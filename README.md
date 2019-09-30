@@ -1,2 +1,8 @@
 # 2019-2020-PnOCW-team-03
-P&amp;O Project
+
+# Taakverdeling:
+* CEO (?): Liam Volckerick
+* CTO: Adam El M'Rabet
+* CT1: Bram Vanbilsen
+* CT2 (?): Maarten Pyck
+* Code review: Bassie Wouters
