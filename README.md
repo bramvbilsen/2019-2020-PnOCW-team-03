@@ -5,4 +5,4 @@
 * CTO: Adam El M'Rabet
 * CT1: Bram Vanbilsen
 * CT2 (?): Maarten Pyck
-* Code review: Bassie Wouters
+* Code review: Sebastiaan Wouters
