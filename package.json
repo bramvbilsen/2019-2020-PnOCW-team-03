@@ -1,0 +1,33 @@
+{
+  "name": "multiscreen_casting",
+  "version": "1.0.0",
+  "description": "* CEO: Liam Volckerick\r * CTO: Adam El M'Rabet\r * CT1: Bram Vanbilsen\r * CT2: Sebastiaan Wouters\r * Code review: Maarten Pyck",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "copyfiles -u 1 ./static/**/*.html ./build/static",
+    "start": "tsc && node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.1",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+<<<<<<< HEAD
+    "copyfiles": "^2.1.1"
+  }
+=======
+    "@types/express": "^4.17.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bramvbilsen/2019-2020-PnOCW-team-03.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bramvbilsen/2019-2020-PnOCW-team-03/issues"
+  },
+  "homepage": "https://github.com/bramvbilsen/2019-2020-PnOCW-team-03#readme"
+>>>>>>> 95348c6115e14362f2246ec808796914d3b8e7ee
+}
