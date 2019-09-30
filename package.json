@@ -1,6 +1,7 @@
 {
-  "name": "front",
+  "name": "multiscreen_casting",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "tsc && node build/index.js",
@@ -8,5 +9,8 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "@types/express": "^4.17.1",
+    "express": "^4.17.1"
+  }
 }
