@@ -1,9 +1,10 @@
 import express from 'express';
+import * as path from "path";
 
 const app = express();
 const port = 3000;
 app.get('/', (req, res) => {
-    res.send('Nice');
+    res.sendFile(path.resolve(__dirname + "/../static/index.html"));
 });
 app.listen(port, err => {
     if (err) {
