@@ -10,5 +10,5 @@ app.listen(port, err => {
     if (err) {
         return console.error(err);
     }
-    return console.log(`server is listening on ${port}`);
+    return console.log(`dag stuk stront, welom op port ${port}`);
 });
