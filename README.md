@@ -3,6 +3,6 @@
 # Taakverdeling:
 * CEO: Liam Volckerick
 * CTO: Adam El M'Rabet
-* CT1: Bram Vanbilsen
-* CT2: Sebastiaan Wouters
+* TC1: Bram Vanbilsen
+* TC2: Sebastiaan Wouters
 * Code review: Maarten Pyck
