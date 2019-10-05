@@ -33,7 +33,7 @@ function readURL(input) {
             reader.readAsDataURL(input.files[0]);
         }
     }
-*/
+
 
 
 //displayed niet, help?
@@ -54,4 +54,4 @@ function displayImg(input){
 $("#picture").change(function(){
 	displayImg(this);
 });
-
+*/
