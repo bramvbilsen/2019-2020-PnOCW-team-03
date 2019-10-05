@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Team 3</title>
+    <meta name="description" content="Screen casting app" />
+  </head>
+
+  <body>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+    ></script>
+    <script src="../js/frontTest.js">
+      // console.log(__dirname);
+      console.log("ok");
+    </script>
+    <h1>Nice - It works</h1>
+    <!---<input type='file' onchange="readURL(this);" />
+      <img id="Id" src="#" alt="uw afbeelding" />-->
+    Upload your image to process here. <input type="file" id="picture" />
+    <img src="#" id="picture-src" />
+    <script
+      type="text/javascript"
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"
+    >
+                $('#picture').change(function(){
+      	          displayImg(this);
+                });
+                function displayImg(input){
+      	        if (input.files && input.files[0]) {
+                  var reader = new FileReader();
+      		    var path = $(input).attr('src');
+
+
+      		    //input.after(img);
+      		    reader.onload = function(b){
+      			    //$('#picture-src').attr('src' , b.target.result);
+                      $('#picture-src').src = path;
+      		    };
+      		    reader.readAsDataURL(input.files[0]);
+      	      }
+      }
+    </script>
+  </body>
+</html>

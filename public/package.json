@@ -1,0 +1,17 @@
+{
+  "name": "public",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && copyfiles ./**/*.html ./build && copyfiles ./**/*.css ./build && copyfiles ./**/*.png ./build  && copyfiles ./**/*.jpg ./build && copyfiles ./**/*.jpeg ./build && copyfiles ./**/*.svg ./build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.1.1"
+  },
+  "author": "",
+  "dependencies": {
+    "@types/jquery": "^3.3.31"
+  }
+}

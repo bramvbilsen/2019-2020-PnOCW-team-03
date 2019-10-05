@@ -3,10 +3,13 @@ import * as path from "path";
 
 const app = express();
 const port = 3000;
-app.use(express.static(path.resolve(__dirname + "/static")))
+
+const staticFolder = path.resolve(__dirname + "/../public/build");
+const htmlFolder = path.resolve(staticFolder + "/html");
+
+app.use(express.static(staticFolder));
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname + "/static/html/index.html"));
-    console.log(__dirname);
+    res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 app.listen(port, err => {
     if (err) {

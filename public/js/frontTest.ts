@@ -1,14 +1,11 @@
-console.log("ok");
-for (let i = 0; i < 100; i++) {
-    console.log("MEHHHH");
-}
+console.log("leven is ok.");
 
 /*$("input").change(function(e) {
 
-    
-        
+
+
         var file = e.originalEvent.srcElement.files[0];
-        
+
         var img = document.createElement("img");
         var reader = new FileReader();
         reader.onloadend = function() {
@@ -42,7 +39,7 @@ function displayImg(input){
         var reader = new FileReader();
 		var path = $(input).attr('src');
 
-			
+
 		//input.after(img);
 		reader.onload = function(b){
 			$('#picture-src').attr('src', b.target.result as string);
