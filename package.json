@@ -4,8 +4,8 @@
   "description": "* CEO: Liam Volckerick\r * CTO: Adam El M'Rabet\r * CT1: Bram Vanbilsen\r * CT2: Sebastiaan Wouters\r * Code review: Maarten Pyck",
   "main": "index.js",
   "scripts": {
-    "prestart": "copyfiles -u 1 ./static/**/*.html ./build/static",
-    "start": "tsc && node build/index.js",
+    "start": "gulp & gulp --gulpfile ./public/gulpfile.js && node build/index.js",
+    "public": "gulp --gulpfile ./public/gulpfile.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -18,6 +18,11 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
-    "copyfiles": "^2.1.1"
+    "copyfiles": "^2.1.1",
+    "gulp": "^4.0.2",
+    "gulp-exec": "^4.0.0",
+    "gulp-nodemon": "^2.4.2",
+    "gulp-typescript": "^5.0.1",
+    "typescript": "^3.6.3"
   }
 }

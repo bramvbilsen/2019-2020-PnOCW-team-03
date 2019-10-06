@@ -5,10 +5,14 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc && copyfiles ./**/*.html ./build && copyfiles ./**/*.css ./build && copyfiles ./**/*.png ./build  && copyfiles ./**/*.jpg ./build && copyfiles ./**/*.jpeg ./build && copyfiles ./**/*.svg ./build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp"
   },
   "devDependencies": {
-    "copyfiles": "^2.1.1"
+    "copyfiles": "^2.1.1",
+    "gulp": "^4.0.2",
+    "typescript": "^3.6.3",
+    "gulp-typescript": "^5.0.1"
   },
   "author": "",
   "dependencies": {

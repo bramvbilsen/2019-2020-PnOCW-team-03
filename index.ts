@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio.listen(server);
 
-const port = process.env.PORT || "3000";
+const port = "3000";
 
 const staticFolder = path.resolve(__dirname + "/../public/build");
 const htmlFolder = path.resolve(staticFolder + "/html");
@@ -20,9 +20,8 @@ app.get('/', (req, res) => {
 
 io.on("connect", (socket: socketio.Socket) => {
     console.log("New connection!");
-    console.log(socket);
 });
 
 server.listen(port, () => {
-    return console.log(`dag stuk stront, welom op port ${port}`);
+    return console.log(`Server listening on port: ${port}`);
 });
