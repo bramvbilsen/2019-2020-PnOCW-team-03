@@ -70,8 +70,8 @@ io.on("connect", (socket: socketio.Socket) => {
             console.log("Attempting to change background by master");
 
             for (const slaveId of Object.keys(msg)) {
-                console.log(slaveId);
-                io.to(slaveId).emit("change-background");
+                console.log(msg[slaveId]);
+                io.to(slaveId).emit("change-background", msg[slaveId]);
             }
         }
     });
