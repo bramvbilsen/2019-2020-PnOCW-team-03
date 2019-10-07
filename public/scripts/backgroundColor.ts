@@ -7,7 +7,7 @@ $(() => {
 
 function changeBackground(color: string) {
     if (connected) {
-        socket.emit("master-change-background", {
+        socket.emit("master-change-all-background", {
             color
         });
     } else {

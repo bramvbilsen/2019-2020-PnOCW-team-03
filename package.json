@@ -4,7 +4,7 @@
   "description": "* CEO: Liam Volckerick\r * CTO: Adam El M'Rabet\r * CT1: Bram Vanbilsen\r * CT2: Sebastiaan Wouters\r * Code review: Maarten Pyck",
   "main": "index.js",
   "scripts": {
-    "start": "gulp & gulp --gulpfile ./public/gulpfile.js && node build/index.js",
+    "start": "gulp & gulp --gulpfile ./public/gulpfile.js",
     "public": "gulp --gulpfile ./public/gulpfile.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

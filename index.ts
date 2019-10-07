@@ -14,6 +14,20 @@ const htmlFolder = path.resolve(staticFolder + "/html");
 
 let connections: Array<string> = [];
 
+function getMaster(): string | null {
+    if (connections.length === 0) {
+        return null;
+    }
+    return connections[0];
+}
+
+function getSlaves(): Array<string> {
+    if (connections.length <= 1) {
+        return [];
+    }
+    return connections.slice(1);
+}
+
 app.use(express.static(staticFolder));
 
 app.get('/', (req, res) => {
@@ -25,17 +39,22 @@ io.on("connect", (socket: socketio.Socket) => {
     console.log("New connection: " + socket.id);
     console.log('Total connected: ' + connections.length);
 
-
+    io.to(getMaster()).emit("notify-master-of-slaves", {
+        slaves: getSlaves()
+    });
 
     socket.on('disconnect', () => {
         connections = connections.filter((val) => val != socket.id);
+        io.to(getMaster()).emit("notify-master-of-slaves", {
+            slaves: getSlaves()
+        });
         console.log("Client disconnected: " + socket.id);
         console.log('Total connected: ' + connections.length);
     });
 
 
 
-    socket.on("master-change-background", function (msg: {
+    socket.on("master-change-all-background", function (msg: {
         color: string
     }) {
         console.log("Attempting to change background by master");
