@@ -17,7 +17,7 @@ interface ISlavesChange {
 }
 
 function generateRandomColor() {
-    return `rgb(${Math.round(Math.random()) * 255}, ${Math.round(Math.random()) * 255}, ${Math.round(Math.random()) * 255})`;
+    return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`;
 }
 
 function assignRandomColorsToSalves() {
