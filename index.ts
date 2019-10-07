@@ -64,6 +64,10 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     });
 
+    socket.on("change-slave-bg", (msg: { [key: string]: string }) => {
+
+    });
+
 
 });
 
