@@ -8,3 +8,9 @@ socket.on("connect", function (data) {
     console.log("connected!");
     connected = true;
 });
+
+socket.on("change-background", function (msg: {
+    color: string
+}) {
+    console.log("Now change backgrounds");
+});

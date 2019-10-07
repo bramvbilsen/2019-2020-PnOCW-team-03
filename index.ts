@@ -23,12 +23,14 @@ app.get('/', (req, res) => {
 io.on("connect", (socket: socketio.Socket) => {
     connections.push(socket.id);
     console.log("New connection: " + socket.id);
+    console.log('Total connected: ' + connections.length);
 
 
 
     socket.on('disconnect', () => {
         connections = connections.filter((val) => val != socket.id);
         console.log("Client disconnected: " + socket.id);
+        console.log('Total connected: ' + connections.length);
     });
 
 
@@ -42,7 +44,11 @@ io.on("connect", (socket: socketio.Socket) => {
             io.emit("change-background", msg);
         }
     });
+
+
 });
+
+
 
 server.listen(port, () => {
     return console.log(`Server listening on port: ${port}`);
