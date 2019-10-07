@@ -7,8 +7,6 @@ $(() => {
 
 function changeBackground(color: string) {
     if (connected) {
-        const page: JQuery<HTMLBodyElement> = $("#page");
-        page.css("background-color", color);
         socket.emit("master-change-background", {
             color
         });
@@ -16,3 +14,10 @@ function changeBackground(color: string) {
         console.log("NOT CONNECTED!");
     }
 }
+
+socket.on("change-background", function (msg: {
+    color: string
+}) {
+    const page: JQuery<HTMLBodyElement> = $("#page");
+    page.css("background-color", msg.color);
+});
