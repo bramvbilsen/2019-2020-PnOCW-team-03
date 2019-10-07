@@ -17,7 +17,7 @@ interface ISlavesChange {
 }
 
 function generateRandomColor() {
-    return `rgb(${Math.round(Math.random()) * 255}, ${Math.round(Math.random()) * 255}, ${Math.round(Math.random()) * 255})`;
+    return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`;
 }
 
 function assignRandomColorsToSalves() {
@@ -27,12 +27,10 @@ function assignRandomColorsToSalves() {
     });
 }
 
-
-
-function assignColorsToSlaves(colors: Array<string>) {
-
+function showColorsOnSlaves() {
+    socket.emit("change-slave-bg", slaveColorCoding);
 }
 
 socket.on("notify-master-of-slaves", (data: ISlavesChange) => {
-    slavesId = data.slaves;
+    slaveIDs = data.slaves;
 });
