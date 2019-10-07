@@ -35,8 +35,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
-app.post("/slaveImg", multer({ dest: 'uploads/' }).single("./slavesImg"), (req, res) => {
-
+app.post("/slaveImg", multer({ dest: 'uploads/' }).single("slaveImg"), (req, res) => {
+    console.log(req.file);
 });
 
 io.on("connect", (socket: socketio.Socket) => {
