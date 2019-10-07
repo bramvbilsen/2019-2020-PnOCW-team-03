@@ -8,7 +8,7 @@
     <meta name="description" content="Screen casting app" />
   </head>
 
-  <body>
+  <body id="page" style="height: 100vh">
     <script
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
@@ -22,11 +22,7 @@
       // console.log(__dirname);
       console.log("ok");
     </script>
-    <h1>Nice - It works!</h1>
-    <!---<input type='file' onchange="readURL(this);" />
-      <img id="Id" src="#" alt="uw afbeelding" />-->
-    Upload your image to process here. <input type="file" id="picture" />
-    <img src="#" id="picture-src" />
+    <script src="../scripts/backgroundColor.js"></script>
     <script
       type="text/javascript"
       src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"
@@ -49,5 +45,17 @@
       	      }
       }
     </script>
+    <h1>Nice - It works!</h1>
+    <!---<input type='file' onchange="readURL(this);" />
+          <img id="Id" src="#" alt="uw afbeelding" />-->
+    Upload your image to process here. <input type="file" id="picture" />
+    <img src="#" id="picture-src" />
+    <div
+      id="Change-Color-Button"
+      onclick="changeBackground('rgb(81, 31, 80)')"
+      style="cursor: pointer"
+    >
+      Change background color
+    </div>
   </body>
 </html>
