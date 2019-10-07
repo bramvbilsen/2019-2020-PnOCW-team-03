@@ -68,10 +68,13 @@ io.on("connect", (socket: socketio.Socket) => {
 
         if (socket.id === connections[0]) {
             console.log("Attempting to change background by master");
-
+            console.log(getSlaves());
+            console.log(Object.keys(msg));
             for (const slaveId of Object.keys(msg)) {
                 console.log(msg[slaveId]);
-                io.to(slaveId).emit("change-background", msg[slaveId]);
+                io.to(slaveId).emit("change-background", {
+                    color: msg[slaveId]
+                });
             }
         }
     });
