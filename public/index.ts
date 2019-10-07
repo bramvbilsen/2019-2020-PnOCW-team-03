@@ -16,11 +16,14 @@ interface ISlavesChange {
     slaves: Array<string>
 }
 
-function generateRandomColor() {
-    return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`;
-}
+socket.on("notify-master-of-slaves", (data: ISlavesChange) => {
+    slaveIDs = data.slaves;
+});
 
 function assignRandomColorsToSalves() {
+    function generateRandomColor() {
+        return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`;
+    }
     slaveColorCoding = {};
     slaveIDs.forEach((slaveID) => {
         slaveColorCoding[slaveID] = generateRandomColor()
@@ -30,7 +33,3 @@ function assignRandomColorsToSalves() {
 function showColorsOnSlaves() {
     socket.emit("change-slave-bg", slaveColorCoding);
 }
-
-socket.on("notify-master-of-slaves", (data: ISlavesChange) => {
-    slaveIDs = data.slaves;
-});
