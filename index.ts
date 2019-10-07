@@ -2,6 +2,7 @@ import express from 'express';
 import * as http from "http";
 import socketio from "socket.io";
 import * as path from "path";
+import multer from "multer";
 
 const app = express();
 const server = http.createServer(app);
@@ -32,6 +33,10 @@ app.use(express.static(staticFolder));
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
+});
+
+app.post("/slaveImg", multer({ dest: 'uploads/' }).single("./slavesImg"), (req, res) => {
+
 });
 
 io.on("connect", (socket: socketio.Socket) => {

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc && copyfiles ./**/*.html ./build && copyfiles ./**/*.css ./build && copyfiles ./**/*.png ./build  && copyfiles ./**/*.jpg ./build && copyfiles ./**/*.jpeg ./build && copyfiles ./**/*.svg ./build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gulp": "gulp"
+    "gulp": "gulp",
+    "start": "gulp"
   },
   "devDependencies": {
     "copyfiles": "^2.1.1",
