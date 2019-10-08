@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"gulp\" \"gulp --gulpfile ./public/gulpfile.js\"",
+    "buildProduction": "concurrently \"gulp build_server_release\" \"gulp --gulpfile ./public/gulpfile.js build_client_release\"",
     "public": "gulp --gulpfile ./public/gulpfile.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

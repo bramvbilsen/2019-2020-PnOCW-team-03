@@ -12,8 +12,9 @@
   "devDependencies": {
     "copyfiles": "^2.1.1",
     "gulp": "^4.0.2",
-    "typescript": "^3.6.3",
-    "gulp-typescript": "^5.0.1"
+    "gulp-exec": "^4.0.0",
+    "gulp-typescript": "^5.0.1",
+    "typescript": "^3.6.3"
   },
   "author": "",
   "dependencies": {

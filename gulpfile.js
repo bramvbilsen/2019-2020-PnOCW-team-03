@@ -1,6 +1,8 @@
 const gulp = require("gulp");
 const nodemon = require("gulp-nodemon");
 const ts = require("gulp-typescript");
+const exec = require("child_process").exec;
+const path = require("path");
 
 const nonTSPathsToCopy = [
   "./**/*.*",
@@ -10,7 +12,6 @@ const nonTSPathsToCopy = [
   "!./public/**/*.*",
   "!./node_modules/**/*.*",
   "!./gulpfile.js",
-  "!./package.json",
   "!./package-lock.json",
   "!./tsconfig.json",
   "!./README.md"
@@ -19,6 +20,8 @@ const nonTSPathsToCopy = [
 const tsProject = ts.createProject("tsconfig.json");
 
 const gulpTasks = {
+  buildRelease: "build_server_release",
+  installProductionModules: "Install server production modules",
   compile: "Compile server TS",
   copyNonTS: "Copy server non TS files",
   recompile: "Recompile server TS",
@@ -46,6 +49,25 @@ gulp.task(gulpTasks.watch, function() {
   gulp.watch("./**/*.ts", gulp.task(gulpTasks.compile));
   gulp.watch(nonTSPathsToCopy, gulp.task(gulpTasks.copyNonTS));
 });
+
+gulp.task(gulpTasks.installProductionModules, async function() {
+  exec(`cd ${path.resolve("./build/")} && npm i --only production`, function(
+    stdout,
+    stderr
+  ) {
+    console.log(stdout);
+    console.log(stderr);
+  });
+});
+
+gulp.task(
+  gulpTasks.buildRelease,
+  gulp.series([
+    gulpTasks.compile,
+    gulpTasks.copyNonTS,
+    gulpTasks.installProductionModules
+  ])
+);
 
 gulp.task(
   "default",

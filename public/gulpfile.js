@@ -1,5 +1,7 @@
 const gulp = require("gulp");
 const ts = require("gulp-typescript");
+const exec = require("child_process").exec;
+const path = require("path");
 
 const tsProject = ts.createProject("tsconfig.json");
 
@@ -9,13 +11,14 @@ const nonTSPathsToCopy = [
   "!./build/**/*.*",
   "!./node_modules/**/*.*",
   "!./gulpfile.js",
-  "!./package.json",
   "!./package-lock.json",
   "!./tsconfig.json"
 ];
 const tsPathToCompile = "./**/*.ts";
 
 const gulpTasks = {
+  buildRelease: "build_client_release",
+  installProductionModules: "Install client production modules",
   compile: "Compile client TS",
   copyNonTS: "Copy client non TS files",
   copyToServer: "Copy client to server",
@@ -34,7 +37,7 @@ gulp.task(gulpTasks.copyNonTS, function() {
 });
 
 gulp.task(gulpTasks.copyToServer, function() {
-  return gulp.src("./build/**/*").pipe(gulp.dest("../build/static"));
+  return gulp.src("./build/**/*").pipe(gulp.dest("../build/public"));
 });
 
 gulp.task(
@@ -50,6 +53,25 @@ gulp.task(gulpTasks.watch, function() {
   gulp.watch(tsPathToCompile, gulp.task(gulpTasks.compileAndCopyToServer));
   gulp.watch(nonTSPathsToCopy, gulp.task(gulpTasks.copyNonTSAndCopyToServer));
 });
+
+gulp.task(gulpTasks.installProductionModules, async function() {
+  exec(
+    `cd ${path.resolve("../build/public")} && ls && npm i --only production`,
+    function(stdout, stderr) {
+      console.log(stdout);
+      console.log(stderr);
+    }
+  );
+});
+
+gulp.task(
+  gulpTasks.buildRelease,
+  gulp.series([
+    gulpTasks.compileAndCopyToServer,
+    gulpTasks.copyNonTSAndCopyToServer,
+    gulpTasks.installProductionModules
+  ])
+);
 
 gulp.task(
   "default",

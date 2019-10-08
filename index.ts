@@ -8,9 +8,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio.listen(server);
 
-const port = "3000";
+const port = process.env.PORT || "3000";
 
-const staticFolder = path.resolve(__dirname + "/../public/build");
+const staticFolder = path.resolve(__dirname + "/public");
 const htmlFolder = path.resolve(staticFolder + "/html");
 
 let connections: Array<string> = [];
