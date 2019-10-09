@@ -4,12 +4,10 @@
   "description": "* CEO: Liam Volckerick\r * CTO: Adam El M'Rabet\r * CT1: Bram Vanbilsen\r * CT2: Sebastiaan Wouters\r * Code review: Maarten Pyck",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"gulp\" \"gulp --gulpfile ./public/gulpfile.js\"",
-    "buildProduction": "concurrently \"gulp build_server_release\" \"gulp --gulpfile ./public/gulpfile.js build_client_release\"",
-    "public": "gulp --gulpfile ./public/gulpfile.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "gulp:server": "gulp",
-    "meh": "concurrently \"tsc -p ./public/ -w\" \"tsc -w\" \"gulp\""
+    "start": "concurrently \"tsc -p ./public/ -w\" \"tsc -w\" \"gulp\"",
+    "build:production": "gulp Build_release",
+    "clean": "gulp Clean",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "dependencies": {
