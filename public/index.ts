@@ -20,6 +20,10 @@ socket.on("notify-master-of-slaves", (data: ISlavesChange) => {
     slaveIDs = data.slaves;
 });
 
+/*
+    COLORS
+*/
+
 function assignRandomColorsToSalves() {
     function generateRandomColor(): string {
         return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`;
@@ -32,4 +36,17 @@ function assignRandomColorsToSalves() {
 
 function showColorsOnSlaves() {
     socket.emit("change-slave-bg", slaveColorCoding);
+}
+
+/*
+    ARROWS
+*/
+
+console.log("ARROWS !");
+function showArrowNorthOnSlaves() {
+    socket.emit("send-arrow-north");
+}
+
+function showArrowRightOnSlaves() {
+    socket.emit("send-arrow-right");
 }

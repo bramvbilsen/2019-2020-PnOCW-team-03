@@ -94,6 +94,24 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     });
 
+    socket.on("send-arrow-north", () => {
+        if (socket.id === getMaster()) {
+            console.log("Master attempts to display arrow north on slaves");
+            for (const slaveId of getSlaves()) {
+                io.to(slaveId).emit("display-arrow-north");
+            }
+        }
+    });
+
+    socket.on("send-arrow-right", () => {
+        if (socket.id === getMaster()) {
+            console.log("Master attempts to display arrow right on slaves");
+            for (const slaveId of getSlaves()) {
+                io.to(slaveId).emit("display-arrow-right");
+            }
+        }
+    });
+
 
 });
 
