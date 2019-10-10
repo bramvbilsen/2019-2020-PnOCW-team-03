@@ -2,7 +2,7 @@
 
 ### Taakverdeling:
 
-- CEO: Liam Volckerick
+- *CEO*: Liam Volckerick
 - CTO: Adam El M'Rabet
 - TC1: Bram Vanbilsen
 - TC2: Sebastiaan Wouters
@@ -15,3 +15,9 @@
 Bram: 2h
 
 Liam: 2h
+
+*7/10:* Made a connection between users and server, identifying each and every user using socket.io. Accessed a user's camera and was able to capture the videoframe and uploading it to our backend.
+
+All: 5hours
+
+*10/10:*
