@@ -7,22 +7,22 @@
     <title>Team 3</title>
     <meta name="description" content="Screen casting app" />
     <style>
-        body{
-            margin: 0;
-            padding: 0;
-            width: 100pw;
-            height: 100ph;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100pw;
+        height: 100ph;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     </style>
   </head>
 
   <body id="page" style="height: 100vh">
     <video id="player" controls autoplay></video>
     <button id="capture">Capture</button>
-    <button id="download">Dowload</button>
+    <button id="upload">Upload</button>
     <canvas id="canvas" width="320" height="240"></canvas>
 
     <script
@@ -30,54 +30,21 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
     ></script>
     <script
+      type="module"
+      src="https://unpkg.com/axios/dist/axios.min.js"
+    ></script>
+    <script
       type="text/javascript"
       src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"
     ></script>
     <script src="../index.js"></script>
-    <script src="../scripts/frontTest.js">
-      // console.log(__dirname);
-      console.log("ok");
-    </script>
+    <script src="../scripts/frontTest.js"></script>
     <script src="../scripts/backgroundColor.js"></script>
     <script
       type="text/javascript"
       src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"
-    >
-                $('#picture').change(function(){
-      	          displayImg(this);
-                });
-                function displayImg(input){
-      	        if (input.files && input.files[0]) {
-                  var reader = new FileReader();
-      		    var path = $(input).attr('src');
-
-
-      		    //input.after(img);
-      		    reader.onload = function(b){
-      			    //$('#picture-src').attr('src' , b.target.result);
-                      $('#picture-src').src = path;
-      		    };
-      		    reader.readAsDataURL(input.files[0]);
-      	      }
-      }
-    </script>
-    
-
-    <script type="text/javascript" src="../scripts/frontTest.js">
-        masterCamera();
-    </script>
+    ></script>
 
     <h1>Nice - It works 👌</h1>
-    <!---<input type='file' onchange="readURL(this);" />
-          <img id="Id" src="#" alt="uw afbeelding" />
-    Upload your image to process here. <input type="file" id="picture" />
-    <img src="#" id="picture-src" />
-    <div
-      id="Change-Color-Button" 
-      onclick="changeBackground('rgb(81, 31, 80)')"
-      style="cursor: pointer"
-    >
-      Change background color
-    </div>-->
   </body>
 </html>

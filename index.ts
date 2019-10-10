@@ -37,8 +37,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
-app.post("/slaveImg", multer({ dest: 'uploads/' }).single("slaveImg"), (req, res) => {
-    console.log(req.file);
+// app.post("/slaveImg", multer({ dest: 'uploads/' }).single("slaveImg"), (req, res) => {
+//     console.log("POSTED IMAGE");
+//     console.log(req.body);
+// });
+
+app.post("/slaveImg", (req, res) => {
+    console.log("POSTED IMAGE");
+    console.log(req.body);
 });
 
 io.on("connect", (socket: socketio.Socket) => {
@@ -52,12 +58,12 @@ io.on("connect", (socket: socketio.Socket) => {
 
     if (getMaster() === socket.id) {
         socket.emit("user-type", {
-            type:"master"
-        });       
+            type: "master"
+        });
     } else {
         socket.emit("user-type", {
-            type:"slave"
-        });  
+            type: "slave"
+        });
     }
 
     socket.on('disconnect', () => {

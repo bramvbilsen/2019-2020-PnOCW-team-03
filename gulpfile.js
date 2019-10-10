@@ -73,7 +73,7 @@ gulp.task(gulpTasks.startServer, async function(done) {
 });
 
 gulp.task(gulpTasks.watch_server_TS, async function() {
-  exec(`cd ${path.resolve("./build/")} && tsc -w`);
+  exec(`cd ${path.resolve("./")} && tsc -w`);
 });
 
 gulp.task(gulpTasks.watch_server_static, async function() {
@@ -98,7 +98,7 @@ gulp.task(gulpTasks.watch_server_static, async function() {
 });
 
 gulp.task(gulpTasks.watch_client_TS, async function() {
-  exec(`cd ${path.resolve("./build/")} && tsc -w`);
+  exec(`cd ${path.resolve("./public/")} && tsc -w`);
 });
 
 gulp.task(gulpTasks.copy_client_non_TS, function() {
@@ -134,10 +134,10 @@ gulp.task(gulpTasks.watch_client_build, async function() {
 });
 
 gulp.task(gulpTasks.buildServer, async function() {
-  exec(`cd ${path.resolve("./build/")} && tsc`);
+  exec(`cd ${path.resolve("./")} && tsc`);
 }),
   gulp.task(gulpTasks.buildClient, async function() {
-    exec(`cd ${path.resolve("./build/public/")} && tsc`);
+    exec(`cd ${path.resolve("./public")} && tsc`);
   });
 
 gulp.task(gulpTasks.installServerProductionModules, async function() {
