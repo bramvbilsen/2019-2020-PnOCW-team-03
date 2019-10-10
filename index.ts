@@ -15,7 +15,7 @@ const port = process.env.PORT || "3000";
 const staticFolder = path.resolve(__dirname + "/public");
 const htmlFolder = path.resolve(staticFolder + "/html");
 
-let connections: Array<string> = [];
+export let connections: Array<string> = [];
 
 function getMaster(): string | null {
     if (connections.length === 0) {
@@ -50,6 +50,16 @@ io.on("connect", (socket: socketio.Socket) => {
         slaves: getSlaves()
     });
 
+    if (getMaster() === socket.id) {
+        socket.emit("user-type", {
+            type:"master"
+        });       
+    } else {
+        socket.emit("user-type", {
+            type:"slave"
+        });  
+    }
+
     socket.on('disconnect', () => {
         connections = connections.filter((val) => val != socket.id);
         io.to(getMaster()).emit("notify-master-of-slaves", {
@@ -58,8 +68,6 @@ io.on("connect", (socket: socketio.Socket) => {
         console.log("Client disconnected: " + socket.id);
         console.log('Total connected: ' + connections.length);
     });
-
-
 
     socket.on("master-change-all-background", function (msg: {
         color: string
