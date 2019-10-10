@@ -183,7 +183,8 @@ function image_xor(buff1, buff2, buff3) {
     assert(buff1.length == buff3.length)
     for(let i = 0; i < buff1.length; ++i) {
         // note: the following is working on Uint8 types (8-bit unsigned integers)
-        buff3[i] = (buff1[i] ^ buff2[i]) * (buff1[i] + buff2[i]) // do something interesting...
+        //buff3[i] = (buff1[i] ^ buff2[i]) * (buff1[i] + buff2[i]) // do something interesting...
+        buff3[i] = Math.abs(buff1[i]-buff2[i])
         //buff3[i] = buff1[i] ^ buff2[i]
     }
 }
