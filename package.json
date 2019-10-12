@@ -4,8 +4,8 @@
   "description": "* CEO: Liam Volckerick\r * CTO: Adam El M'Rabet\r * CT1: Bram Vanbilsen\r * CT2: Sebastiaan Wouters\r * Code review: Maarten Pyck",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"tsc -p ./public/ -w\" \"tsc -w\" \"gulp\"",
-    "build:production": "gulp Build_release",
+    "start": "gulp",
+    "build:production": "gulp build:production",
     "clean": "gulp Clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +25,7 @@
     "copyfiles": "^2.1.1",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
+    "gulp-cache": "^1.1.3",
     "gulp-exec": "^4.0.0",
     "gulp-nodemon": "^2.4.2",
     "gulp-typescript": "^5.0.1",

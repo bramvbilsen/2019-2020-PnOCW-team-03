@@ -1,4 +1,4 @@
-console.log("Init client!!!");
+console.log("Init client... :D:D");
 
 const socket = io.connect("http://localhost:3000");
 

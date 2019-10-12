@@ -1,18 +1,4 @@
 function masterCamera() {
-  // uploadButton.addEventListener("click", () => {
-  //   canvas.toBlob(function (blob) {
-  //     // blob ready, download it
-  //     link = document.createElement("a");
-  //     //console.log(link);
-  //     link.download = "example.png";
-
-  //     link.href = URL.createObjectURL(blob);
-  //     link.click();
-  //     // delete the internal blob reference, to let the browser clear memory from it
-  //     //URL.revokeObjectURL(link.href);
-  //   }, "image/png");
-  // });
-
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
   const context = canvas[0].getContext('2d');
@@ -41,23 +27,22 @@ function uploadImage() {
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
 
   canvas[0].toBlob((blob) => {
-    const file = new File([blob], "capture.jpg", {
-      type: 'image/jpg'
-    });
+    console.log(blob);
     let formData = new FormData();
-    formData.append("image", file);
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', "http://localhost:3000/slaveImg", true);
-    xhr.onload = function (e) {
-      console.log('Sent');
-    };
-    xhr.send(blob);
+    formData.append("image", blob, "image.png");
     $.ajax({
       url: "http://localhost:3000/slaveImg",
       type: "POST",
+      contentType: false,
       cache: false,
       processData: false,
       data: formData,
+      success: (data: any) => {
+        console.log("Success: " + data);
+      },
+      error: () => {
+        console.log("ERROR UPLOADING IMAGE");
+      }
     });
   });
 }

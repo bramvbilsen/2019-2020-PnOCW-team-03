@@ -3,6 +3,8 @@ import * as http from "http";
 import socketio from "socket.io";
 import * as path from "path";
 import multer from "multer";
+import * as fs from "fs";
+import binaryToImageFile from "./imageProcessing/binaryToImageFile"
 
 console.log("Starting server...");
 
@@ -37,15 +39,32 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
-// app.post("/slaveImg", multer({ dest: 'uploads/' }).single("slaveImg"), (req, res) => {
-//     console.log("POSTED IMAGE");
-//     console.log(req.body);
-// });
+const upload = multer({ dest: path.resolve(__dirname + "/uploads/")});
+const type = multer().single("image");
 
-app.post("/slaveImg", (req, res) => {
-    console.log("POSTED IMAGE");
-    console.log(req.body);
-});
+app.post(
+  "/slaveImg",
+  type,
+  (req, res) => {
+      console.log("POSTED IMAGE");
+      const imageFile = req.file;
+      if (!imageFile || (imageFile.mimetype !== "image/png" && imageFile.mimetype !== "image/jpg")) {
+        console.log("BAD IMAGE");
+        res.sendStatus(400);
+      } else {
+        const ext = imageFile.mimetype === "image/png" ? "png" : "jpg";
+        const outputPath = path.resolve(__dirname + `/uploads/image.${ext}`);
+        binaryToImageFile(outputPath, imageFile.buffer)
+        .then(() => {
+          res.sendStatus(200);
+        })
+        .catch((err) => {
+          res.sendStatus(500);
+        });
+      }
+  }
+);
+
 
 io.on("connect", (socket: socketio.Socket) => {
     connections.push(socket.id);
