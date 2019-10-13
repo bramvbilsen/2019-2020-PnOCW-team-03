@@ -138,8 +138,17 @@ gulp.task("Open localhost", function(done) {
 });
 
 // ------ DEFAULT ------ //
-gulp.task("default", gulp.parallel(
+/*gulp.task("default", gulp.parallel(
     "Watch client",
     "Watch server",
     "Open localhost"
+));*/
+
+gulp.task("default", gulp.series(
+  "Clean",
+  gulp.parallel(
+    "Watch client",
+    "Watch server",
+    "Open localhost"
+  )
 ));
