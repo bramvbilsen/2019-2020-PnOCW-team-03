@@ -43,3 +43,5 @@ TC1: 3 Hours
 CEO: 2,5 Hours
 
 Code Reviewer: 1,5 Hours
+
+TC2: 3 Hours
