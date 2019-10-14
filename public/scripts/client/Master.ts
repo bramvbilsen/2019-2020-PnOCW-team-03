@@ -10,9 +10,9 @@ function generateRandomColor(): string {
 export default class Master extends Client {
 	constructor() {
 		super();
-		this.getSlaves = this.getSlaves.bind(this);
 	}
 
+	/********************/
 	private slaves: Array<Slave> = [];
 
 	public getSlaves(): Array<Slave> {
@@ -25,6 +25,6 @@ export default class Master extends Client {
 			slave.setColor(generateRandomColor());
 			slaveColorCoding[slave.getID()] = slave.getColor();
 		});
-		socket.emit("change-slave-bg", slaveColorCoding);
+		socket.emit("change-slaves-bg-by-master", slaveColorCoding);
 	}
 }

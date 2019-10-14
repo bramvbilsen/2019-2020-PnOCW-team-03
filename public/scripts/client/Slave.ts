@@ -2,18 +2,14 @@ import Master from "./Master";
 import Client from "./Client";
 
 export default class Slave extends Client {
-	constructor(color: string, master: Master) {
+	constructor(master: Master) {
 		super();
-		this.color = color;
+		this.color = "rgb(255,255,255)";  // white
 		this.master = master;
 	}
 
+	/********************/
 	private color: string;
-	private master: Master;
-
-	public getMaster(): Master {
-		return this.master;
-	}
 
 	public getColor(): string {
 		return this.color;
@@ -22,4 +18,13 @@ export default class Slave extends Client {
 	public setColor(color: string) {
 		this.color = color;
 	}
+
+	/********************/
+	private master: Master;
+
+	public getMaster(): Master {
+		return this.master;
+	}
+
+	
 }
