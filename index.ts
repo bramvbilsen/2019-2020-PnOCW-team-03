@@ -5,6 +5,7 @@ import * as path from "path";
 import multer from "multer";
 import * as fs from "fs";
 import binaryToImageFile from "./imageProcessing/binaryToImageFile";
+import {MasterEventTypes, SlaveEventTypes} from "./types/SocketIOEvents"
 
 console.log("Starting server...");
 
@@ -66,7 +67,7 @@ io.on("connect", (socket: socketio.Socket) => {
 	console.log("New connection: " + socket.id);
 	console.log("Total connected: " + connections.length);
 
-	io.to(getMaster()).emit("notify-master-of-slaves", {
+	io.to(getMaster()).emit(MasterEventTypes.SlaveChanges, {
 		slaves: getSlaves()
 	});
 
@@ -82,47 +83,37 @@ io.on("connect", (socket: socketio.Socket) => {
 
 	socket.on("disconnect", () => {
 		connections = connections.filter(val => val != socket.id);
-		io.to(getMaster()).emit("notify-master-of-slaves", {
+		io.to(getMaster()).emit(MasterEventTypes.SlaveChanges, {
 			slaves: getSlaves()
 		});
 		console.log("Client disconnected: " + socket.id);
 		console.log("Total connected: " + connections.length);
 	});
 
-	socket.on("master-change-all-background", function(msg: { color: string }) {
-		console.log("Attempting to change background by master");
-		if (socket.id === connections[0]) {
-			console.log("IS MASTER");
-			io.emit("change-background", msg);
-		}
-	});
-
-	socket.on("change-slave-bg", (msg: { [key: string]: string }) => {
+	socket.on(MasterEventTypes.ChangeSlaveBackgrounds, (msg: { [key: string]: string }) => {
 		if (socket.id === connections[0]) {
 			console.log("Attempting to change background by master");
 			console.log(getSlaves());
 			console.log(Object.keys(msg));
 			for (const slaveId of Object.keys(msg)) {
 				console.log(msg[slaveId]);
-				io.to(slaveId).emit("change-background", {
+				io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
 					color: msg[slaveId]
 				});
 			}
 		}
 	});
 
-	socket.on("send-arrow-north", () => {
+	socket.on("display-arrow-north", () => {
 		if (socket.id === getMaster()) {
-			console.log("Master attempts to display arrow north on slaves");
 			for (const slaveId of getSlaves()) {
 				io.to(slaveId).emit("display-arrow-north");
 			}
 		}
 	});
 
-	socket.on("send-arrow-right", () => {
+	socket.on("display-arrow-right", () => {
 		if (socket.id === getMaster()) {
-			console.log("Master attempts to display arrow right on slaves");
 			for (const slaveId of getSlaves()) {
 				io.to(slaveId).emit("display-arrow-right");
 			}
