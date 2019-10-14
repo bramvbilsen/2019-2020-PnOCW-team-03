@@ -1,7 +1,7 @@
 export default abstract class Client {
 	socket: SocketIOClient.Socket;
-	constructor() {
-		this.socket = io.connect("http://localhost:3000");
+	constructor(socket: SocketIOClient.Socket) {
+		this.socket = socket;
 	}
 
 	public isConnected() {

@@ -1,30 +1,34 @@
 import Slave from "./Slave";
 import Client from "./Client";
+import { MasterEventTypes } from "../types/SocketIOEvents";
 
-function generateRandomColor(): string {
-	return `rgb(${Math.round(Math.random() * 255)}, ${Math.round(
-		Math.random() * 255
-	)}, ${Math.round(Math.random() * 255)})`;
+function generateRandomColor() {
+	return `rgb(${Math.random() * 255}, ${Math.random() *
+		255}, ${Math.random() * 255})`;
 }
 
 export default class Master extends Client {
-	constructor() {
-		super();
-		this.getSlaves = this.getSlaves.bind(this);
+	constructor(socket: SocketIOClient.Socket) {
+		super(socket);
+		socket.on(
+			MasterEventTypes.SlaveChanges,
+			(data: { slaves: Array<string> }) => {
+				this.slaves = data.slaves;
+			}
+		);
 	}
 
-	private slaves: Array<Slave> = [];
+	private slaves: Array<string> = [];
 
-	public getSlaves(): Array<Slave> {
+	public getSlaves(): Array<string> {
 		return this.slaves;
 	}
 
-	public showRandomColorsOnSlaves() {
+	public showColorsOnSlaves() {
 		let slaveColorCoding: { [key: string]: string } = {};
-		this.slaves.forEach(slave => {
-			slave.setColor(generateRandomColor());
-			slaveColorCoding[slave.getID()] = slave.getColor();
+		this.slaves.forEach(slaveID => {
+			slaveColorCoding[slaveID] = generateRandomColor();
 		});
-		socket.emit("change-slave-bg", slaveColorCoding);
+		socket.emit(MasterEventTypes.ChangeSlaveBackgrounds, slaveColorCoding);
 	}
 }
