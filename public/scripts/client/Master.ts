@@ -29,6 +29,10 @@ export default class Master extends Client {
 		this.slaves.forEach(slaveID => {
 			slaveColorCoding[slaveID] = generateRandomColor();
 		});
+<<<<<<< HEAD
 		socket.emit(MasterEventTypes.ChangeSlaveBackgrounds, slaveColorCoding);
+=======
+		socket.emit("change-slaves-bg-by-master", slaveColorCoding);
+>>>>>>> a7fd95d825f210ecb5fc8210e6f81718c083c20f
 	}
 }

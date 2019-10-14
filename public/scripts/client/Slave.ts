@@ -13,4 +13,13 @@ export default class Slave extends Client {
 			}
 		);
 	}
+
+	/********************/
+	private master: Master;
+
+	public getMaster(): Master {
+		return this.master;
+	}
+
+
 }
