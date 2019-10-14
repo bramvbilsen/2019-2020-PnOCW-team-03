@@ -1,6 +1,7 @@
 function show_image(src:string) {
     var img = document.createElement("img");
     img.src = src;
+	img.setAttribute('src', src);
 
     // This next line will just add it to the <body> tag
     document.body.appendChild(img);

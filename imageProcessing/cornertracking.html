@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>tracking.js - first tracking</title>
+  <script src="tracking-min.js"></script>
+</head>
+<body>
+
+  <img id = "input_image" height="400" width="700">
+  <input type="file" id="file_input">
+  <canvas id = 'output'></canvas>
+  <input type="number" id="g" name="green" min="0" max="255">
+  <input type="number" id="b" name="blue" min="0" max="255">
+  <input type="number" id="r" name="red" min="0" max="255">
+
+</body>
+
+<script>
+  let img_input = document.getElementById("input_image")
+  let file_input = document.getElementById("file_input")
+
+  file_input.addEventListener('change', (e) => {
+    img_input.src = URL.createObjectURL(e.target.files[0])
+  }, false);
+
+  img_input.onload = function() {
+        colortrack();
+  }
+
+  function colortrack() {
+    var corners = [];
+
+    tracking.ColorTracker.registerColor('green', function(r, g, b) {
+    if (r < 50 && g > 180 && b < 50) {
+      return true;
+    }
+    return false;
+    });
+    tracking.ColorTracker.registerColor('blue', function(r, g, b) {
+      if (r < 15 && g > 230 && b > 230) {
+        return true;
+      }
+      return false;
+    });
+
+    var colors = new tracking.ColorTracker(['blue']);
+    
+    colors.on('track', function(event) {
+      if (event.data.length === 0) {
+        // No colors were detected in this frame.
+        console.log("nothing here")
+      } else {
+        event.data.forEach(function(rect) {
+          console.log(rect.x, rect.y, rect.height, rect.width, rect.color);
+          corners.push(rect);
+        });
+      }
+      console.log(corners)
+    });
+
+  
+
+  tracking.track('#input_image', colors);
+
+  }
+ 
+
+
+  </script>
+
+</html>
