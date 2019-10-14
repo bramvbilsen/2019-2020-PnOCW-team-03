@@ -1,3 +1,7 @@
+export const enum SharedEventTypes {
+	NotifyOfTypeChange = "notify-of-type-change"
+}
+
 export const enum SlaveEventTypes {
 	ChangeBackground = "change-background"
 }
