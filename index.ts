@@ -5,34 +5,26 @@ import * as path from "path";
 import multer from "multer";
 import * as fs from "fs";
 import binaryToImageFile from "./imageProcessing/binaryToImageFile";
-import {MasterEventTypes, SlaveEventTypes} from "./types/SocketIOEvents"
+import Connections from "./server/Connections";
+import {
+	MasterEventTypes,
+	SlaveEventTypes,
+	SharedEventTypes
+} from "./types/SocketIOEvents";
 
 console.log("Starting server...");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio.listen(server);
+export const io = socketio.listen(server);
 
 const port = process.env.PORT || "3000";
 
 const staticFolder = path.resolve(__dirname + "/public");
 const htmlFolder = path.resolve(staticFolder + "/html");
 
-export let connections: Array<string> = [];
-
-function getMaster(): string | null {
-	if (connections.length === 0) {
-		return null;
-	}
-	return connections[0];
-}
-
-function getSlaves(): Array<string> {
-	if (connections.length <= 1) {
-		return [];
-	}
-	return connections.slice(1);
-}
+//export let connections: Array<string> = [];
+let connections: Connections = new Connections();
 
 app.use(express.static(staticFolder));
 
@@ -63,58 +55,51 @@ app.post("/slaveImg", multerSlaveImageType, (req, res) => {
 });
 
 io.on("connect", (socket: socketio.Socket) => {
-	connections.push(socket.id);
+	connections.add(socket);
 	console.log("New connection: " + socket.id);
 	console.log("Total connected: " + connections.length);
 
-	io.to(getMaster()).emit(MasterEventTypes.SlaveChanges, {
-		slaves: getSlaves()
+	io.to(connections.master.id).emit(MasterEventTypes.SlaveChanges, {
+		slaves: connections.slaveIDs
 	});
 
-	if (getMaster() === socket.id) {
-		socket.emit("user-type", {
-			type: "master"
-		});
-	} else {
-		socket.emit("user-type", {
-			type: "slave"
-		});
-	}
-
 	socket.on("disconnect", () => {
-		connections = connections.filter(val => val != socket.id);
-		io.to(getMaster()).emit(MasterEventTypes.SlaveChanges, {
-			slaves: getSlaves()
+		// TODO: The connections.remove methods will emit a signal to the new master if there
+		//  is a new one. Perhaps we need to wait for the new master to receive this before
+		//  notifying of its slaves.
+		connections.remove(socket);
+		io.to(connections.master.id).emit(MasterEventTypes.SlaveChanges, {
+			slaves: connections.slaveIDs
 		});
 		console.log("Client disconnected: " + socket.id);
 		console.log("Total connected: " + connections.length);
 	});
 
-	socket.on(MasterEventTypes.ChangeSlaveBackgrounds, (msg: { [key: string]: string }) => {
-		if (socket.id === connections[0]) {
-			console.log("Attempting to change background by master");
-			console.log(getSlaves());
-			console.log(Object.keys(msg));
-			for (const slaveId of Object.keys(msg)) {
-				console.log(msg[slaveId]);
-				io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
-					color: msg[slaveId]
-				});
+	socket.on(
+		MasterEventTypes.ChangeSlaveBackgrounds,
+		(msg: { [key: string]: string }) => {
+			if (socket.id === connections.master.id) {
+				console.log("Attempting to change background by master");
+				for (const slaveId of Object.keys(msg)) {
+					io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
+						color: msg[slaveId]
+					});
+				}
 			}
 		}
-	});
+	);
 
 	socket.on("display-arrow-north", () => {
-		if (socket.id === getMaster()) {
-			for (const slaveId of getSlaves()) {
+		if (socket.id === connections.master.id) {
+			for (const slaveId of connections.slaveIDs) {
 				io.to(slaveId).emit("display-arrow-north");
 			}
 		}
 	});
 
 	socket.on("display-arrow-right", () => {
-		if (socket.id === getMaster()) {
-			for (const slaveId of getSlaves()) {
+		if (socket.id === connections.master.id) {
+			for (const slaveId of connections.slaveIDs) {
 				io.to(slaveId).emit("display-arrow-right");
 			}
 		}
