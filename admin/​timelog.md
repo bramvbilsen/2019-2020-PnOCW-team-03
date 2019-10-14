@@ -6,7 +6,8 @@
 - CTO: Adam El M'Rabet
 - TC1: Bram Vanbilsen
 - TC2: Sebastiaan Wouters
-- Code reviewer: Maarten Pyck
+- Code reviewer 1: Maarten Pyck
+- Code reviewer 2: Pieter-Jan Van den Broecke
 
 ### **Log**:
 
