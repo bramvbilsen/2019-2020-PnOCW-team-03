@@ -5,10 +5,7 @@ import * as path from "path";
 import multer from "multer";
 import Connections from "./server/Connections";
 import handleImageUpload from "./server/handleImageUpload";
-import {
-	MasterEventTypes,
-	SlaveEventTypes
-} from "./types/SocketIOEvents";
+import { MasterEventTypes, SlaveEventTypes } from "./types/SocketIOEvents";
 
 console.log("Starting server...");
 
@@ -26,50 +23,50 @@ let connections: Connections = new Connections();
 app.use(express.static(staticFolder));
 
 app.get("/", (req, res) => {
-	res.sendFile(path.resolve(htmlFolder + "/index.html"));
+  res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
 const multerSlaveImageType = multer().single("image");
 app.post("/slaveImg", multerSlaveImageType, handleImageUpload);
 
 io.on("connect", (socket: socketio.Socket) => {
-	connections.add(socket);
+  connections.add(socket);
 
-	socket.on("disconnect", () => {
-		connections.remove(socket);
-	});
+  socket.on("disconnect", () => {
+    connections.remove(socket);
+  });
 
-	socket.on(
-		MasterEventTypes.ChangeSlaveBackgrounds,
-		(msg: { [key: string]: string }) => {
-			if (socket.id === connections.master.id) {
-				console.log("Attempting to change background by master");
-				for (const slaveId of Object.keys(msg)) {
-					io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
-						color: msg[slaveId]
-					});
-				}
-			}
-		}
-	);
+  socket.on(
+    MasterEventTypes.ChangeSlaveBackgrounds,
+    (msg: { [key: string]: string }) => {
+      if (socket.id === connections.master.id) {
+        console.log("Attempting to change background by master");
+        for (const slaveId of Object.keys(msg)) {
+          io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
+            color: msg[slaveId]
+          });
+        }
+      }
+    }
+  );
 
-	socket.on("display-arrow-north", () => {
-		if (socket.id === connections.master.id) {
-			for (const slaveId of connections.slaveIDs) {
-				io.to(slaveId).emit("display-arrow-north");
-			}
-		}
-	});
+  socket.on("display-arrow-north", () => {
+    if (socket.id === connections.master.id) {
+      for (const slaveId of connections.slaveIDs) {
+        io.to(slaveId).emit("display-arrow-north");
+      }
+    }
+  });
 
-	socket.on("display-arrow-right", () => {
-		if (socket.id === connections.master.id) {
-			for (const slaveId of connections.slaveIDs) {
-				io.to(slaveId).emit("display-arrow-right");
-			}
-		}
-	});
+  socket.on("display-arrow-right", () => {
+    if (socket.id === connections.master.id) {
+      for (const slaveId of connections.slaveIDs) {
+        io.to(slaveId).emit("display-arrow-right");
+      }
+    }
+  });
 });
 
 server.listen(port, () => {
-	return console.log(`Server listening on port: ${port}`);
+  return console.log(`Server listening on port: ${port}`);
 });
