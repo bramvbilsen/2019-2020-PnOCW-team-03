@@ -11,7 +11,9 @@ class Client {
 	constructor() {
 		console.log("new client!");
 		this._socket = io.connect("http://localhost:3000");
+		/* CONNECTION */
 		this._socket.on("connected", () => console.log("Connected!"));
+		/* NOTIFY MASTER OF CONNECTION */
 		this._socket.on(SharedEventTypes.NotifyOfTypeChange, (data: { type: ConnectionType }) => {
 			this._type = data.type;
 			this._slaves = [];
@@ -27,6 +29,13 @@ class Client {
 				);
 			}
 			this.setNewSocketIOEmitters(socketIOEmittersForNewType);
+		});
+		/* ARROWS ON SLAVES */
+		this._socket.on(SlaveEventTypes.DisplayArrowUp, () => {
+			show_image("../img/arrowUp.png");
+		});
+		this._socket.on(SlaveEventTypes.DisplayArrowRight, () => {
+			show_image("../img/arrowRight.png");
 		});
 	}
 
@@ -76,6 +85,32 @@ class Client {
 			slaveColorCoding[slaveID] = generateRandomColor();
 		});
 		this._socket.emit(MasterEventTypes.ChangeSlaveBackgrounds, slaveColorCoding);
+	}
+
+	/**
+	 * Sends a request commanding all slaves to display an arrow pointing upwards.
+	 * This is only permitted if the current `this.type === ConnectionType.MASTER`
+	 * 	and will thus not send the server request if this is not the case.
+	 */
+	public showArrowsUpOnSlaves = () => {
+		if (this.type === ConnectionType.SLAVE) {
+			console.warn("MASTER PERMISSION NEEDED TO DISPLAY ARROWS.\nNot executing command!");
+			return;
+		}
+		this._socket.emit(MasterEventTypes.SendArrowsUp);
+	}
+
+	/**
+	 * Sends a request commanding all slaves to display an arrow pointing to the right.
+	 * This is only permitted if the current `this.type === ConnectionType.MASTER`
+	 * 	and will thus not send the server request if this is not the case.
+	 */
+	public showArrowsRightOnSlaves = () => {
+		if (this.type === ConnectionType.SLAVE) {
+			console.warn("MASTER PERMISSION NEEDED TO DISPLAY ARROWS.\nNot executing command!");
+			return;
+		}
+		this._socket.emit(MasterEventTypes.SendArrowsRight);
 	}
 
 	private setNewSocketIOEmitters = (newEmitters: Array<SocketIOClient.Emitter>) => {
