@@ -1,4 +1,4 @@
-function masterCamera() {
+export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
   const context = canvas[0].getContext('2d');
@@ -47,6 +47,6 @@ function uploadImage() {
   });
 }
 
-console.log("OKKKK");
+// console.log("OKKKK");
 
-masterCamera();
+// masterCamera();

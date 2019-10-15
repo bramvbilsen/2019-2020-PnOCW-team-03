@@ -1,6 +1,6 @@
 import { io } from "../index";
 import socketio from "socket.io";
-import { SharedEventTypes } from "../types/SocketIOEvents";
+import { SharedEventTypes, MasterEventTypes } from "../types/SocketIOEvents";
 import { ConnectionType } from "../types/ConnectionsType";
 
 export default class Connections {
@@ -10,7 +10,7 @@ export default class Connections {
 		return this._connections.length;
 	}
 
-	get master(): socketio.Socket {
+	get master(): socketio.Socket | undefined {
 		return this._connections[0];
 	}
 	get slaves(): Array<socketio.Socket> {
@@ -23,12 +23,19 @@ export default class Connections {
 		return this._connections;
 	}
 
-	add = (slave: socketio.Socket) => {
-		this._connections = [...this._connections, slave];
-		io.to(slave.id).emit(SharedEventTypes.NotifyOfTypeChange, {
+	add = (connection: socketio.Socket) => {
+		this._connections = [...this._connections, connection];
+		io.to(connection.id).emit(SharedEventTypes.NotifyOfTypeChange, {
 			type:
-				this.length === 0 ? ConnectionType.MASTER : ConnectionType.SLAVE
+				this.length === 1 ? ConnectionType.MASTER : ConnectionType.SLAVE
 		});
+		if (this.master) {
+			io.to(this.master.id).emit(MasterEventTypes.SlaveChanges, {
+				slaves: this.slaveIDs
+			});
+		}
+		console.log("New connection: " + connection.id);
+		console.log("Total connected: " + this.length);
 	};
 
 	remove = (connectionToRemove: socketio.Socket) => {
@@ -45,8 +52,16 @@ export default class Connections {
 				this._connections.splice(index, 1);
 			}
 		});
+		if (this.master) {
+			io.to(this.master.id).emit(MasterEventTypes.SlaveChanges, {
+				slaves: this.slaveIDs
+			});
+		}
+		console.log("Client disconnected: " + connectionToRemove.id);
+		console.log("Total connected: " + this.length);
 	};
 
+	// TODO: New master should be notified of slaves.
 	changeMaster = (newMaster: socketio.Socket) => {
 		if (this._connections.length !== 0) {
 			let oldMaster = this._connections.shift();

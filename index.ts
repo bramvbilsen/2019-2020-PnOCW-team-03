@@ -3,13 +3,11 @@ import * as http from "http";
 import socketio from "socket.io";
 import * as path from "path";
 import multer from "multer";
-import * as fs from "fs";
 import binaryToImageFile from "./imageProcessing/binaryToImageFile";
 import Connections from "./server/Connections";
 import {
 	MasterEventTypes,
-	SlaveEventTypes,
-	SharedEventTypes
+	SlaveEventTypes
 } from "./types/SocketIOEvents";
 
 console.log("Starting server...");
@@ -56,23 +54,9 @@ app.post("/slaveImg", multerSlaveImageType, (req, res) => {
 
 io.on("connect", (socket: socketio.Socket) => {
 	connections.add(socket);
-	console.log("New connection: " + socket.id);
-	console.log("Total connected: " + connections.length);
-
-	io.to(connections.master.id).emit(MasterEventTypes.SlaveChanges, {
-		slaves: connections.slaveIDs
-	});
 
 	socket.on("disconnect", () => {
-		// TODO: The connections.remove methods will emit a signal to the new master if there
-		//  is a new one. Perhaps we need to wait for the new master to receive this before
-		//  notifying of its slaves.
 		connections.remove(socket);
-		io.to(connections.master.id).emit(MasterEventTypes.SlaveChanges, {
-			slaves: connections.slaveIDs
-		});
-		console.log("Client disconnected: " + socket.id);
-		console.log("Total connected: " + connections.length);
 	});
 
 	socket.on(
