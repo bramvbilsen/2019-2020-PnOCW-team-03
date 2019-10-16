@@ -119,13 +119,12 @@ class Client {
 	}
 
 	private displayArrowUp = (): void => {
-		console.log("UP");
-		show_image("../img/arrowUp.png");
+		//$('#arrowImg').remove('<img id="arrowRight" src="../img/arrowRight.png" />');
+		$('#arrowImg').replaceWith('<img id="arrowUp" src="../img/arrowUp.png" />');
 	}
 
 	private displayArrowRight = (): void => {
-		console.log("RIGHT");
-		show_image("../img/arrowRight.png");
+		$('#arrowImg').replaceWith('<img id="arrowRight" src="../img/arrowRight.png" />');
 	}
 
 	private handleSlaveChanges = (data: { slaves: Array<string> }) => {
