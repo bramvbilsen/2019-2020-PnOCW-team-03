@@ -1,6 +1,7 @@
 import { ConnectionType } from "../types/ConnectionType";
 import { SharedEventTypes, SlaveEventTypes, MasterEventTypes } from "../types/SocketIOEvents"
 import { generateRandomColor } from "../util/colors";
+import { show_image } from "../util/images";
 
 class Client {
 	private _type: ConnectionType;
@@ -20,7 +21,9 @@ class Client {
 			const socketIOEmittersForNewType: Array<SocketIOClient.Emitter> = [];
 			if (this.type === ConnectionType.SLAVE) {
 				socketIOEmittersForNewType.push(
-					this._socket.on(SlaveEventTypes.ChangeBackground, this.changeBackground)
+					this._socket.on(SlaveEventTypes.ChangeBackground, this.changeBackground),
+					this._socket.on(SlaveEventTypes.DisplayArrowUp, this.displayArrowUp),
+					this._socket.on(SlaveEventTypes.DisplayArrowRight, this.displayArrowRight)
 				);
 			}
 			else {
@@ -29,13 +32,6 @@ class Client {
 				);
 			}
 			this.setNewSocketIOEmitters(socketIOEmittersForNewType);
-		});
-		/* ARROWS ON SLAVES */
-		this._socket.on(SlaveEventTypes.DisplayArrowUp, () => {
-			show_image("../img/arrowUp.png");
-		});
-		this._socket.on(SlaveEventTypes.DisplayArrowRight, () => {
-			show_image("../img/arrowRight.png");
 		});
 	}
 
@@ -120,6 +116,16 @@ class Client {
 	private changeBackground = (data: { color: string }): void => {
 		const page: JQuery<HTMLBodyElement> = $("#page");
 		page.css("background-color", data.color);
+	}
+
+	private displayArrowUp = (): void => {
+		console.log("UP");
+		show_image("../img/arrowUp.png");
+	}
+
+	private displayArrowRight = (): void => {
+		console.log("RIGHT");
+		show_image("../img/arrowRight.png");
 	}
 
 	private handleSlaveChanges = (data: { slaves: Array<string> }) => {

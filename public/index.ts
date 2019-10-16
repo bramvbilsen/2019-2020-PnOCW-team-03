@@ -5,16 +5,3 @@ handleCameraInput();
 const client = new Client();
 //@ts-ignore
 window.client = client;
-
-/*
-    ARROWS
-*/
-
-// console.log("ARROWS !");
-// function showArrowNorthOnSlaves() {
-//     socket.emit("send-arrow-north");
-// }
-
-// function showArrowRightOnSlaves() {
-//     socket.emit("send-arrow-right");
-// }

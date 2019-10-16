@@ -52,24 +52,31 @@ io.on("connect", (socket: socketio.Socket) => {
 			}
 		}
 	);
-
-	socket.on("display-arrow-north", () => {
-		if (socket.id === connections.master.id) {
-			for (const slaveId of connections.slaveIDs) {
-				io.to(slaveId).emit("display-arrow-north");
+	
+	socket.on(
+		MasterEventTypes.SendArrowsUp, () => {
+			if (socket.id === connections.master.id) {
+				console.log("Attempting to display arrow by master");
+				for (const slaveId of connections.slaveIDs) {
+					io.to(slaveId).emit(SlaveEventTypes.DisplayArrowUp);
+				}
 			}
 		}
-	});
+	);
 
-	socket.on("display-arrow-right", () => {
-		if (socket.id === connections.master.id) {
-			for (const slaveId of connections.slaveIDs) {
-				io.to(slaveId).emit("display-arrow-right");
+	socket.on(
+		MasterEventTypes.SendArrowsRight, () => {
+			if (socket.id === connections.master.id) {
+				console.log("Attempting to display arrow by master");
+				for (const slaveId of connections.slaveIDs) {
+					io.to(slaveId).emit(SlaveEventTypes.DisplayArrowRight);
+				}
 			}
 		}
-	});
+	);
 });
 
 server.listen(port, () => {
 	return console.log(`Server listening on port: ${port}`);
 });
+
