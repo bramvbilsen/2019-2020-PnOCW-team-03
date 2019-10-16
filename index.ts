@@ -5,10 +5,7 @@ import * as path from "path";
 import multer from "multer";
 import Connections from "./server/Connections";
 import handleImageUpload from "./server/handleImageUpload";
-import {
-	MasterEventTypes,
-	SlaveEventTypes
-} from "./types/SocketIOEvents";
+import { MasterEventTypes, SlaveEventTypes } from "./types/SocketIOEvents";
 
 console.log("Starting server...");
 
@@ -26,18 +23,18 @@ let connections: Connections = new Connections();
 app.use(express.static(staticFolder));
 
 app.get("/", (req, res) => {
-	res.sendFile(path.resolve(htmlFolder + "/index.html"));
+  res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
 const multerSlaveImageType = multer().single("image");
 app.post("/slaveImg", multerSlaveImageType, handleImageUpload);
 
 io.on("connect", (socket: socketio.Socket) => {
-	connections.add(socket);
+  connections.add(socket);
 
-	socket.on("disconnect", () => {
-		connections.remove(socket);
-	});
+  socket.on("disconnect", () => {
+    connections.remove(socket);
+  });
 
 	socket.on(
 		MasterEventTypes.ChangeSlaveBackgrounds,
@@ -77,6 +74,6 @@ io.on("connect", (socket: socketio.Socket) => {
 });
 
 server.listen(port, () => {
-	return console.log(`Server listening on port: ${port}`);
+  return console.log(`Server listening on port: ${port}`);
 });
 
