@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hello OpenCV.js</title>
+</head>
+<body>
+<h2>Hello OpenCV.js</h2>
+<p id="status">OpenCV.js is loading...</p>
+<div>
+    <div class="inputoutput">
+        <img id="imageSrc" alt="No Image" />
+        <div class="caption">imageSrc <input type="file" id="fileInput" name="file" /></div>
+    </div>
+    <div class="inputoutput">
+        <canvas id="canvasOutput" ></canvas>
+        <div class="caption">canvasOutput</div>
+    </div>
+</div>
+<script type="text/javascript">
+    /*let imgElement = document.getElementById('imageSrc');
+    let inputElement = document.getElementById('fileInput');
+    inputElement.addEventListener('change', (e) => {
+        imgElement.src = URL.createObjectURL(e.target.files[0]);
+    }, false);
+    imgElement.onload = function() {
+        let mat = cv.imread(imgElement);
+        cv.imshow('canvasOutput', mat);
+        mat.delete();
+    };
+    */
+    var inputElement = document.getElementById("input");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles(e) {
+        var canvas = document.getElementById('canvas1');
+        var canvasWidth = 600 ;
+        var canvasHeight = 400 ;
+        var ctx = canvas.getContext('2d');
+        var url = URL.createObjectURL(e.target.files[0]);
+        var img = new Image();
+        img.onload = function() {
+            //ctx.drawImage(img, 20, 20);
+            var scaleFactor=Math.min((canvasWidth/img.width),(canvasHeight/img.height));
+            canvas.width = img.width*scaleFactor ;
+            canvas.height = img.height*scaleFactor ;
+            ctx.drawImage(img,0,0,img.width*scaleFactor,img.height*scaleFactor);
+        }
+        img.src = url;
+    }
+
+    function onOpenCvReady() {
+        document.getElementById('status').innerHTML = 'OpenCV.js is ready.';
+    }
+
+    function getInput() {
+        var canvas = document.getElementById('canvas1');
+        var ctx = canvas.getContext('2d');
+        var imgData = ctx.getImageData(0,0,canvas.width, canvas.height);
+        return imgData;
+    }
+
+    function download() {
+        var dt = canvas2.toDataURL('image/jpeg');
+        this.href = dt;
+    };
+    downloadLnk.addEventListener('click', download, false);
+
+    function runTest(fct){
+        var start = performance.now();
+        fct()
+        var end = performance.now();
+        var time = end - start;
+        var res = {testName:fct.name , executionTime_ms:time};
+        ress.push(res);
+        var d = new Date().toString();
+        var filename = "file_" + fct.name + "_" + d;
+        downloadLnk.setAttribute('download', filename);
+        downloadLnk.click();
+    }
+    function init() {
+        container = document.createElement('div');
+        document.body.appendChild(container);
+        gui = new dat.GUI({autoPlace: false});
+        document.body.appendChild(gui.domElement);
+        gui.domElement.style.position = "absolute";
+        gui.domElement.style.top = "0px";
+        gui.domElement.style.right = "5px";
+        //Run All Tests
+        gui.add(Control, 'runAllTests');
+    }
+
+    function runAllTests(){
+        ress = [];
+        runTest(harrisCornerDetection);
+
+        var d = new Date().toString();
+        downloadCSV({ filename: "OpenCV_features_2d_results_" + d + ".csv" });
+    }
+
+    function harrisCornerDetection() {
+        var img = cv.matFromArray(getInput(), 24); // 24 for rgba
+        var img_gray = new cv.Mat();
+        var img_color = new cv.Mat();
+        cv.cvtColor(img, img_gray, cv.ColorConversionCodes.COLOR_RGBA2GRAY.value, 0);
+        cv.cvtColor(img, img_color, cv.ColorConversionCodes.COLOR_RGBA2RGB.value, 0);
+        img.delete();
+        var dst = cv.Mat.zeros(img_color.cols, img_color.rows, cv.CV_32FC1);
+        /// Detector parameters
+        var thresh = Control.threshold;
+        var max_thresh = 255;
+        var blockSize = 2;
+        var apertureSize = 3;
+        var k = 0.04;
+        /// Detecting corners
+        cv.cornerHarris(img_gray, dst, blockSize, apertureSize, k, cv.BORDER_DEFAULT);
+        /// Normalizing
+        var dst_norm = new cv.Mat();
+        var dst_norm_scaled = new cv.Mat();
+        cv.normalize(dst, dst_norm, 0, 255, 32, cv.CV_32FC1, new cv.Mat());
+        cv.convertScaleAbs(dst_norm, dst_norm_scaled, 1, 0);
+        /// Drawing a circle around corners
+        for(var j = 0; j < dst_norm.rows ; j++ )
+        { for(var i = 0; i < dst_norm.cols; i++ )
+        {
+            if( dst_norm.get_float_at(j,i) > thresh )
+            {
+                var color = new cv.Scalar(0);
+                cv.circle(dst_norm_scaled, [i, j], 5,  color, 2, 8, 0);
+                color.delete();
+            }
+        }
+        }
+        /// Showing the result
+        show_image( dst_norm_scaled, "canvas2");
+        dst.delete();
+        dst_norm.delete();
+        dst_norm_scaled.delete();
+        img_gray.delete();
+        img_color.delete();
+    }
+    init()
+</script>
+<script async src=".idea/libraries/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+</body>
+</html>
