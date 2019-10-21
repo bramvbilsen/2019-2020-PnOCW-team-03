@@ -14,3 +14,6 @@
 
 14/10:  Continue with task 3 and further complete the algorithm which TC2 and the code reviewer started last meeting on 10/10. Getting something that works even when shading and different lightnings are being used.
 
+17/10: Learning how to isolate a screen and detect its position
+
+21/10: have the isolation algorithm+corner detection+edge detection algorithm for assembly. Getting the paper worked on to complete our explanation behind all algorithms. Try to get an orientation detection  algorithm in there.
