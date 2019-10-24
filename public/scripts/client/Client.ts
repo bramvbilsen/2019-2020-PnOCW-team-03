@@ -8,9 +8,13 @@ class Client {
 	private _slaves: Array<string> = [];
 	private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
 	private _socket: SocketIOClient.Socket;
+	public onConnectionTypeChange: (connectionType: ConnectionType) => void;
 
-	constructor() {
+	constructor(args: {
+		onConnectionTypeChange: (connectionType: ConnectionType) => void
+	}) {
 		console.log("new client!");
+		this.onConnectionTypeChange = args.onConnectionTypeChange;
 		this._socket = io.connect("http://localhost:3000");
 		/* CONNECTION */
 		this._socket.on("connected", () => console.log("Connected!"));
@@ -32,6 +36,7 @@ class Client {
 				);
 			}
 			this.setNewSocketIOEmitters(socketIOEmittersForNewType);
+			this.onConnectionTypeChange(this.type);
 		});
 	}
 
