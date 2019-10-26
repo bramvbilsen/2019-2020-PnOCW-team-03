@@ -26,7 +26,7 @@ class Point {
 	}
 }
 
-//using some random as example
+//using some random points as example
 var p0 = new Point(5,1);
 var p1 = new Point(1,3);
 var p2 = new Point(4,2);
