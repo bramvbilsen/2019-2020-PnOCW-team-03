@@ -1,3 +1,5 @@
+import findScreen from "./image_processing/screen_detection/screen_detection";
+
 export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
@@ -25,6 +27,17 @@ export default function masterCamera() {
 function uploadImage() {
   console.log("uploading image!!! ok");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
+  const pink = {
+    h: 324,
+    s: 100.0,
+    l: 63.7
+  };
+  const blueGreen = {
+    h: 180,
+    s: 100,
+    l: 50
+  }
+  findScreen(pink, canvas[0].toDataURL());
 
   canvas[0].toBlob((blob) => {
     console.log(blob);
