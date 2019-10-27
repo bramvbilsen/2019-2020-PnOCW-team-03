@@ -9,6 +9,7 @@ const ts = require("gulp-typescript");
 const nodemon = require("gulp-nodemon");
 const path = require("path");
 const del = require("del");
+const internalIp = require("internal-ip");
 
 // ------ SERVER ------ //
 
@@ -137,6 +138,9 @@ gulp.task("Open localhost", function(done) {
 			ext: "js",
 			done: done
 		});
+		console.log(
+			"Server running on network: " + internalIp.v4.sync() + ":3000"
+		);
 	}, WAITING_TIME_MS);
 });
 
