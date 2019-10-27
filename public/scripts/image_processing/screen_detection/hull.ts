@@ -59,25 +59,24 @@ function orientation(p: Point, q: Point, r: Point) {
 	} // clock or counterclock wise
 }
 
-
 function compare(p0: Point, p1: Point, p2: Point) {
 	// Find orientation
-	var o = orientation(p0, p1, p2);
+	const o = orientation(p0, p1, p2);
 	if (o === 0)
 		return (p0.distanceTo(p2) >= p0.distanceTo(p1)) ? -1 : 1;
 	return (o === 2) ? -1 : 1;
 }
 
 function swap(Points: Point[], i: number, j: number) {
-	var temp = Points[i];
+	const temp = Points[i];
 	Points[i] = Points[j];
 	Points[j] = temp;
 	return Points;
 }
 
 function filterOnAngle(p0: Point, Points: Point[]) {
-	var toRemove = [];
-	for (var i = 0; i < Points.length - 1; i++) {
+	const toRemove = [];
+	for (let i = 0; i < Points.length - 1; i++) {
 		if (orientation(p0, Points[i], Points[i + 1]) === 0) {
 			toRemove.push(i);
 		}
