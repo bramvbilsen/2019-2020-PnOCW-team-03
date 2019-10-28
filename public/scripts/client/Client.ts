@@ -81,11 +81,12 @@ class Client {
 			console.warn("MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!");
 			return;
 		}
-		let slaveColorCoding: { [key: string]: string } = {};
+		let slaveColorCoding: { [slaveID: string]: string } = {};
 		this.slaves.forEach(slaveID => {
 			slaveColorCoding[slaveID] = generateRandomColor();
 		});
 		this._socket.emit(MasterEventTypes.ChangeSlaveBackgrounds, slaveColorCoding);
+		return slaveColorCoding;
 	}
 
 	/**

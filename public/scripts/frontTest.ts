@@ -26,7 +26,6 @@ export default function masterCamera() {
 }
 
 function uploadImage() {
-  console.log("uploading image!!! ok");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
   const pink = {
     h: 324,
@@ -38,7 +37,9 @@ function uploadImage() {
     s: 100,
     l: 50
   }
-  findScreen(pink, canvas[0].toDataURL());
+  findScreen(pink, canvas[0].toDataURL()).then((newCanvas) => {
+    $("#canvas").replaceWith(newCanvas);
+  });
 
   canvas[0].toBlob((blob) => {
     console.log(blob);
@@ -60,7 +61,3 @@ function uploadImage() {
     });
   });
 }
-
-// console.log("OKKKK");
-
-// masterCamera();
