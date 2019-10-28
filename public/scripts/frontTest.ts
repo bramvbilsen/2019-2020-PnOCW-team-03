@@ -37,10 +37,13 @@ function uploadImage() {
     s: 100,
     l: 50
   }
+  /*
   findScreen(pink, canvas[0].toDataURL()).then((newCanvas) => {
     $("#canvas").replaceWith(newCanvas);
   });
-
+  */
+  findscreen(pink, canvas[0].dataURL());
+  
   canvas[0].toBlob((blob) => {
     console.log(blob);
     let formData = new FormData();
