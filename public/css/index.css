@@ -6,6 +6,9 @@
   float: left;
   width: 20%;
 }
+.canvas{
+  width:100%
+}
 
 /* ANIMATED BUTTONS
 https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
