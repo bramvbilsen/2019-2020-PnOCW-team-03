@@ -11,7 +11,7 @@ export default function masterCamera() {
   };
 
   captureButton.click(() => {
-    $('#camera').replaceWith($('#canvas'));
+    //$('#camera').replaceWith($('#canvas'));
     context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
     // $('#capture').replaceWith('<button id="upload" class="button2" style="vertical-align:middle"><span>Upload </span></button>');
   });

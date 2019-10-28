@@ -1,13 +1,14 @@
-#camera {
+.cameraOutput {
   float: right;
   width: 80%;
 }
-#rest {
+.rest{
   float: left;
   width: 20%;
 }
 .canvas{
-  width:100%
+    float: left;
+    width:100%;
 }
 
 /* ANIMATED BUTTONS
@@ -73,13 +74,10 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
 
 @media only screen and (max-width: 820px) {
     .cameraOutput {
-        max-width: 375px;
-        max-height: 812px;
-        width: auto;
-        height: auto;
+        display: none;
     }
     .desktop{
-        display:none
+        display:none;
     }
     .captureButton{
         height:30px;
@@ -107,7 +105,7 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
 
 @media only screen and (min-width: 820px){
     .mobile{
-        visibility:hidden;
+        visibility:normal;
     }
     .arrow{
         display: none
