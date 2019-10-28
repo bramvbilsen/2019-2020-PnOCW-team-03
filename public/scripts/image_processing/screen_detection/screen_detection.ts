@@ -142,6 +142,7 @@ export default async function findScreen(color: IHSLColor, imagePath: string) {
 		originalImage
 	);
 	dowloadResult(finalCanvas.toDataURL());
+	return finalCanvas;
 }
 
 function checkNeighboringPixelsHaveColor(
