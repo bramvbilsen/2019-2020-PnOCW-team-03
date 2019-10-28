@@ -2,7 +2,6 @@ import handleCameraInput from "./scripts/frontTest";
 import Client from "./scripts/client/Client";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 
-handleCameraInput();
 const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange
 });
@@ -10,5 +9,11 @@ const client = new Client({
 window.client = client;
 
 function onConnectionTypeChange(type: ConnectionType) {
-
+    if (client.type == ConnectionType.MASTER) {
+        handleCameraInput();
+        //$('#page').replaceWith('<body id="page" style="height: 100vh"><video id="player" controls autoplay></video></body>');
+    }
+    else {
+        $('#master').replaceWith('I am your slave :\\');
+    }
 }
