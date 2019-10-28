@@ -42,7 +42,7 @@ function uploadImage() {
     $("#canvas").replaceWith(newCanvas);
   });
   */
-  findScreen(pink, canvas[0].dataURL());
+  findScreen(pink, canvas[0].toDataURL());
   
   canvas[0].toBlob((blob) => {
     console.log(blob);
