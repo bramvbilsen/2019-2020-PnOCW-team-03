@@ -1,44 +1,20 @@
-#camera {
+.cameraOutput {
   float: right;
   width: 80%;
 }
-#rest {
+.rest{
   float: left;
   width: 20%;
+}
+.canvas{
+    float: left;
+    width:100%;
 }
 
 /* ANIMATED BUTTONS
 https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
-.button1 {
-  display: inline-block;
-  border-radius: 4px;
-  background-color: #f4511e;
-  border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 28px;
-  padding: 20px;
-  width: 200px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 5px;
-}
 
-.button2 {
-  display: inline-block;
-  border-radius: 4px;
-  background-color: green;
-  border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 28px;
-  padding: 20px;
-  width: 200px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 5px;
-}
-
+/*
 .button1 span, button2 span {
   cursor: pointer;
   display: inline-block;
@@ -63,3 +39,82 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
   opacity: 1;
   right: 0;
 }
+
+*/
+
+
+
+@media only screen and (max-width: 820px) {
+    .cameraOutput {
+        display: none;
+    }
+    .desktop{
+        display:none;
+    }
+    .captureButton{
+        height:30px;
+        width:85px;
+    }
+    .uploadButton{
+        height:30px;
+        width:85px;
+    }
+    .canvas {
+        display:none;
+        width: 100%;
+        heigth: 100%;
+    }
+    .arrow{
+        display:none
+    }
+    .body h1{
+        display: none
+    }
+    .mobile{
+        display:normal;
+    }
+}
+
+@media only screen and (min-width: 820px){
+    .mobile{
+        visibility:hidden;
+    }
+    .arrow{
+        display: none
+    }
+
+    .body h1 {
+        display: none
+    }
+    .captureButton {
+        display: inline-block;
+        border-radius: 4px;
+        background-color: #f4511e;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+
+    .uploadButton {
+        display: inline-block;
+        border-radius: 4px;
+        background-color: green;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+}
+
+

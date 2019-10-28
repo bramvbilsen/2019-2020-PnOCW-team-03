@@ -11,27 +11,42 @@
 
 	<body id="page" style="height: 100vh">
 		<div id="master">
-			<div id="camera">
-				<video id="player" controls autoplay></video>
+			<div id ="desktop">
+				<div class="cameraOutput" id="camera">
+					<video id="player" controls autoplay></video>
+				</div>
 			</div>
-			<div id="rest">
-				<button
-					class="button1"
-					id="capture"
-					style="vertical-align:middle"
-				>
-					<span>Capture </span>
-				</button>
-				<button
-					id="upload"
-					class="button2"
-					style="vertical-align:middle"
-				>
-					<span>Upload </span>
-				</button>
-				<canvas id="canvas" width="1080" height="720"></canvas>
-			</div>
+				<div class="rest" id="rest">
+					<button
+						class="captureButton"
+						id="capture"
+						style="vertical-align:middle"
+					>
+						<span>Capture </span>
+					</button>
+					<button
+						class="uploadButton"
+						id="upload"
+						style="vertical-align:middle"
+					>
+						<span>Upload </span>
+					</button>
+					<canvas class="canvas" id="canvas" width="1080" height="720"></canvas>
+				</div>
 
+			
+			<div class="mobile">
+				<button class="mobileCaptureButton" id="mobileCapture">MobileCapture</button>
+				<input type="file" accept="image/*" id="file-input" hidden="">
+				<script>
+					document.getElementById('mobileCaptureButton').addEventListener('click',openDialog);
+					function openDialog(){
+					    document.getElementById('file-input').click();
+					}
+		    		</script>
+			</div>
+			
+			
 			<!-- <div id="arrowImg">No Arrow</div> -->
 		</div>
 
