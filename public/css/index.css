@@ -13,35 +13,7 @@
 
 /* ANIMATED BUTTONS
 https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
-.captureButton {
-  display: inline-block;
-  border-radius: 4px;
-  background-color: #f4511e;
-  border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 28px;
-  padding: 20px;
-  width: 200px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 5px;
-}
 
-.uploadButton {
-  display: inline-block;
-  border-radius: 4px;
-  background-color: green;
-  border: none;
-  color: #FFFFFF;
-  text-align: center;
-  font-size: 28px;
-  padding: 20px;
-  width: 200px;
-  transition: all 0.5s;
-  cursor: pointer;
-  margin: 5px;
-}
 /*
 .button1 span, button2 span {
   cursor: pointer;
@@ -105,7 +77,7 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
 
 @media only screen and (min-width: 820px){
     .mobile{
-        visibility:normal;
+        visibility:hidden;
     }
     .arrow{
         display: none
@@ -113,6 +85,35 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
 
     .body h1 {
         display: none
+    }
+    .captureButton {
+        display: inline-block;
+        border-radius: 4px;
+        background-color: #f4511e;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+
+    .uploadButton {
+        display: inline-block;
+        border-radius: 4px;
+        background-color: green;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
     }
 }
 
