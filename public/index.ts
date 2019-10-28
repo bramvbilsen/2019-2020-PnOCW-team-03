@@ -9,6 +9,7 @@ const client = new Client({
 window.client = client;
 
 function onConnectionTypeChange(type: ConnectionType) {
+    console.log("CHANGE IN TYPE");
     if (client.type == ConnectionType.MASTER) {
         handleCameraInput();
         //$('#page').replaceWith('<body id="page" style="height: 100vh"><video id="player" controls autoplay></video></body>');

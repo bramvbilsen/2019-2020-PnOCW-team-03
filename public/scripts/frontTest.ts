@@ -13,13 +13,10 @@ export default function masterCamera() {
   captureButton.click(() => {
     $('#camera').replaceWith($('#canvas'));
     context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
-    $('#capture').replaceWith('<button id="upload" class="button2" style="vertical-align:middle"><span>Upload </span></button>');
-    const uploadButton: JQuery<HTMLButtonElement> = $("#upload");
+    // $('#capture').replaceWith('<button id="upload" class="button2" style="vertical-align:middle"><span>Upload </span></button>');
   });
   uploadButton.click(() => {
-    console.log("Yay");
     uploadImage();
-    alert("En nu algoritme runnen, toch ?! :O");
   });
 
   // Attach the video stream to the video element and autoplay.
