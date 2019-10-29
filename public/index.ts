@@ -1,5 +1,6 @@
 import handleCameraInput from "./scripts/frontTest";
 import Client from "./scripts/client/Client";
+import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 
 const client = new Client({
@@ -7,6 +8,8 @@ const client = new Client({
 });
 //@ts-ignore
 window.client = client;
+//@ts-ignore
+window.findScreen = findScreen;
 
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("CHANGE IN TYPE");

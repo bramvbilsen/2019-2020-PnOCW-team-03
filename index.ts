@@ -23,18 +23,30 @@ let connections: Connections = new Connections();
 app.use(express.static(staticFolder));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.resolve(htmlFolder + "/index.html"));
+	res.sendFile(path.resolve(htmlFolder + "/index.html"));
+});
+
+app.get("/screen_detection", (req, res) => {
+	res.sendFile(path.resolve(htmlFolder + "/screen_detection.html"));
+});
+
+app.get("/non_colored_screen_img", (req, res) => {
+	res.sendFile(path.resolve(staticFolder + "/img/1.png"));
+});
+
+app.get("/colored_screen_img", (req, res) => {
+	res.sendFile(path.resolve(staticFolder + "/img/2.png"));
 });
 
 const multerSlaveImageType = multer().single("image");
 app.post("/slaveImg", multerSlaveImageType, handleImageUpload);
 
 io.on("connect", (socket: socketio.Socket) => {
-  connections.add(socket);
+	connections.add(socket);
 
-  socket.on("disconnect", () => {
-    connections.remove(socket);
-  });
+	socket.on("disconnect", () => {
+		connections.remove(socket);
+	});
 
 	socket.on(
 		MasterEventTypes.ChangeSlaveBackgrounds,
@@ -49,7 +61,7 @@ io.on("connect", (socket: socketio.Socket) => {
 			}
 		}
 	);
-	
+
 	socket.on(
 		MasterEventTypes.SendArrowsUp, () => {
 			if (socket.id === connections.master.id) {
@@ -74,5 +86,5 @@ io.on("connect", (socket: socketio.Socket) => {
 });
 
 server.listen(port, () => {
-  return console.log(`Server listening on port: ${port}`);
+	return console.log(`Server listening on port: ${port}`);
 });

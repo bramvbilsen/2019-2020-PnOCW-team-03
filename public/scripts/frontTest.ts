@@ -1,5 +1,3 @@
-import findScreen from "./image_processing/screen_detection/screen_detection";
-
 export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
@@ -37,13 +35,7 @@ function uploadImage() {
     s: 100,
     l: 50
   }
-  /*
-  findScreen(pink, canvas[0].toDataURL()).then((newCanvas) => {
-    $("#canvas").replaceWith(newCanvas);
-  });
-  */
-  findScreen(pink, canvas[0].toDataURL());
-  
+
   canvas[0].toBlob((blob) => {
     console.log(blob);
     let formData = new FormData();

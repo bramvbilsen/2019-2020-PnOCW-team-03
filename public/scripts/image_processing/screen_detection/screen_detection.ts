@@ -1,6 +1,6 @@
-import convexHull from "./hull";
 import Point from "./Point";
 import Line from "./Line";
+import convexHull from "./hull";
 
 interface IHSLColor {
 	h: number;
@@ -8,13 +8,187 @@ interface IHSLColor {
 	l: number;
 }
 
-interface IPixels {
-	get: (x: number, y: number, colorChannel: number) => number;
-	shape: any[]
+interface IRGBAColor {
+	r: number;
+	g: number;
+	b: number;
+	a: number;
+}
+
+interface IHSLRange { hRange: number, sRange: number, lRange: number }
+
+const similarPinkRange: IHSLRange = {
+	hRange: 30, sRange: 30, lRange: 30
+}
+
+const randomColorRange: IHSLRange = {
+	hRange: 50, sRange: 50, lRange: 50
+}
+
+let currentStep = 0;
+
+document.onkeypress = e => {
+	currentStep++;
+	console.log("new step");
+}
+
+const wait = async (ms: number) => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve();
+		}, ms)
+	});
+}
+
+export default async function findScreen(nonColoredImgPath: string, coloredImgPath: string, screenColorRGBA: IRGBAColor, DEBUG = false) {
+
+	const screenColorHSL: IHSLColor = rgbToHsl(screenColorRGBA.r, screenColorRGBA.g, screenColorRGBA.b);
+
+	const t0 = new Date();
+	const LOST_PIXEL_SEARCH_RANGE = 10;
+	const LOST_PIXEL_THRESHOLD = (8 * LOST_PIXEL_SEARCH_RANGE) * 0.24;
+
+	const nonColoredScreenImg = await loadImage(nonColoredImgPath);
+	const coloredScreenImg = await loadImage(coloredImgPath);
+
+	const width = nonColoredScreenImg.width;
+	const height = nonColoredScreenImg.height;
+
+	const jQueryBody: JQuery<HTMLBodyElement> = $("body");
+	jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
+
+	const jQueryCanvas: JQuery<HTMLCanvasElement> = $("canvas");
+	const ctx = jQueryCanvas[0].getContext("2d");
+	ctx.drawImage(nonColoredScreenImg, 0, 0);
+
+	while (DEBUG && currentStep !== 1) {
+		await wait(250);
+	}
+
+	const nonColoredScreenCanvas = createCanvas(width, height);
+	const nonColoredScreenCtx = <CanvasRenderingContext2D>nonColoredScreenCanvas.getContext("2d");
+	nonColoredScreenCtx.drawImage(nonColoredScreenImg, 0, 0);
+	const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
+		0,
+		0,
+		width,
+		height
+	),
+		nonColoredScreenPixels = nonColoredScreenPixelData.data;
+
+	const coloredScreenCanvas = createCanvas(width, height);
+	const coloredScreenCtx = <CanvasRenderingContext2D>coloredScreenCanvas.getContext("2d");
+	coloredScreenCtx.drawImage(coloredScreenImg, 0, 0);
+	const coloredScreenPixelData = coloredScreenCtx.getImageData(
+		0,
+		0,
+		width,
+		height
+	),
+		coloredScreenPixels = coloredScreenPixelData.data;
+
+	const resultingScreenCanvas = createCanvas(width, height);
+	const resultingScreenCtx = <CanvasRenderingContext2D>resultingScreenCanvas.getContext("2d");
+	resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
+	resultingScreenCtx.fillRect(0, 0, width, height);
+	const resultingScreenImageData = resultingScreenCtx.getImageData(
+		0,
+		0,
+		width,
+		height
+	), resultingPixels = resultingScreenImageData.data;
+
+	let possibleCorners: Point[] = [];
+
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			const linearizedIndex = (width * y + x) * 4;
+			const noScreenColor = getHSLColorForPixel(
+				x,
+				y,
+				width,
+				nonColoredScreenPixels
+			);
+			const screenColor = getHSLColorForPixel(
+				x,
+				y,
+				width,
+				coloredScreenPixels
+			);
+			if (!isSimilarHSLColor(noScreenColor, screenColor, randomColorRange) && isSimilarHSLColor(screenColorHSL, screenColor, similarPinkRange)) {
+				resultingPixels[linearizedIndex] = screenColorRGBA.r;
+				resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
+				resultingPixels[linearizedIndex + 2] = screenColorRGBA.b;
+				possibleCorners.push(new Point(x, y));
+
+			} else {
+				resultingPixels[linearizedIndex] = 0;
+				resultingPixels[linearizedIndex + 1] = 0;
+				resultingPixels[linearizedIndex + 2] = 0;
+			}
+		}
+	}
+
+	if (DEBUG) {
+		resultingScreenCtx.putImageData(resultingScreenImageData, 0, 0);
+		jQueryCanvas[0].getContext("2d").drawImage(resultingScreenCanvas, 0, 0);
+
+		while (currentStep !== 2) {
+			await wait(250);
+		}
+	}
+
+	possibleCorners = possibleCorners.filter(point => {
+		const linearizedIndex = (width * point.y + point.x) * 4;
+		// Corners will have on average 25 percent colored neighbors. Delete all pixels who do not meet this. 
+		if (amountOfNeighboringPixelsWithColor(resultingPixels, LOST_PIXEL_SEARCH_RANGE, point.x, point.y, width, height, screenColorHSL) < LOST_PIXEL_THRESHOLD) {
+			resultingPixels[linearizedIndex] = 0;
+			resultingPixels[linearizedIndex + 1] = 0;
+			resultingPixels[linearizedIndex + 2] = 0;
+			return false;
+		}
+		resultingPixels[linearizedIndex] = screenColorRGBA.r;
+		resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
+		resultingPixels[linearizedIndex + 2] = screenColorRGBA.b;
+		return true;
+	});
+
+	possibleCorners = convexHull(possibleCorners);
+
+	if (DEBUG) {
+		resultingScreenCtx.putImageData(resultingScreenImageData, 0, 0);
+		jQueryCanvas[0].getContext("2d").drawImage(resultingScreenCanvas, 0, 0);
+
+		while (currentStep !== 3) {
+			await wait(250);
+		}
+	}
+
+	const possibleCornerConnections = createConnections(possibleCorners);
+
+	if (DEBUG) {
+		jQueryCanvas[0].getContext("2d").drawImage(drawResultLines(width, height, possibleCornerConnections, 5), 0, 0);
+		while (currentStep !== 4) {
+			await wait(250);
+		}
+	}
+
+	const corners = findFinalCorners(possibleCornerConnections);
+
+	jQueryCanvas[0].getContext("2d").drawImage(nonColoredScreenImg, 0, 0);
+	ctx.fillStyle = "rgb(0, 255, 255)";
+	corners.forEach(corner => {
+		ctx.beginPath();
+		ctx.arc(corner.x, corner.y, 5, 0, Math.PI * 2);
+		ctx.fill();
+		ctx.closePath();
+	});
+
+	const t1 = new Date();
+	console.log(+t1 - +t0 + "ms");
 }
 
 type Image = HTMLImageElement;
-
 async function loadImage(src: string): Promise<Image> {
 	return new Promise((resolve, reject) => {
 		const img = new Image();
@@ -35,252 +209,13 @@ function createCanvas(width: number, height: number): HTMLCanvasElement {
 	return canvas;
 }
 
-function dowloadResult(path: string) {
-	const downloadLink = document.createElement("a");
-	downloadLink.href = path;
-	downloadLink.download = "result.png";
-
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
-	document.body.removeChild(downloadLink);
-}
-
-const getPixels = (path: string): Promise<IPixels> => {
-	return new Promise((resolve, reject) => {
-		require("get-pixels")(path, (err: any, pixels: IPixels) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(pixels);
-			}
-		});
-	});
-};
-
-export default async function findScreen(color: IHSLColor, imagePath: string) {
-	const t0 = new Date();
-
-	const originalImage = await loadImage(imagePath);
-	const width = originalImage.width;
-	const height = originalImage.height;
-
-	// FILTER OUT UNWANTED COLORS
-	const colorFilteredCanvas = removeColor(color, originalImage);
-	// ----------------
-
-	// MAKE A SCALED UP VERSION
-	const nonShiftedImg = await loadImage(colorFilteredCanvas.toDataURL());
-	const shiftSize = 1;
-	const shiftedImgCanvas = scaleUpImage(shiftSize, nonShiftedImg);
-
-	// ----------------
-
-	// GENERATE ROUGH EDGES
-	const shiftedImage = await loadImage(shiftedImgCanvas.toDataURL());
-	const roughEdgeCanvas = generateEdges(nonShiftedImg, shiftedImage);
-	// ----------------
-
-	// DETERMINE POSSIBLE BORDER POINTS
-	let borderPoints = await getPossibleBordersPoints(
-		roughEdgeCanvas.toDataURL(),
-		color
-	);
-	// ----------------
-
-	// REDUCE NOISE CLOSE TO EACH OTHER
-	const nonShiftedImgPixels = await getPixels(
-		colorFilteredCanvas.toDataURL()
-	);
-	borderPoints = reduceNearbyPixelNoise(
-		borderPoints,
-		nonShiftedImgPixels,
-		color
-	);
-	// ----------------
-
-	// // REDUCE NOISE FAR FROM EACH OTHER
-	borderPoints = reduceLongDistancePixelNoise(
-		borderPoints,
-		nonShiftedImgPixels,
-		color
-	);
-	// ----------------
-
-	// // FIND POSSIBLE CORNERS
-	const possibleCorners = convexHull(borderPoints);
-	// // ----------------
-
-	// // CONNECT ALL POSSIBLE CORNERS
-	const possibleCornersConnections = createPossibleCornerConnections(
-		possibleCorners
-	);
-	// ----------------
-
-	// FILTER CONNECTIONS AND SEARCH THE TWO CONTAINING THE 4 CORNERS
-	const [firstCornerConnection, secondCornerConnection] = findFinalCorners(
-		possibleCornersConnections
-	);
-	if (!secondCornerConnection) {
-		console.log("No 4 corners found!");
-		return;
-	}
-	// ----------------
-
-	const t1 = new Date();
-	console.log(+t1 - +t0 + "ms");
-
-	const finalCanvas = drawResultPoints(
-		width,
-		height,
-		[
-			...firstCornerConnection.endPoints,
-			...secondCornerConnection.endPoints
-		],
-		"CIRC",
-		30,
-		"rgb(0, 255, 255)",
-		originalImage
-	);
-	dowloadResult(finalCanvas.toDataURL());
-	return finalCanvas;
-}
-
-function checkNeighboringPixelsHaveColor(
-	pixels: any,
-	searchRange: number,
-	x: number,
-	y: number,
-	width: number,
-	height: number,
-	hslColor: IHSLColor,
-	minAmtOfPositives: number
-) {
-	return (
-		amountOfNeighboringPixelsWithColor(
-			pixels,
-			searchRange,
-			x,
-			y,
-			width,
-			height,
-			hslColor
-		) >= minAmtOfPositives
-	);
-}
-
-function amountOfNeighboringPixelsWithColor(
-	pixels: any,
-	searchRange: number,
-	x: number,
-	y: number,
-	width: number,
-	height: number,
-	hslColor: IHSLColor
-) {
-	let result = 0;
-	if (searchRange <= 0) return result;
-
-	for (let range = 1; range <= searchRange; range++) {
-		if (
-			x > range &&
-			isSimilarHSLColor(getHSLColor(pixels, x - range, y), hslColor)
-		) {
-			result++;
-		}
-		if (
-			y > range &&
-			isSimilarHSLColor(getHSLColor(pixels, x, y - range), hslColor)
-		) {
-			result++;
-		}
-		if (
-			x < width - range &&
-			isSimilarHSLColor(getHSLColor(pixels, x + range, y), hslColor)
-		) {
-			result++;
-		}
-		if (
-			y < height - range &&
-			isSimilarHSLColor(getHSLColor(pixels, x, y + range), hslColor)
-		) {
-			result++;
-		}
-		if (
-			x > range &&
-			y > range &&
-			isSimilarHSLColor(
-				getHSLColor(pixels, x - range, y - range),
-				hslColor
-			)
-		) {
-			result++;
-		}
-		if (
-			x < width - range &&
-			y > range &&
-			isSimilarHSLColor(
-				getHSLColor(pixels, x + range, y - range),
-				hslColor
-			)
-		) {
-			result++;
-		}
-		if (
-			x > range &&
-			y < height - range &&
-			isSimilarHSLColor(
-				getHSLColor(pixels, x - range, y + range),
-				hslColor
-			)
-		) {
-			result++;
-		}
-		if (
-			x < width - range &&
-			y < height - range &&
-			isSimilarHSLColor(
-				getHSLColor(pixels, x + range, y + range),
-				hslColor
-			)
-		) {
-			result++;
-		}
-	}
-
-	return result;
-}
-
-function getHSLColor(pixels: any, x: number, y: number): IHSLColor {
-	const [h, s, l] = rgbToHsl(
-		pixels.get(x, y, 0),
-		pixels.get(x, y, 1),
-		pixels.get(x, y, 2)
-	);
-	return {
-		h,
-		s,
-		l
-	};
-}
-
-function isSimilarHSLColor(colorA: IHSLColor, colorB: IHSLColor): boolean {
-	if (
-		Math.abs(colorA.h - colorB.h) <= 25 &&
-		Math.abs(colorA.s - colorB.s) <= 45 &&
-		Math.abs(colorA.l - colorB.l) <= 45
-	) {
-		return true;
-	}
-	return false;
-}
-
 // From: https://gist.github.com/mjackson/5311256
-function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
+function rgbToHsl(r: number, g: number, b: number): IHSLColor {
 	(r /= 255), (g /= 255), (b /= 255);
 	let max = Math.max(r, g, b),
 		min = Math.min(r, g, b);
-	let h,
-		s,
+	let h = 0,
+		s = 0,
 		l = (max + min) / 2;
 	if (max == min) {
 		h = s = 0; // achromatic
@@ -300,188 +235,130 @@ function rgbToHsl(r: number, g: number, b: number): [number, number, number] {
 		}
 		h /= 6;
 	}
-	return [h * 360, s * 100, l * 100];
+	return { h: h * 360, s: s * 100, l: l * 100 };
 }
 
-// Information by: https://stackoverflow.com/questions/7348618/html5-canvas-clipping-by-color
-function removeColor(color: IHSLColor, image: Image) {
-	const canvas = createCanvas(image.width, image.height);
-	const ctx = canvas.getContext("2d");
+// From: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
+function getRGBAColorForPixel(x: number, y: number, width: number, pixels: Uint8ClampedArray): IRGBAColor {
+	const i = y * (width * 4) + x * 4;
+	return {
+		r: pixels[i],
+		g: pixels[i + 1],
+		b: pixels[i + 2],
+		a: pixels[i + 3]
+	}
+}
 
-	ctx.drawImage(image, 0, 0, image.width, image.height);
+function getHSLColorForPixel(x: number, y: number, width: number, pixels: Uint8ClampedArray): IHSLColor {
+	const rgba = getRGBAColorForPixel(x, y, width, pixels);
+	return rgbToHsl(rgba.r, rgba.g, rgba.b);
+}
 
-	var canvasData = ctx.getImageData(0, 0, image.width, image.height),
-		canvasPixels = canvasData.data;
+function isSimilarHSLColor(colorA: IHSLColor, colorB: IHSLColor, params: IHSLRange): boolean {
+	if (
+		Math.abs(colorA.h - colorB.h) <= params.hRange &&
+		Math.abs(colorA.s - colorB.s) <= params.sRange &&
+		Math.abs(colorA.l - colorB.l) <= params.lRange
+	) {
+		return true;
+	}
+	return false;
+}
 
-	for (var i = 0, n = canvasPixels.length; i < n; i += 4) {
-		const [h, s, l] = rgbToHsl(
-			canvasPixels[i],
-			canvasPixels[i + 1],
-			canvasPixels[i + 2]
-		);
-		if (!isSimilarHSLColor(color, { h, s, l })) {
-			canvasPixels[i + 3] = 0; // set opacity to 0.
+function amountOfNeighboringPixelsWithColor(
+	pixels: Uint8ClampedArray,
+	searchRange: number,
+	x: number,
+	y: number,
+	width: number,
+	height: number,
+	hslColor: IHSLColor
+) {
+	let result = 0;
+	if (searchRange <= 0) return result;
+
+	for (let range = 1; range <= searchRange; range++) {
+		if (
+			x > range &&
+			isSimilarHSLColor(getHSLColorForPixel(x - range, y, width, pixels), hslColor, similarPinkRange)
+		) {
+			result++;
+		}
+		if (
+			y > range &&
+			isSimilarHSLColor(getHSLColorForPixel(x, y - range, width, pixels), hslColor, similarPinkRange)
+		) {
+			result++;
+		}
+		if (
+			x < width - range &&
+			isSimilarHSLColor(getHSLColorForPixel(x + range, y, width, pixels), hslColor, similarPinkRange)
+		) {
+			result++;
+		}
+		if (
+			y < height - range &&
+			isSimilarHSLColor(getHSLColorForPixel(x, y + range, width, pixels), hslColor, similarPinkRange)
+		) {
+			result++;
+		}
+		if (
+			x > range &&
+			y > range &&
+			isSimilarHSLColor(
+				getHSLColorForPixel(x - range, y - range, width, pixels),
+				hslColor, similarPinkRange
+			)
+		) {
+			result++;
+		}
+		if (
+			x < width - range &&
+			y > range &&
+			isSimilarHSLColor(
+				getHSLColorForPixel(x + range, y - range, width, pixels),
+				hslColor, similarPinkRange
+			)
+		) {
+			result++;
+		}
+		if (
+			x > range &&
+			y < height - range &&
+			isSimilarHSLColor(
+				getHSLColorForPixel(x - range, y + range, width, pixels),
+				hslColor, similarPinkRange
+			)
+		) {
+			result++;
+		}
+		if (
+			x < width - range &&
+			y < height - range &&
+			isSimilarHSLColor(
+				getHSLColorForPixel(x + range, y + range, width, pixels),
+				hslColor, similarPinkRange
+			)
+		) {
+			result++;
 		}
 	}
 
-	ctx.putImageData(canvasData, 0, 0);
-	return canvas;
+	return result;
 }
 
-function scaleUpImage(shiftSize: number, image: Image) {
-	const width = image.width,
-		height = image.height;
-	const canvas = createCanvas(width, height);
-	const ctx = canvas.getContext("2d");
-
-	// shift right
-	ctx.drawImage(image, shiftSize, 0, width, height);
-	// shift left
-	ctx.drawImage(image, -shiftSize, 0, width, height);
-	// shift up
-	ctx.drawImage(image, 0, -shiftSize, width, height);
-	// shift down
-	ctx.drawImage(image, 0, shiftSize, width, height);
-	// shift right & up
-	ctx.drawImage(image, shiftSize, -shiftSize, width, height);
-	// shift left & up
-	ctx.drawImage(image, -shiftSize, -shiftSize, width, height);
-	// shift right & down
-	ctx.drawImage(image, shiftSize, shiftSize, width, height);
-	// shift left & down
-	ctx.drawImage(image, -shiftSize, shiftSize, width, height);
-
-	return canvas;
-}
-
-function generateEdges(image: Image, scaledUpImage: Image) {
-	const canvas = createCanvas(image.width, image.height);
-	const ctx = canvas.getContext("2d");
-	ctx.globalCompositeOperation = "xor";
-	ctx.drawImage(image, 0, 0, image.width, image.height);
-	ctx.drawImage(
-		scaledUpImage,
-		0,
-		0,
-		scaledUpImage.width,
-		scaledUpImage.height
-	);
-	return canvas;
-}
-
-async function getPossibleBordersPoints(imagePath: string, color: IHSLColor) {
-	const roughEdgePixels = await getPixels(imagePath);
-	const width = roughEdgePixels.shape[0];
-	const height = roughEdgePixels.shape[1];
-	/** @type {Point[]} */
-	let borderPoints = [];
-	for (let y = 0; y < height; y++) {
-		for (let x = 0; x < width; x++) {
-			let putRect = false;
-			// Borderpoints should have at least one neighboring pixel with color
-			if (
-				checkNeighboringPixelsHaveColor(
-					roughEdgePixels,
-					1,
-					x,
-					y,
-					width,
-					height,
-					color,
-					1
-				)
-			) {
-				putRect = true;
-			}
-
-			if (putRect) {
-				borderPoints.push(new Point(x, y));
-			}
-		}
-	}
-	return borderPoints;
-}
-
-/**
- *
- * @param {Point[]} pixelPoints
- * @returns {Point[]}
- */
-function reduceNearbyPixelNoise(pixelPoints: Point[], pixels: any, color: IHSLColor) {
-	const width = pixels.shape[0];
-	const height = pixels.shape[1];
-	const points: Point[] = [];
-	pixelPoints.forEach(point => {
-		// If 8*2.25 of the 8*3 nearest neighbors are colored.
-		if (
-			amountOfNeighboringPixelsWithColor(
-				pixels,
-				3,
-				point.x,
-				point.y,
-				width,
-				height,
-				color
-			) >
-			8 * 2
-		) {
-			points.push(point);
-		} else {
-		}
-	});
-	return points;
-}
-
-/**
- *
- * @param {Point[]} pixelPoints
- * @returns {Point[]}
- */
-function reduceLongDistancePixelNoise(pixelPoints: Point[], pixels: any, color: IHSLColor) {
-	const width = pixels.shape[0];
-	const height = pixels.shape[1];
-	const points: Point[] = [];
-	pixelPoints.forEach(point => {
-		// If 8*2.25 of the 8*3 nearest neighbors are colored.
-		if (
-			amountOfNeighboringPixelsWithColor(
-				pixels,
-				15,
-				point.x,
-				point.y,
-				width,
-				height,
-				color
-			) >
-			8 * 6
-		) {
-			points.push(point);
-		} else {
-		}
-	});
-	return points;
-}
-
-/**
- *
- * @param {Point[]} corners
- * @returns {Line[]}
- */
-function createPossibleCornerConnections(corners: Point[]) {
+function createConnections(points: Point[]) {
 	const connections: Line[] = [];
-	corners.forEach((corner, index) => {
-		for (let i = index; i < corners.length; i++) {
-			connections.push(new Line(corner, corners[i]));
+	points.forEach((corner, index) => {
+		for (let i = index; i < points.length; i++) {
+			connections.push(new Line(corner, points[i]));
 		}
 	});
 	return connections;
 }
 
-/**
- *
- * @param {Line[]} cornerConnections
- */
-function findFinalCorners(cornerConnections: Line[]) {
+function findFinalCorners(cornerConnections: Line[]): Point[] {
+	if (cornerConnections.length === 0) return [];
 	const sortedPossibleCornersConnections = cornerConnections.sort(
 		(connectionA, connectionB) => connectionB.length - connectionA.length
 	);
@@ -505,54 +382,8 @@ function findFinalCorners(cornerConnections: Line[]) {
 			break;
 		}
 	}
-	return [firstCornerConnection, secondCornerConnection];
-}
-
-/**
- *
- * @param {number} width
- * @param {number} height
- * @param {Point[]} points
- * @param {"RECT" | "CIRC"} type
- * @param {number} size
- * @param {string} color - optional
- * @param {Image} backgroundImg - optional
- */
-function drawResultPoints(
-	width: number,
-	height: number,
-	points: Point[],
-	type: "RECT" | "CIRC",
-	size: number,
-	color: string,
-	backgroundImg: Image
-) {
-	const canvas = createCanvas(width, height);
-	const ctx = canvas.getContext("2d");
-	if (backgroundImg) {
-		ctx.drawImage(backgroundImg, 0, 0, width, height);
-	}
-	if (color) {
-		ctx.fillStyle = color;
-		ctx.strokeStyle = color;
-	} else {
-		ctx.fillStyle = "rgb(0, 255, 255)";
-		ctx.strokeStyle = "rgb(0, 255, 255)";
-	}
-	points.forEach(point => {
-		if (type === "RECT") {
-			ctx.fillRect(point.x, point.y, size, size);
-		} else {
-			ctx.beginPath();
-			ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
-			if (color) {
-				ctx.fill();
-			}
-			ctx.stroke();
-			ctx.closePath();
-		}
-	});
-	return canvas;
+	if (!secondCornerConnection) return [firstCornerConnection.a, firstCornerConnection.b];
+	return [firstCornerConnection.a, firstCornerConnection.b, secondCornerConnection.a, secondCornerConnection.b];
 }
 
 function drawResultLines(width: number, height: number, lines: Line[], pointSize: number) {
