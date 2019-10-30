@@ -16,35 +16,72 @@
 					<video id="player" controls autoplay></video>
 				</div>
 			</div>
-				<div class="rest" id="rest">
+			<div class="rest" id="rest">
+
+				<div class="mobile">
 					<button
+							class="mobileCaptureButton"
+							id="mobileCapture"
+							style="vertical-align:middle"
+					>
+						<span>Mobile Upload</span>
+					</button>
+					<input type="file" accept="image/*" id="file-input" hidden=""/>
+					<script>
+					document.getElementById('mobileCapture').addEventListener('click',openDialog);
+					function openDialog(){
+						document.getElementById('file-input').click();
+					}
+				</script>
+				</div>
+
+				<button
 						class="captureButton"
 						id="capture"
 						style="vertical-align:middle"
-					>
-						<span>Capture </span>
-					</button>
+				>
+					<span>Capture </span>
+				</button>
 					<button
-						class="uploadButton"
-						id="upload"
+					class="uploadButton"
+					id="upload"
+					style="vertical-align:middle"
+				>
+					<span>Upload </span>
+				</button>
+				/*colors*/
+				<button
+						class="pink"
+						id="Display Pink"
 						style="vertical-align:middle"
-					>
-						<span>Upload </span>
-					</button>
-					<canvas class="canvas" id="canvas" width="1080" height="720"></canvas>
-				</div>
-
-			
-			<div class="mobile">
-				<button class="mobileCaptureButton" id="mobileCapture">MobileCapture</button>
-				<input type="file" accept="image/*" id="file-input" hidden="">
-				<script>
-					document.getElementById('mobileCaptureButton').addEventListener('click',openDialog);
-					function openDialog(){
-					    document.getElementById('file-input').click();
-					}
-		    		</script>
+				>
+					<span>Display pink </span>
+				</button>
+					<button
+						class="green"
+						id="Display Green"
+						style="vertical-align:middle"
+				>
+					<span>Display Green </span>
+				</button>
+					<button
+						class="orange"
+						id="Display Orange"
+						style="vertical-align:middle"
+				>
+					<span>Display Orange </span>
+				</button>
+					<button
+						class="blue"
+						id="Display Blue"
+						style="vertical-align:middle"
+				>
+					<span>Display Blue </span>
+				</button>
+				<canvas class="canvas" id="canvas" width="1080" height="720"></canvas>
 			</div>
+
+
 			
 			
 			<!-- <div id="arrowImg">No Arrow</div> -->
