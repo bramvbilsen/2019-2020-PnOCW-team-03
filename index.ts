@@ -63,6 +63,18 @@ io.on("connect", (socket: socketio.Socket) => {
 	);
 
 	socket.on(
+		MasterEventTypes.ChangeSlaveBackground,
+		(msg: { slaveId: string; color: { r: string, g: string, b: string } }) => {
+			if (socket.id === connections.master.id) {
+				console.log("Attempting to change background by master");
+				io.to(msg.slaveId).emit(SlaveEventTypes.ChangeBackground, {
+					color: msg.color
+				});
+			}
+		}
+	);
+
+	socket.on(
 		MasterEventTypes.SendArrowsUp, () => {
 			if (socket.id === connections.master.id) {
 				console.log("Attempting to display arrow by master");

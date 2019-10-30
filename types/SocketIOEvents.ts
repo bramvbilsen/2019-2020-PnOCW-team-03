@@ -10,6 +10,7 @@ export const enum SlaveEventTypes {
 
 export const enum MasterEventTypes {
 	ChangeSlaveBackgrounds = "change-slave-backgrounds",
+	ChangeSlaveBackground = "change-slave-background",
 	SlaveChanges = "notify-master-of-slaves",
 	SendArrowsUp = "send-arrows-up",
 	SendArrowsRight = "send-arrows-right"
