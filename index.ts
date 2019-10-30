@@ -75,6 +75,17 @@ io.on("connect", (socket: socketio.Socket) => {
 	);
 
 	socket.on(
+		MasterEventTypes.DisplaySlaveOrientationColors,
+		(msg: { slaveId: string; leftTop: { r: string, g: string, b: string }; rightTop: { r: string, g: string, b: string }; leftBottom: { r: string, g: string, b: string }; rightBottom: { r: string, g: string, b: string } }) => {
+			if (socket.id === connections.master.id) {
+				console.log("Attempting to change background by master");
+				const { slaveId, ...slaveMsg } = msg;
+				io.to(msg.slaveId).emit(SlaveEventTypes.ChangeOrientationColors, slaveMsg)
+			}
+		}
+	);
+
+	socket.on(
 		MasterEventTypes.SendArrowsUp, () => {
 			if (socket.id === connections.master.id) {
 				console.log("Attempting to display arrow by master");
