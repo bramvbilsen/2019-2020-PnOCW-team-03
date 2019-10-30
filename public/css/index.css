@@ -51,13 +51,113 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
     .desktop{
         display:none;
     }
-    .captureButton{
-        height:30px;
-        width:85px;
+    .mobileCaptureButton{
+        display: inline-block;
+        border-radius: 2px;
+        background-color: deepskyblue;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
     }
-    .uploadButton{
-        height:30px;
-        width:85px;
+    .captureButton {
+        display: none;
+        border-radius: 2px;
+        background-color: deepskyblue;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
+    }
+
+    .uploadButton {
+        display: none;
+        border-radius: 2px;
+        background-color: darkslategrey;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
+    }
+
+
+    .pink{
+        display: inline-block;
+        border-radius: 2px;
+        background-color: deeppink;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
+    }
+    .green{
+        display: inline-block;
+        border-radius: 2px;
+        background-color: green;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
+    }
+    .orange{
+        display: inline-block;
+        border-radius: 2px;
+        background-color: orangered;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
+    }
+    .blue{
+        display: inline-block;
+        border-radius: 2px;
+        background-color: blue;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        left: 50%;
     }
     .canvas {
         display:none;
@@ -69,9 +169,6 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
     }
     .body h1{
         display: none
-    }
-    .mobile{
-        display:normal;
     }
 }
 
@@ -89,7 +186,7 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
     .captureButton {
         display: inline-block;
         border-radius: 4px;
-        background-color: #f4511e;
+        background-color: deepskyblue;
         border: none;
         color: #FFFFFF;
         text-align: center;
@@ -104,7 +201,63 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
     .uploadButton {
         display: inline-block;
         border-radius: 4px;
+        background-color: darkslategrey;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+    .pink{
+        display: inline-block;
+        border-radius: 4px;
+        background-color: deeppink;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+    .green{
+        display: inline-block;
+        border-radius: 4px;
         background-color: green;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+    .orange{
+        display: inline-block;
+        border-radius: 4px;
+        background-color: orangered;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 28px;
+        padding: 20px;
+        width: 200px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
+    .blue{
+        display: inline-block;
+        border-radius: 4px;
+        background-color: blue;
         border: none;
         color: #FFFFFF;
         text-align: center;
