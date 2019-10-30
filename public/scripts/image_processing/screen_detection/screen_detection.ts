@@ -40,6 +40,13 @@ const wait = async (ms: number) => {
 	});
 }
 
+/**
+ * 
+ * @param nonColoredImgPath - Path to image for slave without color.
+ * @param coloredImgPath - Path to image for slave with color.
+ * @param screenColorRGBA - Slave's color.
+ * @param DEBUG - Whether or not to debug (change this later)
+ */
 export default async function findScreen(nonColoredImgPath: string, coloredImgPath: string, screenColorRGBA: IRGBAColor, DEBUG = false) {
 
 	const screenColorHSL: IHSLColor = rgbToHsl(screenColorRGBA.r, screenColorRGBA.g, screenColorRGBA.b);
@@ -186,6 +193,8 @@ export default async function findScreen(nonColoredImgPath: string, coloredImgPa
 
 	const t1 = new Date();
 	console.log(+t1 - +t0 + "ms");
+
+	return corners;
 }
 
 type Image = HTMLImageElement;
@@ -239,6 +248,13 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
 }
 
 // From: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
+/**
+ * 
+ * @param x - X coordinate.
+ * @param y - Y coordinate.
+ * @param width - Width of the image.
+ * @param pixels - Pixels of the image.
+ */
 function getRGBAColorForPixel(x: number, y: number, width: number, pixels: Uint8ClampedArray): IRGBAColor {
 	const i = y * (width * 4) + x * 4;
 	return {
@@ -249,11 +265,24 @@ function getRGBAColorForPixel(x: number, y: number, width: number, pixels: Uint8
 	}
 }
 
+/**
+ * 
+ * @param x - X coordinate.
+ * @param y - Y coordinate.
+ * @param width - Width of the image.
+ * @param pixels - Pixels of the image.
+ */
 function getHSLColorForPixel(x: number, y: number, width: number, pixels: Uint8ClampedArray): IHSLColor {
 	const rgba = getRGBAColorForPixel(x, y, width, pixels);
 	return rgbToHsl(rgba.r, rgba.g, rgba.b);
 }
 
+/**
+ * 
+ * @param colorA - Color to compare to `colorB`
+ * @param colorB - Color to compare to `colorA`
+ * @param params - Range to controll how similar both colors have to be.
+ */
 function isSimilarHSLColor(colorA: IHSLColor, colorB: IHSLColor, params: IHSLRange): boolean {
 	if (
 		Math.abs(colorA.h - colorB.h) <= params.hRange &&
@@ -265,6 +294,17 @@ function isSimilarHSLColor(colorA: IHSLColor, colorB: IHSLColor, params: IHSLRan
 	return false;
 }
 
+/**
+ * Checks whether the neighboring pixels have a similar color to `hslColor`.
+ * @param pixels - Pixels of the image
+ * @param searchRange - The range from (`x`, `y`) to other pixels that are considered neighbors.
+ * A value of `1` will result in the 8 directly neighboring pixels (every direction) that will be checked.
+ * @param x - X coordinate of the pixel of which to check the neighbors.
+ * @param y - Y coordinate of the pixel of which to check the neighbors.
+ * @param width - Width of the image.
+ * @param height - Height of the image.
+ * @param hslColor - Color to be checked.
+ */
 function amountOfNeighboringPixelsWithColor(
 	pixels: Uint8ClampedArray,
 	searchRange: number,
@@ -347,6 +387,10 @@ function amountOfNeighboringPixelsWithColor(
 	return result;
 }
 
+/**
+ * Creates all possible connections between the given `points`
+ * @param points - Points to be connected.
+ */
 function createConnections(points: Point[]) {
 	const connections: Line[] = [];
 	points.forEach((corner, index) => {
@@ -357,6 +401,10 @@ function createConnections(points: Point[]) {
 	return connections;
 }
 
+/**
+ * Searches the final 4 corners of the screen.
+ * @param cornerConnections - Connected possible corners.
+ */
 function findFinalCorners(cornerConnections: Line[]): Point[] {
 	if (cornerConnections.length === 0) return [];
 	const sortedPossibleCornersConnections = cornerConnections.sort(
