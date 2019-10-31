@@ -1,6 +1,6 @@
 import findScreen from "./image_processing/screen_detection/screen_detection";
 import { IHSLColor, IRGBAColor } from "./types/Color"
-import { client } from '../index'
+import { client, slaveFlowHandler } from '../index'
 export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
@@ -24,7 +24,9 @@ export default function masterCamera() {
 
   captureButton.click(() => {
     //$('#camera').replaceWith($('#canvas'));
-    context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
+    // context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
+    slaveFlowHandler.takeNoColorPicture();
+    slaveFlowHandler.showColorOnNextSlave();
     // $('#capture').replaceWith('<button id="upload" class="button2" style="vertical-align:middle"><span>Upload </span></button>');
   });
 
@@ -74,8 +76,8 @@ function processImg({ file }: { file: any }) {
   reader.onload = function (e) {
     var img = new Image();
     img.onload = function () {
-      let canvas: JQuery<HTMLCanvasElement> = $("#canvas");;
-      let context = canvas[0].getContext('2d');;
+      let canvas: JQuery<HTMLCanvasElement> = $("#canvas");
+      let context = canvas[0].getContext('2d');
       context.drawImage(img, 0, 0, canvas[0].width, canvas[0].height)
     }
     if (typeof reader.result === "string") {

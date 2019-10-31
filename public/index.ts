@@ -2,10 +2,14 @@ import handleCameraInput from "./scripts/frontTest";
 import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
+import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange
 });
+
+export const slaveFlowHandler = new SlaveFlowHandler();
+
 //@ts-ignore
 window.client = client;
 //@ts-ignore
