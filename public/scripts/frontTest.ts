@@ -1,3 +1,6 @@
+import findScreen from "./image_processing/screen_detection/screen_detection";
+import {IHSLColor, IRGBAColor} from "./types/Color"
+import client from '../index'
 export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
@@ -5,6 +8,11 @@ export default function masterCamera() {
   const captureButton: JQuery<HTMLButtonElement> = $("#capture");
   const uploadButton: JQuery<HTMLButtonElement> = $("#upload");
   const mobileCaptureButton: JQuery<HTMLButtonElement> = $("#mobileCaptureButton");
+  const pink: JQuery<HTMLButtonElement> = $("#pink");
+  const green: JQuery<HTMLButtonElement> = $("#green");
+  const blue: JQuery<HTMLButtonElement> = $("#blue");
+  const orange: JQuery<HTMLButtonElement> = $("#orange");
+  var rgb = 1 ;
   const constraints = {
     video: true
   };
@@ -12,6 +20,7 @@ export default function masterCamera() {
   interface HTMLInputEvent extends Event {
     target: HTMLInputElement & EventTarget;
   }
+
 
   captureButton.click(() => {
     //$('#camera').replaceWith($('#canvas'));
@@ -37,6 +46,21 @@ export default function masterCamera() {
     }
   });
 
+  pink.click(()=>{
+    client.color = {r: 255, g:70, b:181,a:100}
+  });
+
+  green.click(()=>{
+    client.color = {r: 0, g:128, b:0,a:100}
+  });
+
+  orange.click(()=>{
+    client.color = {r: 255, g:69, b:0,a:100}
+  });
+
+  blue.click(()=>{
+    client.color = {r: 0, g:255, b:0,a:100}
+  });
 
   // Attach the video stream to the video element and autoplay.
   navigator.mediaDevices.getUserMedia(constraints).then(stream => {

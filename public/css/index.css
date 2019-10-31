@@ -83,7 +83,7 @@ https://www.w3schools.com/css/tryit.asp?filename=trycss_buttons_animate1 */
     }
 
     .uploadButton {
-        display: none;
+        display: inline-block;
         border-radius: 2px;
         background-color: darkslategrey;
         border: none;
