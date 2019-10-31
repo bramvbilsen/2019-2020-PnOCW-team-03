@@ -24,11 +24,15 @@ export default class SlaveFlowHandler {
 
     constructor() {
         this.step = WorkflowStep.START;
-        this.slaveIDs = [...client.slaves];
         this.currSlaveID = this.slaveIDs.pop();
     }
 
+    private initialize() {
+        this.slaveIDs = [...client.slaves];
+    }
+
     takeNoColorPicture() {
+        this.initialize();
         const player: JQuery<HTMLVideoElement> = $("#player");
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const context = canvas[0].getContext('2d');

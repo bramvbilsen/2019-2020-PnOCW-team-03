@@ -11,38 +11,44 @@
 
 	<body id="page" style="height: 100vh">
 		<div id="master">
-			<div id ="desktop">
+			<div id="desktop">
 				<div class="cameraOutput" id="camera">
 					<video id="player" controls autoplay></video>
 				</div>
 			</div>
 			<div class="rest" id="rest">
-
 				<div class="mobile">
 					<button
-							class="mobileCaptureButton"
-							id="mobileCapture"
-							style="vertical-align:middle"
+						class="mobileCaptureButton"
+						id="mobileCapture"
+						style="vertical-align:middle"
 					>
 						<span>Mobile Upload</span>
 					</button>
-					<input type="file" accept="image/*" id="file-input" hidden=""/>
+					<input
+						type="file"
+						accept="image/*"
+						id="file-input"
+						hidden=""
+					/>
 					<script>
-					document.getElementById('mobileCapture').addEventListener('click',openDialog);
-					function openDialog(){
-						document.getElementById('file-input').click();
-					}
-				</script>
+						document
+							.getElementById("mobileCapture")
+							.addEventListener("click", openDialog);
+						function openDialog() {
+							document.getElementById("file-input").click();
+						}
+					</script>
 				</div>
 
 				<button
-						class="captureButton"
-						id="capture"
-						style="vertical-align:middle"
+					class="captureButton"
+					id="capture"
+					style="vertical-align:middle"
 				>
 					<span>Capture </span>
 				</button>
-					<button
+				<button
 					class="uploadButton"
 					id="upload"
 					style="vertical-align:middle"
@@ -51,39 +57,41 @@
 				</button>
 				/*colors*/
 				<button
-						class="pink"
-						id="Display Pink"
-						style="vertical-align:middle"
+					class="pink"
+					id="Display Pink"
+					style="vertical-align:middle"
 				>
 					<span>Display pink </span>
 				</button>
-					<button
-						class="green"
-						id="Display Green"
-						style="vertical-align:middle"
+				<button
+					class="green"
+					id="Display Green"
+					style="vertical-align:middle"
 				>
 					<span>Display Green </span>
 				</button>
-					<button
-						class="orange"
-						id="Display Orange"
-						style="vertical-align:middle"
+				<button
+					class="orange"
+					id="Display Orange"
+					style="vertical-align:middle"
 				>
 					<span>Display Orange </span>
 				</button>
-					<button
-						class="blue"
-						id="Display Blue"
-						style="vertical-align:middle"
+				<button
+					class="blue"
+					id="Display Blue"
+					style="vertical-align:middle"
 				>
 					<span>Display Blue </span>
 				</button>
-				<canvas class="canvas" id="canvas" width="1080" height="720"></canvas>
+				<canvas
+					class="canvas"
+					id="canvas"
+					width="1080"
+					height="720"
+				></canvas>
 			</div>
 
-
-			
-			
 			<!-- <div id="arrowImg">No Arrow</div> -->
 		</div>
 
@@ -96,13 +104,7 @@
 				type="text/javascript"
 				src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"
 			></script>
-			<!-- <script src="../index.js"></script> -->
 			<script src="../bundle.js"></script>
-			<!-- <script src="../scripts/frontTest.js"></script> -->
-			<script
-				type="text/javascript"
-				src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"
-			></script>
 		</div>
 	</body>
 </html>
