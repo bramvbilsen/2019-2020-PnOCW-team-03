@@ -2,6 +2,7 @@ import { ConnectionType } from "../types/ConnectionType";
 import { SharedEventTypes, SlaveEventTypes, MasterEventTypes } from "../types/SocketIOEvents"
 import { generateRandomColor } from "../util/colors";
 import { show_image } from "../util/images";
+import { IRGBAColor } from "../types/Color";
 
 class Client {
 	private _type: ConnectionType;
@@ -9,6 +10,16 @@ class Client {
 	private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
 	private _socket: SocketIOClient.Socket;
 	public onConnectionTypeChange: (connectionType: ConnectionType) => void;
+	/**
+	 * Color that the user wants to display on the slave.
+	 * Only applicable for masters.
+	 */
+	public color: IRGBAColor = {
+		r: 255,
+		g: 70,
+		b: 181,
+		a: 100
+	};
 
 	constructor(args: {
 		onConnectionTypeChange: (connectionType: ConnectionType) => void
