@@ -111,6 +111,7 @@ class Client {
 			return;
 		}
 		const { a, ...color } = this.color;
+		console.log(color);
 		this._socket.emit(MasterEventTypes.ChangeSlaveBackground, {
 			slaveId,
 			color
@@ -147,9 +148,9 @@ class Client {
 		this._socketIOEmitters = newEmitters;
 	}
 
-	private changeBackground = (data: { color: string }): void => {
+	private changeBackground = (data: { color: { r: number; g: number; b: number } }): void => {
 		const page: JQuery<HTMLBodyElement> = $("#page");
-		page.css("background-color", data.color);
+		page.css("background-color", `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`);
 	}
 
 	private displayArrowUp = (): void => {
