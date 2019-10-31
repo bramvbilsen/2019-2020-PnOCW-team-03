@@ -2,18 +2,7 @@ import Point from "./Point";
 import Line from "./Line";
 import convexHull from "./hull";
 
-interface IHSLColor {
-	h: number;
-	s: number;
-	l: number;
-}
-
-interface IRGBAColor {
-	r: number;
-	g: number;
-	b: number;
-	a: number;
-}
+import { IHSLColor, IRGBAColor } from "../../types/Color";
 
 interface IHSLRange { hRange: number, sRange: number, lRange: number }
 
