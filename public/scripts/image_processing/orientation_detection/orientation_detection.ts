@@ -1,4 +1,26 @@
 import Point from "../screen_detection/Point";
+const color1 = [0,0,0];
+const color2 = [0,0,0];
+const color3 = [0,0,0];
+const color4 = [0,0,0];
+
+interface IPixels {
+	get: (x: number, y: number, colorChannel: number) => number;
+	shape: any[]
+}
+
+const getPixels = (path: string): Promise<IPixels> => {
+	return new Promise((resolve, reject) => {
+		require("get-pixels")(path, (err: any, pixels: IPixels) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(pixels);
+			}
+		});
+	});
+};
+
 
 /**
  * 1) Get screen_centroid
@@ -7,13 +29,18 @@ import Point from "../screen_detection/Point";
  * 
  * @param points List of points representing the 4 corner-points to get the centroid for.
  */
-function main(points: Point[]): void {
+function main(points: Point[], path: string): void {
     const centroids = getAllCentroids(points);
+    const pixels = getPixels(path);
+    console.log(pixels);
     // 1) check for range of 20 px TODO: finetunen van aantal pixels
-
+    //getOrientation(centroids, pixels);
     // 2) 
 
 }
+
+
+
 
 /**
  * VANAF 45°
@@ -110,6 +137,27 @@ function getAllCentroids(points: Point[]): {[key: string]: Point} {
 
     return {"centroid": centroid, "centroid1": centroid1, "centroid2": centroid2, "centroid3": centroid3, "centroid4": centroid4};
 }
+
+function checkColor(centroid: Point, pixels: Promise<IPixels>) {
+
+    return 0;
+}
+
+function getOrientation(centroids: {[key: string]: Point;}, pixels: Promise<IPixels>) {
+    var centroid: Point;
+    for (var key in centroids) {
+        centroid = centroids[key];
+        if (key == "centroid1") {
+            const part = checkColor(centroid, pixels);
+            pixels
+        }
+        
+        // your code here...
+        
+    }
+}
+
+
 
 /* TEST */
 // let test: Point = getCentroidOf([new Point(0, 0), new Point(10, 0), new Point(0, 10), new Point(10, 10)]);
