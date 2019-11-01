@@ -2,6 +2,7 @@ import { client } from "../../index";
 import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import env from "../../env/env";
+import { calculateCameraCanvasScaleFactor } from "./camera_util";
 
 enum WorkflowStep {
     START = "initialize",
@@ -45,15 +46,13 @@ export default class SlaveFlowHandler {
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth, cameraHeight = player[0].videoHeight;
 
-        const temp_scale = canvas[0].width / cameraWidth;
-        let scale = canvas[0].height / cameraHeight;
-        scale = scale > temp_scale ? temp_scale : scale;
+        const scale = calculateCameraCanvasScaleFactor(cameraWidth, cameraHeight, canvas[0].width, canvas[0].height);
 
         const context = canvas[0].getContext('2d');
         context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
 
         const blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
-        blancoCanvas.getContext("2d").drawImage(canvas[0], 0, 0);
+        blancoCanvas.getContext("2d").drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
         this.blancoCanvas = blancoCanvas;
         this.toggleCaptureButton("OFF");
     }
@@ -82,10 +81,12 @@ export default class SlaveFlowHandler {
     async takePictureOfColoredScreen() {
         const player: JQuery<HTMLVideoElement> = $("#player");
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
+        const cameraWidth = player[0].videoWidth, cameraHeight = player[0].videoHeight;
+        const scale = calculateCameraCanvasScaleFactor(cameraWidth, cameraHeight, canvas[0].width, canvas[0].height);
         const context = canvas[0].getContext('2d');
-        context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
+        context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
         const coloredCanvas = createCanvas(canvas[0].width, canvas[0].height);
-        coloredCanvas.getContext("2d").drawImage(canvas[0], 0, 0);
+        coloredCanvas.getContext("2d").drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
         const corners = await findScreen(this.blancoCanvas, coloredCanvas, client.color, true);
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         this.prevSlaveID = this.currSlaveID;
