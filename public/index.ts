@@ -27,4 +27,6 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#slave").css("display", "inherit");
         $("#slave").append($("<div>Slave</div>"))
     }
+    $("#master").css("background-color", "white");
+    $("#slave").css("background-color", "white");
 }
