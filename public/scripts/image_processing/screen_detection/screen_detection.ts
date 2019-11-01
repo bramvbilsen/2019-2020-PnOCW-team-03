@@ -39,6 +39,8 @@ const wait = async (ms: number) => {
  */
 export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasElement, coloredScreenCanvas: HTMLCanvasElement, screenColorRGBA: IRGBAColor, DEBUG = false) {
 
+	console.log("STARTING SCREEN DETECTION ALGORITHM");
+
 	const screenColorHSL: IHSLColor = rgbToHsl(screenColorRGBA.r, screenColorRGBA.g, screenColorRGBA.b);
 
 	const t0 = new Date();

@@ -27,11 +27,14 @@ export default function masterCamera() {
 
 
   captureButton.click(() => {
+    console.log("CLICKED CAPTURE BUTTON");
     slaveFlowHandler.takeNoColorPicture();
   });
 
   nextSlaveButton.click(() => {
+    console.log("CLICKED ON NEXT SLAVE");
     slaveFlowHandler.showColorOnNextSlave();
+    nextSlaveButton.click(null);
   });
 
   uploadButton.click(() => {

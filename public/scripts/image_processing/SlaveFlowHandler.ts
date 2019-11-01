@@ -29,6 +29,7 @@ export default class SlaveFlowHandler {
     }
 
     private initialize() {
+	console.log("Initializing slave flow");
         this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
         this.currSlaveID = this.slaveIDs.pop();
     }
@@ -51,13 +52,13 @@ export default class SlaveFlowHandler {
         const context = canvas[0].getContext('2d');
         context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
 
-        this.blancoCanvas = copyCanvas(canvas[0]);
+        this.blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
+	const blancoCtx = this.blancoCanvas.getContext("2d");
+	blancoCtx.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
         this.toggleCaptureButton("OFF");
         this.step = WorkflowStep.SLAVE_CYCLE;
         const captureButton: JQuery<HTMLButtonElement> = $("#capture");
-        captureButton.click(() => {
-            this.takePictureOfColoredScreen();
-        });
+        captureButton.click(this.takePictureOfColoredScreen);
     }
 
     /**
