@@ -77,28 +77,6 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 	),
 		coloredScreenPixels = coloredScreenPixelData.data;
 
-	if (DEBUG) {
-		nonColoredScreenCanvas.toBlob((blob) => {
-			console.log(blob);
-			let formData = new FormData();
-			formData.append("image", blob, "image.png");
-			$.ajax({
-				url: `${env.baseUrl}/slaveImg`,
-				type: "POST",
-				contentType: false,
-				cache: false,
-				processData: false,
-				data: formData,
-				success: (data: any) => {
-					console.log("Success: " + data);
-				},
-				error: () => {
-					console.log("ERROR UPLOADING IMAGE");
-				}
-			});
-		});
-	}
-
 	const resultingScreenCanvas = createCanvas(width, height);
 	const resultingScreenCtx = <CanvasRenderingContext2D>resultingScreenCanvas.getContext("2d");
 	resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
@@ -150,25 +128,8 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.fill();
 			_ctx.closePath();
 		});
-		_canvas.toBlob((blob) => {
-			console.log(blob);
-			let formData = new FormData();
-			formData.append("image", blob, "image.png");
-			$.ajax({
-				url: `${env.baseUrl}/slaveImg`,
-				type: "POST",
-				contentType: false,
-				cache: false,
-				processData: false,
-				data: formData,
-				success: (data: any) => {
-					console.log("Success: " + data);
-				},
-				error: () => {
-					console.log("ERROR UPLOADING IMAGE");
-				}
-			});
-		});
+		$("#canvas").replaceWith(_canvas);
+		await wait(10000);
 	}
 
 	possibleCorners = possibleCorners.filter(point => {
@@ -195,25 +156,8 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.fill();
 			_ctx.closePath();
 		});
-		_canvas.toBlob((blob) => {
-			console.log(blob);
-			let formData = new FormData();
-			formData.append("image", blob, "image.png");
-			$.ajax({
-				url: `${env.baseUrl}/slaveImg`,
-				type: "POST",
-				contentType: false,
-				cache: false,
-				processData: false,
-				data: formData,
-				success: (data: any) => {
-					console.log("Success: " + data);
-				},
-				error: () => {
-					console.log("ERROR UPLOADING IMAGE");
-				}
-			});
-		});
+		$("#canvas").replaceWith(_canvas);
+		await wait(10000);
 	}
 
 	possibleCorners = convexHull(possibleCorners);
@@ -227,82 +171,24 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.fill();
 			_ctx.closePath();
 		});
-		_canvas.toBlob((blob) => {
-			console.log(blob);
-			let formData = new FormData();
-			formData.append("image", blob, "image.png");
-			$.ajax({
-				url: `${env.baseUrl}/slaveImg`,
-				type: "POST",
-				contentType: false,
-				cache: false,
-				processData: false,
-				data: formData,
-				success: (data: any) => {
-					console.log("Success: " + data);
-				},
-				error: () => {
-					console.log("ERROR UPLOADING IMAGE");
-				}
-			});
-		});
+		$("#canvas").replaceWith(_canvas);
+		await wait(10000);
 	}
 
 	const possibleCornerConnections = createConnections(possibleCorners);
 
 	if (DEBUG) {
 		const _canvas = drawResultLines(width, height, possibleCornerConnections, 20);
-		_canvas.toBlob((blob) => {
-			console.log(blob);
-			let formData = new FormData();
-			formData.append("image", blob, "image.png");
-			$.ajax({
-				url: `${env.baseUrl}/slaveImg`,
-				type: "POST",
-				contentType: false,
-				cache: false,
-				processData: false,
-				data: formData,
-				success: (data: any) => {
-					console.log("Success: " + data);
-				},
-				error: () => {
-					console.log("ERROR UPLOADING IMAGE");
-				}
-			});
-		});
+		$("#canvas").replaceWith(_canvas);
+		await wait(10000);
 	}
 
 	const corners = findFinalCorners(possibleCornerConnections);
 
 	if (DEBUG) {
 		const _canvas = createCanvas(width, height);
-		const _ctx = _canvas.getContext("2d");
-		corners.forEach(corner => {
-			_ctx.beginPath();
-			_ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-			_ctx.fill();
-			_ctx.closePath();
-		});
-		_canvas.toBlob((blob) => {
-			console.log(blob);
-			let formData = new FormData();
-			formData.append("image", blob, "image.png");
-			$.ajax({
-				url: `${env.baseUrl}/slaveImg`,
-				type: "POST",
-				contentType: false,
-				cache: false,
-				processData: false,
-				data: formData,
-				success: (data: any) => {
-					console.log("Success: " + data);
-				},
-				error: () => {
-					console.log("ERROR UPLOADING IMAGE");
-				}
-			});
-		});
+		$("#canvas").replaceWith(_canvas);
+		await wait(10000);
 	}
 
 	const t1 = new Date();
