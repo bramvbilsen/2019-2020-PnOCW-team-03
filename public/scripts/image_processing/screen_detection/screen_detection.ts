@@ -3,6 +3,7 @@ import Line from "./Line";
 import convexHull from "./hull";
 
 import { IHSLColor, IRGBAColor } from "../../types/Color";
+import env from "../../../env/env";
 
 interface IHSLRange { hRange: number, sRange: number, lRange: number }
 
@@ -76,6 +77,28 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 	),
 		coloredScreenPixels = coloredScreenPixelData.data;
 
+	if (DEBUG) {
+		nonColoredScreenCanvas.toBlob((blob) => {
+			console.log(blob);
+			let formData = new FormData();
+			formData.append("image", blob, "image.png");
+			$.ajax({
+				url: `${env.baseUrl}/slaveImg`,
+				type: "POST",
+				contentType: false,
+				cache: false,
+				processData: false,
+				data: formData,
+				success: (data: any) => {
+					console.log("Success: " + data);
+				},
+				error: () => {
+					console.log("ERROR UPLOADING IMAGE");
+				}
+			});
+		});
+	}
+
 	const resultingScreenCanvas = createCanvas(width, height);
 	const resultingScreenCtx = <CanvasRenderingContext2D>resultingScreenCanvas.getContext("2d");
 	resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
@@ -118,6 +141,36 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		}
 	}
 
+	if (DEBUG) {
+		const _canvas = createCanvas(width, height);
+		const _ctx = _canvas.getContext("2d");
+		possibleCorners.forEach(corner => {
+			_ctx.beginPath();
+			_ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+			_ctx.fill();
+			_ctx.closePath();
+		});
+		_canvas.toBlob((blob) => {
+			console.log(blob);
+			let formData = new FormData();
+			formData.append("image", blob, "image.png");
+			$.ajax({
+				url: `${env.baseUrl}/slaveImg`,
+				type: "POST",
+				contentType: false,
+				cache: false,
+				processData: false,
+				data: formData,
+				success: (data: any) => {
+					console.log("Success: " + data);
+				},
+				error: () => {
+					console.log("ERROR UPLOADING IMAGE");
+				}
+			});
+		});
+	}
+
 	possibleCorners = possibleCorners.filter(point => {
 		const linearizedIndex = (width * point.y + point.x) * 4;
 		// Corners will have on average 25 percent colored neighbors. Delete all pixels who do not meet this. 
@@ -133,11 +186,124 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		return true;
 	});
 
+	if (DEBUG) {
+		const _canvas = createCanvas(width, height);
+		const _ctx = _canvas.getContext("2d");
+		possibleCorners.forEach(corner => {
+			_ctx.beginPath();
+			_ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+			_ctx.fill();
+			_ctx.closePath();
+		});
+		_canvas.toBlob((blob) => {
+			console.log(blob);
+			let formData = new FormData();
+			formData.append("image", blob, "image.png");
+			$.ajax({
+				url: `${env.baseUrl}/slaveImg`,
+				type: "POST",
+				contentType: false,
+				cache: false,
+				processData: false,
+				data: formData,
+				success: (data: any) => {
+					console.log("Success: " + data);
+				},
+				error: () => {
+					console.log("ERROR UPLOADING IMAGE");
+				}
+			});
+		});
+	}
+
 	possibleCorners = convexHull(possibleCorners);
+
+	if (DEBUG) {
+		const _canvas = createCanvas(width, height);
+		const _ctx = _canvas.getContext("2d");
+		possibleCorners.forEach(corner => {
+			_ctx.beginPath();
+			_ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+			_ctx.fill();
+			_ctx.closePath();
+		});
+		_canvas.toBlob((blob) => {
+			console.log(blob);
+			let formData = new FormData();
+			formData.append("image", blob, "image.png");
+			$.ajax({
+				url: `${env.baseUrl}/slaveImg`,
+				type: "POST",
+				contentType: false,
+				cache: false,
+				processData: false,
+				data: formData,
+				success: (data: any) => {
+					console.log("Success: " + data);
+				},
+				error: () => {
+					console.log("ERROR UPLOADING IMAGE");
+				}
+			});
+		});
+	}
 
 	const possibleCornerConnections = createConnections(possibleCorners);
 
+	if (DEBUG) {
+		const _canvas = drawResultLines(width, height, possibleCornerConnections, 20);
+		_canvas.toBlob((blob) => {
+			console.log(blob);
+			let formData = new FormData();
+			formData.append("image", blob, "image.png");
+			$.ajax({
+				url: `${env.baseUrl}/slaveImg`,
+				type: "POST",
+				contentType: false,
+				cache: false,
+				processData: false,
+				data: formData,
+				success: (data: any) => {
+					console.log("Success: " + data);
+				},
+				error: () => {
+					console.log("ERROR UPLOADING IMAGE");
+				}
+			});
+		});
+	}
+
 	const corners = findFinalCorners(possibleCornerConnections);
+
+	if (DEBUG) {
+		const _canvas = createCanvas(width, height);
+		const _ctx = _canvas.getContext("2d");
+		corners.forEach(corner => {
+			_ctx.beginPath();
+			_ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+			_ctx.fill();
+			_ctx.closePath();
+		});
+		_canvas.toBlob((blob) => {
+			console.log(blob);
+			let formData = new FormData();
+			formData.append("image", blob, "image.png");
+			$.ajax({
+				url: `${env.baseUrl}/slaveImg`,
+				type: "POST",
+				contentType: false,
+				cache: false,
+				processData: false,
+				data: formData,
+				success: (data: any) => {
+					console.log("Success: " + data);
+				},
+				error: () => {
+					console.log("ERROR UPLOADING IMAGE");
+				}
+			});
+		});
+	}
 
 	const t1 = new Date();
 	console.log(+t1 - +t0 + "ms");
