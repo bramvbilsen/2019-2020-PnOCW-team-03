@@ -18,10 +18,13 @@ window.findScreen = findScreen;
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("CHANGE IN TYPE");
     if (client.type == ConnectionType.MASTER) {
+        $("#loading").css("display", "none");
+        $("#master").css("display", "inherit");
         handleCameraInput();
-        //$('#page').replaceWith('<body id="page" style="height: 100vh"><video id="player" controls autoplay></video></body>');
     }
     else {
-        $('#master').replaceWith('I am your slave :\\');
+        $("#loading").css("display", "none");
+        $("#slave").css("display", "inherit");
+        $("#slave").append($("<div>Slave</div>"))
     }
 }
