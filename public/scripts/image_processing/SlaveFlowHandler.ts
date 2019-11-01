@@ -75,6 +75,8 @@ export default class SlaveFlowHandler {
         const context = canvas[0].getContext('2d');
         context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
         const coloredImg = canvas[0].toDataURL();
+        console.log(this.blancoImg);
+        console.log(coloredImg);
         const corners = await findScreen(this.blancoImg, coloredImg, client.color);
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         this.prevSlaveID = this.currSlaveID;
