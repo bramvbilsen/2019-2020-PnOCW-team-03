@@ -50,8 +50,8 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 	const jQueryBody: JQuery<HTMLBodyElement> = $("body");
 	jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
 
-	const jQueryCanvas: JQuery<HTMLCanvasElement> = $("canvas");
-	const ctx = jQueryCanvas[0].getContext("2d");
+	const canvas = createCanvas(width, height);
+	const ctx = canvas.getContext("2d");
 	ctx.drawImage(nonColoredScreenCanvas, 0, 0);
 
 	while (DEBUG && currentStep !== 1) {
@@ -118,15 +118,6 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		}
 	}
 
-	if (DEBUG) {
-		resultingScreenCtx.putImageData(resultingScreenImageData, 0, 0);
-		jQueryCanvas[0].getContext("2d").drawImage(resultingScreenCanvas, 0, 0);
-
-		while (currentStep !== 2) {
-			await wait(250);
-		}
-	}
-
 	possibleCorners = possibleCorners.filter(point => {
 		const linearizedIndex = (width * point.y + point.x) * 4;
 		// Corners will have on average 25 percent colored neighbors. Delete all pixels who do not meet this. 
@@ -144,34 +135,9 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 
 	possibleCorners = convexHull(possibleCorners);
 
-	if (DEBUG) {
-		resultingScreenCtx.putImageData(resultingScreenImageData, 0, 0);
-		jQueryCanvas[0].getContext("2d").drawImage(resultingScreenCanvas, 0, 0);
-
-		while (currentStep !== 3) {
-			await wait(250);
-		}
-	}
-
 	const possibleCornerConnections = createConnections(possibleCorners);
 
-	if (DEBUG) {
-		jQueryCanvas[0].getContext("2d").drawImage(drawResultLines(width, height, possibleCornerConnections, 5), 0, 0);
-		while (currentStep !== 4) {
-			await wait(250);
-		}
-	}
-
 	const corners = findFinalCorners(possibleCornerConnections);
-
-	jQueryCanvas[0].getContext("2d").drawImage(nonColoredScreenCanvas, 0, 0);
-	ctx.fillStyle = "rgb(0, 255, 255)";
-	corners.forEach(corner => {
-		ctx.beginPath();
-		ctx.arc(corner.x, corner.y, 5, 0, Math.PI * 2);
-		ctx.fill();
-		ctx.closePath();
-	});
 
 	const t1 = new Date();
 	console.log(+t1 - +t0 + "ms");
