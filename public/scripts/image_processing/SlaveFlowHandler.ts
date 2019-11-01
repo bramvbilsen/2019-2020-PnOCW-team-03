@@ -24,11 +24,18 @@ export default class SlaveFlowHandler {
 
     constructor() {
         this.step = WorkflowStep.START;
-        this.currSlaveID = this.slaveIDs.pop();
     }
 
     private initialize() {
-        this.slaveIDs = [...client.slaves];
+        this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
+        this.currSlaveID = this.slaveIDs.pop();
+    }
+
+    private toggleCaptureButton(mode: "ON" | "OFF") {
+        const captureButton: JQuery<HTMLButtonElement> = $("#capture");
+        const nextSlaveButton: JQuery<HTMLButtonElement> = $("#next-slave");
+        captureButton.css("display", mode === "ON" ? "inherit" : "none");
+        nextSlaveButton.css("display", mode === "ON" ? "none" : "inherit");
     }
 
     takeNoColorPicture() {
@@ -38,6 +45,7 @@ export default class SlaveFlowHandler {
         const context = canvas[0].getContext('2d');
         context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
         this.blancoImg = canvas[0].toDataURL();
+        this.toggleCaptureButton("OFF");
     }
 
     /**
@@ -51,6 +59,11 @@ export default class SlaveFlowHandler {
         }
         client.color = color;
         client.showColorOnSlave(this.currSlaveID);
+        const captureButton: JQuery<HTMLButtonElement> = $("#capture");
+        captureButton.click(() => {
+            this.takePictureOfColoredScreen();
+        });
+        this.toggleCaptureButton("ON");
     }
 
     /**

@@ -112,7 +112,6 @@ class Client {
 			return;
 		}
 		const { a, ...color } = this.color;
-		console.log(color);
 		this._socket.emit(MasterEventTypes.ChangeSlaveBackground, {
 			slaveId,
 			color

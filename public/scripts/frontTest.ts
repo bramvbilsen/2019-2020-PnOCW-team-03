@@ -9,13 +9,13 @@ export default function masterCamera() {
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
   const context = canvas[0].getContext('2d');
   const captureButton: JQuery<HTMLButtonElement> = $("#capture");
+  const nextSlaveButton: JQuery<HTMLButtonElement> = $("#next-slave");
   const uploadButton: JQuery<HTMLButtonElement> = $("#upload");
   const mobileCaptureButton: JQuery<HTMLButtonElement> = $("#mobileCaptureButton");
   const pink: JQuery<HTMLButtonElement> = $("#pink");
   const green: JQuery<HTMLButtonElement> = $("#green");
   const blue: JQuery<HTMLButtonElement> = $("#blue");
   const orange: JQuery<HTMLButtonElement> = $("#orange");
-  var rgb = 1;
   const constraints = {
     video: true
   };
@@ -26,11 +26,11 @@ export default function masterCamera() {
 
 
   captureButton.click(() => {
-    //$('#camera').replaceWith($('#canvas'));
-    // context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
     slaveFlowHandler.takeNoColorPicture();
+  });
+
+  nextSlaveButton.click(() => {
     slaveFlowHandler.showColorOnNextSlave();
-    // $('#capture').replaceWith('<button id="upload" class="button2" style="vertical-align:middle"><span>Upload </span></button>');
   });
 
   uploadButton.click(() => {
