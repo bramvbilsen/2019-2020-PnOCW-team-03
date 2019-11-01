@@ -1,3 +1,3 @@
 export default {
-	"baseUrl": "https://penocw03.student.cs.kuleuven.be"
+	"baseUrl": "http://localhost:3000"
 }

@@ -15,6 +15,11 @@ window.client = client;
 //@ts-ignore
 window.findScreen = findScreen;
 
+$(() => {
+    $("#capture").toggle();
+    $("#next-slave").toggle();
+});
+
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("CHANGE IN TYPE");
     if (client.type == ConnectionType.MASTER) {

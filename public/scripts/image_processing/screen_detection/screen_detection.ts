@@ -71,7 +71,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		_canvas.id = "canvas";
 		const _ctx = _canvas.getContext("2d");
 		_ctx.drawImage(nonColoredScreenCanvas, 0, 0);
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Non colored screen displayed!");
 		while (currentStep !== 1) {
 			await wait(250);
@@ -92,7 +92,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		_canvas.id = "canvas";
 		const _ctx = _canvas.getContext("2d");
 		_ctx.drawImage(coloredScreenCanvas, 0, 0);
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Colored screen displayed!");
 		while (currentStep !== 2) {
 			await wait(250);
@@ -151,7 +151,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.fill();
 			_ctx.closePath();
 		});
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Extracted screen displayed!");
 		while (currentStep !== 3) {
 			await wait(250);
@@ -183,7 +183,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.fill();
 			_ctx.closePath();
 		});
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Possible corners displayed!");
 		while (currentStep !== 4) {
 			await wait(250);
@@ -202,7 +202,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.fill();
 			_ctx.closePath();
 		});
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Convex hull corners displayed!");
 		while (currentStep !== 5) {
 			await wait(250);
@@ -214,7 +214,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 	if (DEBUG) {
 		const _canvas = drawResultLines(width, height, possibleCornerConnections, 20);
 		_canvas.id = "canvas";
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Connected corners displayed!");
 		while (currentStep !== 6) {
 			await wait(250);
@@ -234,7 +234,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		_canvas.id = "canvas";
-		$("#canvas").replaceWith(_canvas);
+		$("#canvas")[0].replaceWith(_canvas);
 		console.log("Final result displayed!");
 	}
 
