@@ -223,12 +223,17 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 
 	if (DEBUG) {
 		const _canvas = createCanvas(width, height);
+		const _ctx = _canvas.getContext("2d");
+		_ctx.fillStyle = "rgb(0, 255, 255)";
+		corners.forEach(corner => {
+			_ctx.beginPath();
+			_ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+			_ctx.fill();
+			_ctx.closePath();
+		});
 		_canvas.id = "canvas";
 		$("#canvas").replaceWith(_canvas);
 		console.log("Final result displayed!");
-		while (currentStep !== 7) {
-			await wait(250);
-		}
 	}
 
 	const t1 = new Date();

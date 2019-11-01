@@ -83,20 +83,11 @@ export default class SlaveFlowHandler {
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth, cameraHeight = player[0].videoHeight;
         const scale = calculateCameraCanvasScaleFactor(cameraWidth, cameraHeight, canvas[0].width, canvas[0].height);
-        const context = canvas[0].getContext('2d');
-        context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
         const coloredCanvas = createCanvas(canvas[0].width, canvas[0].height);
         coloredCanvas.getContext("2d").drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
         const corners = await findScreen(this.blancoCanvas, coloredCanvas, client.color, true);
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         this.prevSlaveID = this.currSlaveID;
         this.currSlaveID = this.slaveIDs.pop();
-        context.fillStyle = "rgb(0, 255, 255)";
-        corners.forEach(corner => {
-            context.beginPath();
-            context.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-            context.fill();
-            context.closePath();
-        });
     }
 }
