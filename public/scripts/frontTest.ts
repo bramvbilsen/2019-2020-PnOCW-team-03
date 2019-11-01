@@ -1,6 +1,9 @@
 import findScreen from "./image_processing/screen_detection/screen_detection";
 import { IHSLColor, IRGBAColor } from "./types/Color"
 import { client, slaveFlowHandler } from '../index'
+
+import env from "../env/env";
+
 export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");
   const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
@@ -104,7 +107,7 @@ function uploadImage() {
     let formData = new FormData();
     formData.append("image", blob, "image.png");
     $.ajax({
-      url: "http://localhost:3000/slaveImg",
+      url: `${env.baseUrl}/slaveImg`,
       type: "POST",
       contentType: false,
       cache: false,

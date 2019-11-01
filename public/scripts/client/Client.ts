@@ -3,6 +3,7 @@ import { SharedEventTypes, SlaveEventTypes, MasterEventTypes } from "../types/So
 import { generateRandomColor } from "../util/colors";
 import { show_image } from "../util/images";
 import { IRGBAColor } from "../types/Color";
+import env from "../../env/env";
 
 class Client {
 	private _type: ConnectionType;
@@ -26,7 +27,7 @@ class Client {
 	}) {
 		console.log("new client!");
 		this.onConnectionTypeChange = args.onConnectionTypeChange;
-		this._socket = io.connect("http://localhost:3000");
+		this._socket = io.connect(env.baseUrl);
 		/* CONNECTION */
 		this._socket.on("connected", () => console.log("Connected!"));
 		/* NOTIFY MASTER OF CONNECTION */
