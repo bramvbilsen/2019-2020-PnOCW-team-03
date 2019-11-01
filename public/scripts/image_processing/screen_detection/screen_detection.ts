@@ -121,6 +121,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 
 	if (DEBUG) {
 		const _canvas = createCanvas(width, height);
+		_canvas.id = "canvas";
 		const _ctx = _canvas.getContext("2d");
 		possibleCorners.forEach(corner => {
 			_ctx.beginPath();
@@ -129,7 +130,9 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		$("#canvas").replaceWith(_canvas);
-		await wait(10000);
+		while (currentStep !== 2) {
+			await wait(250);
+		}
 	}
 
 	possibleCorners = possibleCorners.filter(point => {
@@ -149,6 +152,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 
 	if (DEBUG) {
 		const _canvas = createCanvas(width, height);
+		_canvas.id = "canvas";
 		const _ctx = _canvas.getContext("2d");
 		possibleCorners.forEach(corner => {
 			_ctx.beginPath();
@@ -157,13 +161,16 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		$("#canvas").replaceWith(_canvas);
-		await wait(10000);
+		while (currentStep !== 3) {
+			await wait(250);
+		}
 	}
 
 	possibleCorners = convexHull(possibleCorners);
 
 	if (DEBUG) {
 		const _canvas = createCanvas(width, height);
+		_canvas.id = "canvas";
 		const _ctx = _canvas.getContext("2d");
 		possibleCorners.forEach(corner => {
 			_ctx.beginPath();
@@ -172,23 +179,31 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		$("#canvas").replaceWith(_canvas);
-		await wait(10000);
+		while (currentStep !== 4) {
+			await wait(250);
+		}
 	}
 
 	const possibleCornerConnections = createConnections(possibleCorners);
 
 	if (DEBUG) {
 		const _canvas = drawResultLines(width, height, possibleCornerConnections, 20);
+		_canvas.id = "canvas";
 		$("#canvas").replaceWith(_canvas);
-		await wait(10000);
+		while (currentStep !== 5) {
+			await wait(250);
+		}
 	}
 
 	const corners = findFinalCorners(possibleCornerConnections);
 
 	if (DEBUG) {
 		const _canvas = createCanvas(width, height);
+		_canvas.id = "canvas";
 		$("#canvas").replaceWith(_canvas);
-		await wait(10000);
+		while (currentStep !== 6) {
+			await wait(250);
+		}
 	}
 
 	const t1 = new Date();
