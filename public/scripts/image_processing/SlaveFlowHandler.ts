@@ -1,4 +1,5 @@
 import { client } from "../../index";
+import { copyCanvas } from "../util/canvas";
 import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import env from "../../env/env";
@@ -51,9 +52,7 @@ export default class SlaveFlowHandler {
         const context = canvas[0].getContext('2d');
         context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
 
-        const blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
-        blancoCanvas.getContext("2d").drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
-        this.blancoCanvas = blancoCanvas;
+        this.blancoCanvas = copyCanvas(canvas[0]);
         this.toggleCaptureButton("OFF");
     }
 
