@@ -3,6 +3,7 @@ import { IHSLColor, IRGBAColor } from "./types/Color"
 import { client, slaveFlowHandler } from '../index'
 
 import env from "../env/env";
+import { WorkflowStep } from "./image_processing/SlaveFlowHandler";
 
 export default function masterCamera() {
   const player: JQuery<HTMLVideoElement> = $("#player");

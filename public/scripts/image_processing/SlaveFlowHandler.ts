@@ -5,9 +5,8 @@ import SlaveScreen from "../util/SlaveScreen";
 import env from "../../env/env";
 import { calculateCameraCanvasScaleFactor } from "./camera_util";
 
-enum WorkflowStep {
+export enum WorkflowStep {
     START = "initialize",
-    BLANCO_PIC = "black screens picture",
     SLAVE_CYCLE = "iterating through slaves",
 }
 
@@ -54,6 +53,11 @@ export default class SlaveFlowHandler {
 
         this.blancoCanvas = copyCanvas(canvas[0]);
         this.toggleCaptureButton("OFF");
+        this.step = WorkflowStep.SLAVE_CYCLE;
+        const captureButton: JQuery<HTMLButtonElement> = $("#capture");
+        captureButton.click(() => {
+            this.takePictureOfColoredScreen();
+        });
     }
 
     /**
