@@ -1,6 +1,7 @@
 import { client } from "../../index";
-import findScreen from "./screen_detection/screen_detection";
+import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
+import env from "../../env/env";
 
 enum WorkflowStep {
     START = "initialize",
@@ -19,7 +20,7 @@ export default class SlaveFlowHandler {
     currSlaveID: string;
     slaveIDs: string[];
     step: WorkflowStep;
-    blancoImg: string;
+    blancoCanvas: HTMLCanvasElement;
     screens: SlaveScreen[] = [];
 
     constructor() {
@@ -42,9 +43,18 @@ export default class SlaveFlowHandler {
         this.initialize();
         const player: JQuery<HTMLVideoElement> = $("#player");
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
+        const cameraWidth = player[0].videoWidth, cameraHeight = player[0].videoHeight;
+
+        const temp_scale = canvas[0].width / cameraWidth;
+        let scale = canvas[0].height / cameraHeight;
+        scale = scale > temp_scale ? temp_scale : scale;
+
         const context = canvas[0].getContext('2d');
-        context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
-        this.blancoImg = canvas[0].toDataURL();
+        context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
+
+        const blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
+        blancoCanvas.getContext("2d").drawImage(canvas[0], 0, 0);
+        this.blancoCanvas = blancoCanvas;
         this.toggleCaptureButton("OFF");
     }
 
@@ -74,10 +84,9 @@ export default class SlaveFlowHandler {
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const context = canvas[0].getContext('2d');
         context.drawImage(player[0], 0, 0, canvas[0].width, canvas[0].height);
-        const coloredImg = canvas[0].toDataURL();
-        console.log(this.blancoImg);
-        console.log(coloredImg);
-        const corners = await findScreen(this.blancoImg, coloredImg, client.color);
+        const coloredCanvas = createCanvas(canvas[0].width, canvas[0].height);
+        coloredCanvas.getContext("2d").drawImage(canvas[0], 0, 0);
+        const corners = await findScreen(this.blancoCanvas, coloredCanvas, client.color);
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         this.prevSlaveID = this.currSlaveID;
         this.currSlaveID = this.slaveIDs.pop();

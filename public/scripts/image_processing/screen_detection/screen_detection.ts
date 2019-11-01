@@ -36,7 +36,7 @@ const wait = async (ms: number) => {
  * @param screenColorRGBA - Slave's color.
  * @param DEBUG - Whether or not to debug (change this later)
  */
-export default async function findScreen(nonColoredImgPath: string, coloredImgPath: string, screenColorRGBA: IRGBAColor, DEBUG = false) {
+export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasElement, coloredScreenCanvas: HTMLCanvasElement, screenColorRGBA: IRGBAColor, DEBUG = false) {
 
 	const screenColorHSL: IHSLColor = rgbToHsl(screenColorRGBA.r, screenColorRGBA.g, screenColorRGBA.b);
 
@@ -44,26 +44,21 @@ export default async function findScreen(nonColoredImgPath: string, coloredImgPa
 	const LOST_PIXEL_SEARCH_RANGE = 10;
 	const LOST_PIXEL_THRESHOLD = (8 * LOST_PIXEL_SEARCH_RANGE) * 0.24;
 
-	const nonColoredScreenImg = await loadImage(nonColoredImgPath);
-	const coloredScreenImg = await loadImage(coloredImgPath);
-
-	const width = nonColoredScreenImg.width;
-	const height = nonColoredScreenImg.height;
+	const width = nonColoredScreenCanvas.width;
+	const height = nonColoredScreenCanvas.height;
 
 	const jQueryBody: JQuery<HTMLBodyElement> = $("body");
 	jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
 
 	const jQueryCanvas: JQuery<HTMLCanvasElement> = $("canvas");
 	const ctx = jQueryCanvas[0].getContext("2d");
-	ctx.drawImage(nonColoredScreenImg, 0, 0);
+	ctx.drawImage(nonColoredScreenCanvas, 0, 0);
 
 	while (DEBUG && currentStep !== 1) {
 		await wait(250);
 	}
 
-	const nonColoredScreenCanvas = createCanvas(width, height);
 	const nonColoredScreenCtx = <CanvasRenderingContext2D>nonColoredScreenCanvas.getContext("2d");
-	nonColoredScreenCtx.drawImage(nonColoredScreenImg, 0, 0);
 	const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
 		0,
 		0,
@@ -72,9 +67,7 @@ export default async function findScreen(nonColoredImgPath: string, coloredImgPa
 	),
 		nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
-	const coloredScreenCanvas = createCanvas(width, height);
 	const coloredScreenCtx = <CanvasRenderingContext2D>coloredScreenCanvas.getContext("2d");
-	coloredScreenCtx.drawImage(coloredScreenImg, 0, 0);
 	const coloredScreenPixelData = coloredScreenCtx.getImageData(
 		0,
 		0,
@@ -171,7 +164,7 @@ export default async function findScreen(nonColoredImgPath: string, coloredImgPa
 
 	const corners = findFinalCorners(possibleCornerConnections);
 
-	jQueryCanvas[0].getContext("2d").drawImage(nonColoredScreenImg, 0, 0);
+	jQueryCanvas[0].getContext("2d").drawImage(nonColoredScreenCanvas, 0, 0);
 	ctx.fillStyle = "rgb(0, 255, 255)";
 	corners.forEach(corner => {
 		ctx.beginPath();
@@ -200,7 +193,7 @@ async function loadImage(src: string): Promise<Image> {
 	});
 }
 
-function createCanvas(width: number, height: number): HTMLCanvasElement {
+export function createCanvas(width: number, height: number): HTMLCanvasElement {
 	const canvas = document.createElement("canvas");
 	canvas.width = width;
 	canvas.height = height;
