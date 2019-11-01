@@ -68,6 +68,17 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 	),
 		nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
+	if (DEBUG) {
+		const _canvas = createCanvas(width, height);
+		_canvas.id = "canvas";
+		const _ctx = _canvas.getContext("2d");
+		_ctx.drawImage(nonColoredScreenCanvas, 0, 0);
+		$("#canvas").replaceWith(_canvas);
+		while (currentStep !== 2) {
+			await wait(250);
+		}
+	}
+
 	const coloredScreenCtx = <CanvasRenderingContext2D>coloredScreenCanvas.getContext("2d");
 	const coloredScreenPixelData = coloredScreenCtx.getImageData(
 		0,
@@ -76,6 +87,17 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		height
 	),
 		coloredScreenPixels = coloredScreenPixelData.data;
+
+	if (DEBUG) {
+		const _canvas = createCanvas(width, height);
+		_canvas.id = "canvas";
+		const _ctx = _canvas.getContext("2d");
+		_ctx.drawImage(coloredScreenCanvas, 0, 0);
+		$("#canvas").replaceWith(_canvas);
+		while (currentStep !== 3) {
+			await wait(250);
+		}
+	}
 
 	const resultingScreenCanvas = createCanvas(width, height);
 	const resultingScreenCtx = <CanvasRenderingContext2D>resultingScreenCanvas.getContext("2d");
@@ -130,7 +152,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		$("#canvas").replaceWith(_canvas);
-		while (currentStep !== 2) {
+		while (currentStep !== 4) {
 			await wait(250);
 		}
 	}
@@ -161,7 +183,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		$("#canvas").replaceWith(_canvas);
-		while (currentStep !== 3) {
+		while (currentStep !== 5) {
 			await wait(250);
 		}
 	}
@@ -179,7 +201,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 			_ctx.closePath();
 		});
 		$("#canvas").replaceWith(_canvas);
-		while (currentStep !== 4) {
+		while (currentStep !== 6) {
 			await wait(250);
 		}
 	}
@@ -190,7 +212,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		const _canvas = drawResultLines(width, height, possibleCornerConnections, 20);
 		_canvas.id = "canvas";
 		$("#canvas").replaceWith(_canvas);
-		while (currentStep !== 5) {
+		while (currentStep !== 7) {
 			await wait(250);
 		}
 	}
@@ -201,7 +223,7 @@ export default async function findScreen(nonColoredScreenCanvas: HTMLCanvasEleme
 		const _canvas = createCanvas(width, height);
 		_canvas.id = "canvas";
 		$("#canvas").replaceWith(_canvas);
-		while (currentStep !== 6) {
+		while (currentStep !== 8) {
 			await wait(250);
 		}
 	}
