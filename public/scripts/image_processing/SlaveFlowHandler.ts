@@ -109,9 +109,17 @@ export default class SlaveFlowHandler {
         const corners = await findScreen(
             this.blancoCanvas,
             coloredCanvas,
-            client.color,
-            true
+            client.color
         );
+        const ctx = canvas[0].getContext("2d");
+        ctx.drawImage(this.blancoCanvas, 0, 0);
+        ctx.fillStyle = "rgb(0, 255, 255)";
+        corners.forEach(corner => {
+            ctx.beginPath();
+            ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        });
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         this.prevSlaveID = this.currSlaveID;
         this.currSlaveID = this.slaveIDs.pop();
