@@ -16,8 +16,25 @@ window.client = client;
 window.findScreen = findScreen;
 
 $(() => {
-    $("#capture").toggle();
-    $("#next-slave").toggle();
+    const startButton = $("#start");
+    const nextSlaveButton = $("#next-slave");
+    const captureButton = $("#capture");
+    nextSlaveButton.toggle();
+    captureButton.toggle();
+    startButton.off().on("click", () => {
+        slaveFlowHandler.takeNoColorPicture();
+        nextSlaveButton.toggle();
+    });
+    nextSlaveButton.off().on("click", () => {
+        slaveFlowHandler.showColorOnNextSlave();
+        nextSlaveButton.toggle();
+        captureButton.toggle();
+    });
+    captureButton.off().on("click", async () => {
+        await slaveFlowHandler.takePictureOfColoredScreen();
+        nextSlaveButton.toggle();
+        captureButton.toggle();
+    });
 });
 
 function onConnectionTypeChange(type: ConnectionType) {
@@ -26,11 +43,10 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#loading").css("display", "none");
         $("#master").css("display", "inherit");
         handleCameraInput();
-    }
-    else {
+    } else {
         $("#loading").css("display", "none");
         $("#slave").css("display", "inherit");
-        $("#slave").append($("<div>Slave</div>"))
+        $("#slave").append($("<div>Slave</div>"));
     }
     $("#master").css("background-color", "white");
     $("#slave").css("background-color", "white");

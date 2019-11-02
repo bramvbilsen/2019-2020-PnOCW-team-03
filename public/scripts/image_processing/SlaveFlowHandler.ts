@@ -5,9 +5,8 @@ import { calculateCameraCanvasScaleFactor } from "./camera_util";
 
 export enum WorkflowStep {
     START = "initialize",
-    SLAVE_CYCLE = "iterating through slaves",
+    SLAVE_CYCLE = "iterating through slaves"
 }
-
 
 /**
  * Retains workflow:
@@ -27,11 +26,8 @@ export default class SlaveFlowHandler {
     }
 
     private initialize() {
-        console.log("Initializing slave flow");
         const startButton: JQuery<HTMLButtonElement> = $("#start");
-        startButton.click(null);
         startButton.css("display", "none");
-        $("#next-slave").toggle();
         this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
         this.currSlaveID = this.slaveIDs.pop();
     }
@@ -40,25 +36,42 @@ export default class SlaveFlowHandler {
         this.initialize();
         const player: JQuery<HTMLVideoElement> = $("#player");
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
-        const cameraWidth = player[0].videoWidth, cameraHeight = player[0].videoHeight;
+        const cameraWidth = player[0].videoWidth,
+            cameraHeight = player[0].videoHeight;
 
-        const scale = calculateCameraCanvasScaleFactor(cameraWidth, cameraHeight, canvas[0].width, canvas[0].height);
+        const scale = calculateCameraCanvasScaleFactor(
+            cameraWidth,
+            cameraHeight,
+            canvas[0].width,
+            canvas[0].height
+        );
 
-        const context = canvas[0].getContext('2d');
-        context.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
+        const context = canvas[0].getContext("2d");
+        context.drawImage(
+            player[0],
+            0,
+            0,
+            cameraWidth * scale,
+            cameraHeight * scale
+        );
 
         this.blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
         const blancoCtx = this.blancoCanvas.getContext("2d");
-        blancoCtx.drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
+        blancoCtx.drawImage(
+            player[0],
+            0,
+            0,
+            cameraWidth * scale,
+            cameraHeight * scale
+        );
         this.step = WorkflowStep.SLAVE_CYCLE;
-        const captureButton: JQuery<HTMLButtonElement> = $("#capture");
-        captureButton.click(this.takePictureOfColoredScreen);
     }
 
     /**
      * First we show the color on the slave.
      */
     showColorOnNextSlave() {
+        console.log("Showing color on slave");
         const color = client.color;
         if (this.prevSlaveID) {
             client.color = { r: 255, g: 255, b: 255, a: 255 };
@@ -66,28 +79,41 @@ export default class SlaveFlowHandler {
         }
         client.color = color;
         client.showColorOnSlave(this.currSlaveID);
-        const captureButton: JQuery<HTMLButtonElement> = $("#capture");
-        captureButton.click(this.takePictureOfColoredScreen);
-        $("#next-slave").toggle();
-        captureButton.toggle();
     }
 
     /**
      * Should be called after `showColorOnNextSlave`.
      */
-    takePictureOfColoredScreen() {
+    async takePictureOfColoredScreen() {
+        console.log("Capturing color on slave");
         const player: JQuery<HTMLVideoElement> = $("#player");
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
-        const cameraWidth = player[0].videoWidth, cameraHeight = player[0].videoHeight;
-        const scale = calculateCameraCanvasScaleFactor(cameraWidth, cameraHeight, canvas[0].width, canvas[0].height);
+        const cameraWidth = player[0].videoWidth,
+            cameraHeight = player[0].videoHeight;
+        const scale = calculateCameraCanvasScaleFactor(
+            cameraWidth,
+            cameraHeight,
+            canvas[0].width,
+            canvas[0].height
+        );
         const coloredCanvas = createCanvas(canvas[0].width, canvas[0].height);
-        coloredCanvas.getContext("2d").drawImage(player[0], 0, 0, cameraWidth * scale, cameraHeight * scale);
-        findScreen(this.blancoCanvas, coloredCanvas, client.color).then(corners => {
-            this.screens.push(new SlaveScreen(corners, this.currSlaveID));
-            this.prevSlaveID = this.currSlaveID;
-            this.currSlaveID = this.slaveIDs.pop();
-            $("#next-slave").toggle();
-            $("#capture").toggle();
-        });
+        coloredCanvas
+            .getContext("2d")
+            .drawImage(
+                player[0],
+                0,
+                0,
+                cameraWidth * scale,
+                cameraHeight * scale
+            );
+        const corners = await findScreen(
+            this.blancoCanvas,
+            coloredCanvas,
+            client.color,
+            true
+        );
+        this.screens.push(new SlaveScreen(corners, this.currSlaveID));
+        this.prevSlaveID = this.currSlaveID;
+        this.currSlaveID = this.slaveIDs.pop();
     }
 }
