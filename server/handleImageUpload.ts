@@ -12,7 +12,7 @@ export default (req: Request<Dictionary<string>>, res: Response) => {
     } else {
         const ext = imageFile.mimetype === "image/png" ? "png" : "jpg";
         const dest = path.resolve(__dirname + "/uploads/");
-        const fileName = `image.${ext}`;
+        const fileName = `image${Math.random()}.${ext}`;
         binaryToImageFile(dest, fileName, imageFile.buffer)
             .then(() => {
                 res.sendStatus(200);

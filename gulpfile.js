@@ -10,6 +10,7 @@ const nodemon = require("gulp-nodemon");
 const path = require("path");
 const del = require("del");
 const internalIp = require("internal-ip");
+const fs = require("fs");
 
 // ------ SERVER ------ //
 
@@ -57,6 +58,11 @@ gulp.task(
 	)
 );
 
+gulp.task("Set production env", function(done) {
+	fs.copyFileSync("./public/env/env.prod.ts", "./public/env/env.ts");
+	done();
+});
+
 // ------ CLIENT ------ //
 
 const tsPaths_client = ["./public/**/*.ts"];
@@ -69,18 +75,10 @@ const nonTsPaths_client = [
 ];
 
 gulp.task("Compile client", function() {
-	// const tsProject = ts.createProject("./public/tsconfig.json");
-	// tsProject
-	// 	.src()
-	// 	.pipe(tsProject())
-	// 	.pipe(gulp.dest(path.resolve("./build/public")));
-	// done();
-
 	return browserify({
 		basedir: path.resolve("./public/"),
 		debug: true,
 		entries: ["index.ts"],
-		// transform: ["babelify"],
 		cache: {},
 		packageCache: {}
 	})
@@ -114,6 +112,11 @@ gulp.task(
 	)
 );
 
+gulp.task("Set local env", function(done) {
+	fs.copyFileSync("./public/env/env.local.ts", "./public/env/env.ts");
+	done();
+});
+
 // ------ SHARED ------ //
 
 gulp.task("Clean", function(done) {
@@ -124,6 +127,18 @@ gulp.task("Clean", function(done) {
 gulp.task(
 	"build:production",
 	gulp.series(
+		"Set production env",
+		"Compile server",
+		"Copy server non-TS",
+		"Compile client",
+		"Copy client non-TS"
+	)
+);
+
+gulp.task(
+	"build",
+	gulp.series(
+		"Set local env",
 		"Compile server",
 		"Copy server non-TS",
 		"Compile client",
@@ -145,16 +160,11 @@ gulp.task("Open localhost", function(done) {
 });
 
 // ------ DEFAULT ------ //
-/*gulp.task("default", gulp.parallel(
-    "Watch client",
-    "Watch server",
-    "Open localhost"
-));*/
-
 gulp.task(
 	"default",
 	gulp.series(
 		"Clean",
+		"Set local env",
 		gulp.parallel("Watch client", "Watch server", "Open localhost")
 	)
 );

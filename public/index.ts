@@ -15,13 +15,39 @@ window.client = client;
 //@ts-ignore
 window.findScreen = findScreen;
 
+$(() => {
+    const startButton = $("#start");
+    const nextSlaveButton = $("#next-slave");
+    const captureButton = $("#capture");
+    nextSlaveButton.toggle();
+    captureButton.toggle();
+    startButton.off().on("click", () => {
+        slaveFlowHandler.takeNoColorPicture();
+        nextSlaveButton.toggle();
+    });
+    nextSlaveButton.off().on("click", () => {
+        slaveFlowHandler.showColorOnNextSlave();
+        nextSlaveButton.toggle();
+        captureButton.toggle();
+    });
+    captureButton.off().on("click", async () => {
+        await slaveFlowHandler.takePictureOfColoredScreen();
+        nextSlaveButton.toggle();
+        captureButton.toggle();
+    });
+});
+
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("CHANGE IN TYPE");
     if (client.type == ConnectionType.MASTER) {
+        $("#loading").css("display", "none");
+        $("#master").css("display", "inherit");
         handleCameraInput();
-        //$('#page').replaceWith('<body id="page" style="height: 100vh"><video id="player" controls autoplay></video></body>');
+    } else {
+        $("#loading").css("display", "none");
+        $("#slave").css("display", "inherit");
+        $("#slave").append($("<div>Slave</div>"));
     }
-    else {
-        $('#master').replaceWith('I am your slave :\\');
-    }
+    $("#master").css("background-color", "white");
+    $("#slave").css("background-color", "white");
 }
