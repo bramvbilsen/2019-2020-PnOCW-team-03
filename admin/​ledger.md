@@ -81,4 +81,3 @@ CEO & TC1: Workflow bepaald voor het algoritme in client side, hoe gaan we meerd
 CTO & TC2: Working on orientation detection algorithm.
 
 CR1&CR2: Worked further on implementing the triangulation algorithm given the middle points of each screen.
-
