@@ -17,3 +17,9 @@
 17/10: Learning how to isolate a screen and detect its position
 
 21/10: have the isolation algorithm+corner detection+edge detection algorithm for assembly. Getting the paper worked on to complete our explanation behind all algorithms. Try to get an orientation detection  algorithm in there.
+
+24/10: No real deadlines given to ourselves here, we started working on task 4&5. 
+
+28/10: needed to have the convex hull algorithm and corner detection done by this day, for basic implementations, leaving openCV library and implementing our own algorithms.
+
+31/10: Detecting orientation is a better way than before, giving structure to what we currently have implemented on client side by giving it a class called slave workflow and linking this to a desktop UI.

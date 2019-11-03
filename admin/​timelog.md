@@ -116,3 +116,32 @@ TC1: 8hrs
 CEO: 6hrs
 
 CTO: 6hrs
+
+##### 21/10:
+
+###### -Code reviewers: Code review.
+
+###### -The rest worked on the assembly of all 4 algorithms to form a cohesive working algorithm for corner detection.  Writing the report with all four of us. 
+
+Code reviewers: 4hrs +(1.5h on the 22nd)
+
+CTO: 6hrs
+
+CEO: 7hrs
+
+TC1: 7hrs
+
+TC2: 7hrs
+
+##### 24/10:
+
+###### -CEO, CR1 & CR2: Research and the beginning of triangulation
+
+###### -CTO implementing ui for slave and master
+
+###### -TC1: Refactoring the original corner detection alg.
+
+###### -TC2: Convex hull algorithm
+
+All: 4hrs
+

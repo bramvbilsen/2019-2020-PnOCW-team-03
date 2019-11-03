@@ -42,6 +42,43 @@ TC2&code reviewer 1 worked on the algorithm.
 
 Code reviewer 2 joined the team and got briefed about our implementation by CEO.
 
-### 17/10: 
+### 17/10:
 
 We all worked further on the screen recognition algorithm in regards of the implementation. No real progress was made that day.
+
+### 21/10: 
+
+Verslag beginnen schrijven.
+
+Code reviewers: Code review.
+
+CEO, TC1,TC2, CTO: Edge detection algoritme verder uitgewerkt en de 4 deel algoritmen samengebracht tot 1 geheel.
+
+### 24/10: 
+
+Algoritme overlopen en meer testcases gemaakt waarin ons algoritme zou voor moeten functioneren. Wat bij overlap? Wat in andere cases? Welke soort overlappen etc etc.
+
+TC2: Begon met het schrijven van een convex hull algoritme voor beter de hoekpunten te kunnen reduceren uit de gevonden hoeken. Deadline: 26/10 (is gelukt)
+
+TC1: Refactoring van het oorspronkelijke corner detection algoritme. Harris corner detection en openCV libraries zijn achterwege gelaten.
+
+CTO: Verschil tussen master en slave invoeren op front end UI. Dit was voorheen nog niet goed uitgewerkt door onvolledigheid van het complete algoritme
+
+CEO, CR1 & CR2: Research over Triangulatie en beginselen hiervan opzoeken.
+
+### 28/10:
+
+CEO: Mobile UI implementeren
+
+CTO, TC2; TC1: Bugs op de site clearen, camera werd niet gedisplayed, waiting time implementeren voor de build, zodat files niet aangesproken worden vooraleer ze gebuild zijn. Bug fixes clearen op het hele werkende systeem, van capture tot het aanspreken en returnen van het algoritme en resultaat.
+
+CR1 & CR2: Triangulatie verder onderzoeken en een concreet algoritme uit beginnen werken.
+
+### 31/10:
+
+CEO & TC1: Workflow bepaald voor het algoritme in client side, hoe gaan we meerdere slaves manipuleren en handlen, making buttons for displaying different colors on the slaves en working with the next slave.  First trials on the server.
+
+CTO & TC2: Working on orientation detection algorithm.
+
+CR1&CR2: Worked further on implementing the triangulation algorithm given the middle points of each screen.
+
