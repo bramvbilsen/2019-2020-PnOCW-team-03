@@ -18,9 +18,9 @@ const similarPinkRange: IHSLRange = {
 };
 
 const randomColorRange: IHSLRange = {
-    hRange: 50,
-    sRange: 50,
-    lRange: 50
+    hRange: 52,
+    sRange: 52,
+    lRange: 52
 };
 
 let currentStep = 0;
@@ -60,8 +60,8 @@ export default async function findScreen(
     );
 
     const t0 = new Date();
-    const LOST_PIXEL_SEARCH_RANGE = 10;
-    const LOST_PIXEL_THRESHOLD = 8 * LOST_PIXEL_SEARCH_RANGE * 0.24;
+    const LOST_PIXEL_SEARCH_RANGE = 20;
+    const LOST_PIXEL_THRESHOLD = 8 * LOST_PIXEL_SEARCH_RANGE * 0.2;
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -539,7 +539,7 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         (connectionA, connectionB) => connectionB.length - connectionA.length
     );
 
-    const minDistanceBetweenCorners = 100;
+    const minDistanceBetweenCorners = 50;
     const firstCornerConnection = sortedPossibleCornersConnections[0];
     let secondCornerConnection;
     for (let i = 0; i < sortedPossibleCornersConnections.length; i++) {

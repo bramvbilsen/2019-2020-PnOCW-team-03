@@ -13,12 +13,15 @@ export const slaveFlowHandler = new SlaveFlowHandler();
 //@ts-ignore
 window.client = client;
 //@ts-ignore
+window.slaveFlowHandler = slaveFlowHandler
+//@ts-ignore
 window.findScreen = findScreen;
 
 $(() => {
     const startButton = $("#start");
     const nextSlaveButton = $("#next-slave");
     const captureButton = $("#capture");
+    const resetButton = $("#reset");
     nextSlaveButton.toggle();
     captureButton.toggle();
     startButton.off().on("click", () => {
@@ -35,29 +38,32 @@ $(() => {
         nextSlaveButton.toggle();
         captureButton.toggle();
     });
+    resetButton.off().on("click", () => {
+        slaveFlowHandler.reset();
+    });
 
-    $("#pink")
+    $(".pink")
         .off()
         .click(() => {
             client.color = { r: 255, g: 70, b: 181, a: 100 };
         });
 
-    $("#green")
+    $(".green")
         .off()
         .click(() => {
             client.color = { r: 0, g: 128, b: 0, a: 100 };
         });
 
-    $("#orange")
+    $(".orange")
         .off()
         .click(() => {
             client.color = { r: 255, g: 69, b: 0, a: 100 };
         });
 
-    $("#blue")
+    $(".blue")
         .off()
         .click(() => {
-            client.color = { r: 0, g: 255, b: 0, a: 100 };
+            client.color = { r: 0, g: 0, b: 255, a: 100 };
         });
 });
 
@@ -70,7 +76,7 @@ function onConnectionTypeChange(type: ConnectionType) {
     } else {
         $("#loading").css("display", "none");
         $("#slave").css("display", "inherit");
-        $("#slave").append($("<div>Slave</div>"));
+        $("#slave").append($("<div style='background-color: white'>Slave</div>"));
     }
     $("#master").css("background-color", "white");
     $("#slave").css("background-color", "white");
