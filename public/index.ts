@@ -35,6 +35,30 @@ $(() => {
         nextSlaveButton.toggle();
         captureButton.toggle();
     });
+
+    $("#pink")
+        .off()
+        .click(() => {
+            client.color = { r: 255, g: 70, b: 181, a: 100 };
+        });
+
+    $("#green")
+        .off()
+        .click(() => {
+            client.color = { r: 0, g: 128, b: 0, a: 100 };
+        });
+
+    $("#orange")
+        .off()
+        .click(() => {
+            client.color = { r: 255, g: 69, b: 0, a: 100 };
+        });
+
+    $("#blue")
+        .off()
+        .click(() => {
+            client.color = { r: 0, g: 255, b: 0, a: 100 };
+        });
 });
 
 function onConnectionTypeChange(type: ConnectionType) {

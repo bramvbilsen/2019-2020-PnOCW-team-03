@@ -106,11 +106,12 @@ export default class SlaveFlowHandler {
                 cameraWidth * scale,
                 cameraHeight * scale
             );
+        console.log(client.color);
         const corners = await findScreen(
             this.blancoCanvas,
             coloredCanvas,
             client.color,
-	    true
+            true
         );
         const ctx = canvas[0].getContext("2d");
         ctx.drawImage(this.blancoCanvas, 0, 0);
