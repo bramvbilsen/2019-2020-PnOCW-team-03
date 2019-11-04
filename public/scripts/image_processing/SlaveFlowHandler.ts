@@ -26,18 +26,20 @@ export default class SlaveFlowHandler {
     }
 
     public reset() {
-      $("#capture").css("display", "none");
-      $("#next-slave").css("display", "none");
-      $("#start").css("display", "inherit");
-      const color = {...client.color};
-      client.color = { r: 255, g: 255, b: 255, a: 255 };
-      if (this.prevSlaveID) {
-          client.showColorOnSlave(this.prevSlaveID);
-      }
-      if (this.currSlaveID) {
-          client.showColorOnSlave(this.currSlaveID);
-      }
-      client.color = color;
+        $("#capture").css("display", "none");
+        $("#next-slave").css("display", "none");
+        $("#start").css("display", "inherit");
+        const color = { ...client.color };
+        client.color = { r: 255, g: 255, b: 255, a: 255 };
+        if (this.prevSlaveID) {
+            client.showColorOnSlave(this.prevSlaveID);
+        }
+        if (this.currSlaveID) {
+            client.showColorOnSlave(this.currSlaveID);
+        }
+        client.color = color;
+        //@ts-ignore
+        window.currentStep = 0;
     }
 
     private initialize() {

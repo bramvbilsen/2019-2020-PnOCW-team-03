@@ -23,10 +23,12 @@ const randomColorRange: IHSLRange = {
     lRange: 52
 };
 
-let currentStep = 0;
+//@ts-ignore
+window.currentStep = 0;
 
 document.onkeypress = e => {
-    currentStep++;
+    //@ts-ignore
+    window.currentStep++;
     console.log("new step");
 };
 
@@ -91,6 +93,7 @@ export default async function findScreen(
         _ctx.drawImage(nonColoredScreenCanvas, 0, 0);
         $("#canvas")[0].replaceWith(_canvas);
         console.log("Non colored screen displayed!");
+        //@ts-ignore
         while (currentStep !== 1) {
             await wait(250);
         }
@@ -114,6 +117,7 @@ export default async function findScreen(
         _ctx.drawImage(coloredScreenCanvas, 0, 0);
         $("#canvas")[0].replaceWith(_canvas);
         console.log("Colored screen displayed!");
+        //@ts-ignore
         while (currentStep !== 2) {
             await wait(250);
         }
@@ -183,6 +187,7 @@ export default async function findScreen(
         });
         $("#canvas")[0].replaceWith(_canvas);
         console.log("Extracted screen displayed!");
+        //@ts-ignore
         while (currentStep !== 3) {
             await wait(250);
         }
@@ -226,6 +231,7 @@ export default async function findScreen(
         });
         $("#canvas")[0].replaceWith(_canvas);
         console.log("Possible corners displayed!");
+        //@ts-ignore
         while (currentStep !== 4) {
             await wait(250);
         }
@@ -246,6 +252,7 @@ export default async function findScreen(
         });
         $("#canvas")[0].replaceWith(_canvas);
         console.log("Convex hull corners displayed!");
+        //@ts-ignore
         while (currentStep !== 5) {
             await wait(250);
         }
@@ -263,6 +270,7 @@ export default async function findScreen(
         _canvas.id = "canvas";
         $("#canvas")[0].replaceWith(_canvas);
         console.log("Connected corners displayed!");
+        //@ts-ignore
         while (currentStep !== 6) {
             await wait(250);
         }
