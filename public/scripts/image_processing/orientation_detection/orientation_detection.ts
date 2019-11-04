@@ -32,6 +32,7 @@ interface IPixels {
 
 const getPixels = (path: string): Promise<IPixels> => {
 	return new Promise((resolve, reject) => {
+        // @ts-ignore
 		require("get-pixels")(path, (err: any, pixels: IPixels) => {
 			if (err) {
 				reject(err);
@@ -105,7 +106,7 @@ main([new Point(341,283), new Point(650,280),new Point(646,498),new Point(350,50
 /**
  * VANAF 45°
  */
-function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
+export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
     var corners = [p1, p2, p3, p4]
     var sums = []
     var min = Number.POSITIVE_INFINITY;
@@ -148,7 +149,7 @@ function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
     return { "LeftUp": leftUpperCoordinate, "RightUp": rightUpperCoordinate, "RightUnder": rightUnderCoordinate, "LeftUnder": leftUnderCoordinate };
 }
 
-function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
+export function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
 	var labeledCorners = cornerLabeling(p1, p2, p3, p4);
 	var left = labeledCorners["LeftUp"];
 	var right = labeledCorners["RightUp"];
@@ -159,7 +160,7 @@ function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
 	return radians * (180/Math.PI);
 }
 
-function getAllCentroids(points: Point[]): {[key: string]: Point} {
+export function getAllCentroids(points: Point[]): {[key: string]: Point} {
     /**
      * Get the centroid (center point) of the 4 given corner points.
      * 
@@ -194,14 +195,14 @@ function getAllCentroids(points: Point[]): {[key: string]: Point} {
     return {"0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4};
 }
 
-function checkColor(centroid: Point, pixels: IPixels, key: string) {
+export function checkColor(centroid: Point, pixels: IPixels, key: string) {
     const RANGE = 3;
     const THRESHOLD = 18;
     for (var i = 0; i<colors.length; i++) {
         if (amountOfNeighboringPixelsWithColor(pixels, RANGE, centroid.x, centroid.y, pixels.shape[0], pixels.shape[1], colors[i], colorRange) > THRESHOLD) {
             const orientationNumber = parseInt(key) - i;
             if (orientationNumber == 1 || orientationNumber == -3) {
-                return("rotated to the right right at an angle of: ")
+                return("rotated to the right at an angle of: ")
             }
             if (orientationNumber == -2 || orientationNumber == 2) {
                 return("Upside down, at an angle of: ")
