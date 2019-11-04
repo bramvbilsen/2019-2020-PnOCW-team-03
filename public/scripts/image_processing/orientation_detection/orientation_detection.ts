@@ -2,7 +2,7 @@ import {Orientation} from "./orientations"
 
 /**
  * Initializing constants
- * 
+ *
  */
 
 const colorRange: IHSLRange = {
@@ -10,53 +10,41 @@ const colorRange: IHSLRange = {
     sRange: 60,
     lRange: 60
 };
-const leftUpperColor: IHSLColor = rgbToHsl(
-    255,
-    70,
-    180
-);
-const rightUpperColor: IHSLColor = rgbToHsl(
-    255,
-    216,
-    0
-);
-const rightUnderColor: IHSLColor = rgbToHsl(
-    12,
-    0,
-    255
-);
-const leftUnderColor: IHSLColor = rgbToHsl(
-    0,
-    255,
-    25
-);
-const colors = [leftUpperColor, rightUpperColor, rightUnderColor, leftUnderColor];
+const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180);
+const rightUpperColor: IHSLColor = rgbToHsl(255, 216, 0);
+const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255);
+const leftUnderColor: IHSLColor = rgbToHsl(0, 255, 25);
+const colors = [
+    leftUpperColor,
+    rightUpperColor,
+    rightUnderColor,
+    leftUnderColor
+];
 
 /**
  * Defining imported functions and interfaces
- * 
+ *
  */
 
 interface IPixels {
-	get: (x: number, y: number, colorChannel: number) => number;
-	shape: any[]
+    get: (x: number, y: number, colorChannel: number) => number;
+    shape: any[];
 }
 
 const getPixels = (path: string): Promise<IPixels> => {
-	return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         // @ts-ignore
-		require("get-pixels")(path, (err: any, pixels: IPixels) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(pixels);
-			}
-		});
-	});
+        require("get-pixels")(path, (err: any, pixels: IPixels) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(pixels);
+            }
+        });
+    });
 };
 
 class Point {
-
     x: number;
     y: number;
 
@@ -72,8 +60,6 @@ class Point {
     }
 }
 
-
-
 interface IRGBAColor {
     r: number;
     g: number;
@@ -87,13 +73,11 @@ interface IHSLRange {
     lRange: number;
 }
 
-
 interface IHSLColor {
     h: number;
     s: number;
     l: number;
 }
-
 
 function amountOfNeighboringPixelsWithColor(
     pixels: IPixels,
@@ -198,11 +182,7 @@ function amountOfNeighboringPixelsWithColor(
     return result;
 }
 
-function getHSLColorForPixel(
-    x: number,
-    y: number,
-    pixels: IPixels
-): IHSLColor {
+function getHSLColorForPixel(x: number, y: number, pixels: IPixels): IHSLColor {
     const rgba = getRGBAColorForPixel(x, y, pixels);
     return rgbToHsl(rgba.r, rgba.g, rgba.b);
 }
@@ -214,10 +194,10 @@ function getRGBAColorForPixel(
 ): IRGBAColor {
     //const i = y * (width * 4) + x * 4;
     return {
-        r:  pixels.get(x,y,0),
-        g:  pixels.get(x,y,1),
-        b:  pixels.get(x,y,2),
-        a:  pixels.get(x,y,3)
+        r: pixels.get(x, y, 0),
+        g: pixels.get(x, y, 1),
+        b: pixels.get(x, y, 2),
+        a: pixels.get(x, y, 3)
     };
 }
 
@@ -274,7 +254,7 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
  * 1) Get screen_centroid
  * 2) Get 4 centroids
  * 3) Get color for each centroid
- * 
+ *
  * @param points List of points representing the 4 corner-points to get the centroid for.
  */
 async function main(points: Point[], path: string): Promise<void> {
@@ -296,12 +276,15 @@ main([new Point(0,0), new Point(600,0),new Point(600,800),new Point(0,800)], "..
  * Label all the corners
  */
 export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
-    var corners = [p1, p2, p3, p4]
-    var sums = []
+    var corners = [p1, p2, p3, p4];
+    var sums = [];
     var min = Number.POSITIVE_INFINITY;
     var max = Number.NEGATIVE_INFINITY;
     var rightUnderIndex, leftUpperIndex;
-    var rightUpperCoordinate: Point, leftUnderCoordinate: Point, leftUpperCoordinate: Point, rightUnderCoordinate: Point;
+    var rightUpperCoordinate: Point,
+        leftUnderCoordinate: Point,
+        leftUpperCoordinate: Point,
+        rightUnderCoordinate: Point;
 
     sums[0] = p1.x + p1.y;
     sums[1] = p2.x + p2.y;
@@ -320,7 +303,6 @@ export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
             leftUpperIndex = i;
             leftUpperCoordinate = corners[i];
         }
-
     }
     // Remove those two
     corners.splice(rightUnderIndex, 1);
@@ -335,7 +317,12 @@ export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
         leftUnderCoordinate = corners[0];
     }
 
-    return { "LeftUp": leftUpperCoordinate, "RightUp": rightUpperCoordinate, "RightUnder": rightUnderCoordinate, "LeftUnder": leftUnderCoordinate };
+    return {
+        LeftUp: leftUpperCoordinate,
+        RightUp: rightUpperCoordinate,
+        RightUnder: rightUnderCoordinate,
+        LeftUnder: leftUnderCoordinate
+    };
 }
 
 export function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
@@ -352,7 +339,7 @@ export function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
 export function getAllCentroids(points: Point[]): {[key: string]: Point} {
     /**
      * Get the centroid (center point) of the 4 given corner points.
-     * 
+     *
      * @param points List of points representing the 4 corner-points to get the centroid for.
      */
     function getCentroidOf(points: Point[]): Point {
@@ -362,33 +349,84 @@ export function getAllCentroids(points: Point[]): {[key: string]: Point} {
             sumX += point.x;
             sumY += point.y;
         });
-        return new Point(Math.round(sumX / points.length), Math.round(sumY / points.length));
+        return new Point(
+            Math.round(sumX / points.length),
+            Math.round(sumY / points.length)
+        );
     }
 
-    const labeledCorners = cornerLabeling(points[0], points[1], points[2], points[3]);
+    const labeledCorners = cornerLabeling(
+        points[0],
+        points[1],
+        points[2],
+        points[3]
+    );
     const leftUpper = labeledCorners["LeftUp"];
     const rightUpper = labeledCorners["RightUp"];
     const leftUnder = labeledCorners["LeftUnder"];
     const rightUnder = labeledCorners["RightUnder"];
-    const upperMiddle = new Point((rightUpper.x + leftUpper.x) / 2, (rightUpper.y + leftUpper.y) / 2);
-    const lowerMiddle = new Point((rightUnder.x + leftUnder.x) / 2, (rightUnder.y + leftUnder.y) / 2);
-    const leftMiddle = new Point((leftUpper.x + leftUnder.x) / 2, (leftUpper.y + leftUnder.y) / 2);
-    const rightMiddle = new Point((rightUnder.x + rightUpper.x) / 2, (rightUnder.y + rightUpper.y) / 2);
+    const upperMiddle = new Point(
+        (rightUpper.x + leftUpper.x) / 2,
+        (rightUpper.y + leftUpper.y) / 2
+    );
+    const lowerMiddle = new Point(
+        (rightUnder.x + leftUnder.x) / 2,
+        (rightUnder.y + leftUnder.y) / 2
+    );
+    const leftMiddle = new Point(
+        (leftUpper.x + leftUnder.x) / 2,
+        (leftUpper.y + leftUnder.y) / 2
+    );
+    const rightMiddle = new Point(
+        (rightUnder.x + rightUpper.x) / 2,
+        (rightUnder.y + rightUpper.y) / 2
+    );
 
     const centroid = getCentroidOf(points);
-    const centroid1 = getCentroidOf([leftUpper, upperMiddle, leftMiddle, centroid]);
-    const centroid2 = getCentroidOf([upperMiddle, rightUpper, centroid, rightMiddle]);
-    const centroid3 = getCentroidOf([leftMiddle, centroid, leftUnder, lowerMiddle]);
-    const centroid4 = getCentroidOf([centroid, rightMiddle, lowerMiddle, rightUnder]);
+    const centroid1 = getCentroidOf([
+        leftUpper,
+        upperMiddle,
+        leftMiddle,
+        centroid
+    ]);
+    const centroid2 = getCentroidOf([
+        upperMiddle,
+        rightUpper,
+        centroid,
+        rightMiddle
+    ]);
+    const centroid3 = getCentroidOf([
+        leftMiddle,
+        centroid,
+        leftUnder,
+        lowerMiddle
+    ]);
+    const centroid4 = getCentroidOf([
+        centroid,
+        rightMiddle,
+        lowerMiddle,
+        rightUnder
+    ]);
 
-    return {"0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4};
+    return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };
 }
 
 function checkColor(centroid: Point, pixels: IPixels, key: string) {
     const RANGE = 3;
     const THRESHOLD = 18;
-    for (var i = 0; i<colors.length; i++) {
-        if (amountOfNeighboringPixelsWithColor(pixels, RANGE, centroid.x, centroid.y, pixels.shape[0], pixels.shape[1], colors[i], colorRange) > THRESHOLD) {
+    for (var i = 0; i < colors.length; i++) {
+        if (
+            amountOfNeighboringPixelsWithColor(
+                pixels,
+                RANGE,
+                centroid.x,
+                centroid.y,
+                pixels.shape[0],
+                pixels.shape[1],
+                colors[i],
+                colorRange
+            ) > THRESHOLD
+        ) {
             const orientationNumber = parseInt(key) - i;
             if (orientationNumber == 1 || orientationNumber == -3) {
                 //return("rotated to the right right at an angle of: ")
@@ -460,4 +498,3 @@ function getOrientation(centroids: {[key: string]: Point;}, pixels: IPixels): Or
     return Orientation.NONE
  
 }
-
