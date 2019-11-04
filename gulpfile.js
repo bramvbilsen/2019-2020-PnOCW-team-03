@@ -1,4 +1,4 @@
-const WAITING_TIME_MS = 10000;
+const WAITING_TIME_MS = 20000;
 
 const gulp = require("gulp");
 const browserify = require("browserify");

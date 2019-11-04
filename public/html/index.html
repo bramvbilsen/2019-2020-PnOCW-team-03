@@ -30,6 +30,7 @@
                 crossorigin="anonymous"
             ></script>
             <script src="../bundle.js"></script>
+            <script src="../frontTest.js"></script>
         </div>
         <div id="master" style="display:none;">
             <div id="desktop">
@@ -39,6 +40,7 @@
             </div>
             <div class="rest" id="rest">
                 <div class="mobile">
+                    <!---
                     <button
                         class="mobileCaptureButton"
                         id="mobileCapture"
@@ -46,13 +48,33 @@
                     >
                         <span>Mobile Upload</span>
                     </button>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        id="file-input"
-                        hidden=""
-                    />
-                    <script>
+                    --->
+                    <input class="mobileCaptureButton"
+                           type="file"
+                           accept="image/*"
+                           id="mobileCaptureButton"
+                           hidden=""
+                    ><span>Mobile Upload</span>
+                    <!---<script type="javascript">
+                        function processMobileImgUpload(){
+                            console.log('i got in')
+                            var img = document.querySelector('img');
+                            var file = document.querySelector('input[type=blob]');
+                            var reader = new FileReader();
+                            file instanceof Blob;
+                            reader.addEventListener("load", function () {
+                                img.src = reader.result as string;
+                            }, false);
+
+                            if(file){
+                                // @ts-ignore
+                                img = reader.readAsDataURL(file);
+                            }
+                        }
+                    </script>
+                    ---->
+                </div>
+                    <!---<script>
                         document
                             .getElementById("mobileCapture")
                             .addEventListener("click", openDialog);
@@ -60,7 +82,8 @@
                             document.getElementById("file-input").click();
                         }
                     </script>
-                </div>
+                    --->
+
 
                 <button
                     class="captureButton"
