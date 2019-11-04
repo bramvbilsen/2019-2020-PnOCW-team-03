@@ -11,6 +11,7 @@ class Client {
 	private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
 	private _socket: SocketIOClient.Socket;
 	public onConnectionTypeChange: (connectionType: ConnectionType) => void;
+	public DEBUG: boolean = false;
 	/**
 	 * Color that the user wants to display on the slave.
 	 * Only applicable for masters.

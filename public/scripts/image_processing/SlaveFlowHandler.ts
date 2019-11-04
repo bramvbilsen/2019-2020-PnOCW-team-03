@@ -25,6 +25,21 @@ export default class SlaveFlowHandler {
         this.step = WorkflowStep.START;
     }
 
+    public reset() {
+      $("#capture").css("display", "none");
+      $("#next-slave").css("display", "none");
+      $("#start").css("display", "inherit");
+      const color = {...client.color};
+      client.color = { r: 255, g: 255, b: 255, a: 255 };
+      if (this.prevSlaveID) {
+          client.showColorOnSlave(this.prevSlaveID);
+      }
+      if (this.currSlaveID) {
+          client.showColorOnSlave(this.currSlaveID);
+      }
+      client.color = color;
+    }
+
     private initialize() {
         const startButton: JQuery<HTMLButtonElement> = $("#start");
         startButton.css("display", "none");
@@ -111,7 +126,7 @@ export default class SlaveFlowHandler {
             this.blancoCanvas,
             coloredCanvas,
             client.color,
-            true
+            client.DEBUG
         );
         const ctx = canvas[0].getContext("2d");
         ctx.drawImage(this.blancoCanvas, 0, 0);
