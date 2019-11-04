@@ -38,6 +38,10 @@ export default class SlaveFlowHandler {
             client.showColorOnSlave(this.currSlaveID);
         }
         client.color = color;
+        this.resetDebug();
+    }
+
+    private resetDebug() {
         //@ts-ignore
         window.currentStep = 0;
     }
@@ -130,6 +134,7 @@ export default class SlaveFlowHandler {
             client.color,
             client.DEBUG
         );
+        this.resetDebug();
         const ctx = canvas[0].getContext("2d");
         ctx.drawImage(this.blancoCanvas, 0, 0);
         ctx.fillStyle = "rgb(0, 255, 255)";
