@@ -7,7 +7,8 @@ export default function masterCamera() {
     const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
     const context = canvas[0].getContext("2d");
     const constraints = {
-        video: true
+        video: true,
+	facingMode: {exact: "environment"}
     };
 
     mobileCaptureButton.click(() => {
