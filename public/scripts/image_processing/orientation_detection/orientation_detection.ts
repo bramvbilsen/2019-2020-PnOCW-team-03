@@ -1,3 +1,5 @@
+import {Orientation} from "./orientations"
+
 /**
  * Initializing constants
  * 
@@ -280,11 +282,12 @@ async function main(points: Point[], path: string): Promise<void> {
     console.log(centroids);
     const angle = getAngle(points[0], points[1], points[2], points[3]);
     var pixels = await getPixels(path);
-    getOrientation(centroids, pixels, angle);
-
+    var result = getOrientation(centroids, pixels);
+    console.log(angle)
+    console.log(result)
 }
 
-main([new Point(341,283), new Point(650,280),new Point(646,498),new Point(350,506)], "../../../img/test2.png")
+main([new Point(0,0), new Point(600,0),new Point(600,800),new Point(0,800)], "../../../img/90clockwise.png")
 
 
 
@@ -292,7 +295,7 @@ main([new Point(341,283), new Point(650,280),new Point(646,498),new Point(350,50
 /**
  * Label all the corners
  */
-function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
+export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
     var corners = [p1, p2, p3, p4]
     var sums = []
     var min = Number.POSITIVE_INFINITY;
@@ -335,7 +338,7 @@ function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
     return { "LeftUp": leftUpperCoordinate, "RightUp": rightUpperCoordinate, "RightUnder": rightUnderCoordinate, "LeftUnder": leftUnderCoordinate };
 }
 
-function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
+export function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
 	var labeledCorners = cornerLabeling(p1, p2, p3, p4);
 	var left = labeledCorners["LeftUp"];
 	var right = labeledCorners["RightUp"];
@@ -346,7 +349,7 @@ function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
 	return radians * (180/Math.PI);
 }
 
-function getAllCentroids(points: Point[]): {[key: string]: Point} {
+export function getAllCentroids(points: Point[]): {[key: string]: Point} {
     /**
      * Get the centroid (center point) of the 4 given corner points.
      * 
@@ -388,32 +391,73 @@ function checkColor(centroid: Point, pixels: IPixels, key: string) {
         if (amountOfNeighboringPixelsWithColor(pixels, RANGE, centroid.x, centroid.y, pixels.shape[0], pixels.shape[1], colors[i], colorRange) > THRESHOLD) {
             const orientationNumber = parseInt(key) - i;
             if (orientationNumber == 1 || orientationNumber == -3) {
-                return("rotated to the right right at an angle of: ")
+                //return("rotated to the right right at an angle of: ")
+                return Orientation.CLOCKWISE;
             }
             if (orientationNumber == -2 || orientationNumber == 2) {
-                return("Upside down, at an angle of: ")
+                //return("Upside down, at an angle of: ")
+                return Orientation.FLIPPED;
             }
             if (orientationNumber == 0 ) {
-                return("Standard orientation at an angle of: ")
+                //return("Standard orientation at an angle of: ")
+                return Orientation.NORMAL
             }
             if (orientationNumber == -1 || orientationNumber == 3) {
-                return("rotated to the left at an angle of: ")
+                //return("rotated to the left at an angle of: ")
+                return Orientation.COUNTERCLOCKWISE;
             }
         }
     }
-    return("no orientation detected")
+    return Orientation.NONE;
 
     
 }
 
-function getOrientation(centroids: {[key: string]: Point;}, pixels: IPixels, angle: number) {
+function getOrientation(centroids: {[key: string]: Point;}, pixels: IPixels): Orientation {
     var centroid: Point;
+    var orientations = [];
+    orientations[0] = 0;
+    orientations[1] = 0;
+    orientations[2] = 0;
+    orientations[3] = 0;
+    var ORIENTATION: Enumerator;
+    var MAXINDEX: number;
     for (var key in centroids) {
         centroid = centroids[key];
-        console.log(checkColor(centroid, pixels, key), angle, " degrees");
+        //console.log(checkColor(centroid, pixels, key), " degrees");
         //console.log(key)
         // your code here...
-        
+        switch (checkColor(centroid, pixels, key)) {
+            case Orientation.NORMAL:
+                orientations[0] += 1;
+            case Orientation.CLOCKWISE:
+                orientations[1] += 1;
+            case Orientation.COUNTERCLOCKWISE:
+                orientations[2] += 1; 
+            case Orientation.NORMAL:
+                orientations[3] += 1;       
+        }
     }
+    
+    var MAX = 0;
+    for (var i = 0; i < orientations.length; i++) {
+        if (orientations[i] > MAX) {
+            MAX = orientations[i];
+            MAXINDEX = i;
+        }
+    }
+    switch (MAXINDEX) {
+        case 0:
+            return Orientation.NORMAL
+        case 1:
+            return Orientation.CLOCKWISE
+        case 2:
+            return Orientation.COUNTERCLOCKWISE
+        case 3:
+            return Orientation.FLIPPED    
+    }
+    
+    return Orientation.NONE
+ 
 }
 

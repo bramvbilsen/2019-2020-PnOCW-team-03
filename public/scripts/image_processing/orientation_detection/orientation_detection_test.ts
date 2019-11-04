@@ -5,8 +5,8 @@ const POINTS = [new Point(341,283), new Point(650,280),new Point(646,498),new Po
 
 
 function runAllTests() {
-	labelingTest1(cornerLabeling, new Point(0,0), new Point(2,2), new Point(2,0), new Point(0,2));
-	/*labelingTest2(cornerLabeling, [80,120], [120,80], [120, 120], [80,80]);
+	/*labelingTest1(cornerLabeling, new Point(0,0), new Point(2,2), new Point(2,0), new Point(0,2));
+	labelingTest2(cornerLabeling, [80,120], [120,80], [120, 120], [80,80]);
 	labelingTest3(cornerLabeling, [5,7], [7,2], [12,5], [10,9]);
 
 	angleSpeedTest(getAngle, [0,0], [2,2], [2,0], [0,2]);
