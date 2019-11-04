@@ -12,9 +12,9 @@ interface IHSLRange {
 }
 
 const similarPinkRange: IHSLRange = {
-    hRange: 30,
-    sRange: 30,
-    lRange: 30
+    hRange: 50,
+    sRange: 50,
+    lRange: 50
 };
 
 const randomColorRange: IHSLRange = {

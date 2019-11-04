@@ -109,7 +109,8 @@ export default class SlaveFlowHandler {
         const corners = await findScreen(
             this.blancoCanvas,
             coloredCanvas,
-            client.color
+            client.color,
+	    true
         );
         const ctx = canvas[0].getContext("2d");
         ctx.drawImage(this.blancoCanvas, 0, 0);
