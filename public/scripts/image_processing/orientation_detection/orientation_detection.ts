@@ -97,7 +97,7 @@ async function main(points: Point[], path: string): Promise<void> {
 
 }
 
-main([new Point(341,283), new Point(650,280),new Point(646,498),new Point(350,506)], "test2.png")
+main([new Point(341,283), new Point(650,280),new Point(646,498),new Point(350,506)], "../../../img/test2.png")
 
 
 
