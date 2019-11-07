@@ -10,8 +10,8 @@ export default class SlaveScreen {
     }
 
     get centroid(): Point {
-        var sumX = 0;
-        var sumY = 0;
+        let sumX = 0;
+        let sumY = 0;
         this.corners.forEach(point => {
             sumX += point.x;
             sumY += point.y;
