@@ -162,7 +162,6 @@ class Client {
             );
             return;
         }
-        const { a, ...color } = this.color;
         // TODO:  colors are not necessary any more.
         this._socket.emit(MasterEventTypes.DisplaySlaveOrientationColors, {
             slaveId,
@@ -225,10 +224,11 @@ class Client {
         leftBottom: { r: string; g: string; b: string };
         rightBottom: { r: string; g: string; b: string };
     }): void => {
+        console.log("Displaying orientation colors");
         const orientationElem: JQuery<HTMLDivElement> = $(
             "#orientation-colors"
         );
-        orientationElem.css("display", "inherit");
+        orientationElem.toggle();
     };
 
     private displayArrowUp = (): void => {
