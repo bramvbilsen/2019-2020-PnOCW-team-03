@@ -2,6 +2,7 @@ import { client } from "../../index";
 import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor } from "./camera_util";
+import getOrientationAngle from "./orientation_detection/orientation_detection";
 
 export enum WorkflowStep {
     START = "initialize",
@@ -26,8 +27,10 @@ export default class SlaveFlowHandler {
     }
 
     public reset() {
-        $("#capture").css("display", "none");
+        $("#capture").css("capture-slave", "none");
         $("#next-slave").css("display", "none");
+        $("#show-orientation-button").css("display", "none");
+        $("#capture-orientation").css("display", "none");
         $("#start").css("display", "inherit");
         const color = { ...client.color };
         client.color = { r: 255, g: 255, b: 255, a: 255 };
@@ -44,6 +47,11 @@ export default class SlaveFlowHandler {
     private resetDebug() {
         //@ts-ignore
         window.currentStep = 0;
+    }
+
+    private endSlaveCycle() {
+        this.prevSlaveID = this.currSlaveID;
+        this.currSlaveID = this.slaveIDs.pop();
     }
 
     private initialize() {
@@ -145,7 +153,42 @@ export default class SlaveFlowHandler {
             ctx.closePath();
         });
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
-        this.prevSlaveID = this.currSlaveID;
-        this.currSlaveID = this.slaveIDs.pop();
+    }
+
+    showOrientationOnSlave() {
+        client.showOrientationColorsOnSlave(this.currSlaveID);
+        this.endSlaveCycle();
+    }
+
+    takePictureOfSlaveOrientation() {
+        const player: JQuery<HTMLVideoElement> = $("#player");
+        const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
+        const cameraWidth = player[0].videoWidth,
+            cameraHeight = player[0].videoHeight;
+        const scale = calculateCameraCanvasScaleFactor(
+            cameraWidth,
+            cameraHeight,
+            canvas[0].width,
+            canvas[0].height
+        );
+        const orientationCanvas = createCanvas(
+            canvas[0].width,
+            canvas[0].height
+        );
+        orientationCanvas
+            .getContext("2d")
+            .drawImage(
+                player[0],
+                0,
+                0,
+                cameraWidth * scale,
+                cameraHeight * scale
+            );
+        const currScreen = this.screens[this.screens.length - 1];
+        currScreen.orientation = getOrientationAngle(
+            currScreen,
+            orientationCanvas
+        );
+        console.log(currScreen.orientation);
     }
 }

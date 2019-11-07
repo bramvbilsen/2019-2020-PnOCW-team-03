@@ -13,17 +13,21 @@ export const slaveFlowHandler = new SlaveFlowHandler();
 //@ts-ignore
 window.client = client;
 //@ts-ignore
-window.slaveFlowHandler = slaveFlowHandler
+window.slaveFlowHandler = slaveFlowHandler;
 //@ts-ignore
 window.findScreen = findScreen;
 
 $(() => {
     const startButton = $("#start");
     const nextSlaveButton = $("#next-slave");
-    const captureButton = $("#capture");
+    const captureSlaveButton = $("#capture-slave");
+    const showOrientationButton = $("#show-orientation-button");
+    const captureOrientationButton = $("#capture-orientation");
     const resetButton = $("#reset");
     nextSlaveButton.toggle();
-    captureButton.toggle();
+    captureSlaveButton.toggle();
+    showOrientationButton.toggle();
+    captureOrientationButton.toggle();
     startButton.off().on("click", () => {
         slaveFlowHandler.takeNoColorPicture();
         nextSlaveButton.toggle();
@@ -31,12 +35,22 @@ $(() => {
     nextSlaveButton.off().on("click", () => {
         slaveFlowHandler.showColorOnNextSlave();
         nextSlaveButton.toggle();
-        captureButton.toggle();
+        captureSlaveButton.toggle();
     });
-    captureButton.off().on("click", async () => {
+    captureSlaveButton.off().on("click", async () => {
         await slaveFlowHandler.takePictureOfColoredScreen();
+        captureSlaveButton.toggle();
+        showOrientationButton.toggle();
+    });
+    showOrientationButton.off().on("click", () => {
+        slaveFlowHandler.showOrientationOnSlave();
+        showOrientationButton.toggle();
+        captureOrientationButton.toggle();
+    });
+    captureOrientationButton.off().on("click", () => {
+        slaveFlowHandler.takePictureOfSlaveOrientation();
+        captureOrientationButton.toggle();
         nextSlaveButton.toggle();
-        captureButton.toggle();
     });
     resetButton.off().on("click", () => {
         slaveFlowHandler.reset();
@@ -76,7 +90,6 @@ function onConnectionTypeChange(type: ConnectionType) {
     } else {
         $("#loading").css("display", "none");
         $("#slave").css("display", "inherit");
-        $("#slave").append($("<div style='background-color: white'>Slave</div>"));
     }
     $("#master").css("background-color", "white");
     $("#slave").css("background-color", "white");

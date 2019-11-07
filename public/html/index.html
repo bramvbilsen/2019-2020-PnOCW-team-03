@@ -74,7 +74,7 @@
                     </script>
                     ---->
                 </div>
-                    <!---<script>
+                <!---<script>
                         document
                             .getElementById("mobileCapture")
                             .addEventListener("click", openDialog);
@@ -83,7 +83,6 @@
                         }
                     </script>
                     --->
-
 
                 <button
                     class="captureButton"
@@ -101,17 +100,24 @@
                 </button>
                 <button
                     class="captureButton"
-                    id="capture"
+                    id="capture-slave"
                     style="vertical-align:middle"
                 >
                     <span>Capture</span>
                 </button>
                 <button
-                    class="uploadButton"
-                    id="upload"
+                    class="captureButton"
+                    id="show-orientation-button"
                     style="vertical-align:middle"
                 >
-                    <span>Upload </span>
+                    <span>Show orientation colors</span>
+                </button>
+                <button
+                    class="captureButton"
+                    id="capture-orientation"
+                    style="vertical-align:middle"
+                >
+                    <span>Capture</span>
                 </button>
                 /*colors*/
                 <button
@@ -157,7 +163,18 @@
                 ></canvas>
             </div>
         </div>
-        <div id="slave" style="display:none;"></div>
+        <div id="slave" style="display:none;">
+            <div id="orientation-colors" style="display: none;">
+                <div style="display: flex; flex-direction: column;">
+                    <div style="flex: 1; color: rgb(255, 70, 180);"></div>
+                    <div style="flex: 1; color: rgb(255, 216, 0);"></div>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <div style="flex: 1; color: rgb(0, 255, 25);"></div>
+                    <div style="flex: 1; color: rgb(12, 0, 255);"></div>
+                </div>
+            </div>
+        </div>
         <div id="loading">
             <div class="spinner-grow text-info" role="status">
                 <span class="sr-only">Loading...</span>

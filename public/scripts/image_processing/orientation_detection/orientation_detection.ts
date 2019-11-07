@@ -1,4 +1,5 @@
-import {Orientation} from "./orientations"
+import { Orientation } from "./orientations";
+import SlaveScreen from "../../util/SlaveScreen";
 
 /**
  * Initializing constants
@@ -80,7 +81,7 @@ interface IHSLColor {
 }
 
 function amountOfNeighboringPixelsWithColor(
-    pixels: IPixels,
+    pixels: Uint8ClampedArray,
     searchRange: number,
     x: number,
     y: number,
@@ -97,7 +98,7 @@ function amountOfNeighboringPixelsWithColor(
         if (
             x >= range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x - range, y, pixels),
+                getHSLColorForPixel(x - range, y, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -107,7 +108,7 @@ function amountOfNeighboringPixelsWithColor(
         if (
             y >= range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x, y - range, pixels),
+                getHSLColorForPixel(x, y - range, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -117,7 +118,7 @@ function amountOfNeighboringPixelsWithColor(
         if (
             x < width - range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x + range, y, pixels),
+                getHSLColorForPixel(x + range, y, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -127,7 +128,7 @@ function amountOfNeighboringPixelsWithColor(
         if (
             y < height - range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x, y + range, pixels),
+                getHSLColorForPixel(x, y + range, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -138,7 +139,7 @@ function amountOfNeighboringPixelsWithColor(
             x >= range &&
             y >= range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x - range, y - range, pixels),
+                getHSLColorForPixel(x - range, y - range, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -149,7 +150,7 @@ function amountOfNeighboringPixelsWithColor(
             x < width - range &&
             y >= range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x + range, y - range, pixels),
+                getHSLColorForPixel(x + range, y - range, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -160,7 +161,7 @@ function amountOfNeighboringPixelsWithColor(
             x >= range &&
             y < height - range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x - range, y + range, pixels),
+                getHSLColorForPixel(x - range, y + range, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -171,7 +172,7 @@ function amountOfNeighboringPixelsWithColor(
             x < width - range &&
             y < height - range &&
             isSimilarHSLColor(
-                getHSLColorForPixel(x + range, y + range, pixels),
+                getHSLColorForPixel(x + range, y + range, width, pixels),
                 hslColor,
                 colorRange
             )
@@ -182,22 +183,28 @@ function amountOfNeighboringPixelsWithColor(
     return result;
 }
 
-function getHSLColorForPixel(x: number, y: number, pixels: IPixels): IHSLColor {
-    const rgba = getRGBAColorForPixel(x, y, pixels);
+function getHSLColorForPixel(
+    x: number,
+    y: number,
+    width: number,
+    pixels: Uint8ClampedArray
+): IHSLColor {
+    const rgba = getRGBAColorForPixel(x, y, width, pixels);
     return rgbToHsl(rgba.r, rgba.g, rgba.b);
 }
 
 function getRGBAColorForPixel(
     x: number,
     y: number,
-    pixels: IPixels
+    width: number,
+    pixels: Uint8ClampedArray
 ): IRGBAColor {
-    //const i = y * (width * 4) + x * 4;
+    const i = y * (width * 4) + x * 4;
     return {
-        r: pixels.get(x, y, 0),
-        g: pixels.get(x, y, 1),
-        b: pixels.get(x, y, 2),
-        a: pixels.get(x, y, 3)
+        r: pixels[i],
+        g: pixels[i + 1],
+        b: pixels[i + 2],
+        a: pixels[i + 3]
     };
 }
 
@@ -257,20 +264,38 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
  *
  * @param points List of points representing the 4 corner-points to get the centroid for.
  */
-async function main(points: Point[], path: string): Promise<void> {
-    const centroids = getAllCentroids(points);
+export default function getOrientationAngle(
+    screen: SlaveScreen,
+    canvas: HTMLCanvasElement
+): number {
+    const points = screen.corners;
+    const centroids = getAllCentroids(screen);
     console.log(centroids);
     const angle = getAngle(points[0], points[1], points[2], points[3]);
-    var pixels = await getPixels(path);
-    var result = getOrientation(centroids, pixels);
-    console.log(angle)
-    console.log(result)
+    const orientation = getOrientation(centroids, canvas);
+    console.log(angle);
+
+    switch (orientation) {
+        case Orientation.NORMAL:
+            return angle > 0 ? angle : 360 - angle;
+        case Orientation.CLOCKWISE:
+            return 90 + angle;
+        case Orientation.FLIPPED:
+            return 180 + angle;
+        case Orientation.COUNTERCLOCKWISE:
+            return 270 + angle;
+    }
 }
 
-main([new Point(0,0), new Point(600,0),new Point(600,800),new Point(0,800)], "../../../img/90clockwise.png")
-
-
-
+// main(
+//     [
+//         new Point(0, 0),
+//         new Point(600, 0),
+//         new Point(600, 800),
+//         new Point(0, 800)
+//     ],
+//     "../../../img/90clockwise.png"
+// );
 
 /**
  * Label all the corners
@@ -326,17 +351,18 @@ export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
 }
 
 export function getAngle(p1: Point, p2: Point, p3: Point, p4: Point) {
-	var labeledCorners = cornerLabeling(p1, p2, p3, p4);
-	var left = labeledCorners["LeftUp"];
-	var right = labeledCorners["RightUp"];
-	var origin = left;
-	var vector1 = new Point(right.x-origin.x,left.y-origin.y);
-	var vector2 = new Point (right.x-origin.x, right.y-origin.y);
-	var radians = Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x);
-	return radians * (180/Math.PI);
+    var labeledCorners = cornerLabeling(p1, p2, p3, p4);
+    var left = labeledCorners["LeftUp"];
+    var right = labeledCorners["RightUp"];
+    var origin = left;
+    var vector1 = new Point(right.x - origin.x, left.y - origin.y);
+    var vector2 = new Point(right.x - origin.x, right.y - origin.y);
+    var radians =
+        Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x);
+    return radians * (180 / Math.PI);
 }
 
-export function getAllCentroids(points: Point[]): {[key: string]: Point} {
+export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
     /**
      * Get the centroid (center point) of the 4 given corner points.
      *
@@ -354,6 +380,8 @@ export function getAllCentroids(points: Point[]): {[key: string]: Point} {
             Math.round(sumY / points.length)
         );
     }
+
+    const points = screen.corners;
 
     const labeledCorners = cornerLabeling(
         points[0],
@@ -411,18 +439,32 @@ export function getAllCentroids(points: Point[]): {[key: string]: Point} {
     return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };
 }
 
-function checkColor(centroid: Point, pixels: IPixels, key: string) {
+function checkColorOrientation(
+    centroid: Point,
+    canvas: HTMLCanvasElement,
+    key: string
+) {
     const RANGE = 3;
     const THRESHOLD = 18;
-    for (var i = 0; i < colors.length; i++) {
+
+    const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
+    const nonColoredScreenPixelData = ctx.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+    const pixels = nonColoredScreenPixelData.data;
+
+    for (let i = 0; i < colors.length; i++) {
         if (
             amountOfNeighboringPixelsWithColor(
                 pixels,
                 RANGE,
                 centroid.x,
                 centroid.y,
-                pixels.shape[0],
-                pixels.shape[1],
+                canvas.width,
+                canvas.height,
                 colors[i],
                 colorRange
             ) > THRESHOLD
@@ -436,9 +478,9 @@ function checkColor(centroid: Point, pixels: IPixels, key: string) {
                 //return("Upside down, at an angle of: ")
                 return Orientation.FLIPPED;
             }
-            if (orientationNumber == 0 ) {
+            if (orientationNumber == 0) {
                 //return("Standard orientation at an angle of: ")
-                return Orientation.NORMAL
+                return Orientation.NORMAL;
             }
             if (orientationNumber == -1 || orientationNumber == 3) {
                 //return("rotated to the left at an angle of: ")
@@ -447,38 +489,35 @@ function checkColor(centroid: Point, pixels: IPixels, key: string) {
         }
     }
     return Orientation.NONE;
-
-    
 }
 
-function getOrientation(centroids: {[key: string]: Point;}, pixels: IPixels): Orientation {
-    var centroid: Point;
-    var orientations = [];
+function getOrientation(
+    centroids: { [key: string]: Point },
+    canvas: HTMLCanvasElement
+): Orientation {
+    let centroid: Point;
+    const orientations = [];
     orientations[0] = 0;
     orientations[1] = 0;
     orientations[2] = 0;
     orientations[3] = 0;
-    var ORIENTATION: Enumerator;
-    var MAXINDEX: number;
-    for (var key in centroids) {
+    let MAXINDEX: number;
+    for (let key in centroids) {
         centroid = centroids[key];
-        //console.log(checkColor(centroid, pixels, key), " degrees");
-        //console.log(key)
-        // your code here...
-        switch (checkColor(centroid, pixels, key)) {
+        switch (checkColorOrientation(centroid, canvas, key)) {
             case Orientation.NORMAL:
                 orientations[0] += 1;
             case Orientation.CLOCKWISE:
                 orientations[1] += 1;
             case Orientation.COUNTERCLOCKWISE:
-                orientations[2] += 1; 
+                orientations[2] += 1;
             case Orientation.NORMAL:
-                orientations[3] += 1;       
+                orientations[3] += 1;
         }
     }
-    
-    var MAX = 0;
-    for (var i = 0; i < orientations.length; i++) {
+
+    let MAX = 0;
+    for (let i = 0; i < orientations.length; i++) {
         if (orientations[i] > MAX) {
             MAX = orientations[i];
             MAXINDEX = i;
@@ -486,15 +525,14 @@ function getOrientation(centroids: {[key: string]: Point;}, pixels: IPixels): Or
     }
     switch (MAXINDEX) {
         case 0:
-            return Orientation.NORMAL
+            return Orientation.NORMAL;
         case 1:
-            return Orientation.CLOCKWISE
+            return Orientation.CLOCKWISE;
         case 2:
-            return Orientation.COUNTERCLOCKWISE
+            return Orientation.COUNTERCLOCKWISE;
         case 3:
-            return Orientation.FLIPPED    
+            return Orientation.FLIPPED;
     }
-    
-    return Orientation.NONE
- 
+
+    return Orientation.NONE;
 }
