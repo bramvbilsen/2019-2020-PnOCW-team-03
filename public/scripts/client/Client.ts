@@ -211,8 +211,8 @@ class Client {
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
-        const page: JQuery<HTMLBodyElement> = $("#page");
-        page.css(
+        const slaveHTML: JQuery<HTMLBodyElement> = $("#slave");
+        slaveHTML.css(
             "background-color",
             `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
         );
