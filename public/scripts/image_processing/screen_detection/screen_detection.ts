@@ -293,6 +293,10 @@ export default async function findScreen(
     //     console.log("Final result displayed!");
     // }
 
+      if (DEBUG) {
+          $("#canvas").remove();
+      }
+
     const t1 = new Date();
     console.log(+t1 - +t0 + "ms");
 
