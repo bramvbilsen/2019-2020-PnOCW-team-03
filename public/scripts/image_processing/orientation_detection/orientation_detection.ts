@@ -22,29 +22,6 @@ const colors = [
     leftUnderColor
 ];
 
-/**
- * Defining imported functions and interfaces
- *
- */
-
-interface IPixels {
-    get: (x: number, y: number, colorChannel: number) => number;
-    shape: any[];
-}
-
-const getPixels = (path: string): Promise<IPixels> => {
-    return new Promise((resolve, reject) => {
-        // @ts-ignore
-        require("get-pixels")(path, (err: any, pixels: IPixels) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(pixels);
-            }
-        });
-    });
-};
-
 class Point {
     x: number;
     y: number;
