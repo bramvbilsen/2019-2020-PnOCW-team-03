@@ -1,5 +1,5 @@
-import Point from "./Point";
-import Line from "./Line";
+import Point from "../screen_detection/Point";
+import Line from "../screen_detection/Line";
 
 export default class Circle {
     m: Point;
