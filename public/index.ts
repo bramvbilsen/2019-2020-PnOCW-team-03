@@ -176,11 +176,14 @@ if (env.test) {
     $(() => {
         const testResultsDiv = $("#test-results");
         testResultsDiv.css("display", "inherit");
+        const t0 = new Date();
         run_tests((testName, result) => {
             testResultsDiv.append(`${testName}: ${result}<br/>`);
             $("#loading").css("display", "none");
         }).then(() => {
-            testResultsDiv.append("==========👌COMPLETED 👌==========");
+            testResultsDiv.append(
+                `==========👌 COMPLETED IN ${+new Date() - +t0}ms 👌==========`
+            );
         });
     });
 }

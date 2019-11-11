@@ -4,11 +4,18 @@ import findScreen, {
     createCanvas,
 } from "../../scripts/image_processing/screen_detection/screen_detection";
 
-export function correct<T>(isCorrect: boolean, result: T, expected: T) {
+export function correct<T>(
+    isCorrect: boolean,
+    result: T,
+    expected: T,
+    extra?: string
+) {
     if (isCorrect) {
-        return "Success ✅";
+        return `Success ✅${extra ? "\n" + extra : ""}`;
     } else {
-        return `Error ❌: \n    Expected: ${expected}\n    But got: ${result}`;
+        return `Error ❌: \n    Expected: ${expected}\n    But got: ${result}${
+            extra ? "\n" + extra : ""
+        }`;
     }
 }
 
