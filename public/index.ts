@@ -3,6 +3,8 @@ import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
+import run_tests from "./tests/screen_detection_test";
+import env from "./env/env";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange
@@ -131,4 +133,6 @@ function getDifferenceWithServer() {
     var localSeconds = new Date().getSeconds();
     
     return localSeconds - serverSeconds;
+if (env.test) {
+    // run_tests();
 }
