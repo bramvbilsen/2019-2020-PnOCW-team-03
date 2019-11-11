@@ -3,6 +3,8 @@ import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
+import run_tests from "./tests/screen_detection_test";
+import env from "./env/env";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange
@@ -93,4 +95,44 @@ function onConnectionTypeChange(type: ConnectionType) {
     }
     $("#master").css("background-color", "white");
     $("#slave").css("background-color", "white");
+}
+
+/* ------ SYNCHRONISATIE ------- */
+
+var xmlHttp: XMLHttpRequest;
+// src: https://www.codeproject.com/Questions/1231436/Get-current-server-time-in-javascript
+function srvTime(){
+    try {
+        //FF, Opera, Safari, Chrome
+        xmlHttp = new XMLHttpRequest();
+    }
+    catch (err1) {
+        //IE
+        try {
+            xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
+        }
+        catch (err2) {
+            try {
+                xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            catch (eerr3) {
+                //AJAX not supported, use CPU time.
+                alert("AJAX not supported");
+            }
+        }
+    }
+    xmlHttp.open('HEAD',window.location.href.toString(),false);
+    xmlHttp.setRequestHeader("Content-Type", "text/html");
+    xmlHttp.send('');
+    return xmlHttp.getResponseHeader("Date");
+}
+
+function getDifferenceWithServer() {
+    var st = srvTime();
+    var serverSeconds = new Date(st).getSeconds();
+    var localSeconds = new Date().getSeconds();
+    
+    return localSeconds - serverSeconds;
+if (env.test) {
+    // run_tests();
 }
