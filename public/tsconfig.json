@@ -1,13 +1,13 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"esModuleInterop": true,
-		"target": "es6",
-		"moduleResolution": "classic",
-		"sourceMap": true,
-		"outDir": "build",
-		"rootDir": "./",
-		"noImplicitAny": true
-	},
-	"lib": ["es2015"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "moduleResolution": "classic",
+        "sourceMap": true,
+        "outDir": "build",
+        "rootDir": "./",
+        "noImplicitAny": true
+    },
+    "lib": ["es2015", "webworker"]
 }

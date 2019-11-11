@@ -3,11 +3,11 @@ import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
-import run_tests from "./tests/screen_detection_test";
+import run_tests from "./tests/image_processing/screen_detection_test";
 import env from "./env/env";
 
 export const client = new Client({
-    onConnectionTypeChange: onConnectionTypeChange
+    onConnectionTypeChange: onConnectionTypeChange,
 });
 
 export const slaveFlowHandler = new SlaveFlowHandler();
@@ -95,6 +95,12 @@ function onConnectionTypeChange(type: ConnectionType) {
     }
     $("#master").css("background-color", "white");
     $("#slave").css("background-color", "white");
+
+    if (env.test) {
+        $("#slave").css("display", "none");
+        $("#master").css("display", "none");
+        $("#countdown").css("display", "none");
+    }
 }
 
 /* ------ SYNCHRONISATIE ------- */
@@ -114,7 +120,7 @@ function srvTime() {
                 xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
             } catch (eerr3) {
                 //AJAX not supported, use CPU time.
-                alert("AJAX not supported");
+                // alert("AJAX not supported");
             }
         }
     }
@@ -132,7 +138,7 @@ function getDifferenceWithServer() {
     return localSeconds - serverSeconds;
 }
 
-alert(getDifferenceWithServer() + " seconds difference with the server");
+// alert(getDifferenceWithServer() + " seconds difference with the server");
 
 /* ------- COUNTDOWN ------- */
 
@@ -141,36 +147,40 @@ var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
 
 // Update the count down every 1 second
 var x = setInterval(function() {
+    // Get today's date and time
+    var now = new Date().getTime();
 
-  // Get today's date and time
-  var now = new Date().getTime();
+    // Find the distance between now and the count down date
+    var distance = countDownDate - now;
 
-  // Find the distance between now and the count down date
-  var distance = countDownDate - now;
+    // Time calculations for days, hours, minutes and seconds
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-  // Time calculations for days, hours, minutes and seconds
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    // Display the result in the element with id="countdown"
+    document.getElementById("countdown").innerHTML =
+        days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
 
-  // Display the result in the element with id="countdown"
-  document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
-  + minutes + "m " + seconds + "s ";
-
-  // If the count down is finished, write some text
-  if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("countdown").innerHTML = "EXPIRED";
-  }
+    // If the count down is finished, write some text
+    if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown").innerHTML = "EXPIRED";
+    }
 }, 1000);
-
-
-
-
 
 if (env.test) {
     $(() => {
-        run_tests();
+        const testResultsDiv = $("#test-results");
+        testResultsDiv.css("display", "inherit");
+        run_tests((testName, result) => {
+            testResultsDiv.append(`${testName}: ${result}<br/>`);
+            $("#loading").css("display", "none");
+        }).then(() => {
+            testResultsDiv.append("==========👌COMPLETED 👌==========");
+        });
     });
 }
