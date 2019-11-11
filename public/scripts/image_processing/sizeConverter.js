@@ -69,16 +69,16 @@ function getPointsTranslatedToImage(width, height, screenWidth, screenHeight, li
     let deltaY = 0
     if (center) {
         if (xRatio > yRatio) {
-            deltaX = width - Math.floor(screenWidth * yRatio);
+            deltaX = width - screenWidth * yRatio;
         }
         if (yRatio > xRatio) {
-            deltaY = height - Math.floor(screenHeight * xRatio);
+            deltaY = height - screenHeight * xRatio;
         }
     }
 
     for (let i = 0; i < list.length; i++) {
         const point = list[i];
-        list[i] = new Point(point.x * ratio + deltaX, point.y * ratio + deltaY); // TODO: Math.floor() ?
+        list[i] = new Point(point.x * ratio + deltaX, point.y * ratio + deltaY);
     }
 
     return list;
