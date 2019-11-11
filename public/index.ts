@@ -131,8 +131,10 @@ function getDifferenceWithServer() {
 
     return localSeconds - serverSeconds;
 }
-<<<<<<< HEAD
 
+alert(getDifferenceWithServer() + " seconds difference with the server");
+
+/* ------- COUNTDOWN ------- */
 
 // Set the date we're counting down to
 var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
@@ -167,8 +169,6 @@ var x = setInterval(function() {
 
 
 
-=======
->>>>>>> b4edbfadcb65b4e3d2bd297723578a59d720724d
 if (env.test) {
     $(() => {
         run_tests();
