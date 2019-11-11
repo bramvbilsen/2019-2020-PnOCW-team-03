@@ -4,6 +4,7 @@ export default class SlaveScreen {
     corners: Point[];
     slaveID: string;
     orientation: number | undefined;
+    slavePortionImg: HTMLCanvasElement;
 
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;
