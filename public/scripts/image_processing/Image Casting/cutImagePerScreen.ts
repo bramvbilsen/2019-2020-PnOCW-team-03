@@ -10,8 +10,8 @@
  * @param {boolean} center - Whether or not to center the image.
  */
 
-export function cutImagePerScreen(Array:list, Blob: image){
-    let imagePieces = []
+// export function cutImagePerScreen(Array:list, Blob: image){
+//     let imagePieces = []
 
-    return
-}
+//     return
+// }
