@@ -434,5 +434,3 @@ MigrationBackup/
 
 *.DS_Store
 .vscode/settings.json
-
-gulpfile.js
