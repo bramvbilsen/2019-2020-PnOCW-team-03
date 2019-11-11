@@ -94,3 +94,41 @@ function onConnectionTypeChange(type: ConnectionType) {
     $("#master").css("background-color", "white");
     $("#slave").css("background-color", "white");
 }
+
+/* ------ SYNCHRONISATIE ------- */
+
+var xmlHttp: XMLHttpRequest;
+// src: https://www.codeproject.com/Questions/1231436/Get-current-server-time-in-javascript
+function srvTime(){
+    try {
+        //FF, Opera, Safari, Chrome
+        xmlHttp = new XMLHttpRequest();
+    }
+    catch (err1) {
+        //IE
+        try {
+            xmlHttp = new ActiveXObject('Msxml2.XMLHTTP');
+        }
+        catch (err2) {
+            try {
+                xmlHttp = new ActiveXObject('Microsoft.XMLHTTP');
+            }
+            catch (eerr3) {
+                //AJAX not supported, use CPU time.
+                alert("AJAX not supported");
+            }
+        }
+    }
+    xmlHttp.open('HEAD',window.location.href.toString(),false);
+    xmlHttp.setRequestHeader("Content-Type", "text/html");
+    xmlHttp.send('');
+    return xmlHttp.getResponseHeader("Date");
+}
+
+function getDifferenceWithServer() {
+    var st = srvTime();
+    var serverSeconds = new Date(st).getSeconds();
+    var localSeconds = new Date().getSeconds();
+    
+    return localSeconds - serverSeconds;
+}
