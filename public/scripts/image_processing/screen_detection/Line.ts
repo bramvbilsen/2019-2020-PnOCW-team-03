@@ -1,6 +1,6 @@
 import Point from "./Point";
 // import Circle from "../Triangulation/Circle";
-var gauss = require("gaussian-elimination");
+// var gauss = require("gaussian-elimination");
 
 export default class Line {
     a: Point;
