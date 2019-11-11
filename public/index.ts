@@ -98,5 +98,5 @@ function onConnectionTypeChange(type: ConnectionType) {
 }
 
 if (env.test) {
-    run_tests();
+    // run_tests();
 }
