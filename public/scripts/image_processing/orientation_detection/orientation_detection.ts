@@ -259,7 +259,7 @@ export default function getOrientationAngle(
             if (angle === 0) {
                 return 0;
             }
-            return angle > 0 ? angle : 360 - angle;
+            return angle > 0 ? angle : 360 + angle;
         case Orientation.CLOCKWISE:
             return 90 + angle;
         case Orientation.FLIPPED:
