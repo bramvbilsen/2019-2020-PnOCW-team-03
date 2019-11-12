@@ -162,14 +162,16 @@ CTO&CR1 sick at home.
 
 ###### -Code reviewer 1: helping with countdown
 
-###### -TC1&TC2: Writing testcases
+###### -TC1: Writing testcases
+
+###### -TC2: Working with CEO on perspective transformation
 CEO: 6hrs
 
 CTO: 4hrs
 
 TC1: 6hrs
 
-TC2: 4hrs
+TC2: 6hrs
 
 Code reviewer 1: 1hrs
 
