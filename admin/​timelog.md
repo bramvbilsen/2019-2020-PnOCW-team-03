@@ -145,3 +145,42 @@ TC2: 7hrs
 
 All: 4hrs
 
+##### 11/11:
+
+##### -CEO ...
+
+##### -CTO implementing timesynchronization for countdown
+
+##### -Code reviewer 1: helping with countdown
+
+CEO: 4hrs
+
+CTO: 4hrs
+
+TC1: 6hrs
+
+TC2: 4hrs
+
+Code reviewer 1: 1hrs
+
+Code reviewer 2: 2,5hrs
+
+##### 12/11:
+
+##### -CEO ... (met paint gespeeld :p)
+
+##### -CTO implementing timesynchronization for countdown
+
+##### -Code reviewer 1: writing paper
+
+CEO: 4hrs
+
+CTO: 4hrs
+
+TC1: 6hrs
+
+TC2: 4hrs
+
+Code reviewer 1: 3hrs
+
+Code reviewer 2: 4hrs
