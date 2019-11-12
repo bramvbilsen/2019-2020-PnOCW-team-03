@@ -1,4 +1,4 @@
-const WAITING_TIME_MS = 20000;
+const WAITING_TIME_MS = 30000;
 
 const gulp = require("gulp");
 const browserify = require("browserify");
@@ -23,7 +23,7 @@ const nonTsPaths_server = [
     "!./public/**/*",
     "!tsconfig*",
     "!./**/*.ts",
-    "!package-lock.json"
+    "!package-lock.json",
 ];
 
 gulp.task("Compile server", function(done) {
@@ -71,7 +71,7 @@ const nonTsPaths_client = [
     "!./public/build/**/*.*",
     "!./public/tsconfig*",
     "!./**/*.ts",
-    "!./public/package-lock.json"
+    "!./public/package-lock.json",
 ];
 
 gulp.task("Compile client", function() {
@@ -80,7 +80,7 @@ gulp.task("Compile client", function() {
         debug: true,
         entries: ["index.ts"],
         cache: {},
-        packageCache: {}
+        packageCache: {},
     })
         .plugin(tsify, require("./public/tsconfig.json").compilerOptions)
         .transform(babelify.configure({ extensions: [".ts", ".js"] }))
@@ -167,7 +167,7 @@ gulp.task("Open localhost", function(done) {
         nodemon({
             script: "./build/index.js",
             ext: "js",
-            done: done
+            done: done,
         });
         console.log(
             "Server running on network: " + internalIp.v4.sync() + ":3000"

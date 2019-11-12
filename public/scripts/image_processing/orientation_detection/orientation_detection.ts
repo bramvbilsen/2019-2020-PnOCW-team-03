@@ -9,7 +9,7 @@ import SlaveScreen from "../../util/SlaveScreen";
 const colorRange: IHSLRange = {
     hRange: 35,
     sRange: 60,
-    lRange: 60
+    lRange: 60,
 };
 const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180);
 const rightUpperColor: IHSLColor = rgbToHsl(255, 216, 0);
@@ -19,7 +19,7 @@ const colors = [
     leftUpperColor,
     rightUpperColor,
     rightUnderColor,
-    leftUnderColor
+    leftUnderColor,
 ];
 
 class Point {
@@ -181,7 +181,7 @@ function getRGBAColorForPixel(
         r: pixels[i],
         g: pixels[i + 1],
         b: pixels[i + 2],
-        a: pixels[i + 3]
+        a: pixels[i + 3],
     };
 }
 
@@ -240,21 +240,26 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
  * 3) Get color for each centroid
  *
  * @param points List of points representing the 4 corner-points to get the centroid for.
+ * @returns The orientation if the screen has corners. Otherwise `0`.
  */
 export default function getOrientationAngle(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
 ): number {
+    if (screen.corners.length === 0) {
+        return 0;
+    }
     const points = screen.corners;
     const centroids = getAllCentroids(screen);
-    console.log(centroids);
     const angle = getAngle(points[0], points[1], points[2], points[3]);
     const orientation = getOrientation(centroids, canvas);
-    console.log(angle);
-
+    console.log(orientation);
     switch (orientation) {
         case Orientation.NORMAL:
-            return angle > 0 ? angle : 360 - angle;
+            if (angle === 0) {
+                return 0;
+            }
+            return angle > 0 ? angle : 360 + angle;
         case Orientation.CLOCKWISE:
             return 90 + angle;
         case Orientation.FLIPPED:
@@ -323,7 +328,7 @@ export function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
         LeftUp: leftUpperCoordinate,
         RightUp: rightUpperCoordinate,
         RightUnder: rightUnderCoordinate,
-        LeftUnder: leftUnderCoordinate
+        LeftUnder: leftUnderCoordinate,
     };
 }
 
@@ -392,25 +397,25 @@ export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
         leftUpper,
         upperMiddle,
         leftMiddle,
-        centroid
+        centroid,
     ]);
     const centroid2 = getCentroidOf([
         upperMiddle,
         rightUpper,
         centroid,
-        rightMiddle
+        rightMiddle,
     ]);
     const centroid3 = getCentroidOf([
         leftMiddle,
         centroid,
         leftUnder,
-        lowerMiddle
+        lowerMiddle,
     ]);
     const centroid4 = getCentroidOf([
         centroid,
         rightMiddle,
         lowerMiddle,
-        rightUnder
+        rightUnder,
     ]);
 
     return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };

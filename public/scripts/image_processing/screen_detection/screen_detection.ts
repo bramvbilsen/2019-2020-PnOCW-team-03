@@ -14,13 +14,13 @@ interface IHSLRange {
 const similarPinkRange: IHSLRange = {
     hRange: 50,
     sRange: 50,
-    lRange: 50
+    lRange: 50,
 };
 
 const randomColorRange: IHSLRange = {
     hRange: 52,
     sRange: 52,
-    lRange: 52
+    lRange: 52,
 };
 
 //@ts-ignore
@@ -68,8 +68,9 @@ export default async function findScreen(
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
 
-    const jQueryBody: JQuery<HTMLBodyElement> = $("body");
-    jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
+    // TODO: Check if this is still used.
+    // const jQueryBody: JQuery<HTMLBodyElement> = $("body");
+    // jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
 
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
@@ -278,24 +279,9 @@ export default async function findScreen(
 
     const corners = findFinalCorners(possibleCornerConnections);
 
-    // if (DEBUG) {
-    //     const _canvas = createCanvas(width, height);
-    //     const _ctx = _canvas.getContext("2d");
-    //     _ctx.fillStyle = "rgb(0, 255, 255)";
-    //     corners.forEach(corner => {
-    //         _ctx.beginPath();
-    //         _ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-    //         _ctx.fill();
-    //         _ctx.closePath();
-    //     });
-    //     _canvas.id = "canvas";
-    //     $("#canvas")[0].replaceWith(_canvas);
-    //     console.log("Final result displayed!");
-    // }
-
-      if (DEBUG) {
-          $("#canvas").remove();
-      }
+    if (DEBUG) {
+        $("#canvas").remove();
+    }
 
     const t1 = new Date();
     console.log(+t1 - +t0 + "ms");
@@ -372,7 +358,7 @@ function getRGBAColorForPixel(
         r: pixels[i],
         g: pixels[i + 1],
         b: pixels[i + 2],
-        a: pixels[i + 3]
+        a: pixels[i + 3],
     };
 }
 
@@ -576,7 +562,7 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         firstCornerConnection.a,
         firstCornerConnection.b,
         secondCornerConnection.a,
-        secondCornerConnection.b
+        secondCornerConnection.b,
     ];
 }
 
