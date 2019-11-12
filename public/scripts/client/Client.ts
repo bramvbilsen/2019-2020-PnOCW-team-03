@@ -7,12 +7,14 @@ import {
 import { generateRandomColor } from "../util/colors";
 import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
+import Sync from "../util/Sync";
 
 class Client {
     private _type: ConnectionType;
     private _slaves: Array<string> = [];
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
+    private _sync: Sync;
     private _delayWithServer: number;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
@@ -30,12 +32,13 @@ class Client {
     constructor(args: {
         onConnectionTypeChange: (connectionType: ConnectionType) => void;
     }) {
-        console.log("new client!");
         this.onConnectionTypeChange = args.onConnectionTypeChange;
         this._socket = io.connect(env.baseUrl);
-        /* CONNECTION */
         this._socket.on("connected", () => console.log("Connected!"));
-        /* NOTIFY MASTER OF CONNECTION */
+
+        this._sync = new Sync(this._socket);
+        this._sync.init();
+
         this._socket.on(
             SharedEventTypes.NotifyOfTypeChange,
             (data: { type: ConnectionType }) => {
@@ -78,14 +81,20 @@ class Client {
             }
         );
         // Save the delay time with server
-        var xmlHttp: XMLHttpRequest;
-        var st = this.srvTime(xmlHttp);
-        var serverSeconds = new Date(st).getSeconds();
-        var localSeconds = new Date().getSeconds();
-        this._delayWithServer = localSeconds - serverSeconds;
-        console.log(
-            this._delayWithServer + " seconds difference with the server"
-        );
+        // let st = this.srvTime();
+        // var serverSeconds = new Date(st).getSeconds();
+        // var localSeconds = new Date().getSeconds();
+        // this._delayWithServer = localSeconds - serverSeconds;
+        // console.log(
+        //     this._delayWithServer + " seconds difference with the server"
+        // );
+    }
+
+    /**
+     * @returns Difference in time between server and client
+     */
+    get serverTimeDiff(): number {
+        return this._sync.timeDiff;
     }
 
     /**
@@ -278,7 +287,7 @@ class Client {
     private startCounterEvent = (msg: { startTime: number }): void => {
         console.log("STARTING COUNTER In FRONTEND");
         let { startTime } = msg;
-        startTime += this._delayWithServer;
+        startTime += this.serverTimeDiff;
         const eta_ms = startTime - Date.now();
         setTimeout(function() {
             const elevenseconds = 11000;
@@ -310,7 +319,8 @@ class Client {
         this._slaves = data.slaves;
     };
 
-    private srvTime = (xmlHttp: XMLHttpRequest) => {
+    private srvTime = () => {
+        let xmlHttp: XMLHttpRequest;
         try {
             //FF, Opera, Safari, Chrome
             xmlHttp = new XMLHttpRequest();

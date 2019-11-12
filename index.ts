@@ -5,7 +5,11 @@ import * as path from "path";
 import multer from "multer";
 import Connections from "./server/Connections";
 import handleImageUpload from "./server/handleImageUpload";
-import { MasterEventTypes, SlaveEventTypes } from "./types/SocketIOEvents";
+import {
+    MasterEventTypes,
+    SlaveEventTypes,
+    SharedEventTypes,
+} from "./types/SocketIOEvents";
 
 console.log("Starting server...");
 
@@ -46,6 +50,13 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on("disconnect", () => {
         connections.remove(socket);
+    });
+
+    socket.on(SharedEventTypes.TimeSyncClient, (data: { t0: number }) => {
+        socket.emit(SharedEventTypes.TimeSyncServer, {
+            t1: Date.now(),
+            t0: data.t0,
+        });
     });
 
     socket.on(
