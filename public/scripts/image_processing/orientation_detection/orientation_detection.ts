@@ -253,9 +253,12 @@ export default function getOrientationAngle(
     const centroids = getAllCentroids(screen);
     const angle = getAngle(points[0], points[1], points[2], points[3]);
     const orientation = getOrientation(centroids, canvas);
-
+    console.log(orientation);
     switch (orientation) {
         case Orientation.NORMAL:
+            if (angle === 0) {
+                return 0;
+            }
             return angle > 0 ? angle : 360 - angle;
         case Orientation.CLOCKWISE:
             return 90 + angle;
