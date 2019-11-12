@@ -14,6 +14,7 @@ class Client {
     private _slaves: Array<string> = [];
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
+    private _delayWithServer: Number;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
     /**
@@ -43,7 +44,7 @@ class Client {
                 this._slaves = [];
                 const socketIOEmittersForNewType: Array<
                     SocketIOClient.Emitter
-                > = [];
+                    > = [];
                 if (this.type === ConnectionType.SLAVE) {
                     socketIOEmittersForNewType.push(
                         this._socket.on(
@@ -61,6 +62,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.ChangeOrientationColors,
                             this.displayOrientationColors
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.SetCounterEvent,
+                            this.startCounterEvent
                         )
                     );
                 } else {
@@ -75,6 +80,14 @@ class Client {
                 this.onConnectionTypeChange(this.type);
             }
         );
+        // Save the delay time with server
+        var xmlHttp: XMLHttpRequest;
+        var st = this.srvTime(xmlHttp);
+        var serverSeconds = new Date(st).getSeconds();
+        var localSeconds = new Date().getSeconds();
+        this._delayWithServer = localSeconds - serverSeconds
+        //alert(this._delayWithServer + " seconds difference with the server");
+
     }
 
     /**
@@ -244,9 +257,87 @@ class Client {
         );
     };
 
+    /**
+     * Emit to each slave the starttime of the counter (10 seconds ahead from now).
+     * Each slave gets the server time plus or minus its own delay.
+     */
+    public notifySlavesOfStartTimeCounter = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
+            );
+        } else {
+            let startTime = new Date().getTime() + 10000;
+            let slaves = this.slaves;
+            console.log("slaves frontend: ");
+            console.log(typeof slaves);
+            console.log("Emitting counter event");
+            this._socket.emit(MasterEventTypes.NotifySlavesOfStartTimeCounter, {
+                startTime,
+                slaves
+            });
+        }
+    }
+
+    private startCounterEvent = (startTime: number): void => {
+        console.log("STARTING COUNTER In FRONTEND")
+        // TODO: start time with the delay
+        const eta_ms = startTime - Date.now();
+        const timeout = setTimeout(function () {
+            const tenseconds = 10000;
+            const enddate = new Date(startTime + tenseconds);
+            countdown(enddate.getTime());
+        }, eta_ms);
+
+        function countdown(endDate: number) {
+            var timer = setInterval(function () {
+
+                let now = new Date().getTime();
+                var t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
+
+                if (t > 0) {
+                    document.getElementById("countdown").innerHTML = t.toString();
+                }
+
+                else {
+                    document.getElementById("countdown").innerHTML = "Tadaaaaa";
+                    clearinterval();
+                }
+
+            }, 1);
+            function clearinterval() {
+                clearInterval(timer);
+            }
+        }
+
+    }
+
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
     };
+
+    private srvTime = (xmlHttp: XMLHttpRequest) => {
+        try {
+            //FF, Opera, Safari, Chrome
+            xmlHttp = new XMLHttpRequest();
+        } catch (err1) {
+            //IE
+            try {
+                xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (err2) {
+                try {
+                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (eerr3) {
+                    //AJAX not supported, use CPU time.
+                    alert("AJAX not supported");
+                }
+            }
+        }
+        xmlHttp.open("HEAD", window.location.href.toString(), false);
+        xmlHttp.setRequestHeader("Content-Type", "text/html");
+        xmlHttp.send("");
+        return xmlHttp.getResponseHeader("Date");
+    }
 }
 
 export default Client;

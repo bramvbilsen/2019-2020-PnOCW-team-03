@@ -78,6 +78,25 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     socket.on(
+        MasterEventTypes.NotifySlavesOfStartTimeCounter,
+        (msg: {
+            startTime: Date;
+            slaveIds: Array<string>;
+        }) => {
+            if (socket.id === connections.master.id) {
+                console.log("Attempting to start the countdown mannekkeeeeeees !!!!");
+                console.log("slaves server:");
+                console.log(msg.slaveIds);
+                for (const slaveId in msg.slaveIds) {
+                    io.to(slaveId).emit(SlaveEventTypes.SetCounterEvent, {
+                        startTime: msg.startTime
+                    });
+                }
+            }
+        }
+    );
+
+    socket.on(
         MasterEventTypes.DisplaySlaveOrientationColors,
         (msg: {
             slaveId: string;

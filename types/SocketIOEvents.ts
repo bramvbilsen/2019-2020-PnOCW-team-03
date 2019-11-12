@@ -6,7 +6,8 @@ export const enum SlaveEventTypes {
 	ChangeBackground = "change-background",
 	ChangeOrientationColors = "change-orientation-colors",
 	DisplayArrowUp = "display-arrow-up",
-	DisplayArrowRight = "display-arrow-right"
+	DisplayArrowRight = "display-arrow-right",
+	SetCounterEvent = "set-counter-event"
 }
 
 export const enum MasterEventTypes {
@@ -15,5 +16,6 @@ export const enum MasterEventTypes {
 	DisplaySlaveOrientationColors = "display-slave-orientation-colors",
 	SlaveChanges = "notify-master-of-slaves",
 	SendArrowsUp = "send-arrows-up",
-	SendArrowsRight = "send-arrows-right"
+	SendArrowsRight = "send-arrows-right",
+	NotifySlavesOfStartTimeCounter = "notify-slaves-of-start-time-counter"
 }
