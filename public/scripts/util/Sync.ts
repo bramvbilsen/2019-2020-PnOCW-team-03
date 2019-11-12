@@ -10,7 +10,9 @@ export default class Sync {
         this._socket = socket;
         this._socket.on(SharedEventTypes.TimeSyncServer, this.onSync);
         setInterval(() => {
-            this.sync();
+            this._socket.emit(SharedEventTypes.TimeSyncClient, {
+                t0: Date.now(),
+            });
         }, 1000);
     }
 
@@ -26,11 +28,5 @@ export default class Sync {
         this._offsets.unshift(diff);
 
         if (this._offsets.length > 10) this._offsets.pop();
-    };
-
-    sync = () => {
-        this._socket.emit(SharedEventTypes.TimeSyncClient, {
-            t0: Date.now(),
-        });
     };
 }
