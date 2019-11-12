@@ -1,71 +1,59 @@
 import findScreen, {
     createCanvas,
 } from "../../scripts/image_processing/screen_detection/screen_detection";
-import { IRGBAColor } from "../../scripts/types/Color";
 import Point from "../../scripts/image_processing/screen_detection/Point";
-import {
-    Screen,
-    correct,
+import test_runner, {
     isCorrectPoints,
     createRectangularScreensCanvas,
     rotatePointsAroundCenter,
+    TestResult,
+    Tests,
+    pinkRGBA,
 } from "./helpers";
 
-const pinkRGBA: IRGBAColor = {
-    r: 255,
-    g: 70,
-    b: 181,
-    a: 100,
-};
-
 const CORNER_OFFSET_THRESHOLD = 50;
+const DEFAULT_WIDTH = 1280;
+const DEFAULT_HEIGHT = 720;
 
 export default function run_tests(
-    onNewResult: (testName: string, result: string) => void
+    onNewResult: (testResult: TestResult) => void
 ) {
-    const testCompletion: Array<Promise<void>> = [];
-    tests.forEach(test => {
-        testCompletion.push(
-            new Promise((resolve, reject) => {
-                const t0 = new Date();
-                test().then(result => {
-                    onNewResult(
-                        test.name,
-                        result + `\n⏳${+new Date() - +t0}ms`
-                    );
-                    resolve();
-                });
-            })
-        );
-    });
-    return Promise.all(testCompletion);
+    return test_runner(
+        tests,
+        (testName, expected, result, dt) => {
+            return new TestResult(
+                testName,
+                expected,
+                result,
+                isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
+                dt
+            );
+        },
+        onNewResult
+    );
 }
 
-/// THE ALGORITHM IS DESIGNED TO WORK WITH POSITIVE X AND Y VALUES ONLY!
-const tests = [
-    async function no_screen() {
-        const blanoCanvas = createCanvas(1280, 720);
+/// MAKE SURE THAT THE EXPECTED COORDINATES ARE INSIDE OF THE CANVAS!
+const tests: Tests<Point[]> = {
+    "No Screen": async function no_screen() {
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
-        const coloredCanvas = createCanvas(1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const coloredCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const coloredCtx = coloredCanvas.getContext("2d");
         coloredCtx.fillStyle = "rgb(255, 255, 255)";
-        coloredCtx.fillRect(0, 0, 1280, 720);
+        coloredCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
         const expected: Point[] = [];
-        return correct(
-            isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function smallest_allowed_screen() {
-        const blanoCanvas = createCanvas(1280, 720);
+    "Smallest allowed screen": async function smallest_allowed_screen() {
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const expected = [
             new Point(0, 0),
             new Point(50, 0),
@@ -75,215 +63,212 @@ const tests = [
         const coloredCanvas = createRectangularScreensCanvas(
             expected,
             pinkRGBA,
-            1280,
-            720
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
         );
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
-        return correct(
-            isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function ten_percent_screen() {
+    "Ten percent screen size": async function ten_percent_screen() {
         const percentage = 0.1;
-        const blanoCanvas = createCanvas(1280, 720);
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const expected = [
             new Point(0, 0),
-            new Point(1280 * percentage, 0),
-            new Point(1280 * percentage, 720 * percentage),
-            new Point(0, 720 * percentage),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
         ];
         const coloredCanvas = createRectangularScreensCanvas(
             expected,
             pinkRGBA,
-            1280,
-            720
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
         );
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
-        return correct(
-            isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function twenty_percent_screen() {
+    "Twenty percent screen size": async function twenty_percent_screen() {
         const percentage = 0.2;
-        const blanoCanvas = createCanvas(1280, 720);
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const expected = [
             new Point(0, 0),
-            new Point(1280 * percentage, 0),
-            new Point(1280 * percentage, 720 * percentage),
-            new Point(0, 720 * percentage),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
         ];
         const coloredCanvas = createRectangularScreensCanvas(
             expected,
             pinkRGBA,
-            1280,
-            720
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
         );
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
-        return correct(
-            isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function thirty_percent_screen() {
+    "Thirty percent screen size": async function thirty_percent_screen() {
         const percentage = 0.3;
-        const blanoCanvas = createCanvas(1280, 720);
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const expected = [
             new Point(0, 0),
-            new Point(1280 * percentage, 0),
-            new Point(1280 * percentage, 720 * percentage),
-            new Point(0, 720 * percentage),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
         ];
         const coloredCanvas = createRectangularScreensCanvas(
             expected,
             pinkRGBA,
-            1280,
-            720
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
         );
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
-        return correct(
-            isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function ten_percent_45deg_rotated_screen() {
+    "Ten percent screen size & 45 degree rotation": async function ten_percent_45deg_rotated_screen() {
         const percentage = 0.1;
         const degree = 45;
-        const blanoCanvas = createCanvas(1280, 720);
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const expected = rotatePointsAroundCenter(
             [
                 new Point(0, 0),
-                new Point(1280 * percentage, 0),
-                new Point(1280 * percentage, 720 * percentage),
-                new Point(0, 720 * percentage),
+                new Point(DEFAULT_WIDTH * percentage, 0),
+                new Point(
+                    DEFAULT_WIDTH * percentage,
+                    DEFAULT_HEIGHT * percentage
+                ),
+                new Point(0, DEFAULT_HEIGHT * percentage),
             ],
             degree
         );
         const coloredCanvas = createRectangularScreensCanvas(
             expected,
             pinkRGBA,
-            1280,
-            720
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
         );
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
-        return correct(
-            isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function cluttered_blanco_random_rotation_and_size() {
-        const percentage = Math.random();
-        const degree = Math.random() * 360;
-        const blanoCanvas = createCanvas(1280, 720);
+    "Blanco canvas with random noise + Randomly generated small screen size and orientation": async function cluttered_blanco_random_rotation_and_size() {
+        // Make sure the rotation does not cause points outside the canvas.
+        let percentage = Math.random() % 0.4;
+        while (percentage < 0.07) {
+            // Make sure the min length is 50.
+            percentage = Math.random() % 0.4;
+        }
+        // Make sure the rotation does not cause points outside the canvas.
+        const degree = (Math.random() * 360) % 30;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         blancoCtx.fillStyle = `rgb(${pinkRGBA.r}, ${pinkRGBA.g}, ${pinkRGBA.b})`;
-        for (let row = 0; row < 720; row++) {
-            for (let column = 0; column < 1280; column++) {
+        for (let row = 0; row < DEFAULT_HEIGHT; row++) {
+            for (let column = 0; column < DEFAULT_WIDTH; column++) {
                 // 20% chance that there will be clutter on this pixel.
                 if (Math.random() < 0.2) {
                     blancoCtx.fillRect(column, row, 1, 1);
                 }
             }
         }
+        const width = DEFAULT_WIDTH * percentage;
+        const height = DEFAULT_HEIGHT * percentage;
         const expected = rotatePointsAroundCenter(
             [
-                new Point(0, 0),
-                new Point(1280 * percentage, 0),
-                new Point(1280 * percentage, 720 * percentage),
-                new Point(0, 720 * percentage),
+                new Point(width * 0.25, height * 0.25),
+                new Point(width * 0.25 + width, height * 0.25),
+                new Point(width * 0.25 + width, height * 0.25 + height),
+                new Point(width * 0.25, height * 0.25 + height),
             ],
             degree
         );
         const coloredCanvas = createRectangularScreensCanvas(
             expected,
             pinkRGBA,
-            1280,
-            720
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
         );
         const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
-        return correct(
-            !isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD),
-            result.map(elem => JSON.stringify(elem)),
-            expected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
 
-    async function cluttered_blanco_random_rotation_and_size_5_screens() {
-        const percentage = Math.random();
-        const degree = Math.random() * 360;
-        const blanoCanvas = createCanvas(1280, 720);
+    "Blanco canvas with random noise + 5 randomly generated small screens": async function cluttered_blanco_random_rotation_and_size_5_screens() {
+        // Make sure the rotation does not cause points outside the canvas.
+        let percentage = Math.random() % 0.4;
+        while (percentage < 0.07) {
+            // Make sure the min length is 50.
+            percentage = Math.random() % 0.4;
+        }
+        // Make sure the rotation does not cause points outside the canvas.
+        const degree = (Math.random() * 360) % 30;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
-        blancoCtx.fillRect(0, 0, 1280, 720);
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         blancoCtx.fillStyle = `rgb(${pinkRGBA.r}, ${pinkRGBA.g}, ${pinkRGBA.b})`;
-        for (let row = 0; row < 720; row++) {
-            for (let column = 0; column < 1280; column++) {
+        for (let row = 0; row < DEFAULT_HEIGHT; row++) {
+            for (let column = 0; column < DEFAULT_WIDTH; column++) {
                 // 20% chance that there will be clutter on this pixel.
                 if (Math.random() < 0.2) {
                     blancoCtx.fillRect(column, row, 1, 1);
                 }
             }
         }
-        let failedExpected: Point[] = [];
-        let failedResult: Point[] = [];
+        let expected: Point[] = [];
+        let result: Point[] = [];
         let isCorrect = true;
         for (let screenNum = 0; screenNum < 5; screenNum++) {
-            const expected = rotatePointsAroundCenter(
+            const width = DEFAULT_WIDTH * percentage;
+            const height = DEFAULT_HEIGHT * percentage;
+            const localExpected = rotatePointsAroundCenter(
                 [
-                    new Point(0, 0),
-                    new Point(1280 * percentage, 0),
-                    new Point(1280 * percentage, 720 * percentage),
-                    new Point(0, 720 * percentage),
+                    new Point(width * 0.25, height * 0.25),
+                    new Point(width * 0.25 + width, height * 0.25),
+                    new Point(width * 0.25 + width, height * 0.25 + height),
+                    new Point(width * 0.25, height * 0.25 + height),
                 ],
                 degree
             );
             const coloredCanvas = createRectangularScreensCanvas(
-                expected,
+                localExpected,
                 pinkRGBA,
-                1280,
-                720
+                DEFAULT_WIDTH,
+                DEFAULT_HEIGHT
             );
-            const result = await findScreen(
+            const localResult = await findScreen(
                 blanoCanvas,
                 coloredCanvas,
                 pinkRGBA
             );
-            if (!isCorrectPoints(expected, result, CORNER_OFFSET_THRESHOLD)) {
+            if (
+                !isCorrectPoints(
+                    localExpected,
+                    localResult,
+                    CORNER_OFFSET_THRESHOLD
+                )
+            ) {
                 isCorrect = false;
-                failedExpected = expected;
-                failedResult = result;
+                expected = localExpected;
+                result = localResult;
                 break;
             }
         }
-        return correct(
-            isCorrect,
-            failedResult.map(elem => JSON.stringify(elem)),
-            failedExpected.map(elem => JSON.stringify(elem))
-        );
+        return { expected, result };
     },
-];
+};
