@@ -147,13 +147,14 @@ All: 4hrs
 
 ##### 11/11:
 
-##### -CEO ...
+###### -CEO: Working on smallest bounding box in all directions for given set of points.
 
-##### -CTO implementing timesynchronization for countdown
+###### -CTO: implementing timesynchronization for countdown
 
-##### -Code reviewer 1: helping with countdown
+###### -Code reviewer 1: helping with countdown
 
-CEO: 4hrs
+###### -TC1&TC2: Writing testcases
+CEO: 6hrs
 
 CTO: 4hrs
 
@@ -173,14 +174,14 @@ Code reviewer 2: 2,5hrs
 
 ##### -Code reviewer 1: writing paper
 
-CEO: 4hrs
+CEO: 6hrs
 
-CTO: 4hrs
+CTO: 6hrs
 
-TC1: 6hrs
+TC1: 8hrs
 
-TC2: 4hrs
+TC2: 6hrs
 
 Code reviewer 1: 3hrs
 
-Code reviewer 2: 4hrs
+Code reviewer 2: 6hrs
