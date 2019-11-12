@@ -37,7 +37,6 @@ class Client {
         this._socket.on("connected", () => console.log("Connected!"));
 
         this._sync = new Sync(this._socket);
-        this._sync.init();
 
         this._socket.on(
             SharedEventTypes.NotifyOfTypeChange,
@@ -80,14 +79,6 @@ class Client {
                 this.onConnectionTypeChange(this.type);
             }
         );
-        // Save the delay time with server
-        // let st = this.srvTime();
-        // var serverSeconds = new Date(st).getSeconds();
-        // var localSeconds = new Date().getSeconds();
-        // this._delayWithServer = localSeconds - serverSeconds;
-        // console.log(
-        //     this._delayWithServer + " seconds difference with the server"
-        // );
     }
 
     /**
@@ -276,7 +267,6 @@ class Client {
         } else {
             let startTime = new Date().getTime() + 10000;
             let slaveIds = this.slaves;
-            console.log("Emitting counter event");
             this._socket.emit(MasterEventTypes.NotifySlavesOfStartTimeCounter, {
                 startTime,
                 slaveIds,
@@ -285,7 +275,7 @@ class Client {
     };
 
     private startCounterEvent = (msg: { startTime: number }): void => {
-        console.log("STARTING COUNTER In FRONTEND");
+        $("#loading").css("display", "inherit");
         let { startTime } = msg;
         startTime += this.serverTimeDiff;
         const eta_ms = startTime - Date.now();
@@ -297,15 +287,14 @@ class Client {
 
         function countdown(endDate: number) {
             var timer = setInterval(function() {
-                let now = new Date().getTime();
-                var t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
+                const now = new Date().getTime();
+                const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
                 if (t > 0) {
-                    document.getElementById(
-                        "countdown"
-                    ).innerHTML = t.toString();
+                    $("#countdown").html(`<h2>${t}</h2>`);
                 } else {
-                    document.getElementById("countdown").innerHTML = "Tadaaaaa";
+                    $("#loading").css("display", "none");
+                    $("#countdown").html("<h1>BOOOOOMMM</h1>");
                     clearinterval();
                 }
             }, 1);
@@ -317,30 +306,6 @@ class Client {
 
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
-    };
-
-    private srvTime = () => {
-        let xmlHttp: XMLHttpRequest;
-        try {
-            //FF, Opera, Safari, Chrome
-            xmlHttp = new XMLHttpRequest();
-        } catch (err1) {
-            //IE
-            try {
-                xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } catch (err2) {
-                try {
-                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-                } catch (eerr3) {
-                    //AJAX not supported, use CPU time.
-                    alert("AJAX not supported");
-                }
-            }
-        }
-        xmlHttp.open("HEAD", window.location.href.toString(), false);
-        xmlHttp.setRequestHeader("Content-Type", "text/html");
-        xmlHttp.send("");
-        return xmlHttp.getResponseHeader("Date");
     };
 }
 

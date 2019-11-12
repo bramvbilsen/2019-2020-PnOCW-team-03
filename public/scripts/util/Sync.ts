@@ -8,9 +8,6 @@ export default class Sync {
 
     constructor(socket: SocketIOClient.Socket) {
         this._socket = socket;
-    }
-
-    init() {
         this._socket.on(SharedEventTypes.TimeSyncServer, this.onSync);
         setInterval(() => {
             this.sync();
@@ -18,14 +15,9 @@ export default class Sync {
     }
 
     get timeDiff() {
-        let sum = 0;
-        for (let i = 0; i < this._offsets.length; i++) {
-            sum += this._offsets[i];
-        }
-        if (this._offsets.length > 0) {
-            sum /= this._offsets.length;
-        }
-        return sum;
+        return (
+            this._offsets.reduce((a, b) => a + b, 0) / this._offsets.length || 0
+        );
     }
 
     onSync = (data: { t1: number; t0: number }) => {
