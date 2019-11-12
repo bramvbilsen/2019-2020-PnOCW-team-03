@@ -2,7 +2,7 @@ import { ConnectionType } from "../types/ConnectionType";
 import {
     SharedEventTypes,
     SlaveEventTypes,
-    MasterEventTypes
+    MasterEventTypes,
 } from "../types/SocketIOEvents";
 import { generateRandomColor } from "../util/colors";
 import { show_image } from "../util/images";
@@ -14,7 +14,7 @@ class Client {
     private _slaves: Array<string> = [];
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
-    private _delayWithServer: Number;
+    private _delayWithServer: number;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
     /**
@@ -25,7 +25,7 @@ class Client {
         r: 255,
         g: 70,
         b: 181,
-        a: 100
+        a: 100,
     };
 
     constructor(args: {
@@ -42,9 +42,7 @@ class Client {
             (data: { type: ConnectionType }) => {
                 this._type = data.type;
                 this._slaves = [];
-                const socketIOEmittersForNewType: Array<
-                    SocketIOClient.Emitter
-                    > = [];
+                const socketIOEmittersForNewType: Array<SocketIOClient.Emitter> = [];
                 if (this.type === ConnectionType.SLAVE) {
                     socketIOEmittersForNewType.push(
                         this._socket.on(
@@ -85,9 +83,8 @@ class Client {
         var st = this.srvTime(xmlHttp);
         var serverSeconds = new Date(st).getSeconds();
         var localSeconds = new Date().getSeconds();
-        this._delayWithServer = localSeconds - serverSeconds
+        this._delayWithServer = localSeconds - serverSeconds;
         //alert(this._delayWithServer + " seconds difference with the server");
-
     }
 
     /**
@@ -159,7 +156,7 @@ class Client {
         const { a, ...color } = this.color;
         this._socket.emit(MasterEventTypes.ChangeSlaveBackground, {
             slaveId,
-            color
+            color,
         });
     };
 
@@ -181,7 +178,7 @@ class Client {
             leftTop: { r: 0, g: 0, b: 0 },
             rightTop: { r: 0, g: 0, b: 0 },
             leftBottom: { r: 0, g: 0, b: 0 },
-            rightBottom: { r: 0, g: 0, b: 0 }
+            rightBottom: { r: 0, g: 0, b: 0 },
         });
     };
 
@@ -268,49 +265,45 @@ class Client {
             );
         } else {
             let startTime = new Date().getTime() + 10000;
-            let slaves = this.slaves;
-            console.log("slaves frontend: ");
-            console.log(typeof slaves);
+            let slaveIds = this.slaves;
             console.log("Emitting counter event");
             this._socket.emit(MasterEventTypes.NotifySlavesOfStartTimeCounter, {
                 startTime,
-                slaves
+                slaveIds,
             });
         }
-    }
+    };
 
-    private startCounterEvent = (startTime: number): void => {
-        console.log("STARTING COUNTER In FRONTEND")
-        // TODO: start time with the delay
+    private startCounterEvent = (msg: { startTime: number }): void => {
+        console.log("STARTING COUNTER In FRONTEND");
+        let { startTime } = msg;
+        startTime += this._delayWithServer;
         const eta_ms = startTime - Date.now();
-        const timeout = setTimeout(function () {
-            const tenseconds = 10000;
-            const enddate = new Date(startTime + tenseconds);
+        setTimeout(function() {
+            const elevenseconds = 11000;
+            const enddate = new Date(startTime + elevenseconds);
             countdown(enddate.getTime());
         }, eta_ms);
 
         function countdown(endDate: number) {
-            var timer = setInterval(function () {
-
+            var timer = setInterval(function() {
                 let now = new Date().getTime();
                 var t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
                 if (t > 0) {
-                    document.getElementById("countdown").innerHTML = t.toString();
-                }
-
-                else {
+                    document.getElementById(
+                        "countdown"
+                    ).innerHTML = t.toString();
+                } else {
                     document.getElementById("countdown").innerHTML = "Tadaaaaa";
                     clearinterval();
                 }
-
             }, 1);
             function clearinterval() {
                 clearInterval(timer);
             }
         }
-
-    }
+    };
 
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
@@ -337,7 +330,7 @@ class Client {
         xmlHttp.setRequestHeader("Content-Type", "text/html");
         xmlHttp.send("");
         return xmlHttp.getResponseHeader("Date");
-    }
+    };
 }
 
 export default Client;

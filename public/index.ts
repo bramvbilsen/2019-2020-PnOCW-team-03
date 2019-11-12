@@ -104,11 +104,10 @@ function onConnectionTypeChange(type: ConnectionType) {
     }
 }
 
-<<<<<<< HEAD
-// /* ------ SYNCHRONISATIE ------- */
-// // src: https://stackoverflow.com/questions/20269657/right-way-to-get-web-server-time-and-display-it-on-web-pages/20270636#20270636
+/* ------ SYNCHRONISATIE ------- */
 
 // var xmlHttp: XMLHttpRequest;
+// // src: https://www.codeproject.com/Questions/1231436/Get-current-server-time-in-javascript
 // function srvTime() {
 //     try {
 //         //FF, Opera, Safari, Chrome
@@ -122,7 +121,7 @@ function onConnectionTypeChange(type: ConnectionType) {
 //                 xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
 //             } catch (eerr3) {
 //                 //AJAX not supported, use CPU time.
-//                 alert("AJAX not supported");
+//                 // alert("AJAX not supported");
 //             }
 //         }
 //     }
@@ -140,145 +139,39 @@ function onConnectionTypeChange(type: ConnectionType) {
 //     return localSeconds - serverSeconds;
 // }
 
-// alert(getDifferenceWithServer() + " seconds difference with the server");
+// // alert(getDifferenceWithServer() + " seconds difference with the server");
 
 // /* ------- COUNTDOWN ------- */
-// // src: https://www.w3schools.com/howto/howto_js_countdown.asp
 
 // // Set the date we're counting down to
-// var countDownDate = new Date("Nov 12, 2019 18:30:00").getTime();
+// var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
 
 // // Update the count down every 1 second
-// var x = setInterval(function () {
-
+// var x = setInterval(function() {
 //     // Get today's date and time
 //     var now = new Date().getTime();
 
 //     // Find the distance between now and the count down date
-//     var seconds = countDownDate - now;
-//     seconds = seconds / 1000;
+//     var distance = countDownDate - now;
 
-//     /*
 //     // Time calculations for days, hours, minutes and seconds
 //     var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-//     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+//     var hours = Math.floor(
+//         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+//     );
 //     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 //     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-//     */
 
 //     // Display the result in the element with id="countdown"
-//     document.getElementById("countdown").innerHTML = seconds + "s ";
+//     document.getElementById("countdown").innerHTML =
+//         days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
 
 //     // If the count down is finished, write some text
-//     if (seconds < 0) {
+//     if (distance < 0) {
 //         clearInterval(x);
-//         document.getElementById("countdown").innerHTML = "BOOOOOM";
+//         document.getElementById("countdown").innerHTML = "EXPIRED";
 //     }
-// }, 1);
-
-
-// // --- COUNTDOWN MAARTEN
-
-// function master(startdate: number) {
-//     var eta_ms = startdate - Date.now();
-//     var timeout = setTimeout(function () {
-//         const tenseconds = 10000;
-//         var enddate = new Date(startdate + tenseconds);
-//         countdown(enddate.getTime());
-//     }, eta_ms);
-// }
-
-// function countdown(endDate: number) {
-//     var timer = setInterval(function () {
-
-//         let now = new Date().getTime();
-//         var t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
-
-//         if (t > 0) {
-//             document.getElementById("countdown").innerHTML = t.toString();
-//         }
-
-//         else {
-//             document.getElementById("countdown").innerHTML = "Tadaaaaa";
-//             clearinterval();
-//         }
-
-//     }, 1);
-//     function clearinterval() {
-//         clearInterval(timer);
-//     }
-// }
-
-=======
-/* ------ SYNCHRONISATIE ------- */
-
-var xmlHttp: XMLHttpRequest;
-// src: https://www.codeproject.com/Questions/1231436/Get-current-server-time-in-javascript
-function srvTime() {
-    try {
-        //FF, Opera, Safari, Chrome
-        xmlHttp = new XMLHttpRequest();
-    } catch (err1) {
-        //IE
-        try {
-            xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } catch (err2) {
-            try {
-                xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-            } catch (eerr3) {
-                //AJAX not supported, use CPU time.
-                // alert("AJAX not supported");
-            }
-        }
-    }
-    xmlHttp.open("HEAD", window.location.href.toString(), false);
-    xmlHttp.setRequestHeader("Content-Type", "text/html");
-    xmlHttp.send("");
-    return xmlHttp.getResponseHeader("Date");
-}
-
-function getDifferenceWithServer() {
-    var st = srvTime();
-    var serverSeconds = new Date(st).getSeconds();
-    var localSeconds = new Date().getSeconds();
-
-    return localSeconds - serverSeconds;
-}
-
-// alert(getDifferenceWithServer() + " seconds difference with the server");
-
-/* ------- COUNTDOWN ------- */
-
-// Set the date we're counting down to
-var countDownDate = new Date("Jan 5, 2021 15:37:25").getTime();
-
-// Update the count down every 1 second
-var x = setInterval(function() {
-    // Get today's date and time
-    var now = new Date().getTime();
-
-    // Find the distance between now and the count down date
-    var distance = countDownDate - now;
-
-    // Time calculations for days, hours, minutes and seconds
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    // Display the result in the element with id="countdown"
-    document.getElementById("countdown").innerHTML =
-        days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
-
-    // If the count down is finished, write some text
-    if (distance < 0) {
-        clearInterval(x);
-        document.getElementById("countdown").innerHTML = "EXPIRED";
-    }
-}, 1000);
->>>>>>> 939efb4ff4e8b4c005cc463992276485423d7462
+// }, 1000);
 
 if (env.test) {
     $(() => {

@@ -55,7 +55,7 @@ io.on("connect", (socket: socketio.Socket) => {
                 console.log("Attempting to change background by master");
                 for (const slaveId of Object.keys(msg)) {
                     io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
-                        color: msg[slaveId]
+                        color: msg[slaveId],
                     });
                 }
             }
@@ -71,7 +71,7 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log("Attempting to change background by master");
                 io.to(msg.slaveId).emit(SlaveEventTypes.ChangeBackground, {
-                    color: msg.color
+                    color: msg.color,
                 });
             }
         }
@@ -79,19 +79,14 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on(
         MasterEventTypes.NotifySlavesOfStartTimeCounter,
-        (msg: {
-            startTime: Date;
-            slaveIds: Array<string>;
-        }) => {
+        (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
-                console.log("Attempting to start the countdown mannekkeeeeeees !!!!");
-                console.log("slaves server:");
-                console.log(msg.slaveIds);
-                for (const slaveId in msg.slaveIds) {
-                    io.to(slaveId).emit(SlaveEventTypes.SetCounterEvent, {
-                        startTime: msg.startTime
+                console.log("Attempting to start timer by master");
+                msg.slaveIds.forEach(id => {
+                    io.to(id).emit(SlaveEventTypes.SetCounterEvent, {
+                        startTime: msg.startTime,
                     });
-                }
+                });
             }
         }
     );
