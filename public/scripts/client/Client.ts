@@ -5,7 +5,6 @@ import {
     MasterEventTypes,
 } from "../types/SocketIOEvents";
 import { generateRandomColor } from "../util/colors";
-import { show_image } from "../util/images";
 import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 
@@ -84,7 +83,9 @@ class Client {
         var serverSeconds = new Date(st).getSeconds();
         var localSeconds = new Date().getSeconds();
         this._delayWithServer = localSeconds - serverSeconds;
-        //alert(this._delayWithServer + " seconds difference with the server");
+        console.log(
+            this._delayWithServer + " seconds difference with the server"
+        );
     }
 
     /**
