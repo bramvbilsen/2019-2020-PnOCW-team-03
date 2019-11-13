@@ -21,6 +21,7 @@ window.slaveFlowHandler = slaveFlowHandler;
 window.findScreen = findScreen;
 
 $(() => {
+    setCanvasSize();
     const startButton = $("#start");
     const nextSlaveButton = $("#next-slave");
     const captureSlaveButton = $("#capture-slave");
@@ -102,6 +103,15 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#master").css("display", "none");
         $("#countdown").css("display", "none");
     }
+}
+
+function setCanvasSize() {
+    const globalCanvas: HTMLCanvasElement = (<JQuery<HTMLCanvasElement>>(
+        $("#canvas")
+    ))[0];
+    const scaleFactor = $(window).width() / $(window).height();
+    globalCanvas.width = $(window).width();
+    globalCanvas.height = 720 * scaleFactor;
 }
 
 if (env.test) {

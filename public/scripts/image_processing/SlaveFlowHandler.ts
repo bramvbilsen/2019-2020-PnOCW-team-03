@@ -6,7 +6,7 @@ import getOrientationAngle from "./orientation_detection/orientation_detection";
 
 export enum WorkflowStep {
     START = "initialize",
-    SLAVE_CYCLE = "iterating through slaves"
+    SLAVE_CYCLE = "iterating through slaves",
 }
 
 /**

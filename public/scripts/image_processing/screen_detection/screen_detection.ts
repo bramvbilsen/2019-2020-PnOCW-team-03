@@ -88,11 +88,7 @@ export default async function findScreen(
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
-        const _canvas = createCanvas(width, height);
-        _canvas.id = "canvas";
-        const _ctx = _canvas.getContext("2d");
-        _ctx.drawImage(nonColoredScreenCanvas, 0, 0);
-        $("#canvas")[0].replaceWith(_canvas);
+        displayCanvasOnVisibleCanvas(nonColoredScreenCanvas);
         console.log("Non colored screen displayed!");
         //@ts-ignore
         while (currentStep !== 1) {
@@ -112,11 +108,7 @@ export default async function findScreen(
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
-        const _canvas = createCanvas(width, height);
-        _canvas.id = "canvas";
-        const _ctx = _canvas.getContext("2d");
-        _ctx.drawImage(coloredScreenCanvas, 0, 0);
-        $("#canvas")[0].replaceWith(_canvas);
+        displayCanvasOnVisibleCanvas(coloredScreenCanvas);
         console.log("Colored screen displayed!");
         //@ts-ignore
         while (currentStep !== 2) {
@@ -186,7 +178,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        $("#canvas")[0].replaceWith(_canvas);
+        displayCanvasOnVisibleCanvas(_canvas);
         console.log("Extracted screen displayed!");
         //@ts-ignore
         while (currentStep !== 3) {
@@ -230,7 +222,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        $("#canvas")[0].replaceWith(_canvas);
+        displayCanvasOnVisibleCanvas(_canvas);
         console.log("Possible corners displayed!");
         //@ts-ignore
         while (currentStep !== 4) {
@@ -251,7 +243,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        $("#canvas")[0].replaceWith(_canvas);
+        displayCanvasOnVisibleCanvas(_canvas);
         console.log("Convex hull corners displayed!");
         //@ts-ignore
         while (currentStep !== 5) {
@@ -262,14 +254,9 @@ export default async function findScreen(
     const possibleCornerConnections = createConnections(possibleCorners);
 
     if (DEBUG) {
-        const _canvas = drawResultLines(
-            width,
-            height,
-            possibleCornerConnections,
-            20
+        displayCanvasOnVisibleCanvas(
+            drawResultLines(width, height, possibleCornerConnections, 20)
         );
-        _canvas.id = "canvas";
-        $("#canvas")[0].replaceWith(_canvas);
         console.log("Connected corners displayed!");
         //@ts-ignore
         while (currentStep !== 6) {
@@ -278,10 +265,6 @@ export default async function findScreen(
     }
 
     const corners = findFinalCorners(possibleCornerConnections);
-
-    if (DEBUG) {
-        $("#canvas").remove();
-    }
 
     const t1 = new Date();
     console.log(+t1 - +t0 + "ms");
@@ -591,4 +574,22 @@ function drawResultLines(
     });
 
     return canvas;
+}
+
+function displayCanvasOnVisibleCanvas(canvasToDisplay: HTMLCanvasElement) {
+    const globalCanvas: HTMLCanvasElement = (<JQuery<HTMLCanvasElement>>(
+        $("#canvas")
+    ))[0];
+    const globalCtx = globalCanvas.getContext("2d");
+    globalCtx.drawImage(
+        canvasToDisplay,
+        0,
+        0,
+        canvasToDisplay.width,
+        canvasToDisplay.height,
+        0,
+        0,
+        globalCanvas.width,
+        globalCanvas.height
+    );
 }
