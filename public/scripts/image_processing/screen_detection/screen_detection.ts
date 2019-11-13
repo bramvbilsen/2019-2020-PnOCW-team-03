@@ -14,13 +14,13 @@ interface IHSLRange {
 const similarPinkRange: IHSLRange = {
     hRange: 50,
     sRange: 50,
-    lRange: 50
+    lRange: 50,
 };
 
 const randomColorRange: IHSLRange = {
     hRange: 52,
     sRange: 52,
-    lRange: 52
+    lRange: 52,
 };
 
 //@ts-ignore
@@ -68,8 +68,9 @@ export default async function findScreen(
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
 
-    const jQueryBody: JQuery<HTMLBodyElement> = $("body");
-    jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
+    // TODO: Check if this is still used.
+    // const jQueryBody: JQuery<HTMLBodyElement> = $("body");
+    // jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
 
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
@@ -87,11 +88,7 @@ export default async function findScreen(
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
-        const _canvas = createCanvas(width, height);
-        _canvas.id = "canvas";
-        const _ctx = _canvas.getContext("2d");
-        _ctx.drawImage(nonColoredScreenCanvas, 0, 0);
-        $("#canvas")[0].replaceWith(_canvas);
+        displayDebugResult(nonColoredScreenCanvas);
         console.log("Non colored screen displayed!");
         //@ts-ignore
         while (currentStep !== 1) {
@@ -111,11 +108,7 @@ export default async function findScreen(
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
-        const _canvas = createCanvas(width, height);
-        _canvas.id = "canvas";
-        const _ctx = _canvas.getContext("2d");
-        _ctx.drawImage(coloredScreenCanvas, 0, 0);
-        $("#canvas")[0].replaceWith(_canvas);
+        displayDebugResult(coloredScreenCanvas);
         console.log("Colored screen displayed!");
         //@ts-ignore
         while (currentStep !== 2) {
@@ -185,7 +178,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        $("#canvas")[0].replaceWith(_canvas);
+        displayDebugResult(_canvas);
         console.log("Extracted screen displayed!");
         //@ts-ignore
         while (currentStep !== 3) {
@@ -229,7 +222,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        $("#canvas")[0].replaceWith(_canvas);
+        displayDebugResult(_canvas);
         console.log("Possible corners displayed!");
         //@ts-ignore
         while (currentStep !== 4) {
@@ -250,7 +243,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        $("#canvas")[0].replaceWith(_canvas);
+        displayDebugResult(_canvas);
         console.log("Convex hull corners displayed!");
         //@ts-ignore
         while (currentStep !== 5) {
@@ -261,14 +254,9 @@ export default async function findScreen(
     const possibleCornerConnections = createConnections(possibleCorners);
 
     if (DEBUG) {
-        const _canvas = drawResultLines(
-            width,
-            height,
-            possibleCornerConnections,
-            20
+        displayDebugResult(
+            drawResultLines(width, height, possibleCornerConnections, 20)
         );
-        _canvas.id = "canvas";
-        $("#canvas")[0].replaceWith(_canvas);
         console.log("Connected corners displayed!");
         //@ts-ignore
         while (currentStep !== 6) {
@@ -277,25 +265,6 @@ export default async function findScreen(
     }
 
     const corners = findFinalCorners(possibleCornerConnections);
-
-    // if (DEBUG) {
-    //     const _canvas = createCanvas(width, height);
-    //     const _ctx = _canvas.getContext("2d");
-    //     _ctx.fillStyle = "rgb(0, 255, 255)";
-    //     corners.forEach(corner => {
-    //         _ctx.beginPath();
-    //         _ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-    //         _ctx.fill();
-    //         _ctx.closePath();
-    //     });
-    //     _canvas.id = "canvas";
-    //     $("#canvas")[0].replaceWith(_canvas);
-    //     console.log("Final result displayed!");
-    // }
-
-      if (DEBUG) {
-          $("#canvas").remove();
-      }
 
     const t1 = new Date();
     console.log(+t1 - +t0 + "ms");
@@ -372,7 +341,7 @@ function getRGBAColorForPixel(
         r: pixels[i],
         g: pixels[i + 1],
         b: pixels[i + 2],
-        a: pixels[i + 3]
+        a: pixels[i + 3],
     };
 }
 
@@ -576,7 +545,7 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         firstCornerConnection.a,
         firstCornerConnection.b,
         secondCornerConnection.a,
-        secondCornerConnection.b
+        secondCornerConnection.b,
     ];
 }
 
@@ -605,4 +574,8 @@ function drawResultLines(
     });
 
     return canvas;
+}
+
+function displayDebugResult(canvasToDisplay: HTMLCanvasElement) {
+    $("#result-img").attr("src", canvasToDisplay.toDataURL());
 }

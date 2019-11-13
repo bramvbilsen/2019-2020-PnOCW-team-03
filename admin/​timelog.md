@@ -145,3 +145,54 @@ TC2: 7hrs
 
 All: 4hrs
 
+##### 07/11:
+
+###### -CEO&CR2: Thinking about cat casting an image, creating a workflow which can lead to a working algorithm.
+
+###### -TC1&TC2: Working further on orientation detection implementation
+
+CEO,TC1&2,CR2: 4Hrs
+CTO&CR1 sick at home.
+
+##### 11/11:
+
+###### -CEO: Working on smallest bounding box in all directions for given set of points.
+
+###### -CTO: implementing timesynchronization for countdown
+
+###### -Code reviewer 1: helping with countdown
+
+###### -TC1: Writing testcases
+
+###### -TC2: Working with CEO on perspective transformation
+CEO: 6hrs
+
+CTO: 4hrs
+
+TC1: 6hrs
+
+TC2: 6hrs
+
+Code reviewer 1: 1hrs
+
+Code reviewer 2: 2,5hrs
+
+##### 12/11:
+
+###### -CEO: Writing report and debate with TC2&CR2 around the workflow for cat casting.
+
+###### -CTO implementing timesynchronization for countdown
+
+###### -Code reviewer 1: writing report.
+
+CEO: 6hrs
+
+CTO: 6hrs
+
+TC1: 8hrs
+
+TC2: 6hrs
+
+Code reviewer 1: 3hrs
+
+Code reviewer 2: 6hrs

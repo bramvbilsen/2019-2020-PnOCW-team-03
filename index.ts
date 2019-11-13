@@ -5,7 +5,11 @@ import * as path from "path";
 import multer from "multer";
 import Connections from "./server/Connections";
 import handleImageUpload from "./server/handleImageUpload";
-import { MasterEventTypes, SlaveEventTypes } from "./types/SocketIOEvents";
+import {
+    MasterEventTypes,
+    SlaveEventTypes,
+    SharedEventTypes,
+} from "./types/SocketIOEvents";
 
 console.log("Starting server...");
 
@@ -48,6 +52,13 @@ io.on("connect", (socket: socketio.Socket) => {
         connections.remove(socket);
     });
 
+    socket.on(SharedEventTypes.TimeSyncClient, (data: { t0: number }) => {
+        socket.emit(SharedEventTypes.TimeSyncServer, {
+            t1: Date.now(),
+            t0: data.t0,
+        });
+    });
+
     socket.on(
         MasterEventTypes.ChangeSlaveBackgrounds,
         (msg: { [key: string]: string }) => {
@@ -55,7 +66,7 @@ io.on("connect", (socket: socketio.Socket) => {
                 console.log("Attempting to change background by master");
                 for (const slaveId of Object.keys(msg)) {
                     io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
-                        color: msg[slaveId]
+                        color: msg[slaveId],
                     });
                 }
             }
@@ -71,7 +82,21 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log("Attempting to change background by master");
                 io.to(msg.slaveId).emit(SlaveEventTypes.ChangeBackground, {
-                    color: msg.color
+                    color: msg.color,
+                });
+            }
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.NotifySlavesOfStartTimeCounter,
+        (msg: { startTime: Date; slaveIds: Array<string> }) => {
+            if (socket.id === connections.master.id) {
+                console.log("Attempting to start timer by master");
+                msg.slaveIds.forEach(id => {
+                    io.to(id).emit(SlaveEventTypes.SetCounterEvent, {
+                        startTime: msg.startTime,
+                    });
                 });
             }
         }

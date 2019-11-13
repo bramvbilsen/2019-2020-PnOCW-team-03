@@ -1,13 +1,132 @@
-.cameraOutput {
-	float: right;
-	width: 80%;
-}
-.rest {
-	float: left;
-	width: 20%;
+#master {
+    width: 100vw;
+    height: 100vh;
 }
 
-@media only screen and (max-width: 820px) {
+#slave-flow-buttons {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0px;
+}
+
+video {
+    object-fit: cover;
+}
+
+.btn-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px !important;
+    font-size: 40px !important;
+}
+
+.cameraOutput {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+}
+.rest {
+    float: left;
+    width: 20%;
+}
+
+.mobile {
+    display: none;
+}
+.arrow {
+    display: none;
+}
+
+.body h1 {
+    display: none;
+}
+.captureButton {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: deepskyblue;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.uploadButton {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: darkslategrey;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+.pink {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: deeppink;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+.green {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: green;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+.orange {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: orangered;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+.blue {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: blue;
+    border: none;
+    color: #ffffff;
+    text-align: center;
+    font-size: 28px;
+    padding: 20px;
+    width: 200px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
+/* @media only screen and (max-width: 820px) {
 	.cameraOutput {
 		display: none;
 	}
@@ -229,4 +348,4 @@
 		cursor: pointer;
 		margin: 5px;
 	}
-}
+} */

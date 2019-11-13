@@ -1,5 +1,4 @@
 export default class Point {
-
     x: number;
     y: number;
 
@@ -12,5 +11,9 @@ export default class Point {
         return Math.sqrt(
             Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2)
         );
+    }
+
+    toString() {
+        return JSON.stringify({ x: this.x, y: this.y });
     }
 }

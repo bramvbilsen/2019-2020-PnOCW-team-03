@@ -3,10 +3,11 @@ import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
+import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
 
 export enum WorkflowStep {
     START = "initialize",
-    SLAVE_CYCLE = "iterating through slaves"
+    SLAVE_CYCLE = "iterating through slaves",
 }
 
 /**
@@ -64,27 +65,20 @@ export default class SlaveFlowHandler {
     takeNoColorPicture() {
         this.initialize();
         const player: JQuery<HTMLVideoElement> = $("#player");
-        const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
 
         const scale = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
 
-        const context = canvas[0].getContext("2d");
-        context.drawImage(
-            player[0],
-            0,
-            0,
-            cameraWidth * scale,
-            cameraHeight * scale
+        this.blancoCanvas = createCanvas(
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
-
-        this.blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
         const blancoCtx = this.blancoCanvas.getContext("2d");
         blancoCtx.drawImage(
             player[0],
@@ -93,6 +87,7 @@ export default class SlaveFlowHandler {
             cameraWidth * scale,
             cameraHeight * scale
         );
+        $("#result-img").attr("src", this.blancoCanvas.toDataURL());
         this.step = WorkflowStep.SLAVE_CYCLE;
     }
 
@@ -116,16 +111,18 @@ export default class SlaveFlowHandler {
     async takePictureOfColoredScreen() {
         console.log("Capturing color on slave");
         const player: JQuery<HTMLVideoElement> = $("#player");
-        const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
         const scale = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
-        const coloredCanvas = createCanvas(canvas[0].width, canvas[0].height);
+        const coloredCanvas = createCanvas(
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
+        );
         coloredCanvas
             .getContext("2d")
             .drawImage(
@@ -135,7 +132,6 @@ export default class SlaveFlowHandler {
                 cameraWidth * scale,
                 cameraHeight * scale
             );
-        console.log(client.color);
         const corners = await findScreen(
             this.blancoCanvas,
             coloredCanvas,
@@ -143,15 +139,20 @@ export default class SlaveFlowHandler {
             client.DEBUG
         );
         this.resetDebug();
-        const ctx = canvas[0].getContext("2d");
-        ctx.drawImage(this.blancoCanvas, 0, 0);
-        ctx.fillStyle = "rgb(0, 255, 255)";
+        const resultCanvas = createCanvas(
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
+        );
+        const resultCtx = resultCanvas.getContext("2d");
+        resultCtx.drawImage(this.blancoCanvas, 0, 0);
+        resultCtx.fillStyle = "rgb(0, 255, 255)";
         corners.forEach(corner => {
-            ctx.beginPath();
-            ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.closePath();
+            resultCtx.beginPath();
+            resultCtx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+            resultCtx.fill();
+            resultCtx.closePath();
         });
+        $("#result-img").attr("src", resultCanvas.toDataURL());
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
     }
 
@@ -162,18 +163,17 @@ export default class SlaveFlowHandler {
 
     takePictureOfSlaveOrientation() {
         const player: JQuery<HTMLVideoElement> = $("#player");
-        const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
         const scale = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
         const orientationCanvas = createCanvas(
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
         orientationCanvas
             .getContext("2d")

@@ -2,18 +2,20 @@ import { ConnectionType } from "../types/ConnectionType";
 import {
     SharedEventTypes,
     SlaveEventTypes,
-    MasterEventTypes
+    MasterEventTypes,
 } from "../types/SocketIOEvents";
 import { generateRandomColor } from "../util/colors";
-import { show_image } from "../util/images";
 import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
+import Sync from "../util/Sync";
 
 class Client {
     private _type: ConnectionType;
     private _slaves: Array<string> = [];
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
+    private _sync: Sync;
+    private _delayWithServer: number;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
     /**
@@ -24,26 +26,24 @@ class Client {
         r: 255,
         g: 70,
         b: 181,
-        a: 100
+        a: 100,
     };
 
     constructor(args: {
         onConnectionTypeChange: (connectionType: ConnectionType) => void;
     }) {
-        console.log("new client!");
         this.onConnectionTypeChange = args.onConnectionTypeChange;
         this._socket = io.connect(env.baseUrl);
-        /* CONNECTION */
         this._socket.on("connected", () => console.log("Connected!"));
-        /* NOTIFY MASTER OF CONNECTION */
+
+        this._sync = new Sync(this._socket);
+
         this._socket.on(
             SharedEventTypes.NotifyOfTypeChange,
             (data: { type: ConnectionType }) => {
                 this._type = data.type;
                 this._slaves = [];
-                const socketIOEmittersForNewType: Array<
-                    SocketIOClient.Emitter
-                > = [];
+                const socketIOEmittersForNewType: Array<SocketIOClient.Emitter> = [];
                 if (this.type === ConnectionType.SLAVE) {
                     socketIOEmittersForNewType.push(
                         this._socket.on(
@@ -61,6 +61,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.ChangeOrientationColors,
                             this.displayOrientationColors
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.SetCounterEvent,
+                            this.startCounterEvent
                         )
                     );
                 } else {
@@ -75,6 +79,13 @@ class Client {
                 this.onConnectionTypeChange(this.type);
             }
         );
+    }
+
+    /**
+     * @returns Difference in time between server and client
+     */
+    get serverTimeDiff(): number {
+        return this._sync.timeDiff;
     }
 
     /**
@@ -146,7 +157,7 @@ class Client {
         const { a, ...color } = this.color;
         this._socket.emit(MasterEventTypes.ChangeSlaveBackground, {
             slaveId,
-            color
+            color,
         });
     };
 
@@ -168,7 +179,7 @@ class Client {
             leftTop: { r: 0, g: 0, b: 0 },
             rightTop: { r: 0, g: 0, b: 0 },
             leftBottom: { r: 0, g: 0, b: 0 },
-            rightBottom: { r: 0, g: 0, b: 0 }
+            rightBottom: { r: 0, g: 0, b: 0 },
         });
     };
 
@@ -242,6 +253,55 @@ class Client {
         $("#arrowImg").replaceWith(
             '<img id="arrowRight" src="../img/arrowRight.png" />'
         );
+    };
+
+    /**
+     * Emit to each slave the starttime of the counter (10 seconds ahead from now).
+     * Each slave gets the server time plus or minus its own delay.
+     */
+    public notifySlavesOfStartTimeCounter = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
+            );
+        } else {
+            let startTime = new Date().getTime() + 10000;
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.NotifySlavesOfStartTimeCounter, {
+                startTime,
+                slaveIds,
+            });
+        }
+    };
+
+    private startCounterEvent = (msg: { startTime: number }): void => {
+        $("#loading").css("display", "inherit");
+        let { startTime } = msg;
+        startTime += this.serverTimeDiff;
+        const eta_ms = startTime - Date.now();
+        setTimeout(function() {
+            const elevenseconds = 11000;
+            const enddate = new Date(startTime + elevenseconds);
+            countdown(enddate.getTime());
+        }, eta_ms);
+
+        function countdown(endDate: number) {
+            var timer = setInterval(function() {
+                const now = new Date().getTime();
+                const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
+
+                if (t > 0) {
+                    $("#countdown").html(`<h2>${t}</h2>`);
+                } else {
+                    $("#loading").css("display", "none");
+                    $("#countdown").html("<h1>BOOOOOMMM</h1>");
+                    clearinterval();
+                }
+            }, 1);
+            function clearinterval() {
+                clearInterval(timer);
+            }
+        }
     };
 
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {

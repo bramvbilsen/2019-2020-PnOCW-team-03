@@ -24,143 +24,114 @@
                 integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
                 crossorigin="anonymous"
             ></script>
+            <link
+                rel="stylesheet"
+                href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+                crossorigin="anonymous"
+            />
             <script
                 src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
                 integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
                 crossorigin="anonymous"
             ></script>
+            <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+            />
             <script src="../bundle.js"></script>
-            <script src="../frontTest.js"></script>
         </div>
+        <div id="test-results" style="display: none;">
+            <h2>TEST RESULTS</h2>
+            <div id="test-results-text"></div>
+            <div id="test-results-visuals"></div>
+        </div>
+        <div id="countdown"></div>
         <div id="master" style="display:none;">
-            <div id="desktop">
-                <div class="cameraOutput" id="camera">
-                    <video id="player" autoplay></video>
-                </div>
+            <div class="cameraOutput" id="camera">
+                <video id="player" autoplay></video>
             </div>
-            <div class="rest" id="rest">
-                <div class="mobile">
-                    <!---
-                    <button
-                        class="mobileCaptureButton"
-                        id="mobileCapture"
-                        style="vertical-align:middle"
-                    >
-                        <span>Mobile Upload</span>
-                    </button>
-                    
-                    <input class="mobileCaptureButton"
-                           type="file"
-                           accept="image/*"
-                           id="mobileCaptureButton"
-                           hidden=""
-                    ><span>Mobile Upload</span>
-                    <script type="javascript">
-                        function processMobileImgUpload(){
-                            console.log('i got in')
-                            var img = document.querySelector('img');
-                            var file = document.querySelector('input[type=blob]');
-                            var reader = new FileReader();
-                            file instanceof Blob;
-                            reader.addEventListener("load", function () {
-                                img.src = reader.result as string;
-                            }, false);
-
-                            if(file){
-                                // @ts-ignore
-                                img = reader.readAsDataURL(file);
-                            }
-                        }
-                    </script>
-                    ---->
-                </div>
-                <!---<script>
-                        document
-                            .getElementById("mobileCapture")
-                            .addEventListener("click", openDialog);
-                        function openDialog() {
-                            document.getElementById("file-input").click();
-                        }
-                    </script>
-                    --->
-
+            <div id="slave-flow-buttons">
                 <button
-                    class="captureButton"
+                    type="button"
+                    class="btn btn-danger btn-circle"
                     id="start"
-                    style="vertical-align:middle"
                 >
-                    <span>Capture blank</span>
+                    <i class="fa fa-camera-retro"></i>
                 </button>
                 <button
-                    class="captureButton"
+                    type="button"
+                    class="btn btn-danger btn-circle"
                     id="next-slave"
-                    style="vertical-align:middle;"
                 >
-                    <span>Next Slave</span>
+                    <i class="fa fa-step-forward"></i>
                 </button>
                 <button
-                    class="captureButton"
+                    type="button"
+                    class="btn btn-danger btn-circle"
                     id="capture-slave"
-                    style="vertical-align:middle"
                 >
-                    <span>Capture</span>
+                    <i class="fa fa-camera-retro"></i>
                 </button>
                 <button
-                    class="captureButton"
+                    type="button"
+                    class="btn btn-danger btn-circle"
                     id="show-orientation-button"
-                    style="vertical-align:middle"
                 >
-                    <span>Show orientation colors</span>
+                    <i class="fa fa-compass"></i>
                 </button>
                 <button
-                    class="captureButton"
+                    type="button"
+                    class="btn btn-danger btn-circle"
                     id="capture-orientation"
-                    style="vertical-align:middle"
                 >
-                    <span>Capture</span>
+                    <i class="fa fa-camera-retro"></i>
                 </button>
-                /*colors*/
-                <button
-                    class="pink"
-                    id="Display Pink"
-                    style="vertical-align:middle"
-                >
-                    <span>Display pink </span>
-                </button>
-                <button
-                    class="green"
-                    id="Display Green"
-                    style="vertical-align:middle"
-                >
-                    <span>Display Green </span>
-                </button>
-                <button
-                    class="orange"
-                    id="Display Orange"
-                    style="vertical-align:middle"
-                >
-                    <span>Display Orange </span>
-                </button>
-                <button
-                    class="blue"
-                    id="Display Blue"
-                    style="vertical-align:middle"
-                >
-                    <span>Display Blue </span>
-                </button>
-                <button
-                    class="captureButton"
-                    id="reset"
-                    style="vertical-align:middle"
-                >
-                    <span>Reset</span>
-                </button>
-                <canvas
-                    class="canvas"
-                    id="canvas"
-                    width="1280"
-                    height="720"
-                ></canvas>
+            </div>
+            <!-- <button
+                class="pink"
+                id="Display Pink"
+                style="vertical-align:middle"
+            >
+                <span>Display pink </span>
+            </button>
+            <button
+                class="green"
+                id="Display Green"
+                style="vertical-align:middle"
+            >
+                <span>Display Green </span>
+            </button>
+            <button
+                class="orange"
+                id="Display Orange"
+                style="vertical-align:middle"
+            >
+                <span>Display Orange </span>
+            </button>
+            <button
+                class="blue"
+                id="Display Blue"
+                style="vertical-align:middle"
+            >
+                <span>Display Blue </span>
+            </button>
+            <button
+                class="captureButton"
+                id="reset"
+                style="vertical-align:middle"
+            >
+                <span>Reset</span>
+            </button> -->
+            <div
+                style="width: 100vw; display: flex; align-items: center; flex-direction: column;"
+            >
+                <div><h3>Output</h3></div>
+                <img
+                    id="result-img"
+                    src=""
+                    style="max-width: 100%; max-height: 100%;"
+                />
             </div>
         </div>
         <div
@@ -191,7 +162,10 @@
                 </div>
             </div>
         </div>
-        <div id="loading">
+        <div
+            id="loading"
+            style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;"
+        >
             <div class="spinner-grow text-info" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
