@@ -105,15 +105,6 @@ function onConnectionTypeChange(type: ConnectionType) {
     }
 }
 
-function setCanvasSize() {
-    const globalCanvas: HTMLCanvasElement = (<JQuery<HTMLCanvasElement>>(
-        $("#canvas")
-    ))[0];
-    const scaleFactor = $(window).width() / $(window).height();
-    globalCanvas.width = $(window).width();
-    globalCanvas.height = 720 * scaleFactor;
-}
-
 if (env.test) {
     $(() => {
         $("#test-results").css("display", "inherit");
