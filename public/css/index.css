@@ -9,16 +9,21 @@
     padding: 20px 0px;
 }
 
+video {
+    object-fit: cover;
+}
+
 .btn-circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 35px !important;
-    font-size: 25px !important;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px !important;
+    font-size: 40px !important;
 }
 
 .cameraOutput {
     display: flex;
     justify-content: center;
+    width: 100vw;
 }
 .rest {
     float: left;
