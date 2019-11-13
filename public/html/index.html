@@ -35,6 +35,10 @@
                 integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
                 crossorigin="anonymous"
             ></script>
+            <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+            />
             <script src="../bundle.js"></script>
         </div>
         <div id="test-results" style="display: none;">
@@ -47,41 +51,43 @@
             <div class="cameraOutput" id="camera">
                 <video id="player" autoplay></video>
             </div>
-            <button
-                class="captureButton"
-                id="start"
-                style="vertical-align:middle"
-            >
-                <span>Capture blank</span>
-            </button>
-            <button
-                class="captureButton"
-                id="next-slave"
-                style="vertical-align:middle;"
-            >
-                <span>Next Slave</span>
-            </button>
-            <button
-                class="captureButton"
-                id="capture-slave"
-                style="vertical-align:middle"
-            >
-                <span>Capture</span>
-            </button>
-            <button
-                class="captureButton"
-                id="show-orientation-button"
-                style="vertical-align:middle"
-            >
-                <span>Show orientation colors</span>
-            </button>
-            <button
-                class="captureButton"
-                id="capture-orientation"
-                style="vertical-align:middle"
-            >
-                <span>Capture</span>
-            </button>
+            <div id="slave-flow-buttons">
+                <button
+                    type="button"
+                    class="btn btn-danger btn-circle"
+                    id="start"
+                >
+                    <i class="fa fa-camera-retro"></i>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-danger btn-circle"
+                    id="next-slave"
+                >
+                    <i class="fa fa-step-forward"></i>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-danger btn-circle"
+                    id="capture-slave"
+                >
+                    <i class="fa fa-camera-retro"></i>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-danger btn-circle"
+                    id="show-orientation-button"
+                >
+                    <i class="fa fa-compass"></i>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-danger btn-circle"
+                    id="capture-orientation"
+                >
+                    <i class="fa fa-camera-retro"></i>
+                </button>
+            </div>
             <!-- <button
                 class="pink"
                 id="Display Pink"
@@ -117,13 +123,10 @@
             >
                 <span>Reset</span>
             </button> -->
-            <!-- <canvas
-                class="canvas"
-                id="canvas"
-                width="1280"
-                height="720"
-            ></canvas> -->
-            <div style="width: 100vw;">
+            <div
+                style="width: 100vw; display: flex; align-items: center; flex-direction: column;"
+            >
+                <div><h3>Output</h3></div>
                 <img
                     id="result-img"
                     src=""

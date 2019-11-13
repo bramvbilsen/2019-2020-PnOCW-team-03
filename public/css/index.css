@@ -3,9 +3,22 @@
     height: 100vh;
 }
 
+#slave-flow-buttons {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0px;
+}
+
+.btn-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 35px !important;
+    font-size: 25px !important;
+}
+
 .cameraOutput {
-    float: right;
-    width: 80%;
+    display: flex;
+    justify-content: center;
 }
 .rest {
     float: left;
