@@ -88,7 +88,7 @@ export default async function findScreen(
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
-        displayCanvasOnVisibleCanvas(nonColoredScreenCanvas);
+        displayDebugResult(nonColoredScreenCanvas);
         console.log("Non colored screen displayed!");
         //@ts-ignore
         while (currentStep !== 1) {
@@ -108,7 +108,7 @@ export default async function findScreen(
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
-        displayCanvasOnVisibleCanvas(coloredScreenCanvas);
+        displayDebugResult(coloredScreenCanvas);
         console.log("Colored screen displayed!");
         //@ts-ignore
         while (currentStep !== 2) {
@@ -178,7 +178,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        displayCanvasOnVisibleCanvas(_canvas);
+        displayDebugResult(_canvas);
         console.log("Extracted screen displayed!");
         //@ts-ignore
         while (currentStep !== 3) {
@@ -222,7 +222,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        displayCanvasOnVisibleCanvas(_canvas);
+        displayDebugResult(_canvas);
         console.log("Possible corners displayed!");
         //@ts-ignore
         while (currentStep !== 4) {
@@ -243,7 +243,7 @@ export default async function findScreen(
             _ctx.fill();
             _ctx.closePath();
         });
-        displayCanvasOnVisibleCanvas(_canvas);
+        displayDebugResult(_canvas);
         console.log("Convex hull corners displayed!");
         //@ts-ignore
         while (currentStep !== 5) {
@@ -254,7 +254,7 @@ export default async function findScreen(
     const possibleCornerConnections = createConnections(possibleCorners);
 
     if (DEBUG) {
-        displayCanvasOnVisibleCanvas(
+        displayDebugResult(
             drawResultLines(width, height, possibleCornerConnections, 20)
         );
         console.log("Connected corners displayed!");
@@ -576,20 +576,6 @@ function drawResultLines(
     return canvas;
 }
 
-function displayCanvasOnVisibleCanvas(canvasToDisplay: HTMLCanvasElement) {
-    const globalCanvas: HTMLCanvasElement = (<JQuery<HTMLCanvasElement>>(
-        $("#canvas")
-    ))[0];
-    const globalCtx = globalCanvas.getContext("2d");
-    globalCtx.drawImage(
-        canvasToDisplay,
-        0,
-        0,
-        canvasToDisplay.width,
-        canvasToDisplay.height,
-        0,
-        0,
-        globalCanvas.width,
-        globalCanvas.height
-    );
+function displayDebugResult(canvasToDisplay: HTMLCanvasElement) {
+    $("#result-img").attr("src", canvasToDisplay.toDataURL());
 }
