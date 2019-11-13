@@ -122,4 +122,4 @@ function pointsToSlaveScreens(points, list) {
     }
 
     return screens;
-}
+} 
