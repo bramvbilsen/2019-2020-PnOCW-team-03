@@ -21,7 +21,6 @@ window.slaveFlowHandler = slaveFlowHandler;
 window.findScreen = findScreen;
 
 $(() => {
-    setCanvasSize();
     const startButton = $("#start");
     const nextSlaveButton = $("#next-slave");
     const captureSlaveButton = $("#capture-slave");
