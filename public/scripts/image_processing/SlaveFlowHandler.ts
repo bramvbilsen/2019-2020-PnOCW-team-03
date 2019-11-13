@@ -87,10 +87,7 @@ export default class SlaveFlowHandler {
             cameraWidth * scale,
             cameraHeight * scale
         );
-        $("#result-img").attr(
-            "src",
-            "data:image/png;base64," + this.blancoCanvas.toDataURL()
-        );
+        $("#result-img").attr("src", this.blancoCanvas.toDataURL());
         this.step = WorkflowStep.SLAVE_CYCLE;
     }
 
