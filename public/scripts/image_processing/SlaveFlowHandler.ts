@@ -3,6 +3,7 @@ import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
+import { PREFERRED_CANVAS_WIDTH, PREFERRED_CANVAS_HEIGHT } from "../CONSTANTS";
 
 export enum WorkflowStep {
     START = "initialize",
@@ -68,7 +69,7 @@ export default class SlaveFlowHandler {
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
 
-        const scale = calculateCameraCanvasScaleFactor(
+        const visualScale = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
             canvas[0].width,
@@ -80,18 +81,28 @@ export default class SlaveFlowHandler {
             player[0],
             0,
             0,
-            cameraWidth * scale,
-            cameraHeight * scale
+            cameraWidth * visualScale,
+            cameraHeight * visualScale
         );
 
-        this.blancoCanvas = createCanvas(canvas[0].width, canvas[0].height);
+        const algoScale = calculateCameraCanvasScaleFactor(
+            cameraWidth,
+            cameraHeight,
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
+        );
+
+        this.blancoCanvas = createCanvas(
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
+        );
         const blancoCtx = this.blancoCanvas.getContext("2d");
         blancoCtx.drawImage(
             player[0],
             0,
             0,
-            cameraWidth * scale,
-            cameraHeight * scale
+            cameraWidth * algoScale,
+            cameraHeight * algoScale
         );
         this.step = WorkflowStep.SLAVE_CYCLE;
     }
@@ -119,23 +130,25 @@ export default class SlaveFlowHandler {
         const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
-        const scale = calculateCameraCanvasScaleFactor(
+        const algoScale = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
-        const coloredCanvas = createCanvas(canvas[0].width, canvas[0].height);
+        const coloredCanvas = createCanvas(
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
+        );
         coloredCanvas
             .getContext("2d")
             .drawImage(
                 player[0],
                 0,
                 0,
-                cameraWidth * scale,
-                cameraHeight * scale
+                cameraWidth * algoScale,
+                cameraHeight * algoScale
             );
-        console.log(client.color);
         const corners = await findScreen(
             this.blancoCanvas,
             coloredCanvas,
@@ -143,12 +156,34 @@ export default class SlaveFlowHandler {
             client.DEBUG
         );
         this.resetDebug();
+        const visualScale = calculateCameraCanvasScaleFactor(
+            cameraWidth,
+            cameraHeight,
+            canvas[0].width,
+            canvas[0].height
+        );
         const ctx = canvas[0].getContext("2d");
-        ctx.drawImage(this.blancoCanvas, 0, 0);
+        ctx.drawImage(
+            this.blancoCanvas,
+            0,
+            0,
+            this.blancoCanvas.width,
+            this.blancoCanvas.height,
+            0,
+            0,
+            canvas[0].width,
+            canvas[0].height
+        );
         ctx.fillStyle = "rgb(0, 255, 255)";
         corners.forEach(corner => {
             ctx.beginPath();
-            ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+            ctx.arc(
+                corner.x * visualScale,
+                corner.y * visualScale,
+                20,
+                0,
+                Math.PI * 2
+            );
             ctx.fill();
             ctx.closePath();
         });
@@ -162,18 +197,17 @@ export default class SlaveFlowHandler {
 
     takePictureOfSlaveOrientation() {
         const player: JQuery<HTMLVideoElement> = $("#player");
-        const canvas: JQuery<HTMLCanvasElement> = $("#canvas");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
-        const scale = calculateCameraCanvasScaleFactor(
+        const algoScale = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
         const orientationCanvas = createCanvas(
-            canvas[0].width,
-            canvas[0].height
+            PREFERRED_CANVAS_WIDTH,
+            PREFERRED_CANVAS_HEIGHT
         );
         orientationCanvas
             .getContext("2d")
@@ -181,8 +215,8 @@ export default class SlaveFlowHandler {
                 player[0],
                 0,
                 0,
-                cameraWidth * scale,
-                cameraHeight * scale
+                cameraWidth * algoScale,
+                cameraHeight * algoScale
             );
         const currScreen = this.screens[this.screens.length - 1];
         currScreen.orientation = getOrientationAngle(
