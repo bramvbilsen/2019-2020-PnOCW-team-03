@@ -67,7 +67,7 @@ export default async function findScreen(
     );
 
     const IMMEDIATE_NEIGHBOR_RANGE = 1;
-    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.2;
+    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.1;
     const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.5;
 
     const width = nonColoredScreenCanvas.width;
@@ -237,7 +237,7 @@ export default async function findScreen(
         );
         console.log("Connected corners displayed!");
         //@ts-ignore
-        while (currentStep !== 6) {
+        while (currentStep !== 5) {
             await wait(250);
         }
     }
@@ -250,20 +250,6 @@ export default async function findScreen(
     );
 
     return corners;
-}
-
-type Image = HTMLImageElement;
-async function loadImage(src: string): Promise<Image> {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-            resolve(img);
-        };
-        img.onerror = err => {
-            reject(err);
-        };
-    });
 }
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
