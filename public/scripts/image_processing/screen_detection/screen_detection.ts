@@ -186,6 +186,27 @@ export default async function findScreen(
         }
     }
 
+    possibleCorners = convexHull(possibleCorners);
+
+    if (DEBUG) {
+        const _canvas = createCanvas(width, height);
+        _canvas.id = "canvas";
+        const _ctx = _canvas.getContext("2d");
+        _ctx.fillStyle = "rgb(0, 255, 255)";
+        possibleCorners.forEach(corner => {
+            _ctx.beginPath();
+            _ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+            _ctx.fill();
+            _ctx.closePath();
+        });
+        displayDebugResult(_canvas);
+        console.log("Convex hull corners displayed!");
+        //@ts-ignore
+        while (currentStep !== 4) {
+            await wait(250);
+        }
+    }
+
     possibleCorners = possibleCorners.filter(point => {
         const linearizedIndex = (width * point.y + point.x) * 4;
         // Corners will have on average 25 percent colored neighbors. Delete all pixels who do not meet this.
@@ -224,27 +245,6 @@ export default async function findScreen(
         });
         displayDebugResult(_canvas);
         console.log("Possible corners displayed!");
-        //@ts-ignore
-        while (currentStep !== 4) {
-            await wait(250);
-        }
-    }
-
-    possibleCorners = convexHull(possibleCorners);
-
-    if (DEBUG) {
-        const _canvas = createCanvas(width, height);
-        _canvas.id = "canvas";
-        const _ctx = _canvas.getContext("2d");
-        _ctx.fillStyle = "rgb(0, 255, 255)";
-        possibleCorners.forEach(corner => {
-            _ctx.beginPath();
-            _ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-            _ctx.fill();
-            _ctx.closePath();
-        });
-        displayDebugResult(_canvas);
-        console.log("Convex hull corners displayed!");
         //@ts-ignore
         while (currentStep !== 5) {
             await wait(250);
