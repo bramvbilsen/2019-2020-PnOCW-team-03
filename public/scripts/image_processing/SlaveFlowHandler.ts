@@ -33,6 +33,7 @@ export default class SlaveFlowHandler {
         $("#show-orientation-button").css("display", "none");
         $("#capture-orientation").css("display", "none");
         $("#start").css("display", "inherit");
+        $("#loading-master-indicator").css("display", "none");
         const color = { ...client.color };
         client.color = { r: 255, g: 255, b: 255, a: 255 };
         if (this.prevSlaveID) {
@@ -154,6 +155,8 @@ export default class SlaveFlowHandler {
         });
         $("#result-img").attr("src", resultCanvas.toDataURL());
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
+        $("#show-orientation-button").toggle();
+        $("#loading-master-indicator").toggle();
     }
 
     showOrientationOnSlave() {

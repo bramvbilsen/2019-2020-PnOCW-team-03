@@ -12,6 +12,7 @@ import Sync from "../util/Sync";
 class Client {
     private _type: ConnectionType;
     private _slaves: Array<string> = [];
+    private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;

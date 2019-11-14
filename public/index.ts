@@ -26,11 +26,13 @@ $(() => {
     const captureSlaveButton = $("#capture-slave");
     const showOrientationButton = $("#show-orientation-button");
     const captureOrientationButton = $("#capture-orientation");
+    const loadingMasterIndicator = $("#loading-master-indicator");
     const resetButton = $("#reset");
     nextSlaveButton.toggle();
     captureSlaveButton.toggle();
     showOrientationButton.toggle();
     captureOrientationButton.toggle();
+    loadingMasterIndicator.toggle();
     startButton.off().on("click", () => {
         slaveFlowHandler.takeNoColorPicture();
         nextSlaveButton.toggle();
@@ -42,8 +44,8 @@ $(() => {
     });
     captureSlaveButton.off().on("click", async () => {
         await slaveFlowHandler.takePictureOfColoredScreen();
+        loadingMasterIndicator.toggle();
         captureSlaveButton.toggle();
-        showOrientationButton.toggle();
     });
     showOrientationButton.off().on("click", () => {
         slaveFlowHandler.showOrientationOnSlave();
@@ -126,13 +128,13 @@ if (env.test) {
                 `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
             );
         });
-        // run_orientation_detection_tests(testResult => {
-        //     $("#loading").css("display", "none");
-        //     orientationDetectionTextDiv.append(testResult.htmlMsg);
-        // }).then(totalExecutionTime => {
-        //     orientationDetectionTextDiv.append(
-        //         `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
-        //     );
-        // });
+        run_orientation_detection_tests(testResult => {
+            $("#loading").css("display", "none");
+            orientationDetectionTextDiv.append(testResult.htmlMsg);
+        }).then(totalExecutionTime => {
+            orientationDetectionTextDiv.append(
+                `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
+            );
+        });
     });
 }
