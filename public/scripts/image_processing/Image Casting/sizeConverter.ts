@@ -28,7 +28,7 @@ export function getSurroundingBoxPoints(list: Array<Point>) {
      * @param {number} lowestY - The lowest Y-value
 	 * @param {array} list - A list with the points of the screens.
 	 */
-function getPointsTranslatedToBox(lowestX: number, lowestY: number, list: Array<Point>) {
+export function getPointsTranslatedToBox(lowestX: number, lowestY: number, list: Array<Point>) {
     for (let i = 0; i < list.length; i++) {
         const point: Point = list[i];
         list[i] = new Point(point.x-lowestX, point.y-lowestY);
@@ -96,7 +96,7 @@ export function getScreensTranslatedToImage(width: number, height: number, list:
 	 * Turns a list of slaveScreens into a list of points
 	 * @param {array} slaveScreens - A list with all the slaveScreens.
 	 */
-function slaveScreensToPoints(slaveScreens: Array<SlaveScreen>) {
+export function slaveScreensToPoints(slaveScreens: Array<SlaveScreen>) {
     let points: Array<Point> = [];
 
     slaveScreens.forEach(screen => {
@@ -111,7 +111,7 @@ function slaveScreensToPoints(slaveScreens: Array<SlaveScreen>) {
 	 * @param {array} points - A list with all the points. (Must be %4!)
      * @param {array} list - A list with all the original slaveScreens.
 	 */
-function pointsToSlaveScreens(points: Array<Point>, list: Array<SlaveScreen>) {
+export function pointsToSlaveScreens(points: Array<Point>, list: Array<SlaveScreen>) {
     let screens: Array<SlaveScreen> = [];
 
     for (let i = 0; i < points.length; i+=4) {
