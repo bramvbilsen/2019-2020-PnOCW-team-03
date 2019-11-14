@@ -513,7 +513,7 @@ function findFinalCorners(
 
     const avgDistanceBetweenCorners =
         distancesBetweenPoints.reduce((a, b) => a + b, 0) /
-        this._offsets.length;
+        distancesBetweenPoints.length;
 
     const centerPoint = getCentroidOf(possibleCorners);
 
