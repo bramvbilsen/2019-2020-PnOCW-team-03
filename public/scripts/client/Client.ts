@@ -161,6 +161,24 @@ class Client {
     };
 
     /**
+     * Sends a request to the server to change the background color of the slave.
+     * This is only permitted if the current `this.type === ConnectionType.MASTER`
+     * 	and will thus not send the server request if this is not the case.
+     */
+    public resetSlaveColor = (slaveId: string) => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
+            );
+            return;
+        }
+        this._socket.emit(MasterEventTypes.ChangeSlaveBackground, {
+            slaveId,
+            color: { r: 0, g: 0, b: 0 },
+        });
+    };
+
+    /**
      * Sends a request to the server to change the orientation colors of the slave.
      * This is only permitted if the current `this.type === ConnectionType.MASTER`
      * 	and will thus not send the server request if this is not the case.
