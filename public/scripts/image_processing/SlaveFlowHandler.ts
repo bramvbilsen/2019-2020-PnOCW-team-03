@@ -160,7 +160,7 @@ export default class SlaveFlowHandler {
     }
 
     showOrientationOnSlave() {
-        client.showOrientationColorsOnSlave(this.currSlaveID);
+        client.toggleOrientationColorsOnSlave(this.currSlaveID);
     }
 
     takePictureOfSlaveOrientation() {
@@ -192,7 +192,7 @@ export default class SlaveFlowHandler {
             orientationCanvas
         );
         console.log(currScreen.orientation);
-        client.resetSlaveColor(this.currSlaveID);
+        client.toggleOrientationColorsOnSlave(this.currSlaveID);
         this.endSlaveCycle();
     }
 }

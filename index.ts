@@ -103,7 +103,7 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     socket.on(
-        MasterEventTypes.DisplaySlaveOrientationColors,
+        MasterEventTypes.ToggleSlaveOrientationColors,
         (msg: {
             slaveId: string;
             leftTop: { r: string; g: string; b: string };
