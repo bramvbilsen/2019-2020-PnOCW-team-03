@@ -499,7 +499,7 @@ function findFinalCorners(
 ): Point[] {
     if (cornerConnections.length === 0) return [];
 
-    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 10;
+    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 20;
     const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.2;
 
     const sortedPossibleCornersConnections = cornerConnections.sort(
