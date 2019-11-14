@@ -267,11 +267,7 @@ export default async function findScreen(
         }
     }
 
-    const corners = findFinalCorners(
-        possibleCornerConnections,
-        coloredScreenPixels,
-        screenColorHSL
-    );
+    const corners = findFinalCorners(possibleCornerConnections);
 
     return corners;
 }
@@ -505,7 +501,6 @@ function removeOutliers(
     originalColoredScreenPixels: Uint8ClampedArray,
     color: IHSLColor
 ) {
-    const CENTROID_DISTANCE_THRESHOLD = 0.025;
     const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
 
     /**
@@ -549,36 +544,13 @@ function removeOutliers(
     }
 
     return possibleCorners;
-
-    // const LOST_PIXEL_THRESHOLD_LONG_RANGE = 20;
-    // const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.1;
-    // return [
-    //     ...possibleCorners.filter(corner => {
-    //         amountOfNeighboringPixelsWithColor(
-    //             originalColoredScreenPixels,
-    //             LOST_PIXEL_THRESHOLD_LONG_RANGE,
-    //             corner.x,
-    //             corner.y,
-    //             PREFERRED_CANVAS_WIDTH,
-    //             PREFERRED_CANVAS_HEIGHT,
-    //             color
-    //         ) > LOST_PIXEL_THRESHOLD_LONG;
-    //     }),
-    // ];
 }
 
 /**
  * Searches the final 4 corners of the screen.
  * @param cornerConnections - Connected possible corners.
  */
-function findFinalCorners(
-    cornerConnections: Line[],
-    originalColoredScreenPixels: Uint8ClampedArray,
-    color: IHSLColor
-): Point[] {
-    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 10;
-    const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.2;
-
+function findFinalCorners(cornerConnections: Line[]): Point[] {
     if (cornerConnections.length === 0) return [];
     if (cornerConnections.length === 1)
         return [...cornerConnections[0].endPoints];
@@ -593,61 +565,10 @@ function findFinalCorners(
     );
 
     const minDistanceBetweenCorners = 50;
-    let firstCornerConnection: Line;
-    let corner1IsValid = false;
-    let corner2IsValid = false;
-    while (
-        !(corner1IsValid && corner2IsValid) &&
-        sortedPossibleCornersConnections.length > 0
-    ) {
-        firstCornerConnection = sortedPossibleCornersConnections.shift();
-        corner1IsValid =
-            amountOfNeighboringPixelsWithColor(
-                originalColoredScreenPixels,
-                LOST_PIXEL_THRESHOLD_LONG_RANGE,
-                firstCornerConnection.a.x,
-                firstCornerConnection.a.y,
-                PREFERRED_CANVAS_WIDTH,
-                PREFERRED_CANVAS_HEIGHT,
-                color
-            ) > LOST_PIXEL_THRESHOLD_LONG;
-        corner2IsValid =
-            amountOfNeighboringPixelsWithColor(
-                originalColoredScreenPixels,
-                LOST_PIXEL_THRESHOLD_LONG_RANGE,
-                firstCornerConnection.b.x,
-                firstCornerConnection.b.y,
-                PREFERRED_CANVAS_WIDTH,
-                PREFERRED_CANVAS_HEIGHT,
-                color
-            ) > LOST_PIXEL_THRESHOLD_LONG;
-    }
-    if (sortedPossibleCornersConnections.length === 0) {
-        return firstCornerConnection.endPoints;
-    }
+    let firstCornerConnection: Line = sortedPossibleCornersConnections.shift();
     let secondCornerConnection: Line;
     for (let i = 0; i < sortedPossibleCornersConnections.length; i++) {
         const connection = sortedPossibleCornersConnections[i];
-        corner1IsValid =
-            amountOfNeighboringPixelsWithColor(
-                originalColoredScreenPixels,
-                LOST_PIXEL_THRESHOLD_LONG_RANGE,
-                connection.a.x,
-                connection.a.y,
-                PREFERRED_CANVAS_WIDTH,
-                PREFERRED_CANVAS_HEIGHT,
-                color
-            ) > LOST_PIXEL_THRESHOLD_LONG;
-        corner2IsValid =
-            amountOfNeighboringPixelsWithColor(
-                originalColoredScreenPixels,
-                LOST_PIXEL_THRESHOLD_LONG_RANGE,
-                connection.b.x,
-                connection.b.y,
-                PREFERRED_CANVAS_WIDTH,
-                PREFERRED_CANVAS_HEIGHT,
-                color
-            ) > LOST_PIXEL_THRESHOLD_LONG;
         if (
             connection.a.distanceTo(firstCornerConnection.a) >
                 minDistanceBetweenCorners &&
@@ -656,9 +577,7 @@ function findFinalCorners(
             connection.b.distanceTo(firstCornerConnection.a) >
                 minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners &&
-            corner1IsValid &&
-            corner2IsValid
+                minDistanceBetweenCorners
         ) {
             secondCornerConnection = connection;
             break;
