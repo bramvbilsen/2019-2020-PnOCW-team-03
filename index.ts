@@ -112,7 +112,7 @@ io.on("connect", (socket: socketio.Socket) => {
             rightBottom: { r: string; g: string; b: string };
         }) => {
             if (socket.id === connections.master.id) {
-                console.log("Attempting to change background by master");
+                console.log("Attempting to change orientation by master");
                 const { slaveId, ...slaveMsg } = msg;
                 io.to(slaveId).emit(
                     SlaveEventTypes.ChangeOrientationColors,

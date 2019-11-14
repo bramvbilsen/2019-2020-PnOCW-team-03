@@ -160,6 +160,7 @@ export default class SlaveFlowHandler {
     }
 
     showOrientationOnSlave() {
+        console.log("showing or colors");
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
     }
 

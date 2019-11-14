@@ -62,7 +62,7 @@ class Client {
                             this.startCounterEvent
                         ),
                         this._socket.on(
-                            SlaveEventTypes.ToggleOrientationColors,
+                            SlaveEventTypes.ChangeOrientationColors,
                             this.toggleOrientationColors
                         )
                     );
@@ -238,6 +238,9 @@ class Client {
         const orientationElem: JQuery<HTMLDivElement> = $(
             "#orientation-colors"
         );
+        if (orientationElem.attr("display") !== "none") {
+            this.changeBackground({ color: { r: 255, g: 255, b: 255 } });
+        }
         orientationElem.toggle();
     };
 
