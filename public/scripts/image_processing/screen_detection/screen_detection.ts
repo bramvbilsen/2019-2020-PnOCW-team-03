@@ -18,14 +18,14 @@ interface IHSLRange {
 
 const similarPinkRange: IHSLRange = {
     hRange: 50,
-    sRange: 50,
-    lRange: 50,
+    sRange: 30,
+    lRange: 30,
 };
 
 const randomColorRange: IHSLRange = {
     hRange: 52,
-    sRange: 52,
-    lRange: 52,
+    sRange: 30,
+    lRange: 30,
 };
 
 //@ts-ignore
@@ -67,8 +67,8 @@ export default async function findScreen(
     );
 
     const IMMEDIATE_NEIGHBOR_RANGE = 3;
-    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.1;
-    const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.5;
+    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.2;
+    const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.6;
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -269,7 +269,6 @@ export default async function findScreen(
 
     const corners = findFinalCorners(
         possibleCornerConnections,
-        possibleCorners,
         coloredScreenPixels,
         screenColorHSL
     );
@@ -506,65 +505,66 @@ function removeOutliers(
     originalColoredScreenPixels: Uint8ClampedArray,
     color: IHSLColor
 ) {
-    // const CENTROID_DISTANCE_THRESHOLD = 0.025;
+    const CENTROID_DISTANCE_THRESHOLD = 0.025;
+    const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
 
-    // /**
-    //  * Keeps an object with the index of the corners as the keys and the longest connection as the value
-    //  */
-    // const longestCornerConnection: { [cornerIndex: number]: number } = {};
+    /**
+     * Keeps an object with the index of the corners as the keys and the longest connection as the value
+     */
+    const longestCornerConnection: { [cornerIndex: number]: number } = {};
 
-    // const distancesBetweenPoints: number[] = [];
-    // possibleCorners.forEach((corner, index) => {
-    //     for (let i = index + 1; i < possibleCorners.length; i++) {
-    //         const distance = corner.distanceTo(possibleCorners[i]);
-    //         distancesBetweenPoints.push(distance);
-    //         if (!longestCornerConnection[index]) {
-    //             longestCornerConnection[index] = distance;
-    //         } else {
-    //             longestCornerConnection[index] += distance;
-    //         }
-    //         if (!longestCornerConnection[i]) {
-    //             longestCornerConnection[i] = distance;
-    //         } else {
-    //             longestCornerConnection[i] += distance;
-    //         }
-    //     }
-    // });
+    const totalDistancesBetweenPoints: number[] = [];
+    possibleCorners.forEach((corner, index) => {
+        for (let i = index + 1; i < possibleCorners.length; i++) {
+            const distance = corner.distanceTo(possibleCorners[i]);
+            totalDistancesBetweenPoints.push(distance);
+            if (!longestCornerConnection[index]) {
+                longestCornerConnection[index] = distance;
+            } else {
+                longestCornerConnection[index] += distance;
+            }
+            if (!longestCornerConnection[i]) {
+                longestCornerConnection[i] = distance;
+            } else {
+                longestCornerConnection[i] += distance;
+            }
+        }
+    });
 
-    // const avgDistanceBetweenCorners =
-    //     distancesBetweenPoints.reduce((a, b) => a + b, 0) /
-    //     distancesBetweenPoints.length;
+    const avgTotalDistancesBetweenCorners =
+        Object.values(longestCornerConnection).reduce((a, b) => a + b, 0) /
+        Object.values(longestCornerConnection).length;
 
-    // for (const [index, length] of Object.entries(longestCornerConnection)) {
-    //     if (length > )
-    // }
+    for (const [index, length] of Object.entries(longestCornerConnection)) {
+        if (
+            length >
+            avgTotalDistancesBetweenCorners * MAX_AVG_DISTANCE_DIFF_THRESHOLD
+        ) {
+            const indexToRemove = parseInt(index);
+            possibleCorners = [
+                ...possibleCorners.slice(0, indexToRemove),
+                ...possibleCorners.slice(indexToRemove + 1),
+            ];
+        }
+    }
 
-    // const centerPoint = getCentroidOf(possibleCorners);
+    return possibleCorners;
 
+    // const LOST_PIXEL_THRESHOLD_LONG_RANGE = 20;
+    // const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.1;
     // return [
     //     ...possibleCorners.filter(corner => {
-    //         return (
-    //             corner.distanceTo(centerPoint) <=
-    //             avgDistanceBetweenCorners * CENTROID_DISTANCE_THRESHOLD
-    //         );
+    //         amountOfNeighboringPixelsWithColor(
+    //             originalColoredScreenPixels,
+    //             LOST_PIXEL_THRESHOLD_LONG_RANGE,
+    //             corner.x,
+    //             corner.y,
+    //             PREFERRED_CANVAS_WIDTH,
+    //             PREFERRED_CANVAS_HEIGHT,
+    //             color
+    //         ) > LOST_PIXEL_THRESHOLD_LONG;
     //     }),
     // ];
-
-    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 20;
-    const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.1;
-    return [
-        ...possibleCorners.filter(corner => {
-            amountOfNeighboringPixelsWithColor(
-                originalColoredScreenPixels,
-                LOST_PIXEL_THRESHOLD_LONG_RANGE,
-                corner.x,
-                corner.y,
-                PREFERRED_CANVAS_WIDTH,
-                PREFERRED_CANVAS_HEIGHT,
-                color
-            ) > LOST_PIXEL_THRESHOLD_LONG;
-        }),
-    ];
 }
 
 /**
@@ -573,7 +573,6 @@ function removeOutliers(
  */
 function findFinalCorners(
     cornerConnections: Line[],
-    possibleCorners: Point[],
     originalColoredScreenPixels: Uint8ClampedArray,
     color: IHSLColor
 ): Point[] {
@@ -667,7 +666,7 @@ function findFinalCorners(
     }
     return [
         ...firstCornerConnection.endPoints,
-        ...secondCornerConnection.endPoints,
+        ...(secondCornerConnection.endPoints || []),
     ];
 }
 
