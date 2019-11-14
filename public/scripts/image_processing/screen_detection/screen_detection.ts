@@ -18,14 +18,14 @@ interface IHSLRange {
 
 const similarPinkRange: IHSLRange = {
     hRange: 50,
-    sRange: 30,
-    lRange: 30,
+    sRange: 40,
+    lRange: 40,
 };
 
 const randomColorRange: IHSLRange = {
-    hRange: 52,
-    sRange: 30,
-    lRange: 30,
+    hRange: 50,
+    sRange: 40,
+    lRange: 40,
 };
 
 //@ts-ignore
