@@ -70,7 +70,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Ten percent screen size": async function ten_percent_screen() {
+    "10% percent screen size": async function ten_percent_screen() {
         const percentage = 0.1;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -92,7 +92,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Twenty percent screen size": async function twenty_percent_screen() {
+    "20% percent screen size": async function twenty_percent_screen() {
         const percentage = 0.2;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -114,7 +114,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Thirty percent screen size": async function thirty_percent_screen() {
+    "30% percent screen size": async function thirty_percent_screen() {
         const percentage = 0.3;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -136,7 +136,29 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Ten percent screen size & 45 degree rotation": async function ten_percent_45deg_rotated_screen() {
+    "100% screen size": async function ten_percent_screen() {
+        const percentage = 1;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(0, 0, 0)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "10% screen size & 45 degree rotation": async function ten_percent_45deg_rotated_screen() {
         const percentage = 0.1;
         const degree = 45;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);

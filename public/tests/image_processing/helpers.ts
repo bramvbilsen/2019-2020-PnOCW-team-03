@@ -3,6 +3,10 @@ import { IRGBAColor } from "../../scripts/types/Color";
 import findScreen, {
     createCanvas,
 } from "../../scripts/image_processing/screen_detection/screen_detection";
+import {
+    PREFERRED_CANVAS_WIDTH,
+    PREFERRED_CANVAS_HEIGHT,
+} from "../../scripts/CONSTANTS";
 
 export const pinkRGBA: IRGBAColor = {
     r: 255,
@@ -213,6 +217,8 @@ export function createRectangularScreensCanvas(
     const screen = Screen.unordered(points);
     const canvas = createCanvas(canvasWidth, canvasHeight);
     const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, PREFERRED_CANVAS_WIDTH, PREFERRED_CANVAS_HEIGHT);
     ctx.fillStyle = `rgb(${color.r}, ${color.g}, ${color.b})`;
     ctx.beginPath();
     ctx.moveTo(screen.topLeft.x, screen.topLeft.y);

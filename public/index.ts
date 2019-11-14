@@ -126,13 +126,13 @@ if (env.test) {
                 `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
             );
         });
-        run_orientation_detection_tests(testResult => {
-            $("#loading").css("display", "none");
-            orientationDetectionTextDiv.append(testResult.htmlMsg);
-        }).then(totalExecutionTime => {
-            orientationDetectionTextDiv.append(
-                `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
-            );
-        });
+        // run_orientation_detection_tests(testResult => {
+        //     $("#loading").css("display", "none");
+        //     orientationDetectionTextDiv.append(testResult.htmlMsg);
+        // }).then(totalExecutionTime => {
+        //     orientationDetectionTextDiv.append(
+        //         `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
+        //     );
+        // });
     });
 }
