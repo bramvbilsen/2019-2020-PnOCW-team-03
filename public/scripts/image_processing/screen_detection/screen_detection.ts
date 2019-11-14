@@ -8,6 +8,7 @@ import {
     PREFERRED_CANVAS_WIDTH,
     PREFERRED_CANVAS_HEIGHT,
 } from "../../CONSTANTS";
+import { getCentroidOf } from "../../util/shapes";
 
 interface IHSLRange {
     hRange: number;
@@ -243,6 +244,7 @@ export default async function findScreen(
 
     const corners = findFinalCorners(
         possibleCornerConnections,
+        possibleCorners,
         coloredScreenPixels,
         screenColorHSL
     );
@@ -494,13 +496,37 @@ function createConnections(points: Point[]) {
  */
 function findFinalCorners(
     cornerConnections: Line[],
+    possibleCorners: Point[],
     originalColoredScreenPixels: Uint8ClampedArray,
     color: IHSLColor
 ): Point[] {
-    if (cornerConnections.length === 0) return [];
-
-    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 20;
+    const CENTROID_DISTANCE_THRESHOLD = 0.025;
+    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 10;
     const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.2;
+
+    const distancesBetweenPoints: number[] = [];
+    possibleCorners.forEach((corner, index) => {
+        for (let i = index; i < possibleCorners.length; i++) {
+            distancesBetweenPoints.push(corner.distanceTo(possibleCorners[i]));
+        }
+    });
+
+    const avgDistanceBetweenCorners =
+        distancesBetweenPoints.reduce((a, b) => a + b, 0) /
+        this._offsets.length;
+
+    const centerPoint = getCentroidOf(possibleCorners);
+
+    cornerConnections.filter(connection => {
+        return (
+            connection.a.distanceTo(centerPoint) <=
+                avgDistanceBetweenCorners * CENTROID_DISTANCE_THRESHOLD &&
+            connection.b.distanceTo(centerPoint) <=
+                avgDistanceBetweenCorners * CENTROID_DISTANCE_THRESHOLD
+        );
+    });
+
+    if (cornerConnections.length === 0) return [];
 
     const sortedPossibleCornersConnections = cornerConnections.sort(
         (connectionA, connectionB) => connectionB.length - connectionA.length
