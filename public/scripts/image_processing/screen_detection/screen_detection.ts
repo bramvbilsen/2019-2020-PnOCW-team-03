@@ -497,28 +497,68 @@ function createConnections(points: Point[]) {
     return connections;
 }
 
-function removeOutliers(possibleCorners: Point[]) {
-    const CENTROID_DISTANCE_THRESHOLD = 0.025;
+function removeOutliers(
+    possibleCorners: Point[],
+    originalColoredScreenPixels: Uint8ClampedArray,
+    color: IHSLColor
+) {
+    // const CENTROID_DISTANCE_THRESHOLD = 0.025;
 
-    const distancesBetweenPoints: number[] = [];
-    possibleCorners.forEach((corner, index) => {
-        for (let i = index; i < possibleCorners.length; i++) {
-            distancesBetweenPoints.push(corner.distanceTo(possibleCorners[i]));
-        }
-    });
+    // /**
+    //  * Keeps an object with the index of the corners as the keys and the longest connection as the value
+    //  */
+    // const longestCornerConnection: { [cornerIndex: number]: number } = {};
 
-    const avgDistanceBetweenCorners =
-        distancesBetweenPoints.reduce((a, b) => a + b, 0) /
-        distancesBetweenPoints.length;
+    // const distancesBetweenPoints: number[] = [];
+    // possibleCorners.forEach((corner, index) => {
+    //     for (let i = index + 1; i < possibleCorners.length; i++) {
+    //         const distance = corner.distanceTo(possibleCorners[i]);
+    //         distancesBetweenPoints.push(distance);
+    //         if (!longestCornerConnection[index]) {
+    //             longestCornerConnection[index] = distance;
+    //         } else {
+    //             longestCornerConnection[index] += distance;
+    //         }
+    //         if (!longestCornerConnection[i]) {
+    //             longestCornerConnection[i] = distance;
+    //         } else {
+    //             longestCornerConnection[i] += distance;
+    //         }
+    //     }
+    // });
 
-    const centerPoint = getCentroidOf(possibleCorners);
+    // const avgDistanceBetweenCorners =
+    //     distancesBetweenPoints.reduce((a, b) => a + b, 0) /
+    //     distancesBetweenPoints.length;
 
+    // for (const [index, length] of Object.entries(longestCornerConnection)) {
+    //     if (length > )
+    // }
+
+    // const centerPoint = getCentroidOf(possibleCorners);
+
+    // return [
+    //     ...possibleCorners.filter(corner => {
+    //         return (
+    //             corner.distanceTo(centerPoint) <=
+    //             avgDistanceBetweenCorners * CENTROID_DISTANCE_THRESHOLD
+    //         );
+    //     }),
+    // ];
+
+    const LOST_PIXEL_THRESHOLD_LONG_RANGE = 20;
+    const LOST_PIXEL_THRESHOLD_LONG = 8 * LOST_PIXEL_THRESHOLD_LONG_RANGE * 0.1;
     return [
         ...possibleCorners.filter(corner => {
-            return (
-                corner.distanceTo(centerPoint) <=
-                avgDistanceBetweenCorners * CENTROID_DISTANCE_THRESHOLD
-            );
+            amountOfNeighboringPixelsWithColor(
+                originalColoredScreenPixels,
+                LOST_PIXEL_THRESHOLD_LONG_RANGE,
+                corner.x,
+                corner.y,
+                PREFERRED_CANVAS_WIDTH,
+                PREFERRED_CANVAS_HEIGHT,
+                color
+            ) > LOST_PIXEL_THRESHOLD_LONG;
         }),
     ];
 }
