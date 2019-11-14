@@ -1,15 +1,15 @@
 import Point from "screen_detection/Point";
-import SlaveScreen from "../util/SlaveScreen";
+import SlaveScreen from "util/SlaveScreen";
 
 /**
 	 * Calculates the coordinates of the closest surrounding box around the screens.
 	 * @param {array} list - A list with the points of the screens.
 	 */
-function getSurroundingBoxPoints(list) {
-    let highestX = 0;
-    let lowestX = 0;
-    let highestY = 0;
-    let lowestY = 0;
+export function getSurroundingBoxPoints(list: Array<Point>) {
+    let highestX: number = 0;
+    let lowestX: number = 0;
+    let highestY: number = 0;
+    let lowestY: number = 0;
 
     list.forEach(point => {
         if (point.x > highestX) highestX = point.x;
@@ -28,9 +28,9 @@ function getSurroundingBoxPoints(list) {
      * @param {number} lowestY - The lowest Y-value
 	 * @param {array} list - A list with the points of the screens.
 	 */
-function getPointsTranslatedToBox(lowestX, lowestY, list) {
+function getPointsTranslatedToBox(lowestX: number, lowestY: number, list: Array<Point>) {
     for (let i = 0; i < list.length; i++) {
-        const point = list[i];
+        const point: Point = list[i];
         list[i] = new Point(point.x-lowestX, point.y-lowestY);
     }
 
@@ -47,13 +47,13 @@ function getPointsTranslatedToBox(lowestX, lowestY, list) {
 	 * @param {array} list - A list with the points of the screens.
      * @param {boolean} center - Whether or not to center the image.
 	 */
-function getPointsTranslatedToImage(width, height, screenWidth, screenHeight, list, center) {
-    let xRatio = width / screenWidth;
-    let yRatio = height / screenHeight;
-    let ratio = Math.min(xRatio, yRatio);
+export function getPointsTranslatedToImage(width: number, height: number, screenWidth: number, screenHeight: number, list: Array<Point>, center: boolean = false) {
+    let xRatio: number = width / screenWidth;
+    let yRatio: number = height / screenHeight;
+    let ratio: number = Math.min(xRatio, yRatio);
 
-    let deltaX = 0
-    let deltaY = 0
+    let deltaX: number = 0
+    let deltaY: number = 0
     if (center) {
         if (xRatio > yRatio) {
             deltaX = (width - screenWidth * yRatio) / 2;
@@ -64,7 +64,7 @@ function getPointsTranslatedToImage(width, height, screenWidth, screenHeight, li
     }
 
     for (let i = 0; i < list.length; i++) {
-        const point = list[i];
+        const point: Point = list[i];
         list[i] = new Point(point.x * ratio + deltaX, point.y * ratio + deltaY);
     }
 
@@ -79,15 +79,15 @@ function getPointsTranslatedToImage(width, height, screenWidth, screenHeight, li
 	 * @param {array} list - A list with the slaveScreens.
      * @param {boolean} center - Whether or not to center the image. (Default: false)
 	 */
-function getPointsTranslatedToImage(width, height, list, center = false) {
-    let points = slaveScreensToPoints(list);
+export function getScreensTranslatedToImage(width: number, height: number, list: Array<SlaveScreen>, center: boolean = false) {
+    let points: Array<Point> = slaveScreensToPoints(list);
 
-    let box = getSurroundingBoxPoints(points);
-    let screenWidth = box[1].x - box[0].x;
-    let screenHeight = box[1].y - box[0].y;
-    
-    let boxedPoints = getPointsTranslatedToBox(box[0].x, box[0].y, points);
-    let translatedPoints = getPointsTranslatedToImage(width, height, screenWidth, screenHeight, boxedPoints, center);
+    let box: Array<Point> = getSurroundingBoxPoints(points);
+    let screenWidth: number = box[1].x - box[0].x;
+    let screenHeight: number = box[1].y - box[0].y;
+
+    let boxedPoints: Array<Point> = getPointsTranslatedToBox(box[0].x, box[0].y, points);
+    let translatedPoints: Array<Point> = getPointsTranslatedToImage(width, height, screenWidth, screenHeight, boxedPoints, center);
 
     return pointsToSlaveScreens(translatedPoints, list);
 }
@@ -96,13 +96,13 @@ function getPointsTranslatedToImage(width, height, list, center = false) {
 	 * Turns a list of slaveScreens into a list of points
 	 * @param {array} slaveScreens - A list with all the slaveScreens.
 	 */
-function slaveScreensToPoints(slaveScreens) {
-    let points = [];
-        
+function slaveScreensToPoints(slaveScreens: Array<SlaveScreen>) {
+    let points: Array<Point> = [];
+
     slaveScreens.forEach(screen => {
         Array.prototype.push.apply(points, screen.corners);
     });
-    
+
     return points;
 }
 
@@ -111,15 +111,15 @@ function slaveScreensToPoints(slaveScreens) {
 	 * @param {array} points - A list with all the points. (Must be %4!)
      * @param {array} list - A list with all the original slaveScreens.
 	 */
-function pointsToSlaveScreens(points, list) {
-    let screens = [];
+function pointsToSlaveScreens(points: Array<Point>, list: Array<SlaveScreen>) {
+    let screens: Array<SlaveScreen> = [];
 
     for (let i = 0; i < points.length; i+=4) {
-        let corners = [points[i], points[i+1], points[i+2], points[i+3]];
-        let screen = new SlaveScreen(corners, list[i].slaveID);
+        let corners: Array<Point> = [points[i], points[i+1], points[i+2], points[i+3]];
+        let screen: SlaveScreen = new SlaveScreen(corners, list[i].slaveID);
         screen.slaveID = list[i].slaveID;
         screens.push(screen);
     }
 
     return screens;
-} 
+}
