@@ -205,7 +205,11 @@ export default async function findScreen(
         }
     }
 
-    possibleCorners = removeOutliers(possibleCorners);
+    possibleCorners = removeOutliers(
+        possibleCorners,
+        coloredScreenPixels,
+        screenColorHSL
+    );
 
     if (DEBUG) {
         const _canvas = createCanvas(width, height);
