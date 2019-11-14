@@ -66,7 +66,7 @@ export default async function findScreen(
         screenColorRGBA.b
     );
 
-    const IMMEDIATE_NEIGHBOR_RANGE = 1;
+    const IMMEDIATE_NEIGHBOR_RANGE = 3;
     const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.1;
     const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.5;
 
