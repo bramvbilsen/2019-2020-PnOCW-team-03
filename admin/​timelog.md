@@ -196,3 +196,23 @@ TC2: 6hrs
 Code reviewer 1: 3hrs
 
 Code reviewer 2: 6hrs
+
+
+##### 14/11:
+###### -CEO,TC2,CR2: Working with around the workflow for cat casting. Trying to finish the affine transformation algorithm.
+
+###### -CTO: Designing our design schematics in a flowchart/deployment diagram.
+
+###### -TC1: Writing tests and optimizing the corner detection algorithm.
+
+###### -CR1: Debugging triangulation.
+
+CEO: 2,5 hrs
+
+CTO: 2 hrs
+
+TC1: 4 hrs
+
+TC2: 3 hrs
+
+CR1&CR2: 3 hrs

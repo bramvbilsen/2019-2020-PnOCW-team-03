@@ -81,3 +81,38 @@ CEO & TC1: Workflow bepaald voor het algoritme in client side, hoe gaan we meerd
 CTO & TC2: Working on orientation detection algorithm.
 
 CR1&CR2: Worked further on implementing the triangulation algorithm given the middle points of each screen.
+
+### 04/11:
+CEO, TC1: verder gewerkt aan slaveflowHandler en het schrijven van report hiervan.
+TC2, CTO: Gewerkt aan het algoritme van screen orientation detection. De report hiervan uitgewerkt. Het algoritme werkt nu zoals we hadden afgesproken (display on screens, hoek meeting, return de hoek van orientatie).
+CR1: Verder gewerkt aan triangulatie. **Deadline volgende week (11/11).**
+CR2: Code reviewing van alles dat geschreven is afgelopen week. 
+
+### 07/11:
+CEO, CR2: Een concept zitten bedenken om cat casting mogelijk te maken. Volledig concept uitwerken in een pseudo algoritme. **Deadline om alles geimplementeerd te krijgen: 18/11
+
+TC1,TC2: Hebben verder gewerkt aan screendetection & orientationdetection, alsook testen zitten schrijven voor dit stuk code. 
+
+CTO&CR1 waren afwezig door ziekte deze meeting. Ik heb vernomen dat CR1 verder heeft gewerkt aan triangulatie(debuggen).
+
+### 11/11:
+CEO, TC2, CR2: Verder opdelen van het resterende werk om cat casting mogelijk te maken. Verdere bespreking van de workflow om dit mogelijk te krijgen. **TC2 maakt de affiene transformatie algoritme tegen volgende meeting(14/11).** Report schrijven.
+
+CTO, CR1: Werken aan synchronization.
+
+CR1: verder gewerkt aan Triangulation
+
+### 12/11:
+CEO,TC2,CR2: Report schrijven en testen rond cat casting. Elkaar verder helpen met het slicen van de image en de transformatie van img to screen.
+
+CTO, TC2, CR1: Testcases voor synchronizatie. TC1 en CTO hebben het verslagdeel hiervan (synchronization) geschreven ook in de latere avond.
+
+### 14/11:
+CEO, TC2, CR2: Verder werken aan cat casting algoritme in zijn geheel. Herschrijven van enkele functies alsook het creëeren van een image casting workflow voor een cohesief geheel te maken. **Deadline zondag 17/11 om middernacht om het werkende te krijgen.**
+
+TC1: Debuggen alsook het optimaliseren van cornerdetection. Hij zal de veranderde/versimpelde ui nog werkende zien te krijgen tegen **maandag 18/11.**
+
+CTO: Heeft het design schematic gemaakt voor ons project.
+
+CR1: Verder gewerkt aan triangulatie(still?).
+
