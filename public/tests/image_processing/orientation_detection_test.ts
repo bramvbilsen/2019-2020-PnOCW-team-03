@@ -20,7 +20,8 @@ const bottomLeftColor = "rgb(255, 216, 0)";
 const bottomRightColor = "rgb(12, 0, 255)";
 
 export default function run_tests(
-    onNewResult: (testResult: TestResult) => void
+    onNewResult: (testResult: TestResult) => void,
+    testNames?: string[]
 ) {
     return test_runner(
         tests,
@@ -33,13 +34,14 @@ export default function run_tests(
                 dt
             );
         },
-        onNewResult
+        onNewResult,
+        testNames
     );
 }
 
 /// MAKE SURE THAT THE EXPECTED COORDINATES ARE INSIDE OF THE CANVAS!
 const tests: Tests<number> = {
-    "No points": async function() {
+    "No points": async function () {
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
@@ -47,7 +49,7 @@ const tests: Tests<number> = {
         getOrientation(new SlaveScreen([], "1"), blanoCanvas);
         return { expected: 0, result: 0 };
     },
-    "Points but no colored screen": async function() {
+    "Points but no colored screen": async function () {
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
@@ -66,7 +68,7 @@ const tests: Tests<number> = {
         );
         return { expected: 0, result: 0 };
     },
-    "No orientation": async function() {
+    "No orientation": async function () {
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";

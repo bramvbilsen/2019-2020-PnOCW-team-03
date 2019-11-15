@@ -30,27 +30,30 @@ export default async function test_runner<T>(
         result: T,
         dt: number
     ) => TestResult,
-    onNewResult: (testResult: TestResult) => void
+    onNewResult: (testResult: TestResult) => void,
+    testNames?: string[]
 ): Promise<number> {
     const startTime = new Date();
     const testCompletion: Array<Promise<void>> = [];
     Object.entries(tests).forEach(([testName, test]) => {
-        testCompletion.push(
-            new Promise((resolve, reject) => {
-                const t0 = new Date();
-                test().then(({ expected, result }) => {
-                    onNewResult(
-                        createResult(
-                            testName,
-                            expected,
-                            result,
-                            +new Date() - +t0
-                        )
-                    );
-                    resolve();
-                });
-            })
-        );
+        if (!testNames || testNames.includes(testName)) {
+            testCompletion.push(
+                new Promise((resolve, reject) => {
+                    const t0 = new Date();
+                    test().then(({ expected, result }) => {
+                        onNewResult(
+                            createResult(
+                                testName,
+                                expected,
+                                result,
+                                +new Date() - +t0
+                            )
+                        );
+                        resolve();
+                    });
+                })
+            );
+        }
     });
     await Promise.all(testCompletion);
     return +new Date() - +startTime;
@@ -101,10 +104,10 @@ export class TestResult {
             this.success
                 ? ""
                 : "<br/>Expected: " +
-                  JSON.stringify(this.expected) +
-                  "<br/>But got: " +
-                  JSON.stringify(this.result)
-        }<br/>  ⏳ Executed in: ${this.dt}ms<br/><br/>`;
+                JSON.stringify(this.expected) +
+                "<br/>But got: " +
+                JSON.stringify(this.result)
+            }<br/>  ⏳ Executed in: ${this.dt}ms<br/><br/>`;
     }
 
     get msg() {
@@ -112,10 +115,10 @@ export class TestResult {
             this.success
                 ? ""
                 : "\nExpected: " +
-                  JSON.stringify(this.expected) +
-                  "\nBut got: " +
-                  JSON.stringify(this.result)
-        }\n  ⏳ Executed in: ${this.dt}ms\n\n`;
+                JSON.stringify(this.expected) +
+                "\nBut got: " +
+                JSON.stringify(this.result)
+            }\n  ⏳ Executed in: ${this.dt}ms\n\n`;
     }
 }
 
@@ -130,7 +133,7 @@ export function createResultMsg<T>(
     } else {
         return `Error ❌: <br/>    Expected: ${expected}<br/>    But got: ${result}${
             extra ? "<br/>" + extra : ""
-        }`;
+            }`;
     }
 }
 

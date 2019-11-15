@@ -11,6 +11,13 @@ const path = require("path");
 const del = require("del");
 const internalIp = require("internal-ip");
 const fs = require("fs");
+const args = {};
+const _args = require("minimist")(process.argv.slice(2));
+Object.keys(_args).forEach(arg => {
+    if (arg !== "_") {
+        args[arg] = _args[arg];
+    }
+});
 
 // ------ SERVER ------ //
 
@@ -118,7 +125,18 @@ gulp.task("Set local env", function(done) {
 });
 
 gulp.task("Set test env", function(done) {
-    fs.copyFileSync("./public/env/env.test.ts", "./public/env/env.ts");
+    const testArgs = {
+        baseUrl: "http://localhost:3000",
+        test: true,
+        testArgs: {},
+    };
+    for (let [key, value] of Object.entries(args)) {
+        testArgs.testArgs[key] = value.split(",");
+    }
+    fs.writeFileSync(
+        "./public/env/env.ts",
+        `export default ${JSON.stringify(testArgs)}`
+    );
     done();
 });
 

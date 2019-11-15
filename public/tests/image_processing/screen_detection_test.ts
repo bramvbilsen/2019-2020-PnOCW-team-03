@@ -16,7 +16,8 @@ const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;
 
 export default function run_tests(
-    onNewResult: (testResult: TestResult) => void
+    onNewResult: (testResult: TestResult) => void,
+    testNames: string[]
 ) {
     return test_runner(
         tests,
@@ -29,7 +30,8 @@ export default function run_tests(
                 dt
             );
         },
-        onNewResult
+        onNewResult,
+        testNames
     );
 }
 
@@ -70,7 +72,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "10% percent screen size": async function ten_percent_screen() {
+    "10% screen size": async function ten_percent_screen() {
         const percentage = 0.1;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -92,7 +94,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "20% percent screen size": async function twenty_percent_screen() {
+    "20% screen size": async function twenty_percent_screen() {
         const percentage = 0.2;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -114,7 +116,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "30% percent screen size": async function thirty_percent_screen() {
+    "30% screen size": async function thirty_percent_screen() {
         const percentage = 0.3;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
