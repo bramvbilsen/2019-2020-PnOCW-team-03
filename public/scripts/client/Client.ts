@@ -225,8 +225,8 @@ class Client {
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
-        const slaveHTML: JQuery<HTMLBodyElement> = $("#slave");
-        slaveHTML.css(
+        const page: JQuery<HTMLBodyElement> = $("#page");
+        page.css(
             "background-color",
             `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
         );
@@ -242,9 +242,9 @@ class Client {
         const orientationElem: JQuery<HTMLDivElement> = $(
             "#orientation-colors"
         );
-        // if (orientationElem.attr("display") !== "none") {
-        //     this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
-        // }
+        if (orientationElem.attr("display") !== "none") {
+            this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
+        }
         orientationElem.toggle();
     };
 

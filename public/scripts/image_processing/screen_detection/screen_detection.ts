@@ -1,3 +1,5 @@
+// TODO: It might be nice to check whether the corners enclose an area that exists of over THRESHOLD colored pixels
+
 import Point from "./Point";
 import Line from "./Line";
 import convexHull from "./hull";
@@ -76,11 +78,11 @@ export default async function findScreen(
         nonColoredScreenCanvas.getContext("2d")
     );
     const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
-        0,
-        0,
-        width,
-        height
-    ),
+            0,
+            0,
+            width,
+            height
+        ),
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
@@ -96,11 +98,11 @@ export default async function findScreen(
         coloredScreenCanvas.getContext("2d")
     );
     const coloredScreenPixelData = coloredScreenCtx.getImageData(
-        0,
-        0,
-        width,
-        height
-    ),
+            0,
+            0,
+            width,
+            height
+        ),
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
@@ -119,11 +121,11 @@ export default async function findScreen(
     resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
     resultingScreenCtx.fillRect(0, 0, width, height);
     const resultingScreenImageData = resultingScreenCtx.getImageData(
-        0,
-        0,
-        width,
-        height
-    ),
+            0,
+            0,
+            width,
+            height
+        ),
         resultingPixels = resultingScreenImageData.data;
 
     let possibleCorners: Point[] = [];
@@ -282,7 +284,7 @@ export default async function findScreen(
 
     const corners = findFinalCorners(possibleCornerConnections);
 
-    console.log(+(new Date()) - +t0 + "ms");
+    console.log(+new Date() - +t0 + "ms");
 
     return corners;
 }
@@ -586,13 +588,13 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         const connection = sortedPossibleCornersConnections[i];
         if (
             connection.a.distanceTo(firstCornerConnection.a) >
-            minDistanceBetweenCorners &&
+                minDistanceBetweenCorners &&
             connection.a.distanceTo(firstCornerConnection.b) >
-            minDistanceBetweenCorners &&
+                minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.a) >
-            minDistanceBetweenCorners &&
+                minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.b) >
-            minDistanceBetweenCorners
+                minDistanceBetweenCorners
         ) {
             secondCornerConnection = connection;
             break;

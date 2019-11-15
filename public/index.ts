@@ -107,6 +107,8 @@ $(() => {
 
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("Changed type to: " + type);
+    const page: JQuery<HTMLBodyElement> = $("#page");
+    page.css("background-color", `rgb(76, 175, 80)`);
     const loadingElem = $("#loading");
     if (slaveFlowHandler) {
         slaveFlowHandler.reset();
