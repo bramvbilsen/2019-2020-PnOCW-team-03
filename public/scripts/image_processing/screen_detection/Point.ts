@@ -16,4 +16,6 @@ export default class Point {
     toString() {
         return JSON.stringify({ x: this.x, y: this.y });
     }
+
+    copy = () => new Point(this.x, this.y);
 }

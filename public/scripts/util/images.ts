@@ -1,6 +1,5 @@
-export function show_image(src:string) {
-    var img = document.createElement("img");
-    img.src = src;
-    img.setAttribute('src', src);
-    console.log("DONE !")
-}
+export function cutImageToBoundingBoxAspectRatio(
+    image: HTMLImageElement,
+    boundingBoxWidth: number,
+    boundingBoxHeight: number
+) {}

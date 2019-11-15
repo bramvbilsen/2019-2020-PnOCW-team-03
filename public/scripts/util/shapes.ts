@@ -13,7 +13,7 @@ export function getCentroidOf(points: Point[]): Point {
     );
 }
 
-export function boundingBox(
+export function calculateBoundingBox(
     points: Point[]
 ): { topLeft: Point; topRight: Point; bottomLeft: Point; bottomRight: Point } {
     const xCoordinates = points.map(point => point.x).sort((a, b) => a - b);

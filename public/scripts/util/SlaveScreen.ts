@@ -23,4 +23,11 @@ export default class SlaveScreen {
             Math.round(sumY / this.corners.length)
         );
     }
+
+    public copy(): SlaveScreen {
+        const screen = new SlaveScreen(this.corners, this.slaveID);
+        screen.orientation = this.orientation;
+        screen.slavePortionImg = this.slavePortionImg;
+        return screen;
+    }
 }
