@@ -52,6 +52,15 @@
     padding: 20px 0px;
 }
 
+#image-container-slave {
+    width: 100vw;
+    height: 100vh;
+}
+
+#image-slave {
+    width: 100%;
+}
+
 #orientation-colors {
     display: none;
     width: 100vw;

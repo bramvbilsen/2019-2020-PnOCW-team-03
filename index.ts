@@ -21,10 +21,12 @@ const port = process.env.PORT || "3000";
 
 const staticFolder = path.resolve(__dirname + "/public");
 export const htmlFolder = path.resolve(staticFolder + "/html");
+const slaveImgUploadFolder = path.resolve(__dirname + "/server/uploads/slaves");
 
 let connections: Connections = new Connections();
 
 app.use(express.static(staticFolder));
+app.use("/slave_images", express.static(slaveImgUploadFolder));
 
 app.get("/", (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
@@ -79,6 +81,18 @@ io.on("connect", (socket: socketio.Socket) => {
                 console.log("Attempting to change background by master");
                 io.to(msg.slaveId).emit(SlaveEventTypes.ChangeBackground, {
                     color: msg.color,
+                });
+            }
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.DisplayImageOnSlave,
+        (msg: { slaveId: string; imgUrl: string }) => {
+            if (socket.id === connections.master.id) {
+                console.log("Attempting to display image by master");
+                io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
+                    imgUrl: msg.imgUrl,
                 });
             }
         }

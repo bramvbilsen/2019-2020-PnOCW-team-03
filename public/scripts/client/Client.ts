@@ -13,6 +13,7 @@ import { slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
+import { uploadSlaveImgCanvas } from "../util/image_uploader";
 
 class Client {
     private _type: ConnectionType;
@@ -69,6 +70,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.ChangeOrientationColors,
                             this.toggleOrientationColors
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.DisplayImage,
+                            this.displayImage
                         )
                     );
                 } else {
@@ -217,6 +222,28 @@ class Client {
         this._socket.emit(MasterEventTypes.SendArrowsRight);
     };
 
+    public showCanvasImgOnSlave = (
+        slaveId: string,
+        canvas: HTMLCanvasElement
+    ) => {
+        // Create test canvas for test purposes
+        if (!canvas) {
+            canvas = createCanvas(1280, 720);
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "rgb(0, 0, 0)";
+            ctx.fillRect(0, 0, 1280, 720);
+            ctx.fillStyle = "rgb(255, 0, 0)";
+            ctx.fillRect(50, 50, 300, 300);
+        }
+        uploadSlaveImgCanvas(this.id, canvas).then(({ imgPath }) => {
+            console.log(imgPath);
+            this._socket.emit(MasterEventTypes.DisplayImageOnSlave, {
+                imgUrl: `${env.baseUrl}${imgPath}`,
+                slaveId,
+            });
+        });
+    };
+
     private setNewSocketIOEmitters = (
         newEmitters: Array<SocketIOClient.Emitter>
     ) => {
@@ -260,6 +287,11 @@ class Client {
         $("#arrowImg").replaceWith(
             '<img id="arrowRight" src="../img/arrowRight.png" />'
         );
+    };
+
+    private displayImage = (data: { imgUrl: string }): void => {
+        $("#main-flow-slave").hide();
+        $("#image-slave").attr("src", data.imgUrl);
     };
 
     /**
