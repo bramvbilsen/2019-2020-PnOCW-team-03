@@ -222,6 +222,10 @@ class Client {
         this._socket.emit(MasterEventTypes.SendArrowsRight);
     };
 
+    /**
+     * Uploads an image (canvas) to the server and sends a Socket io event to the client
+     * to display the uploaded image.
+     */
     public showCanvasImgOnSlave = (
         slaveId: string,
         canvas: HTMLCanvasElement
