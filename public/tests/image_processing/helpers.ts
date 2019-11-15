@@ -36,7 +36,7 @@ export default async function test_runner<T>(
     const startTime = new Date();
     const testCompletion: Array<Promise<void>> = [];
     Object.entries(tests).forEach(([testName, test]) => {
-        if (!testNames || testNames.includes(testName)) {
+        if (!testNames || testNames.length === 0 || testNames.includes(testName)) {
             testCompletion.push(
                 new Promise((resolve, reject) => {
                     const t0 = new Date();
@@ -61,6 +61,12 @@ export default async function test_runner<T>(
 
 export interface Tests<T> {
     [testName: string]: () => Promise<{ expected: T; result: T }>;
+}
+
+export interface ITestResult {
+    name: string;
+    dt: number;
+    success: boolean;
 }
 
 export class TestResult {
@@ -119,6 +125,16 @@ export class TestResult {
                 "\nBut got: " +
                 JSON.stringify(this.result)
             }\n  ⏳ Executed in: ${this.dt}ms\n\n`;
+    }
+
+    toJsonObject = (): ITestResult => ({
+        name: this.name,
+        dt: this.dt,
+        success: this.success
+    })
+
+    toString() {
+        return JSON.stringify(this.toJsonObject());
     }
 }
 

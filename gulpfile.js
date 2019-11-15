@@ -1,4 +1,4 @@
-const WAITING_TIME_MS = 35000;
+const WAITING_TIME_MS = 12000;
 
 const gulp = require("gulp");
 const browserify = require("browserify");
@@ -131,7 +131,11 @@ gulp.task("Set test env", function(done) {
         testArgs: {},
     };
     for (let [key, value] of Object.entries(args)) {
-        testArgs.testArgs[key] = value.split(",");
+        if (value.split) {
+            testArgs.testArgs[key] = value.split(",");
+        } else {
+            testArgs.testArgs[key] = [];
+        }
     }
     fs.writeFileSync(
         "./public/env/env.ts",

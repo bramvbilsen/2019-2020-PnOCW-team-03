@@ -4,6 +4,7 @@ import findScreen from "./scripts/image_processing/screen_detection/screen_detec
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
 import run_tests from "./tests/run";
+import downloadTests from "./tests/download";
 import env from "./env/env";
 
 export const client = new Client({
@@ -106,5 +107,7 @@ function onConnectionTypeChange(type: ConnectionType) {
 }
 
 if (env.test) {
-    run_tests();
+    run_tests().then(results => {
+        downloadTests(results)
+    });
 }

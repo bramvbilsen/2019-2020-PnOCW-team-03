@@ -3,12 +3,6 @@ import Line from "./Line";
 import convexHull from "./hull";
 
 import { IHSLColor, IRGBAColor } from "../../types/Color";
-import env from "../../../env/env";
-import {
-    PREFERRED_CANVAS_WIDTH,
-    PREFERRED_CANVAS_HEIGHT,
-} from "../../CONSTANTS";
-import { getCentroidOf } from "../../util/shapes";
 
 interface IHSLRange {
     hRange: number;
@@ -59,6 +53,7 @@ export default async function findScreen(
     DEBUG = false
 ) {
     console.log("STARTING SCREEN DETECTION ALGORITHM");
+    const t0 = new Date();
 
     const screenColorHSL: IHSLColor = rgbToHsl(
         screenColorRGBA.r,
@@ -81,11 +76,11 @@ export default async function findScreen(
         nonColoredScreenCanvas.getContext("2d")
     );
     const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
@@ -101,11 +96,11 @@ export default async function findScreen(
         coloredScreenCanvas.getContext("2d")
     );
     const coloredScreenPixelData = coloredScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
@@ -124,11 +119,11 @@ export default async function findScreen(
     resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
     resultingScreenCtx.fillRect(0, 0, width, height);
     const resultingScreenImageData = resultingScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         resultingPixels = resultingScreenImageData.data;
 
     let possibleCorners: Point[] = [];
@@ -205,6 +200,12 @@ export default async function findScreen(
         }
     }
 
+    if (possibleCorners.length < 4) {
+        return [];
+    } else if (possibleCorners.length === 4) {
+        return possibleCorners;
+    }
+
     possibleCorners = removeOutliers(
         possibleCorners,
         coloredScreenPixels,
@@ -230,6 +231,12 @@ export default async function findScreen(
         }
     }
 
+    if (possibleCorners.length < 4) {
+        return [];
+    } else if (possibleCorners.length === 4) {
+        return possibleCorners;
+    }
+
     possibleCorners = convexHull(possibleCorners);
 
     if (DEBUG) {
@@ -251,6 +258,12 @@ export default async function findScreen(
         }
     }
 
+    if (possibleCorners.length < 4) {
+        return [];
+    } else if (possibleCorners.length === 4) {
+        return possibleCorners;
+    }
+
     if (possibleCorners.length === 4) {
         return possibleCorners;
     }
@@ -268,6 +281,8 @@ export default async function findScreen(
     }
 
     const corners = findFinalCorners(possibleCornerConnections);
+
+    console.log(+(new Date()) - +t0 + "ms");
 
     return corners;
 }
@@ -571,13 +586,13 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         const connection = sortedPossibleCornersConnections[i];
         if (
             connection.a.distanceTo(firstCornerConnection.a) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.a.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.a) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners
+            minDistanceBetweenCorners
         ) {
             secondCornerConnection = connection;
             break;
