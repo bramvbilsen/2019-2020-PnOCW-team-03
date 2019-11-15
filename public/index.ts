@@ -120,8 +120,6 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#master").css("display", "none");
         $("#slave").css("display", "inherit");
     }
-    // $("#master").css("background-color", "white");
-    // $("#slave").css("background-color", "white");
 
     if (env.test) {
         $("#slave").css("display", "none");

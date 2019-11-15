@@ -30,10 +30,6 @@ app.get("/", (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
-app.get("/screen_detection", (req, res) => {
-    res.sendFile(path.resolve(htmlFolder + "/screen_detection.html"));
-});
-
 app.get("/non_colored_screen_img", (req, res) => {
     res.sendFile(path.resolve(staticFolder + "/img/1.png"));
 });
