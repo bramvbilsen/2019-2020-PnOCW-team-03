@@ -12,6 +12,7 @@ import delauney from "../image_processing/Triangulation/Delaunay";
 import { slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
+import Line from "../image_processing/screen_detection/Line";
 
 class Client {
     private _type: ConnectionType;
@@ -347,7 +348,7 @@ class Client {
             const canvas = createCanvas(200, 200); //nog met juiste size werken
             const ctx = canvas.getContext("2d");
             ctx.strokeStyle = "rgb(255,0,0)";
-            triangulation.forEach(line => {
+            triangulation.forEach((line: Line) => {
                 let endPoints = line.endPoints;
                 ctx.beginPath();
                 ctx.moveTo(endPoints[0].x, endPoints[0].y);

@@ -99,12 +99,6 @@ export default class SlaveFlowHandler {
      */
     showColorOnNextSlave() {
         console.log("Showing color on slave");
-        const color = client.color;
-        if (this.prevSlaveID) {
-            client.color = { r: 255, g: 255, b: 255, a: 255 };
-            client.showColorOnSlave(this.prevSlaveID);
-        }
-        client.color = color;
         client.showColorOnSlave(this.currSlaveID);
     }
 
