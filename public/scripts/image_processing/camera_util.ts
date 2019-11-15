@@ -1,3 +1,8 @@
+export enum ScaledToFit {
+    WIDTH = "width",
+    HEIGHT = "height",
+}
+
 /**
  * Returns the scale factor for the camera snapshot to fit as large as possible in the canvas.
  * @param cameraWidth
@@ -11,7 +16,17 @@ export function calculateCameraCanvasScaleFactor(
     canvasWidth: number,
     canvasHeight: number
 ) {
-    const temp_scale = canvasWidth / cameraWidth;
-    let scale = canvasHeight / cameraHeight;
-    return (scale = scale > temp_scale ? temp_scale : scale);
+    const widthScale = canvasWidth / cameraWidth;
+    let heightScale = canvasHeight / cameraHeight;
+    if (heightScale > widthScale) {
+        return {
+            scale: widthScale,
+            along: ScaledToFit.WIDTH,
+        };
+    } else {
+        return {
+            scale: heightScale,
+            along: ScaledToFit.HEIGHT,
+        };
+    }
 }

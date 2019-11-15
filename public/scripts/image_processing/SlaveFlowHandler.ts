@@ -1,9 +1,10 @@
 import { client } from "../../index";
 import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
-import { calculateCameraCanvasScaleFactor } from "./camera_util";
+import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
+import { createCameraOverlayWithPoints } from "../util/canvas";
 
 export enum WorkflowStep {
     START = "initialize",
@@ -34,6 +35,7 @@ export default class SlaveFlowHandler {
         $("#capture-orientation").css("display", "none");
         $("#start").css("display", "inherit");
         $("#loading-master-indicator").css("display", "none");
+        $("#player-overlay").removeAttr("src");
         const color = { ...client.color };
         client.color = { r: 255, g: 255, b: 255, a: 255 };
         if (this.prevSlaveID) {
@@ -69,7 +71,7 @@ export default class SlaveFlowHandler {
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
 
-        const scale = calculateCameraCanvasScaleFactor(
+        const { scale } = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
             PREFERRED_CANVAS_WIDTH,
@@ -114,7 +116,7 @@ export default class SlaveFlowHandler {
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
-        const scale = calculateCameraCanvasScaleFactor(
+        const { scale, along: scaledAlong } = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
             PREFERRED_CANVAS_WIDTH,
@@ -140,20 +142,24 @@ export default class SlaveFlowHandler {
             client.DEBUG
         );
         this.resetDebug();
-        const resultCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
+        const resultCanvasWithBg = createCameraOverlayWithPoints(
+            corners,
+            cameraWidth,
+            cameraHeight,
+            scale,
+            scaledAlong,
+            this.blancoCanvas
         );
-        const resultCtx = resultCanvas.getContext("2d");
-        resultCtx.drawImage(this.blancoCanvas, 0, 0);
-        resultCtx.fillStyle = "rgb(0, 255, 255)";
-        corners.forEach(corner => {
-            resultCtx.beginPath();
-            resultCtx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
-            resultCtx.fill();
-            resultCtx.closePath();
-        });
-        $("#result-img").attr("src", resultCanvas.toDataURL());
+        const resultCanvas = createCameraOverlayWithPoints(
+            corners,
+            cameraWidth,
+            cameraHeight,
+            scale,
+            scaledAlong
+        );
+        $("#result-img").attr("src", resultCanvasWithBg.toDataURL());
+        $("#player-overlay").attr("src", resultCanvas.toDataURL());
+
         this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         $("#show-orientation-button").toggle();
         $("#loading-master-indicator").toggle();
@@ -168,7 +174,7 @@ export default class SlaveFlowHandler {
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
-        const scale = calculateCameraCanvasScaleFactor(
+        const { scale } = calculateCameraCanvasScaleFactor(
             cameraWidth,
             cameraHeight,
             PREFERRED_CANVAS_WIDTH,

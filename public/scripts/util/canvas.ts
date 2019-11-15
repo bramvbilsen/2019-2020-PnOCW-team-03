@@ -1,8 +1,47 @@
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
+import Point from "../image_processing/screen_detection/Point";
+import { ScaledToFit } from "../image_processing/camera_util";
+import { PREFERRED_CANVAS_WIDTH, PREFERRED_CANVAS_HEIGHT } from "../CONSTANTS";
 
-export function copyCanvas(canvas: HTMLCanvasElement) {
+export function createCameraOverlayWithPoints(
+    points: Point[],
+    cameraWidth: number,
+    cameraHeight: number,
+    scale: number,
+    scaledAlong: ScaledToFit,
+    background?: any
+) {
+    const canvas = createCanvas(
+        (PREFERRED_CANVAS_WIDTH -
+            (PREFERRED_CANVAS_WIDTH - cameraWidth * scale)) /
+            scale,
+        (PREFERRED_CANVAS_HEIGHT -
+            (PREFERRED_CANVAS_HEIGHT - cameraHeight * scale)) /
+            scale
+    );
     const ctx = canvas.getContext("2d");
-    const cv = createCanvas(canvas.width, canvas.height);
-    cv.getContext("2d").putImageData(ctx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
-    return cv;
+    if (scaledAlong === ScaledToFit.HEIGHT) {
+        const rescale =
+            Math.abs(PREFERRED_CANVAS_WIDTH - cameraWidth) /
+            scale /
+            cameraWidth;
+        ctx.scale(rescale, rescale);
+    } else {
+        const rescale =
+            Math.abs(PREFERRED_CANVAS_HEIGHT - cameraHeight) /
+            scale /
+            cameraHeight;
+        ctx.scale(rescale, rescale);
+    }
+    if (background) {
+        ctx.drawImage(background, 0, 0);
+    }
+    ctx.fillStyle = "rgb(0, 255, 255)";
+    points.forEach(point => {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.closePath();
+    });
+    return canvas;
 }

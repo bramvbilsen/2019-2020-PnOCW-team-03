@@ -36,6 +36,9 @@ $(() => {
         slaveFlowHandler = new SlaveFlowHandler();
         $("#welcome-master").css("display", "none");
         $("#main-flow-master").css("display", "inherit");
+        const player: JQuery<HTMLVideoElement> = $("#player");
+        $("#player-overlay").width(player.width());
+        $("#player-overlay").height(player.height());
         const startButton = $("#start");
         const nextSlaveButton = $("#next-slave");
         const captureSlaveButton = $("#capture-slave");

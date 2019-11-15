@@ -79,11 +79,17 @@ video {
     font-size: 40px !important;
 }
 
-.cameraOutput {
+#camera {
     display: flex;
     justify-content: center;
     width: 100vw;
 }
+
+#player-overlay {
+    position: absolute;
+    z-index: 2;
+}
+
 .rest {
     float: left;
     width: 20%;
