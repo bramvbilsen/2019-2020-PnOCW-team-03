@@ -112,7 +112,6 @@ export default class SlaveFlowHandler {
      * Should be called after `showColorOnNextSlave`.
      */
     async takePictureOfColoredScreen() {
-        console.log("Capturing color on slave");
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;

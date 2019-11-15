@@ -61,9 +61,9 @@ $(() => {
             captureSlaveButton.toggle();
         });
         captureSlaveButton.off().on("click", async () => {
-            await slaveFlowHandler.takePictureOfColoredScreen();
-            loadingMasterIndicator.toggle();
+            loadingMasterIndicator.show();
             captureSlaveButton.toggle();
+            await slaveFlowHandler.takePictureOfColoredScreen();
         });
         showOrientationButton.off().on("click", () => {
             slaveFlowHandler.showOrientationOnSlave();
