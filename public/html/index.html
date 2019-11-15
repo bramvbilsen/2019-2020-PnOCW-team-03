@@ -44,120 +44,185 @@
         <div id="test-results" style="display: none;">
             <h2>TEST RESULTS</h2>
             <div id="test-results-text"></div>
-            <div id="test-results-visuals"></div>
-        </div>
-        <div id="countdown"></div>
-        <div id="master" style="display:none;">
-            <div class="cameraOutput" id="camera">
-                <video id="player" autoplay></video>
-            </div>
-            <div id="slave-flow-buttons">
-                <button
-                    type="button"
-                    class="btn btn-danger btn-circle"
-                    id="start"
-                >
-                    <i class="fa fa-camera-retro"></i>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-danger btn-circle"
-                    id="next-slave"
-                >
-                    <i class="fa fa-step-forward"></i>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-danger btn-circle"
-                    id="capture-slave"
-                >
-                    <i class="fa fa-camera-retro"></i>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-danger btn-circle"
-                    id="show-orientation-button"
-                >
-                    <i class="fa fa-compass"></i>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-danger btn-circle"
-                    id="capture-orientation"
-                >
-                    <i class="fa fa-camera-retro"></i>
-                </button>
-            </div>
-            <!-- <button
-                class="pink"
-                id="Display Pink"
-                style="vertical-align:middle"
-            >
-                <span>Display pink </span>
-            </button>
-            <button
-                class="green"
-                id="Display Green"
-                style="vertical-align:middle"
-            >
-                <span>Display Green </span>
-            </button>
-            <button
-                class="orange"
-                id="Display Orange"
-                style="vertical-align:middle"
-            >
-                <span>Display Orange </span>
-            </button>
-            <button
-                class="blue"
-                id="Display Blue"
-                style="vertical-align:middle"
-            >
-                <span>Display Blue </span>
-            </button>
-            <button
-                class="captureButton"
-                id="reset"
-                style="vertical-align:middle"
-            >
-                <span>Reset</span>
-            </button> -->
             <div
                 style="width: 100vw; display: flex; align-items: center; flex-direction: column;"
             >
-                <div><h3>Output</h3></div>
+                <div>
+                    <h3>Output</h3>
+                </div>
                 <img
-                    id="result-img"
+                    id="test-results-visual"
                     src=""
                     style="max-width: 100%; max-height: 100%;"
                 />
+            </div>
+        </div>
+        <div id="countdown"></div>
+        <div id="master" style="display:none;">
+            <div
+                id="welcome-master-no-slave-toast"
+                class="toast"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
+            >
+                <div class="toast-body" style="color: black;">
+                    Looks like there are no slaves connected yet!
+                </div>
+            </div>
+            <div id="welcome-master">
+                <div id="welcome-master-content">
+                    <div id="welcome-master-text" class="thin-font">
+                        You are master!
+                    </div>
+                    <div id="welcome-master-connected-slaves">
+                        --- Connected Slaves:
+                        <span id="welcome-master-connected-slaves-amt">0</span>
+                        ---
+                    </div>
+                    <button
+                        type="button"
+                        id="start-master-button"
+                        class="btn btn-outline-light thin-font"
+                    >
+                        Start
+                    </button>
+                </div>
+            </div>
+            <div id="main-flow-master" style="display: none;">
+                <div class="cameraOutput" id="camera">
+                    <video id="player" autoplay></video>
+                </div>
+                <div id="slave-flow-buttons">
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-circle outlined-button-white"
+                        id="start"
+                    >
+                        <i class="fa fa-camera-retro"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-circle outlined-button-white"
+                        id="next-slave"
+                    >
+                        <i class="fa fa-step-forward"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-circle outlined-button-white"
+                        id="capture-slave"
+                    >
+                        <i class="fa fa-camera-retro"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-circle outlined-button-white"
+                        id="show-orientation-button"
+                    >
+                        <i class="fa fa-compass"></i>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-circle outlined-button-white"
+                        id="capture-orientation"
+                    >
+                        <i class="fa fa-camera-retro"></i>
+                    </button>
+                    <div
+                        id="loading-master-indicator"
+                        class="spinner-grow text-light"
+                        role="status"
+                    >
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <!-- <button
+                                class="pink"
+                                id="Display Pink"
+                                style="vertical-align:middle"
+                            >
+                                <span>Display pink </span>
+                            </button>
+                            <button
+                                class="green"
+                                id="Display Green"
+                                style="vertical-align:middle"
+                            >
+                                <span>Display Green </span>
+                            </button>
+                            <button
+                                class="orange"
+                                id="Display Orange"
+                                style="vertical-align:middle"
+                            >
+                                <span>Display Orange </span>
+                            </button>
+                            <button
+                                class="blue"
+                                id="Display Blue"
+                                style="vertical-align:middle"
+                            >
+                                <span>Display Blue </span>
+                            </button>
+                            <button
+                                class="captureButton"
+                                id="reset"
+                                style="vertical-align:middle"
+                            >
+                                <span>Reset</span>
+                            </button> -->
+                <div
+                    style="width: 100vw; display: flex; align-items: center; flex-direction: column;"
+                >
+                    <div>
+                        <h3>OUTPUT</h3>
+                    </div>
+                    <div>
+                        <img
+                            id="result-img"
+                            src=""
+                            style="max-width: 100%; max-height: 100%;"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
         <div
             id="slave"
             style="display:none; width: 100vw; height: 100vh; background-color: transparent;"
         >
-            <div
-                id="orientation-colors"
-                style="display: none; width: 100vw; height: 100vh; background-color: transparent;"
-            >
-                <div style="display: flex; width: 100vw; height: 100vh;">
-                    <div style="display: flex; flex-direction: column; flex: 1">
-                        <div
-                            style="flex: 1; background-color: rgb(255, 70, 180);"
-                        ></div>
-                        <div
-                            style="flex: 1; background-color: rgb(255, 216, 0);"
-                        ></div>
+            <div id="main-flow-slave">
+                <div id="default-slave-state">
+                    <div style="padding-bottom: 20px;">
+                        Waiting on request from master
                     </div>
-                    <div style="display: flex; flex-direction: column; flex: 1">
+                    <div class="spinner-grow text-light" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div id="orientation-colors">
+                    <div style="display: flex; width: 100vw; height: 100vh;">
                         <div
-                            style="flex: 1; background-color: rgb(0, 255, 25);"
-                        ></div>
+                            style="display: flex; flex-direction: column; flex: 1"
+                        >
+                            <div
+                                style="flex: 1; background-color: rgb(255, 70, 180);"
+                            ></div>
+                            <div
+                                style="flex: 1; background-color: rgb(255, 216, 0);"
+                            ></div>
+                        </div>
                         <div
-                            style="flex: 1; background-color: rgb(12, 0, 255);"
-                        ></div>
+                            style="display: flex; flex-direction: column; flex: 1"
+                        >
+                            <div
+                                style="flex: 1; background-color: rgb(0, 255, 25);"
+                            ></div>
+                            <div
+                                style="flex: 1; background-color: rgb(12, 0, 255);"
+                            ></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -166,7 +231,7 @@
             id="loading"
             style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;"
         >
-            <div class="spinner-grow text-info" role="status">
+            <div class="spinner-grow text-light" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>

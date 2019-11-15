@@ -3,7 +3,6 @@ import Line from "./Line";
 import convexHull from "./hull";
 
 import { IHSLColor, IRGBAColor } from "../../types/Color";
-import env from "../../../env/env";
 
 interface IHSLRange {
     hRange: number;
@@ -13,14 +12,14 @@ interface IHSLRange {
 
 const similarPinkRange: IHSLRange = {
     hRange: 50,
-    sRange: 50,
-    lRange: 50,
+    sRange: 40,
+    lRange: 40,
 };
 
 const randomColorRange: IHSLRange = {
-    hRange: 52,
-    sRange: 52,
-    lRange: 52,
+    hRange: 50,
+    sRange: 40,
+    lRange: 40,
 };
 
 //@ts-ignore
@@ -54,6 +53,7 @@ export default async function findScreen(
     DEBUG = false
 ) {
     console.log("STARTING SCREEN DETECTION ALGORITHM");
+    const t0 = new Date();
 
     const screenColorHSL: IHSLColor = rgbToHsl(
         screenColorRGBA.r,
@@ -61,16 +61,12 @@ export default async function findScreen(
         screenColorRGBA.b
     );
 
-    const t0 = new Date();
-    const LOST_PIXEL_SEARCH_RANGE = 20;
-    const LOST_PIXEL_THRESHOLD = 8 * LOST_PIXEL_SEARCH_RANGE * 0.2;
+    const IMMEDIATE_NEIGHBOR_RANGE = 3;
+    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.2;
+    const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.6;
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
-
-    // TODO: Check if this is still used.
-    // const jQueryBody: JQuery<HTMLBodyElement> = $("body");
-    // jQueryBody.append($(`<canvas width=${width} height=${height}></canvas>`));
 
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
@@ -80,11 +76,11 @@ export default async function findScreen(
         nonColoredScreenCanvas.getContext("2d")
     );
     const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
@@ -100,11 +96,11 @@ export default async function findScreen(
         coloredScreenCanvas.getContext("2d")
     );
     const coloredScreenPixelData = coloredScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
@@ -123,11 +119,11 @@ export default async function findScreen(
     resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
     resultingScreenCtx.fillRect(0, 0, width, height);
     const resultingScreenImageData = resultingScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         resultingPixels = resultingScreenImageData.data;
 
     let possibleCorners: Point[] = [];
@@ -155,10 +151,28 @@ export default async function findScreen(
                 ) &&
                 isSimilarHSLColor(screenColorHSL, screenColor, similarPinkRange)
             ) {
-                resultingPixels[linearizedIndex] = screenColorRGBA.r;
-                resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
-                resultingPixels[linearizedIndex + 2] = screenColorRGBA.b;
-                possibleCorners.push(new Point(x, y));
+                const coloredNeighbors = amountOfNeighboringPixelsWithColor(
+                    coloredScreenPixels,
+                    IMMEDIATE_NEIGHBOR_RANGE,
+                    x,
+                    y,
+                    width,
+                    height,
+                    screenColorHSL
+                );
+                if (
+                    coloredNeighbors > LOST_PIXEL_THRESHOLD_SHORT &&
+                    coloredNeighbors <= MAX_CORNER_NEIGHBORS
+                ) {
+                    resultingPixels[linearizedIndex] = screenColorRGBA.r;
+                    resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
+                    resultingPixels[linearizedIndex + 2] = screenColorRGBA.b;
+                    possibleCorners.push(new Point(x, y));
+                } else {
+                    resultingPixels[linearizedIndex] = 0;
+                    resultingPixels[linearizedIndex + 1] = 0;
+                    resultingPixels[linearizedIndex + 2] = 0;
+                }
             } else {
                 resultingPixels[linearizedIndex] = 0;
                 resultingPixels[linearizedIndex + 1] = 0;
@@ -186,30 +200,17 @@ export default async function findScreen(
         }
     }
 
-    possibleCorners = possibleCorners.filter(point => {
-        const linearizedIndex = (width * point.y + point.x) * 4;
-        // Corners will have on average 25 percent colored neighbors. Delete all pixels who do not meet this.
-        if (
-            amountOfNeighboringPixelsWithColor(
-                resultingPixels,
-                LOST_PIXEL_SEARCH_RANGE,
-                point.x,
-                point.y,
-                width,
-                height,
-                screenColorHSL
-            ) < LOST_PIXEL_THRESHOLD
-        ) {
-            resultingPixels[linearizedIndex] = 0;
-            resultingPixels[linearizedIndex + 1] = 0;
-            resultingPixels[linearizedIndex + 2] = 0;
-            return false;
-        }
-        resultingPixels[linearizedIndex] = screenColorRGBA.r;
-        resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
-        resultingPixels[linearizedIndex + 2] = screenColorRGBA.b;
-        return true;
-    });
+    if (possibleCorners.length < 4) {
+        return [];
+    } else if (possibleCorners.length === 4) {
+        return possibleCorners;
+    }
+
+    possibleCorners = removeOutliers(
+        possibleCorners,
+        coloredScreenPixels,
+        screenColorHSL
+    );
 
     if (DEBUG) {
         const _canvas = createCanvas(width, height);
@@ -223,11 +224,17 @@ export default async function findScreen(
             _ctx.closePath();
         });
         displayDebugResult(_canvas);
-        console.log("Possible corners displayed!");
+        console.log("No outliers displayed!");
         //@ts-ignore
         while (currentStep !== 4) {
             await wait(250);
         }
+    }
+
+    if (possibleCorners.length < 4) {
+        return [];
+    } else if (possibleCorners.length === 4) {
+        return possibleCorners;
     }
 
     possibleCorners = convexHull(possibleCorners);
@@ -251,6 +258,15 @@ export default async function findScreen(
         }
     }
 
+    if (possibleCorners.length < 4) {
+        return [];
+    } else if (possibleCorners.length === 4) {
+        return possibleCorners;
+    }
+
+    if (possibleCorners.length === 4) {
+        return possibleCorners;
+    }
     const possibleCornerConnections = createConnections(possibleCorners);
 
     if (DEBUG) {
@@ -266,24 +282,9 @@ export default async function findScreen(
 
     const corners = findFinalCorners(possibleCornerConnections);
 
-    const t1 = new Date();
-    console.log(+t1 - +t0 + "ms");
+    console.log(+(new Date()) - +t0 + "ms");
 
     return corners;
-}
-
-type Image = HTMLImageElement;
-async function loadImage(src: string): Promise<Image> {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-            resolve(img);
-        };
-        img.onerror = err => {
-            reject(err);
-        };
-    });
 }
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
@@ -510,42 +511,96 @@ function createConnections(points: Point[]) {
     return connections;
 }
 
+function removeOutliers(
+    possibleCorners: Point[],
+    originalColoredScreenPixels: Uint8ClampedArray,
+    color: IHSLColor
+) {
+    const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
+
+    /**
+     * Keeps an object with the index of the corners as the keys and the longest connection as the value
+     */
+    const longestCornerConnection: { [cornerIndex: number]: number } = {};
+
+    const totalDistancesBetweenPoints: number[] = [];
+    possibleCorners.forEach((corner, index) => {
+        for (let i = index + 1; i < possibleCorners.length; i++) {
+            const distance = corner.distanceTo(possibleCorners[i]);
+            totalDistancesBetweenPoints.push(distance);
+            if (!longestCornerConnection[index]) {
+                longestCornerConnection[index] = distance;
+            } else {
+                longestCornerConnection[index] += distance;
+            }
+            if (!longestCornerConnection[i]) {
+                longestCornerConnection[i] = distance;
+            } else {
+                longestCornerConnection[i] += distance;
+            }
+        }
+    });
+
+    const avgTotalDistancesBetweenCorners =
+        Object.values(longestCornerConnection).reduce((a, b) => a + b, 0) /
+        Object.values(longestCornerConnection).length;
+
+    for (const [index, length] of Object.entries(longestCornerConnection)) {
+        if (
+            length >
+            avgTotalDistancesBetweenCorners * MAX_AVG_DISTANCE_DIFF_THRESHOLD
+        ) {
+            const indexToRemove = parseInt(index);
+            possibleCorners = [
+                ...possibleCorners.slice(0, indexToRemove),
+                ...possibleCorners.slice(indexToRemove + 1),
+            ];
+        }
+    }
+
+    return possibleCorners;
+}
+
 /**
  * Searches the final 4 corners of the screen.
  * @param cornerConnections - Connected possible corners.
  */
 function findFinalCorners(cornerConnections: Line[]): Point[] {
     if (cornerConnections.length === 0) return [];
+    if (cornerConnections.length === 1)
+        return [...cornerConnections[0].endPoints];
+    if (cornerConnections.length === 2)
+        return [
+            ...cornerConnections[0].endPoints,
+            ...cornerConnections[0].endPoints,
+        ];
+
     const sortedPossibleCornersConnections = cornerConnections.sort(
         (connectionA, connectionB) => connectionB.length - connectionA.length
     );
 
     const minDistanceBetweenCorners = 50;
-    const firstCornerConnection = sortedPossibleCornersConnections[0];
-    let secondCornerConnection;
+    let firstCornerConnection: Line = sortedPossibleCornersConnections.shift();
+    let secondCornerConnection: Line;
     for (let i = 0; i < sortedPossibleCornersConnections.length; i++) {
         const connection = sortedPossibleCornersConnections[i];
         if (
             connection.a.distanceTo(firstCornerConnection.a) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.a.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.a) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners
+            minDistanceBetweenCorners
         ) {
             secondCornerConnection = connection;
             break;
         }
     }
-    if (!secondCornerConnection)
-        return [firstCornerConnection.a, firstCornerConnection.b];
     return [
-        firstCornerConnection.a,
-        firstCornerConnection.b,
-        secondCornerConnection.a,
-        secondCornerConnection.b,
+        ...firstCornerConnection.endPoints,
+        ...(secondCornerConnection.endPoints || []),
     ];
 }
 
@@ -578,4 +633,5 @@ function drawResultLines(
 
 function displayDebugResult(canvasToDisplay: HTMLCanvasElement) {
     $("#result-img").attr("src", canvasToDisplay.toDataURL());
+    $("#test-results-visual").attr("src", canvasToDisplay.toDataURL());
 }

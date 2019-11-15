@@ -30,10 +30,6 @@ app.get("/", (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
 
-app.get("/screen_detection", (req, res) => {
-    res.sendFile(path.resolve(htmlFolder + "/screen_detection.html"));
-});
-
 app.get("/non_colored_screen_img", (req, res) => {
     res.sendFile(path.resolve(staticFolder + "/img/1.png"));
 });
@@ -103,7 +99,7 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     socket.on(
-        MasterEventTypes.DisplaySlaveOrientationColors,
+        MasterEventTypes.ToggleSlaveOrientationColors,
         (msg: {
             slaveId: string;
             leftTop: { r: string; g: string; b: string };
@@ -112,7 +108,7 @@ io.on("connect", (socket: socketio.Socket) => {
             rightBottom: { r: string; g: string; b: string };
         }) => {
             if (socket.id === connections.master.id) {
-                console.log("Attempting to change background by master");
+                console.log("Attempting to change orientation by master");
                 const { slaveId, ...slaveMsg } = msg;
                 io.to(slaveId).emit(
                     SlaveEventTypes.ChangeOrientationColors,

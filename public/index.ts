@@ -3,15 +3,15 @@ import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
-import run_screen_detection_tests from "./tests/image_processing/screen_detection_test";
-import run_orientation_detection_tests from "./tests/image_processing/orientation_detection_test";
+import run_tests from "./tests/run";
+import downloadTests from "./tests/download";
 import env from "./env/env";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
 });
 
-export const slaveFlowHandler = new SlaveFlowHandler();
+export let slaveFlowHandler: SlaveFlowHandler;
 
 //@ts-ignore
 window.client = client;
@@ -21,81 +21,105 @@ window.slaveFlowHandler = slaveFlowHandler;
 window.findScreen = findScreen;
 
 $(() => {
-    const startButton = $("#start");
-    const nextSlaveButton = $("#next-slave");
-    const captureSlaveButton = $("#capture-slave");
-    const showOrientationButton = $("#show-orientation-button");
-    const captureOrientationButton = $("#capture-orientation");
-    const resetButton = $("#reset");
-    nextSlaveButton.toggle();
-    captureSlaveButton.toggle();
-    showOrientationButton.toggle();
-    captureOrientationButton.toggle();
-    startButton.off().on("click", () => {
-        slaveFlowHandler.takeNoColorPicture();
-        nextSlaveButton.toggle();
+    //@ts-ignore
+    $("#welcome-master-no-slave-toast").toast({
+        delay: 5000,
+        animation: true,
     });
-    nextSlaveButton.off().on("click", () => {
-        slaveFlowHandler.showColorOnNextSlave();
+    const startMasterButton = $("#start-master-button");
+    startMasterButton.off().on("click", () => {
+        if (client.slaves.length === 0) {
+            //@ts-ignore
+            $("#welcome-master-no-slave-toast").toast("show");
+            return;
+        }
+        slaveFlowHandler = new SlaveFlowHandler();
+        $("#welcome-master").css("display", "none");
+        $("#main-flow-master").css("display", "inherit");
+        const startButton = $("#start");
+        const nextSlaveButton = $("#next-slave");
+        const captureSlaveButton = $("#capture-slave");
+        const showOrientationButton = $("#show-orientation-button");
+        const captureOrientationButton = $("#capture-orientation");
+        const loadingMasterIndicator = $("#loading-master-indicator");
+        const resetButton = $("#reset");
         nextSlaveButton.toggle();
         captureSlaveButton.toggle();
-    });
-    captureSlaveButton.off().on("click", async () => {
-        await slaveFlowHandler.takePictureOfColoredScreen();
-        captureSlaveButton.toggle();
-        showOrientationButton.toggle();
-    });
-    showOrientationButton.off().on("click", () => {
-        slaveFlowHandler.showOrientationOnSlave();
         showOrientationButton.toggle();
         captureOrientationButton.toggle();
+        loadingMasterIndicator.toggle();
+        startButton.off().on("click", () => {
+            slaveFlowHandler.takeNoColorPicture();
+            nextSlaveButton.toggle();
+        });
+        nextSlaveButton.off().on("click", () => {
+            slaveFlowHandler.showColorOnNextSlave();
+            nextSlaveButton.toggle();
+            captureSlaveButton.toggle();
+        });
+        captureSlaveButton.off().on("click", async () => {
+            await slaveFlowHandler.takePictureOfColoredScreen();
+            loadingMasterIndicator.toggle();
+            captureSlaveButton.toggle();
+        });
+        showOrientationButton.off().on("click", () => {
+            slaveFlowHandler.showOrientationOnSlave();
+            showOrientationButton.toggle();
+            captureOrientationButton.toggle();
+        });
+        captureOrientationButton.off().on("click", () => {
+            slaveFlowHandler.takePictureOfSlaveOrientation();
+            captureOrientationButton.toggle();
+            nextSlaveButton.toggle();
+        });
+        resetButton.off().on("click", () => {
+            slaveFlowHandler.reset();
+        });
+
+        $(".pink")
+            .off()
+            .click(() => {
+                client.color = { r: 255, g: 70, b: 181, a: 100 };
+            });
+
+        $(".green")
+            .off()
+            .click(() => {
+                client.color = { r: 0, g: 128, b: 0, a: 100 };
+            });
+
+        $(".orange")
+            .off()
+            .click(() => {
+                client.color = { r: 255, g: 69, b: 0, a: 100 };
+            });
+
+        $(".blue")
+            .off()
+            .click(() => {
+                client.color = { r: 0, g: 0, b: 255, a: 100 };
+            });
     });
-    captureOrientationButton.off().on("click", () => {
-        slaveFlowHandler.takePictureOfSlaveOrientation();
-        captureOrientationButton.toggle();
-        nextSlaveButton.toggle();
-    });
-    resetButton.off().on("click", () => {
-        slaveFlowHandler.reset();
-    });
-
-    $(".pink")
-        .off()
-        .click(() => {
-            client.color = { r: 255, g: 70, b: 181, a: 100 };
-        });
-
-    $(".green")
-        .off()
-        .click(() => {
-            client.color = { r: 0, g: 128, b: 0, a: 100 };
-        });
-
-    $(".orange")
-        .off()
-        .click(() => {
-            client.color = { r: 255, g: 69, b: 0, a: 100 };
-        });
-
-    $(".blue")
-        .off()
-        .click(() => {
-            client.color = { r: 0, g: 0, b: 255, a: 100 };
-        });
 });
 
 function onConnectionTypeChange(type: ConnectionType) {
-    console.log("CHANGE IN TYPE");
+    console.log("Changed type to: " + type);
+    const loadingElem = $("#loading");
+    if (slaveFlowHandler) {
+        slaveFlowHandler.reset();
+    }
     if (client.type == ConnectionType.MASTER) {
-        $("#loading").css("display", "none");
+        loadingElem.css("display", "none");
+        $("#slave").css("display", "none");
         $("#master").css("display", "inherit");
+        $("#welcome-master").css("display", "inherit");
+        $("#main-flow-master").css("display", "none");
         handleCameraInput();
     } else {
-        $("#loading").css("display", "none");
+        loadingElem.css("display", "none");
+        $("#master").css("display", "none");
         $("#slave").css("display", "inherit");
     }
-    $("#master").css("background-color", "white");
-    $("#slave").css("background-color", "white");
 
     if (env.test) {
         $("#slave").css("display", "none");
@@ -105,34 +129,7 @@ function onConnectionTypeChange(type: ConnectionType) {
 }
 
 if (env.test) {
-    $(() => {
-        $("#test-results").css("display", "inherit");
-        const testResultsTextDiv = $("#test-results-text");
-        testResultsTextDiv.append(
-            "<div id='screen-detection-test-results-text'><h3>Screen Detection</h3></div>"
-        );
-        testResultsTextDiv.append(
-            "<div id='orientation-detection-test-results-text'><h3>Orientation Detection</h3></div>"
-        );
-        const screenDetectionTextDiv = $("#screen-detection-test-results-text");
-        const orientationDetectionTextDiv = $(
-            "#orientation-detection-test-results-text"
-        );
-        run_screen_detection_tests(testResult => {
-            $("#loading").css("display", "none");
-            screenDetectionTextDiv.append(testResult.htmlMsg);
-        }).then(totalExecutionTime => {
-            screenDetectionTextDiv.append(
-                `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
-            );
-        });
-        run_orientation_detection_tests(testResult => {
-            $("#loading").css("display", "none");
-            orientationDetectionTextDiv.append(testResult.htmlMsg);
-        }).then(totalExecutionTime => {
-            orientationDetectionTextDiv.append(
-                `==========👌 COMPLETED IN ${totalExecutionTime}ms 👌==========<br/><br/><br/><br/>`
-            );
-        });
+    run_tests().then(results => {
+        downloadTests(results);
     });
 }

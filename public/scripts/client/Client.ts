@@ -19,7 +19,6 @@ class Client {
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
-    private _delayWithServer: number;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
     /**
@@ -63,12 +62,12 @@ class Client {
                             this.displayArrowRight
                         ),
                         this._socket.on(
-                            SlaveEventTypes.ChangeOrientationColors,
-                            this.displayOrientationColors
-                        ),
-                        this._socket.on(
                             SlaveEventTypes.SetCounterEvent,
                             this.startCounterEvent
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.ChangeOrientationColors,
+                            this.toggleOrientationColors
                         )
                     );
                 } else {
@@ -170,7 +169,7 @@ class Client {
      * This is only permitted if the current `this.type === ConnectionType.MASTER`
      * 	and will thus not send the server request if this is not the case.
      */
-    public showOrientationColorsOnSlave = (slaveId: string) => {
+    public toggleOrientationColorsOnSlave = (slaveId: string) => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
@@ -178,7 +177,7 @@ class Client {
             return;
         }
         // TODO:  colors are not necessary any more.
-        this._socket.emit(MasterEventTypes.DisplaySlaveOrientationColors, {
+        this._socket.emit(MasterEventTypes.ToggleSlaveOrientationColors, {
             slaveId,
             leftTop: { r: 0, g: 0, b: 0 },
             rightTop: { r: 0, g: 0, b: 0 },
@@ -233,16 +232,19 @@ class Client {
         );
     };
 
-    private displayOrientationColors = (data: {
+    private toggleOrientationColors = (data: {
         leftTop: { r: string; g: string; b: string };
         rightTop: { r: string; g: string; b: string };
         leftBottom: { r: string; g: string; b: string };
         rightBottom: { r: string; g: string; b: string };
     }): void => {
-        console.log("Displaying orientation colors");
+        console.log("Toggling");
         const orientationElem: JQuery<HTMLDivElement> = $(
             "#orientation-colors"
         );
+        if (orientationElem.attr("display") !== "none") {
+            this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
+        }
         orientationElem.toggle();
     };
 
@@ -310,6 +312,7 @@ class Client {
 
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
+        $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
     };
 
     public showTriangulation = () => {

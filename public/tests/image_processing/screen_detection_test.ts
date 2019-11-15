@@ -16,7 +16,8 @@ const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;
 
 export default function run_tests(
-    onNewResult: (testResult: TestResult) => void
+    onNewResult: (testResult: TestResult) => void,
+    testNames: string[]
 ) {
     return test_runner(
         tests,
@@ -29,7 +30,8 @@ export default function run_tests(
                 dt
             );
         },
-        onNewResult
+        onNewResult,
+        testNames
     );
 }
 
@@ -70,7 +72,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Ten percent screen size": async function ten_percent_screen() {
+    "0% screen size": async function ten_percent_screen() {
         const percentage = 0.1;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -92,7 +94,29 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Twenty percent screen size": async function twenty_percent_screen() {
+    "10% screen size": async function ten_percent_screen() {
+        const percentage = 0.1;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "20% screen size": async function twenty_percent_screen() {
         const percentage = 0.2;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -114,7 +138,7 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Thirty percent screen size": async function thirty_percent_screen() {
+    "30% screen size": async function thirty_percent_screen() {
         const percentage = 0.3;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blanoCanvas.getContext("2d");
@@ -136,7 +160,161 @@ const tests: Tests<Point[]> = {
         return { expected, result };
     },
 
-    "Ten percent screen size & 45 degree rotation": async function ten_percent_45deg_rotated_screen() {
+    "40% screen size": async function () {
+        const percentage = 0.4;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "50% screen size": async function () {
+        const percentage = 0.5;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "60% screen size": async function () {
+        const percentage = 0.6;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "70% screen size": async function () {
+        const percentage = 0.7;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "80% screen size": async function () {
+        const percentage = 0.8;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "90% screen size": async function () {
+        const percentage = 0.9;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "100% screen size": async function () {
+        const percentage = 1;
+        const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const blancoCtx = blanoCanvas.getContext("2d");
+        blancoCtx.fillStyle = "rgb(255, 255, 255)";
+        blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        const expected = [
+            new Point(0, 0),
+            new Point(DEFAULT_WIDTH * percentage, 0),
+            new Point(DEFAULT_WIDTH * percentage, DEFAULT_HEIGHT * percentage),
+            new Point(0, DEFAULT_HEIGHT * percentage),
+        ];
+        const coloredCanvas = createRectangularScreensCanvas(
+            expected,
+            pinkRGBA,
+            DEFAULT_WIDTH,
+            DEFAULT_HEIGHT
+        );
+        const result = await findScreen(blanoCanvas, coloredCanvas, pinkRGBA);
+        return { expected, result };
+    },
+
+    "10% screen size & 45 degree rotation": async function ten_percent_45deg_rotated_screen() {
         const percentage = 0.1;
         const degree = 45;
         const blanoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
