@@ -1,1 +1,5 @@
-export default {"baseUrl":"http://localhost:3000","test":true,"testArgs":{"screen_detection":[]}}
+export default {
+    baseUrl: "http://localhost:3000",
+    test: false,
+    testArgs: {}
+};

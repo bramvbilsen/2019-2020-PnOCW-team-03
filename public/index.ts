@@ -11,7 +11,7 @@ export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
 });
 
-export const slaveFlowHandler = new SlaveFlowHandler();
+export let slaveFlowHandler: SlaveFlowHandler;
 
 //@ts-ignore
 window.client = client;
@@ -21,83 +21,107 @@ window.slaveFlowHandler = slaveFlowHandler;
 window.findScreen = findScreen;
 
 $(() => {
-    const startButton = $("#start");
-    const nextSlaveButton = $("#next-slave");
-    const captureSlaveButton = $("#capture-slave");
-    const showOrientationButton = $("#show-orientation-button");
-    const captureOrientationButton = $("#capture-orientation");
-    const loadingMasterIndicator = $("#loading-master-indicator");
-    const resetButton = $("#reset");
-    nextSlaveButton.toggle();
-    captureSlaveButton.toggle();
-    showOrientationButton.toggle();
-    captureOrientationButton.toggle();
-    loadingMasterIndicator.toggle();
-    startButton.off().on("click", () => {
-        slaveFlowHandler.takeNoColorPicture();
-        nextSlaveButton.toggle();
+    //@ts-ignore
+    $("#welcome-master-no-slave-toast").toast({
+        delay: 5000,
+        animation: true,
     });
-    nextSlaveButton.off().on("click", () => {
-        slaveFlowHandler.showColorOnNextSlave();
+    const startMasterButton = $("#start-master-button");
+    startMasterButton.off().on("click", () => {
+        if (client.slaves.length === 0) {
+            //@ts-ignore
+            $("#welcome-master-no-slave-toast").toast("show");
+            return;
+        }
+        slaveFlowHandler = new SlaveFlowHandler();
+        $("#welcome-master").css("display", "none");
+        $("#main-flow-master").css("display", "inherit");
+        const startButton = $("#start");
+        const nextSlaveButton = $("#next-slave");
+        const captureSlaveButton = $("#capture-slave");
+        const showOrientationButton = $("#show-orientation-button");
+        const captureOrientationButton = $("#capture-orientation");
+        const loadingMasterIndicator = $("#loading-master-indicator");
+        const resetButton = $("#reset");
         nextSlaveButton.toggle();
         captureSlaveButton.toggle();
-    });
-    captureSlaveButton.off().on("click", async () => {
-        await slaveFlowHandler.takePictureOfColoredScreen();
-        loadingMasterIndicator.toggle();
-        captureSlaveButton.toggle();
-    });
-    showOrientationButton.off().on("click", () => {
-        slaveFlowHandler.showOrientationOnSlave();
         showOrientationButton.toggle();
         captureOrientationButton.toggle();
+        loadingMasterIndicator.toggle();
+        startButton.off().on("click", () => {
+            slaveFlowHandler.takeNoColorPicture();
+            nextSlaveButton.toggle();
+        });
+        nextSlaveButton.off().on("click", () => {
+            slaveFlowHandler.showColorOnNextSlave();
+            nextSlaveButton.toggle();
+            captureSlaveButton.toggle();
+        });
+        captureSlaveButton.off().on("click", async () => {
+            await slaveFlowHandler.takePictureOfColoredScreen();
+            loadingMasterIndicator.toggle();
+            captureSlaveButton.toggle();
+        });
+        showOrientationButton.off().on("click", () => {
+            slaveFlowHandler.showOrientationOnSlave();
+            showOrientationButton.toggle();
+            captureOrientationButton.toggle();
+        });
+        captureOrientationButton.off().on("click", () => {
+            slaveFlowHandler.takePictureOfSlaveOrientation();
+            captureOrientationButton.toggle();
+            nextSlaveButton.toggle();
+        });
+        resetButton.off().on("click", () => {
+            slaveFlowHandler.reset();
+        });
+
+        $(".pink")
+            .off()
+            .click(() => {
+                client.color = { r: 255, g: 70, b: 181, a: 100 };
+            });
+
+        $(".green")
+            .off()
+            .click(() => {
+                client.color = { r: 0, g: 128, b: 0, a: 100 };
+            });
+
+        $(".orange")
+            .off()
+            .click(() => {
+                client.color = { r: 255, g: 69, b: 0, a: 100 };
+            });
+
+        $(".blue")
+            .off()
+            .click(() => {
+                client.color = { r: 0, g: 0, b: 255, a: 100 };
+            });
     });
-    captureOrientationButton.off().on("click", () => {
-        slaveFlowHandler.takePictureOfSlaveOrientation();
-        captureOrientationButton.toggle();
-        nextSlaveButton.toggle();
-    });
-    resetButton.off().on("click", () => {
-        slaveFlowHandler.reset();
-    });
-
-    $(".pink")
-        .off()
-        .click(() => {
-            client.color = { r: 255, g: 70, b: 181, a: 100 };
-        });
-
-    $(".green")
-        .off()
-        .click(() => {
-            client.color = { r: 0, g: 128, b: 0, a: 100 };
-        });
-
-    $(".orange")
-        .off()
-        .click(() => {
-            client.color = { r: 255, g: 69, b: 0, a: 100 };
-        });
-
-    $(".blue")
-        .off()
-        .click(() => {
-            client.color = { r: 0, g: 0, b: 255, a: 100 };
-        });
 });
 
 function onConnectionTypeChange(type: ConnectionType) {
-    console.log("CHANGE IN TYPE");
+    console.log("Changed type to: " + type);
+    const loadingElem = $("#loading");
+    if (slaveFlowHandler) {
+        slaveFlowHandler.reset();
+    }
     if (client.type == ConnectionType.MASTER) {
-        $("#loading").css("display", "none");
+        loadingElem.css("display", "none");
+        $("#slave").css("display", "none");
         $("#master").css("display", "inherit");
+        $("#welcome-master").css("display", "inherit");
+        $("#main-flow-master").css("display", "none");
         handleCameraInput();
     } else {
-        $("#loading").css("display", "none");
+        loadingElem.css("display", "none");
+        $("#master").css("display", "none");
         $("#slave").css("display", "inherit");
     }
-    $("#master").css("background-color", "white");
-    $("#slave").css("background-color", "white");
+    // $("#master").css("background-color", "white");
+    // $("#slave").css("background-color", "white");
 
     if (env.test) {
         $("#slave").css("display", "none");
@@ -108,6 +132,6 @@ function onConnectionTypeChange(type: ConnectionType) {
 
 if (env.test) {
     run_tests().then(results => {
-        downloadTests(results)
+        downloadTests(results);
     });
 }

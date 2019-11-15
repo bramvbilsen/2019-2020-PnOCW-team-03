@@ -239,7 +239,7 @@ class Client {
             "#orientation-colors"
         );
         if (orientationElem.attr("display") !== "none") {
-            this.changeBackground({ color: { r: 255, g: 255, b: 255 } });
+            this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
         }
         orientationElem.toggle();
     };
@@ -308,6 +308,7 @@ class Client {
 
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
+        $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
     };
 }
 
