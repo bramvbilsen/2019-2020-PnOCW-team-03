@@ -14,7 +14,7 @@ var gauss = require("gaussian-elimination");
 // }
 //});
 
-function delauney(points: Point[]): Triangulation {
+export  default function delauney(points: Point[]): Triangulation {
     //basisgevallen, geven triangulaties terug
     if (points.length == 3) {
         let line1 = new Line(points[0], points[1]);
@@ -40,8 +40,8 @@ function delauney(points: Point[]): Triangulation {
     let new_width = Math.ceil(points.length / 2);
     var left = points.slice(0, new_width);
     var right = points.slice(new_width, points.length);
-    console.log(left);
-    console.log(right);
+    //console.log(left);
+    //console.log(right);
     return delauneyMerging(delauney(left), delauney(right));
 }
 
