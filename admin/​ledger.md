@@ -98,7 +98,14 @@ CTO&CR1 waren afwezig door ziekte deze meeting. Ik heb vernomen dat CR1 verder h
 ### 11/11:
 CEO, TC2, CR2: Verder opdelen van het resterende werk om cat casting mogelijk te maken. Verdere bespreking van de workflow om dit mogelijk te krijgen. **TC2 maakt de affiene transformatie algoritme tegen volgende meeting(14/11).** Report schrijven.
 
-TC1, CTO, CR1: Werken aan synchronization. Report schrijven en testen hierrond.
+CTO, CR1: Werken aan synchronization.
+
+CR1: verder gewerkt aan Triangulation
+
+### 12/11:
+CEO,TC2,CR2: Report schrijven en testen rond cat casting. Elkaar verder helpen met het slicen van de image en de transformatie van img to screen.
+
+CTO, TC2, CR1: Testcases voor synchronizatie. TC1 en CTO hebben het verslagdeel hiervan (synchronization) geschreven ook in de latere avond.
 
 ### 14/11:
 CEO, TC2, CR2: Verder werken aan cat casting algoritme in zijn geheel. Herschrijven van enkele functies alsook het creëeren van een image casting workflow voor een cohesief geheel te maken. **Deadline zondag 17/11 om middernacht om het werkende te krijgen.**
