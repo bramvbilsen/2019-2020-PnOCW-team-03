@@ -8,8 +8,8 @@ import { generateRandomColor } from "../util/colors";
 import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
-import delauney from "../image_processing/Triangulation/Delaunay"
-import {slaveFlowHandler} from "../../index"
+import delauney from "../image_processing/Triangulation/Delaunay";
+import { slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 
@@ -242,9 +242,9 @@ class Client {
         const orientationElem: JQuery<HTMLDivElement> = $(
             "#orientation-colors"
         );
-        if (orientationElem.attr("display") !== "none") {
-            this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
-        }
+        // if (orientationElem.attr("display") !== "none") {
+        //     this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
+        // }
         orientationElem.toggle();
     };
 
@@ -325,22 +325,26 @@ class Client {
                 middlePoints.push(slave.centroid);
             });
             for (let i = 0; i < 20; i++) {
-               middlePoints.push(new Point(Math.floor((Math.random() * 199) + 1), Math.floor((Math.random() * 199) + 1)));   
+                middlePoints.push(
+                    new Point(
+                        Math.floor(Math.random() * 199 + 1),
+                        Math.floor(Math.random() * 199 + 1)
+                    )
+                );
             }
             console.log(middlePoints);
-            middlePoints.sort(function(a,b) {
-             if (a.x-b.x == 0) {
-               return a.y-b.y
-             }
-             else {
-               return a.x-b.x
-            }
+            middlePoints.sort(function(a, b) {
+                if (a.x - b.x == 0) {
+                    return a.y - b.y;
+                } else {
+                    return a.x - b.x;
+                }
             });
             let triangulation = delauney(middlePoints).lines;
 
             console.log(middlePoints);
             console.log(triangulation);
-            const canvas = createCanvas(200,200); //nog met juiste size werken
+            const canvas = createCanvas(200, 200); //nog met juiste size werken
             const ctx = canvas.getContext("2d");
             ctx.strokeStyle = "rgb(255,0,0)";
             triangulation.forEach(line => {
@@ -352,15 +356,12 @@ class Client {
             });
             middlePoints.forEach(point => {
                 ctx.font = "50px Arial";
-	            ctx.fillText("*", point.x - 10, point.y + 25); 
+                ctx.fillText("*", point.x - 10, point.y + 25);
             });
             $("#result-img").attr("src", canvas.toDataURL());
             return canvas;
         }
-    }
-
-    
-
+    };
 }
 
 export default Client;
