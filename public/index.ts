@@ -134,7 +134,8 @@ function onConnectionTypeChange(type: ConnectionType) {
 }
 
 if (env.test) {
+    $("#page").css("background-color", "white");
     run_tests().then(results => {
-        downloadTests(results);
+        // downloadTests(results);
     });
 }

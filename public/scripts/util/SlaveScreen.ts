@@ -1,7 +1,9 @@
 import Point from "../image_processing/screen_detection/Point";
+import { BoundingBox } from "./BoundingBox";
 
 export default class SlaveScreen {
     corners: Point[];
+    boundingBox: BoundingBox;
     slaveID: string;
     orientation: number | undefined;
     slavePortionImg: HTMLCanvasElement;
@@ -9,6 +11,7 @@ export default class SlaveScreen {
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;
         this.slaveID = slaveID;
+        this.boundingBox = new BoundingBox(corners);
     }
 
     get centroid(): Point {

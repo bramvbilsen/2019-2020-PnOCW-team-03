@@ -20,12 +20,14 @@ export const io = socketio.listen(server);
 const port = process.env.PORT || "3000";
 
 const staticFolder = path.resolve(__dirname + "/public");
+const imgFolder = path.resolve(staticFolder + "/img");
 export const htmlFolder = path.resolve(staticFolder + "/html");
 const slaveImgUploadFolder = path.resolve(__dirname + "/server/uploads/slaves");
 
 let connections: Connections = new Connections();
 
 app.use(express.static(staticFolder));
+app.use("/images", express.static(imgFolder));
 app.use("/slave_images", express.static(slaveImgUploadFolder));
 
 app.get("/", (req, res) => {

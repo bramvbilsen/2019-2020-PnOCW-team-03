@@ -2,6 +2,40 @@ import SlaveScreen from "./SlaveScreen";
 import Point from "../image_processing/screen_detection/Point";
 import { calculateBoundingBox } from "./shapes";
 
+export class BoundingBox {
+    private _topLeft: Point;
+    private _topRight: Point;
+    private _bottomLeft: Point;
+    private _bottomRight: Point;
+
+    get topLeft() {
+        return this._topLeft;
+    }
+    get topRight() {
+        return this._topRight;
+    }
+    get bottomLeft() {
+        return this._bottomLeft;
+    }
+    get bottomRight() {
+        return this._bottomRight;
+    }
+    get width() {
+        return this._topRight.x - this._topLeft.x;
+    }
+    get height() {
+        return this._bottomRight.y - this._topRight.y;
+    }
+
+    constructor(points: Point[]) {
+        const box = calculateBoundingBox(points);
+        this._topLeft = box.topLeft;
+        this._topRight = box.topRight;
+        this._bottomLeft = box.bottomLeft;
+        this._bottomRight = box.bottomRight;
+    }
+}
+
 export class BoudingBoxOfSlaveScreens {
     private _screens: SlaveScreen[] = [];
     private _topLeft: Point;
@@ -38,7 +72,7 @@ export class BoudingBoxOfSlaveScreens {
                 corner.copy()
             );
             this._screens.push(screen.copy());
-            points = [...points, ...newPoints];
+            points.push(...newPoints);
         });
         const box = calculateBoundingBox(points);
         this._topLeft = box.topLeft;
