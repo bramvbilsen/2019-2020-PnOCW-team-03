@@ -3,6 +3,7 @@ import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import {slaveFlowHandler} from '../../index';
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
+import {getScreensTranslatedToImage} from './Image Casting/sizeConverter';
 
 export enum imgDisplayFlow {
     START = "initialize new canvas",
@@ -26,6 +27,7 @@ export default class SlaveCatCastImgHandler {
     slavesStartCanvas: HTMLCanvasElement;
     slaveScreens: SlaveScreen[] = [];
 
+
     constructor() {
         this.step = imgDisplayFlow.START;
     }
@@ -42,7 +44,15 @@ export default class SlaveCatCastImgHandler {
         );
     }
 
+    /*
+    *Yet to implement image choosing for cat casting
+     */
     private linearScale(){
+        this.slaveScreens = getScreensTranslatedToImage(img.width,img.height, this.slaveScreens);
+    }
+    private cutBoundingBox(){
+        this.slaveScreens.forEach(obj=>{
 
+        });
     }
 }
