@@ -6,12 +6,14 @@ import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
 import run_tests from "./tests/run";
 import downloadTests from "./tests/download";
 import env from "./env/env";
+import ImageDisplayHandler from "./scripts/image_processing/imageDisplayHandler";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
 });
 
 export let slaveFlowHandler: SlaveFlowHandler;
+export let imageDisplayHandler : ImageDisplayHandler;
 
 //@ts-ignore
 window.client = client;
@@ -46,11 +48,20 @@ $(() => {
         const captureOrientationButton = $("#capture-orientation");
         const loadingMasterIndicator = $("#loading-master-indicator");
         const resetButton = $("#reset");
+        const uploadImage = $("#upload-image-to-display");
+        const displayBaseImage = $("#display-standard-image");
+        const displayImage = $("#display-uploaded-image");
+
         nextSlaveButton.toggle();
         captureSlaveButton.toggle();
         showOrientationButton.toggle();
         captureOrientationButton.toggle();
         loadingMasterIndicator.toggle();
+        uploadImage.toggle();
+        displayBaseImage.toggle();
+        displayImage.toggle();
+
+
         startButton.off().on("click", () => {
             slaveFlowHandler.takeNoColorPicture();
             nextSlaveButton.toggle();
@@ -74,10 +85,26 @@ $(() => {
             slaveFlowHandler.takePictureOfSlaveOrientation();
             captureOrientationButton.toggle();
             nextSlaveButton.toggle();
+            //LIAM HERE
+            uploadImage.toggle();
+            displayImage.toggle();
+            displayBaseImage.toggle();
         });
         resetButton.off().on("click", () => {
             slaveFlowHandler.reset();
         });
+
+        uploadImage.off().on('click', () =>{
+            /**CHANGE THIS*/
+            imageDisplayHandler.defaultImage();
+        });
+
+        displayImage.off().on('click',() =>{
+            imageDisplayHandler.defaultImage();
+            imageDisplayHandler.linearScale();
+            imageDisplayHandler.cutBoxOutImg();
+        });
+
 
         $(".pink")
             .off()
