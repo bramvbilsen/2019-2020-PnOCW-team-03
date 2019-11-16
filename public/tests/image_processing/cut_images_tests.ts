@@ -55,7 +55,7 @@ const tests: Tests<number> = {
 
         const resultCanvas = createImageCanvasForSlave(
             slaveScreen.boundingBox,
-            slaveScreen.boundingBox,
+            slaveScreen,
             canvas
         );
         $("#test-results-visual").attr("src", resultCanvas.toDataURL());
@@ -105,7 +105,7 @@ const tests: Tests<number> = {
         slaveScreens.forEach((screen, index) => {
             const resultCanvas = createImageCanvasForSlave(
                 globalBoundingBox,
-                screen.boundingBox,
+                screen,
                 imgCanvas
             );
             testResultCtx.drawImage(
@@ -169,7 +169,7 @@ const tests: Tests<number> = {
         slaveScreens.forEach((screen, index) => {
             const resultCanvas = createImageCanvasForSlave(
                 globalBoundingBox,
-                screen.boundingBox,
+                screen,
                 imgCanvas
             );
             testResultCtx.drawImage(
@@ -177,8 +177,9 @@ const tests: Tests<number> = {
                 screen.boundingBox.topLeft.x,
                 screen.boundingBox.topLeft.y
             );
+            $("#test-results-visual").attr("src", resultCanvas.toDataURL());
         });
-        $("#test-results-visual").attr("src", testResultCanvas.toDataURL());
+        // $("#test-results-visual").attr("src", testResultCanvas.toDataURL());
 
         return { expected: 0, result: 0 };
     },
