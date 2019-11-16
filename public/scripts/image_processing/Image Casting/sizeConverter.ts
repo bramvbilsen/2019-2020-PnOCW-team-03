@@ -1,5 +1,6 @@
 import Point from "screen_detection/Point";
 import SlaveScreen from "util/SlaveScreen";
+import {BoundingBox} from '../../util/BoundingBox';
 
 /**
 	 * Calculates the coordinates of the closest surrounding box around the screens.
