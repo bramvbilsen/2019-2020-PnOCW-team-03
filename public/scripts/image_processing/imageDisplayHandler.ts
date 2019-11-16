@@ -5,6 +5,7 @@ import {slaveFlowHandler} from '../../index';
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
 import {getScreensTranslatedToImage} from './Image Casting/sizeConverter';
 import {BoundingBox, BoudingBoxOfSlaveScreens} from '../util/BoundingBox';
+import {loadImage} from '../util/images';
 
 export enum imgDisplayFlow {
     START = "initialize new canvas",
