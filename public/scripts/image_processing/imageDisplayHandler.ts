@@ -1,5 +1,5 @@
 import { client } from "../../index";
-import findScreen, { createCanvas } from "./screen_detection/screen_detection";
+import { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import {slaveFlowHandler} from '../../index';
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
@@ -30,43 +30,46 @@ export default class SlaveCatCastImgHandler {
     slaveScreens: SlaveScreen[] = [];
 
 
-    constructor(img:HTMLImageElement) {
+    constructor(img: HTMLImageElement) {
         this.image = img;
         this.step = imgDisplayFlow.START;
     }
 
-    private initialize(){
-        //make button
-        const initButton: JQuery<HTMLButtonElement> = $("#start");
-        initButton.css("display", "none");
+    private initialize() {
         this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
         this.currSlaveID = this.slaveIDs.pop();
         this.slaveScreens = [...slaveFlowHandler.screens];
         this.slavesStartCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,PREFERRED_CANVAS_HEIGHT
+            PREFERRED_CANVAS_WIDTH, PREFERRED_CANVAS_HEIGHT
         );
     }
 
+    async defaultImage(){
+        this.image = await loadImage(
+            "http://localhost:3000/images/unicorn.jpeg");
+    }
 
-    linearScale(){
-        this.slaveScreens = getScreensTranslatedToImage(this.image.width,this.image.height, this.slaveScreens);
+    linearScale() {
+        this.initialize();
+        this.slaveScreens = getScreensTranslatedToImage(this.image.width, this.image.height, this.slaveScreens);
         this.step = imgDisplayFlow.LIN_SCALING;
     }
+
     /**
-    * 1)Get Context from blanco canvas in this class(used for placing the bbox contents in)
-    * 2)Draw the boundingbox content from background to this blanco canvas
-    * 3)From the drawn onto canvas, get all data in a url and place this in the slavescreen canvas src.
-    */
-    cutBoxOutImg(){
+     * 1)Get Context from blanco canvas in this class(used for placing the bbox contents in)
+     * 2)Draw the boundingbox content from background to this blanco canvas
+     * 3)From the drawn onto canvas, get all data in a url and place this in the slavescreen canvas src.
+     */
+    cutBoxOutImg() {
         this.step = imgDisplayFlow.CUT_IMG;
-        this.slaveScreens.forEach(obj=>{
+        this.slaveScreens.forEach(obj => {
             let bb = obj.boundingBox;
             let ctxSlave = this.slavesStartCanvas.getContext('2d');
             ctxSlave.drawImage(this.image, bb.topLeft.x, bb.topLeft.y,
                 bb.width, bb.height, 0, 0, bb.width, bb.height);
             let dataUrl = this.slavesStartCanvas.toDataURL();
             obj.slavePortionImg.setAttribute('src', dataUrl);
-            //setting corners of slavescreen in relation of its bbox left upper corner in 0,0.
+            /**setting corners of slavescreen in relation of its bbox left upper corner in 0,0.*/
             this.resetCoordinates(obj);
         });
     }
@@ -74,10 +77,9 @@ export default class SlaveCatCastImgHandler {
     private resetCoordinates(slaveScreen: SlaveScreen){
         let x = slaveScreen.boundingBox.topLeft.x;
         let y = slaveScreen.boundingBox.topLeft.y;
-        slaveScreen.corners.forEach(corner=>{
+        slaveScreen.corners.forEach(corner => {
             corner.x -= x;
             corner.y -= y;
         });
-        return
     }
 }
