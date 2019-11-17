@@ -32,17 +32,10 @@ export default class SlaveScreen {
         return new BoundingBox(this.corners);
     }
 
-    // TODO: This should be fixed because it won't work for portrait oriented devices.
     get width(): number {
-        this.sortCornersByAngle();
-        const edgeA = new Line(this.corners[0], this.corners[1]);
-        const edgeB = new Line(this.corners[1], this.corners[2]);
-        const edgeC = new Line(this.corners[2], this.corners[3]);
-        const edgeD = new Line(this.corners[3], this.corners[0]);
-        return Math.max(edgeA.length, edgeB.length, edgeC.length, edgeD.length);
+        return this.widthEdge.length;
     }
 
-    // TODO: This should be fixed because it won't work for portrait oriented devices.
     get height(): number {
         this.sortCornersByAngle();
         const edgeA = new Line(this.corners[0], this.corners[1]);
@@ -59,6 +52,55 @@ export default class SlaveScreen {
             return Math.max(edgeB.length, edgeD.length);
         } else {
             return Math.max(edgeA.length, edgeC.length);
+        }
+    }
+
+    // TODO: This should be fixed because it won't work for portrait oriented devices.
+    /**
+     * Edge representing the width of the screen
+     */
+    get widthEdge(): Line {
+        this.sortCornersByAngle();
+        const edgeA = new Line(this.corners[0], this.corners[1]);
+        const edgeB = new Line(this.corners[1], this.corners[2]);
+        const edgeC = new Line(this.corners[2], this.corners[3]);
+        const edgeD = new Line(this.corners[3], this.corners[0]);
+        const longestLength = Math.max(
+            edgeA.length,
+            edgeB.length,
+            edgeC.length,
+            edgeD.length
+        );
+        if (edgeA.length === longestLength) return edgeA;
+        if (edgeB.length === longestLength) return edgeB;
+        if (edgeC.length === longestLength) return edgeC;
+        if (edgeD.length === longestLength) return edgeD;
+    }
+
+    // TODO: This should be fixed because it won't work for portrait oriented devices.
+    /**
+     * Edge representing the height of the screen
+     */
+    get heightEdge(): Line {
+        this.sortCornersByAngle();
+        const edgeA = new Line(this.corners[0], this.corners[1]);
+        const edgeB = new Line(this.corners[1], this.corners[2]);
+        const edgeC = new Line(this.corners[2], this.corners[3]);
+        const edgeD = new Line(this.corners[3], this.corners[0]);
+        const width = Math.max(
+            edgeA.length,
+            edgeB.length,
+            edgeC.length,
+            edgeD.length
+        );
+        if (width === edgeA.length || width === edgeC.length) {
+            const longestLength = Math.max(edgeB.length, edgeD.length);
+            if (longestLength === edgeB.length) return edgeB;
+            if (longestLength === edgeD.length) return edgeD;
+        } else {
+            const longestLength = Math.max(edgeA.length, edgeC.length);
+            if (longestLength === edgeA.length) return edgeA;
+            if (longestLength === edgeC.length) return edgeC;
         }
     }
 

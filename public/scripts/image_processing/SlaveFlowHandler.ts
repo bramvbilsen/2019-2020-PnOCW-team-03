@@ -175,6 +175,11 @@ export default class SlaveFlowHandler {
     }
 
     takePictureOfSlaveOrientation() {
+        console.log(
+            "MY NEW ANGLE: " +
+                this.screens[this.screens.length - 1].widthEdge
+                    .angleBetweenEndpoints
+        );
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;

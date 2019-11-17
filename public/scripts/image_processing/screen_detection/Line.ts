@@ -25,6 +25,13 @@ export default class Line {
         );
     }
 
+    get angleBetweenEndpoints() {
+        return (
+            (Math.atan2(this.b.y - this.a.y, this.b.x - this.a.x) * 180) /
+            Math.PI
+        );
+    }
+
     lineAbove(line: Line, index: number) {
         let sameEndPoint;
         let otherPoint;
