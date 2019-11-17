@@ -156,6 +156,25 @@ $(() => {
                 });
             });
 
+        $("#display-delaunay-triangulation-button")
+            .off()
+            .on("click", async () => {
+                const triangCanvas = client.calculateTriangulation();
+                const globalBoundingBox = new BoundingBox(
+                    flattenOneLevel(
+                        slaveFlowHandler.screens.map(screen => screen.corners)
+                    )
+                );
+                slaveFlowHandler.screens.forEach(screen => {
+                    const slaveImg = createImageCanvasForSlave(
+                        globalBoundingBox,
+                        screen,
+                        triangCanvas
+                    );
+                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                });
+            });
+
         $(".pink")
             .off()
             .click(() => {
