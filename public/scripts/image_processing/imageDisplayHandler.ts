@@ -58,7 +58,22 @@ export default class SlaveCatCastImgHandler {
 
     linearScale() {
         this.initialize();
+        //debugging
+        this.slaveScreens.forEach(obj => {
+            let bb = obj.boundingBox;
+            console.log(imgDisplayFlow.LIN_SCALING + "\n slave = " + obj + "\n " +
+                "Bbox: " + bb.topLeft + "\n" +
+                bb.topRight + "\n" + bb.bottomLeft + "\n" + bb.bottomRight + "\n" +
+                "screen itself:" + obj.corners)
+        });
+
         this.slaveScreens = getScreensTranslatedToImage(this.image.width, this.image.height, this.slaveScreens);
+
+        let scaleX = this.image.width / this.slavesStartCanvas.width;
+        let scaleY = this.image.height / this.slavesStartCanvas.height;
+        this.slavesStartCanvas.width *= scaleX;
+        this.slavesStartCanvas.height *= scaleY;
+
         this.step = imgDisplayFlow.LIN_SCALING;
     }
 
@@ -71,8 +86,14 @@ export default class SlaveCatCastImgHandler {
         this.step = imgDisplayFlow.CUT_IMG;
 
         this.slaveScreens.forEach(obj => {
-            console.log('slave;'+obj);
             let bb = obj.boundingBox;
+            //debugging
+            console.log("slave = " + obj + "\n " +
+                "Bbox: "+bb.topLeft +"\n" +
+                bb.topRight+"\n" +bb.bottomLeft+"\n" +bb.bottomRight+"\n"+
+                "screen itself:" + obj.corners
+            );
+
             let ctxSlave = this.slavesStartCanvas.getContext('2d');
             ctxSlave.drawImage(this.image, bb.topLeft.x, bb.topLeft.y,
                 bb.width, bb.height, 0, 0, bb.width, bb.height);
