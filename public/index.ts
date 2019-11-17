@@ -113,7 +113,7 @@ $(() => {
             .off()
             .on("click", async () => {
                 const img = await loadImage(
-                    "http://localhost:3000/images/unicorn.jpeg"
+                    env.baseUrl + "/images/unicorn.jpeg"
                 );
                 const imgCanvas = createCanvas(img.width, img.height);
                 imgCanvas.getContext("2d").drawImage(img, 0, 0);
