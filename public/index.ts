@@ -105,7 +105,8 @@ $(() => {
         displayImage.off().on("click", () => {
             imageDisplayHandler.defaultImage();
             imageDisplayHandler.linearScale();
-            imageDisplayHandler.cutBoxOutImg();
+            let  data = imageDisplayHandler.cutBoxOutImg();
+            $("#result-img").attr("src", data)
         });
 
         $("#display-unicorn-img-button")
