@@ -1,1 +1,5 @@
-export default {"baseUrl":"http://localhost:3000","test":true,"testArgs":{"cut_images":["One screen - image has same aspect ratio as screen"]}}
+export default {
+    baseUrl: "http://localhost:3000",
+    test: false,
+    testArgs: {}
+};
