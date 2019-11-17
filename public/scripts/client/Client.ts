@@ -14,6 +14,8 @@ import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
 import { uploadSlaveImgCanvas } from "../util/image_uploader";
+import { BoundingBox } from "../util/BoundingBox";
+import { flattenOneLevel } from "../util/arrays";
 
 class Client {
     private _type: ConnectionType;
@@ -353,23 +355,22 @@ class Client {
         $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
     };
 
-    public showTriangulation = () => {
+    public calculateTriangulation = () => {
         if (this.type === ConnectionType.MASTER) {
             let slaves = slaveFlowHandler.screens;
-            console.log(slaves);
             let middlePoints: Point[] = [];
-            //middlepoitns verplaatsen -> moet nog gebeuren
+            const globalBoundingBox = new BoundingBox(
+                flattenOneLevel(
+                    slaveFlowHandler.screens.map(screen => screen.corners)
+                )
+            );
+            const leftCorner= globalBoundingBox.topLeft;
             slaves.forEach(slave => {
-                middlePoints.push(slave.centroid);
+                let centroid = slave.centroid;
+                centroid.x -= leftCorner.x;
+                centroid.y -= leftCorner.y;
+                middlePoints.push();
             });
-            for (let i = 0; i < 20; i++) {
-                middlePoints.push(
-                    new Point(
-                        Math.floor(Math.random() * 199 + 1),
-                        Math.floor(Math.random() * 199 + 1)
-                    )
-                );
-            }
             console.log(middlePoints);
             middlePoints.sort(function(a, b) {
                 if (a.x - b.x == 0) {
@@ -379,10 +380,7 @@ class Client {
                 }
             });
             let triangulation = delauney(middlePoints).lines;
-
-            console.log(middlePoints);
-            console.log(triangulation);
-            const canvas = createCanvas(200, 200); //nog met juiste size werken
+            const canvas = createCanvas(globalBoundingBox.width, globalBoundingBox.height);
             const ctx = canvas.getContext("2d");
             ctx.strokeStyle = "rgb(255,0,0)";
             triangulation.forEach((line: Line) => {
