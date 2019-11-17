@@ -109,6 +109,12 @@ $(() => {
             $("#result-img").attr("src", data);
         });
 
+        $("#display-countdown-button")
+            .off()
+            .on("click", () => {
+                client.notifySlavesOfStartTimeCounter();
+            });
+
         $("#display-unicorn-img-button")
             .off()
             .on("click", async () => {
@@ -127,6 +133,24 @@ $(() => {
                         globalBoundingBox,
                         screen,
                         imgCanvas
+                    );
+                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                });
+            });
+
+        $("#display-master-img-button")
+            .off()
+            .on("click", async () => {
+                const globalBoundingBox = new BoundingBox(
+                    flattenOneLevel(
+                        slaveFlowHandler.screens.map(screen => screen.corners)
+                    )
+                );
+                slaveFlowHandler.screens.forEach(screen => {
+                    const slaveImg = createImageCanvasForSlave(
+                        globalBoundingBox,
+                        screen,
+                        slaveFlowHandler.blancoCanvas
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
