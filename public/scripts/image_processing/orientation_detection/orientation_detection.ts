@@ -252,15 +252,15 @@ export default function getOrientationAngle(
     const points = screen.corners;
     const centroids = getAllCentroids(screen);
     let angle = getAngle(points[0], points[1], points[2], points[3]);
-    console.log(`ANGLE: ${angle}`);
-    if (angle >= 0) {
-        return angle;
-    } else {
-        while (angle < 0) {
-            angle += 360;
-            return angle;
-        }
-    }
+    // console.log(`ANGLE: ${angle}`);
+    // if (angle >= 0) {
+    //     return angle;
+    // } else {
+    //     while (angle < 0) {
+    //         angle += 360;
+    //         return angle;
+    //     }
+    // }
     const orientation = getOrientation(centroids, canvas);
     console.log(orientation);
     switch (orientation) {
@@ -420,13 +420,13 @@ export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
     return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };
 }
 /**
- * 
- * @param centroid 
- * @param canvas 
- * @param key 
- * 
+ *
+ * @param centroid
+ * @param canvas
+ * @param key
+ *
  * For every part of the screen (divided in 4), check which color it contains. By comparing this found color
- * to the color expected with a normal orientation, we can return an enum that represents the orientation of that part. 
+ * to the color expected with a normal orientation, we can return an enum that represents the orientation of that part.
  * (this is done four times, makes it more robust for failures)
  */
 function checkColorOrientation(

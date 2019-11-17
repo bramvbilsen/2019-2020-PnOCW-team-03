@@ -13,7 +13,7 @@ export const client = new Client({
 });
 
 export let slaveFlowHandler: SlaveFlowHandler;
-export let imageDisplayHandler : SlaveCatCastImgHandler;
+export let imageDisplayHandler: SlaveCatCastImgHandler;
 
 //@ts-ignore
 window.client = client;
@@ -52,7 +52,6 @@ $(() => {
         const loadingMasterIndicator = $("#loading-master-indicator");
         const resetButton = $("#reset");
 
-
         const uploadImage = $("#upload-image-to-display");
         const displayBaseImage = $("#display-standard-image");
         const displayImage = $("#display-uploaded-image");
@@ -62,10 +61,6 @@ $(() => {
         showOrientationButton.toggle();
         captureOrientationButton.toggle();
         loadingMasterIndicator.toggle();
-        uploadImage.toggle();
-        displayBaseImage.toggle();
-        displayImage.toggle();
-
 
         startButton.off().on("click", () => {
             slaveFlowHandler.takeNoColorPicture();
@@ -89,29 +84,25 @@ $(() => {
         captureOrientationButton.off().on("click", () => {
             slaveFlowHandler.takePictureOfSlaveOrientation();
             captureOrientationButton.toggle();
-            nextSlaveButton.toggle();
-            //LIAM HERE
-            uploadImage.toggle();
-            displayImage.toggle();
-            displayBaseImage.toggle();
         });
         resetButton.off().on("click", () => {
             slaveFlowHandler.reset();
         });
 
-        uploadImage.off().on('click', () =>{
+        uploadImage.off().on("click", () => {
             /**CHANGE THIS*/
             imageDisplayHandler.defaultImage();
         });
 
-        displayImage.off().on('click',async () =>{
-            imageDisplayHandler = new SlaveCatCastImgHandler(slaveFlowHandler.screens);
+        displayImage.off().on("click", async () => {
+            imageDisplayHandler = new SlaveCatCastImgHandler(
+                slaveFlowHandler.screens
+            );
             await imageDisplayHandler.defaultImage();
             imageDisplayHandler.linearScale();
-            let  data = imageDisplayHandler.cutBoxOutImg();
-            $("#result-img").attr("src", data)
+            let data = imageDisplayHandler.cutBoxOutImg();
+            $("#result-img").attr("src", data);
         });
-
 
         $(".pink")
             .off()

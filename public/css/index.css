@@ -65,7 +65,8 @@
 #display-slave-img-buttons-content {
     display: flex;
     width: 100vw;
-    height: 100vw;
+    /* height: 100vw; */
+    padding-top: 50vh;
     justify-content: space-evenly;
     align-items: center;
 }
