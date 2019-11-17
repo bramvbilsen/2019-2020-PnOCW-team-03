@@ -2,11 +2,14 @@ import { BoundingBox } from "./BoundingBox";
 import { scaleAndCutImageToBoundingBoxAspectRatio } from "./images";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import SlaveScreen from "./SlaveScreen";
+import { degreesToRadians, rotatePointAroundAnchor } from "./angles";
+import { calculateBoundingBox } from "./shapes";
 
 /**
  * Creates/cuts images to display on slaves
- * @param globalBoundingBox
- * @param img Either a string reference to the image or a canvas with the image on it.
+ * @param globalBoundingBox Bouding box around all the screens
+ * @param screen Screen of slave
+ * @param img Canvas with the image to display on.
  */
 export function createImageCanvasForSlave(
     globalBoundingBox: BoundingBox,
@@ -17,56 +20,67 @@ export function createImageCanvasForSlave(
         imgCanvas,
         globalBoundingBox
     );
-    const screenCanvas = createCanvas(
-        screen.boundingBox.width,
-        screen.boundingBox.height
-    );
-    const screenCtx = screenCanvas.getContext("2d");
-    return rotateAndDrawImageForSlave(screen, imgCanvas);
+    return rotateAndDrawImageForSlave(globalBoundingBox, screen, imgCanvas);
 }
 
+/**
+ *
+ * @param globalBoundingBox Bouding box around all the screens
+ * @param screen Screen of slave
+ * @param imgCanvas image of canvas already scaled to fill `globalBoundingBox`
+ */
 function rotateAndDrawImageForSlave(
+    globalBoundingBox: BoundingBox,
     screen: SlaveScreen,
     imgCanvas: HTMLCanvasElement
 ): HTMLCanvasElement {
-    const slaveBox = screen.boundingBox;
-    screen = screen.copyAndMoveAsCloseToOriginAsPossible();
+    const screenCenter = screen.centroid;
 
-    const slaveCanvas = createCanvas(screen.width, screen.height);
-    const slaveCtx = slaveCanvas.getContext("2d");
-    // const slaveCanvasPixels = slaveCtx.createImageData(screen.width, screen.height);
+    // Rotate the image to the same rotation as the screen
+    const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
+    const rotatedImgCtx = rotatedImg.getContext("2d");
+    rotatedImgCtx.translate(screenCenter.x, screenCenter.y);
+    rotatedImgCtx.rotate(degreesToRadians(screen.orientation));
+    rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
+    rotatedImgCtx.drawImage(imgCanvas, 0, 0);
 
-    const imgForBoundingBoxCanvas = createCanvas(
-        slaveBox.width,
-        slaveBox.height
+    // Rotate the screen to have a 0deg angle.
+    screen.sortCornersByAngle();
+    const corners = screen.corners.map(corner =>
+        rotatePointAroundAnchor(corner, screenCenter, -screen.orientation)
     );
-    const imgForBoundingBoxCtx = imgForBoundingBoxCanvas.getContext("2d");
-    imgForBoundingBoxCtx.rotate(-screen.orientation);
-    imgForBoundingBoxCtx.drawImage(
-        imgCanvas,
-        slaveBox.topLeft.x,
-        slaveBox.topLeft.y,
-        slaveBox.width,
-        slaveBox.height,
+    const slaveScreenMask = createCanvas(imgCanvas.width, imgCanvas.height);
+    const slaveScreenMaskCtx = slaveScreenMask.getContext("2d");
+    slaveScreenMaskCtx.beginPath();
+    slaveScreenMaskCtx.moveTo(corners[0].x, corners[0].y);
+    slaveScreenMaskCtx.lineTo(corners[1].x, corners[1].y);
+    slaveScreenMaskCtx.lineTo(corners[2].x, corners[2].y);
+    slaveScreenMaskCtx.lineTo(corners[3].x, corners[3].y);
+    slaveScreenMaskCtx.fill();
+
+    const maskedImg = createCanvas(
+        globalBoundingBox.width + globalBoundingBox.topLeft.x,
+        globalBoundingBox.height + globalBoundingBox.topLeft.y
+    );
+    const maskedImgCtx = maskedImg.getContext("2d");
+    maskedImgCtx.drawImage(slaveScreenMask, 0, 0);
+    maskedImgCtx.globalCompositeOperation = "source-in";
+    maskedImgCtx.drawImage(rotatedImg, 0, 0);
+
+    const slaveImg = createCanvas(screen.width, screen.height);
+    const slaveImgCtx = slaveImg.getContext("2d");
+    const boundingBoxCorners = calculateBoundingBox(corners);
+    slaveImgCtx.drawImage(
+        maskedImg,
+        boundingBoxCorners.topLeft.x,
+        boundingBoxCorners.topLeft.y,
+        boundingBoxCorners.topLeft.x + screen.width,
+        boundingBoxCorners.topLeft.y + screen.height,
         0,
         0,
-        slaveBox.width,
-        slaveBox.height
+        boundingBoxCorners.topLeft.x + screen.width,
+        boundingBoxCorners.topLeft.y + screen.height
     );
-    slaveCtx.drawImage(imgForBoundingBoxCanvas, 0, 0);
 
-    // const imgPixels = imgCanvas
-    //     .getContext("2d")
-    //     .getImageData(
-    //         screen.boundingBox.topLeft.x,
-    //         screen.boundingBox.topLeft.y,
-    //         screen.boundingBox.width,
-    //         screen.boundingBox.height
-    //     );
-
-    // for (let y = 0; y < screen.boundingBox.height; y++) {
-    //     for (let x = 0; x < screen.boundingBox.width; x++) {}
-    // }
-
-    return slaveCanvas;
+    return slaveImg;
 }
