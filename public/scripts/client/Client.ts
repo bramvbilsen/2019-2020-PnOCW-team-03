@@ -296,7 +296,7 @@ class Client {
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
         $("#main-flow-slave").hide();
-        $("#image-slave").attr("src", data.imgUrl);
+        $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
     };
 
     /**
