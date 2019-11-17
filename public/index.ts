@@ -6,14 +6,14 @@ import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
 import run_tests from "./tests/run";
 import downloadTests from "./tests/download";
 import env from "./env/env";
-import ImageDisplayHandler from "./scripts/image_processing/imageDisplayHandler";
+import SlaveCatCastImgHandler from "./scripts/image_processing/imageDisplayHandler";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
 });
 
 export let slaveFlowHandler: SlaveFlowHandler;
-export let imageDisplayHandler : ImageDisplayHandler;
+export let imageDisplayHandler : SlaveCatCastImgHandler;
 
 //@ts-ignore
 window.client = client;
@@ -21,6 +21,8 @@ window.client = client;
 window.slaveFlowHandler = slaveFlowHandler;
 //@ts-ignore
 window.findScreen = findScreen;
+//@ts-ignore
+//window.imageDisplayHandler = imageDisplayHandler(slaveFlowHandler.screens);
 
 $(() => {
     //@ts-ignore
@@ -36,6 +38,7 @@ $(() => {
             return;
         }
         slaveFlowHandler = new SlaveFlowHandler();
+
         $("#welcome-master").css("display", "none");
         $("#main-flow-master").css("display", "inherit");
         const player: JQuery<HTMLVideoElement> = $("#player");
@@ -48,6 +51,8 @@ $(() => {
         const captureOrientationButton = $("#capture-orientation");
         const loadingMasterIndicator = $("#loading-master-indicator");
         const resetButton = $("#reset");
+
+
         const uploadImage = $("#upload-image-to-display");
         const displayBaseImage = $("#display-standard-image");
         const displayImage = $("#display-uploaded-image");
@@ -99,8 +104,9 @@ $(() => {
             imageDisplayHandler.defaultImage();
         });
 
-        displayImage.off().on('click',() =>{
-            imageDisplayHandler.defaultImage();
+        displayImage.off().on('click',async () =>{
+            imageDisplayHandler = new SlaveCatCastImgHandler(slaveFlowHandler.screens);
+            await imageDisplayHandler.defaultImage();
             imageDisplayHandler.linearScale();
             let  data = imageDisplayHandler.cutBoxOutImg();
             $("#result-img").attr("src", data)

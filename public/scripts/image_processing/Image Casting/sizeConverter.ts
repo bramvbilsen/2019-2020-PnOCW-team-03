@@ -1,5 +1,5 @@
-import Point from "screen_detection/Point";
-import SlaveScreen from "util/SlaveScreen";
+import Point from "../screen_detection/Point";
+import SlaveScreen from "../../util/SlaveScreen";
 import {BoundingBox} from '../../util/BoundingBox';
 
 /**

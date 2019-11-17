@@ -1,6 +1,6 @@
 import { client } from "../../index";
 import { createCanvas } from "./screen_detection/screen_detection";
-import SlaveScreen from "../util/SlaveScreen";
+import SlaveScreen from ".././util/SlaveScreen";
 import {slaveFlowHandler} from '../../index';
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
 import {getScreensTranslatedToImage} from './Image Casting/sizeConverter';
@@ -31,15 +31,20 @@ export default class SlaveCatCastImgHandler {
     slavesStartCanvas: HTMLCanvasElement;
     slaveScreens: SlaveScreen[] = [];
 
-
+/**
     constructor(img: HTMLImageElement) {
         this.image = img;
         this.step = imgDisplayFlow.START;
+    }*/
+    constructor(screens:SlaveScreen[]) {
+        this.slaveScreens = [...screens];
+        this.step = imgDisplayFlow.START;
     }
 
+
     private initialize() {
-        this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
-        this.currSlaveID = this.slaveIDs.pop();
+        /*this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
+        this.currSlaveID = this.slaveIDs.pop();*/
         this.slaveScreens = [...slaveFlowHandler.screens];
         this.slavesStartCanvas = createCanvas(
             PREFERRED_CANVAS_WIDTH, PREFERRED_CANVAS_HEIGHT
@@ -66,15 +71,16 @@ export default class SlaveCatCastImgHandler {
         this.step = imgDisplayFlow.CUT_IMG;
 
         this.slaveScreens.forEach(obj => {
+            console.log('slave;'+obj);
             let bb = obj.boundingBox;
             let ctxSlave = this.slavesStartCanvas.getContext('2d');
             ctxSlave.drawImage(this.image, bb.topLeft.x, bb.topLeft.y,
                 bb.width, bb.height, 0, 0, bb.width, bb.height);
             let dataUrl = this.slavesStartCanvas.toDataURL();
             this.data = dataUrl;
-            obj.slavePortionImg.setAttribute('src', dataUrl);
+            //obj.slavePortionImg.setAttribute('src', dataUrl);
             /**setting corners of slavescreen in relation of its bbox left upper corner in 0,0.*/
-            this.resetCoordinates(obj);
+            //this.resetCoordinates(obj);
 
         });
         return this.data;
