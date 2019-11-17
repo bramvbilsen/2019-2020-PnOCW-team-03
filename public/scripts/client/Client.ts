@@ -369,7 +369,7 @@ class Client {
                 let centroid = slave.centroid;
                 centroid.x -= leftCorner.x;
                 centroid.y -= leftCorner.y;
-                middlePoints.push();
+                middlePoints.push(centroid);
             });
             console.log(middlePoints);
             middlePoints.sort(function(a, b) {
