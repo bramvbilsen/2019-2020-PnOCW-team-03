@@ -92,7 +92,10 @@ io.on("connect", (socket: socketio.Socket) => {
         MasterEventTypes.DisplayImageOnSlave,
         (msg: { slaveId: string; imgUrl: string }) => {
             if (socket.id === connections.master.id) {
-                console.log("Attempting to display image by master");
+                console.log(
+                    "Attempting to display image by master, imgurl: " +
+                        msg.imgUrl
+                );
                 io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
                     imgUrl: msg.imgUrl,
                 });
