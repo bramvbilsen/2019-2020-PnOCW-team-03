@@ -37,7 +37,7 @@ function rotateAndDrawImageForSlave(
     const screenCenter = screen.centroid;
 
     // TODO: DELETE THIS!!!!
-    screen.orientation = 0;
+    // screen.orientation = 0;
 
     // Rotate the image to the same rotation as the screen
     const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
@@ -62,8 +62,8 @@ function rotateAndDrawImageForSlave(
     slaveScreenMaskCtx.fill();
 
     const maskedImg = createCanvas(
-        globalBoundingBox.width + globalBoundingBox.topLeft.x,
-        globalBoundingBox.height + globalBoundingBox.topLeft.y
+        globalBoundingBox.width,
+        globalBoundingBox.height
     );
     const maskedImgCtx = maskedImg.getContext("2d");
     maskedImgCtx.drawImage(slaveScreenMask, 0, 0);

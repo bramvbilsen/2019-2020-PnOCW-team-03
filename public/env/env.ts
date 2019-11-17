@@ -1,5 +1,1 @@
-export default {
-    baseUrl: "http://localhost:3000",
-    test: false,
-    testArgs: {}
-};
+export default {"baseUrl":"http://localhost:3000","test":true,"testArgs":{"cut_images":[]}}
