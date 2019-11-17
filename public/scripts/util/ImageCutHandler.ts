@@ -7,8 +7,9 @@ import { calculateBoundingBox } from "./shapes";
 
 /**
  * Creates/cuts images to display on slaves
- * @param globalBoundingBox
- * @param img Either a string reference to the image or a canvas with the image on it.
+ * @param globalBoundingBox Bouding box around all the screens
+ * @param screen Screen of slave
+ * @param img Canvas with the image to display on.
  */
 export function createImageCanvasForSlave(
     globalBoundingBox: BoundingBox,
@@ -22,6 +23,12 @@ export function createImageCanvasForSlave(
     return rotateAndDrawImageForSlave(globalBoundingBox, screen, imgCanvas);
 }
 
+/**
+ *
+ * @param globalBoundingBox Bouding box around all the screens
+ * @param screen Screen of slave
+ * @param imgCanvas image of canvas already scaled to fill `globalBoundingBox`
+ */
 function rotateAndDrawImageForSlave(
     globalBoundingBox: BoundingBox,
     screen: SlaveScreen,
@@ -36,7 +43,6 @@ function rotateAndDrawImageForSlave(
     rotatedImgCtx.rotate(degreesToRadians(screen.orientation));
     rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
     rotatedImgCtx.drawImage(imgCanvas, 0, 0);
-    // $("#test-results-visual").attr("src", rotatedImg.toDataURL());
 
     // Rotate the screen to have a 0deg angle.
     screen.sortCornersByAngle();
@@ -61,8 +67,6 @@ function rotateAndDrawImageForSlave(
     maskedImgCtx.globalCompositeOperation = "source-in";
     maskedImgCtx.drawImage(rotatedImg, 0, 0);
 
-    // $("#test-results-visual").attr("src", maskedImg.toDataURL());
-
     const slaveImg = createCanvas(screen.width, screen.height);
     const slaveImgCtx = slaveImg.getContext("2d");
     const boundingBoxCorners = calculateBoundingBox(corners);
@@ -77,8 +81,6 @@ function rotateAndDrawImageForSlave(
         boundingBoxCorners.topLeft.x + screen.width,
         boundingBoxCorners.topLeft.y + screen.height
     );
-
-    // $("#test-results-visual").attr("src", slaveImg.toDataURL());
 
     return slaveImg;
 }
