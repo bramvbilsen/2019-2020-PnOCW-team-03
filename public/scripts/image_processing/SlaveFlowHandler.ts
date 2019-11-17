@@ -210,7 +210,8 @@ export default class SlaveFlowHandler {
         console.log("ORIENTATION: " + currScreen.orientation);
         currScreen.orientation =
             calculateOrientation(currScreen, orientationCanvas) +
-            currScreen.widthEdge.angleBetweenEndpoints;
+            currScreen.widthEdge.angleBetweenEndpoints -
+            180;
         console.log("ANGLE: " + currScreen.orientation);
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
         this.endSlaveCycle();
