@@ -269,16 +269,6 @@ export default function getOrientationAngle(
     }
 }
 
-// main(
-//     [
-//         new Point(0, 0),
-//         new Point(600, 0),
-//         new Point(600, 800),
-//         new Point(0, 800)
-//     ],
-//     "../../../img/90clockwise.png"
-// );
-
 /**
  * Label all the corners
  */
