@@ -1,6 +1,8 @@
 import Point from "../image_processing/screen_detection/Point";
 import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
+import { rotatePointsAroundCenter } from "../../tests/image_processing/helpers";
+import { radiansToDegrees } from "./angles";
 
 export default class SlaveScreen {
     corners: Point[];
@@ -31,35 +33,49 @@ export default class SlaveScreen {
     }
 
     // TODO: This should be fixed because it won't work for portrait oriented devices.
-    /** currently, this will always return the longest connection between the points. */
     get width(): number {
-        const connections: Line[] = [];
-        this.corners.forEach((corner, index) => {
-            for (let i = index; i < this.corners.length; i++) {
-                connections.push(new Line(corner, this.corners[i]));
-            }
-        });
-        const sortedConnections = connections.sort(
-            (connectionA, connectionB) =>
-                connectionB.length - connectionA.length
-        );
-        return sortedConnections[0].length;
+        this.sortCornersByAngle();
+        const edgeA = new Line(this.corners[0], this.corners[1]);
+        const edgeB = new Line(this.corners[1], this.corners[2]);
+        const edgeC = new Line(this.corners[2], this.corners[3]);
+        const edgeD = new Line(this.corners[3], this.corners[0]);
+        return Math.max(edgeA.length, edgeB.length, edgeC.length, edgeD.length);
     }
 
     // TODO: This should be fixed because it won't work for portrait oriented devices.
-    /** currently, this will always return the shortest connection between the points. */
     get height(): number {
-        const connections: Line[] = [];
-        this.corners.forEach((corner, index) => {
-            for (let i = index; i < this.corners.length; i++) {
-                connections.push(new Line(corner, this.corners[i]));
-            }
-        });
-        const sortedConnections = connections.sort(
-            (connectionA, connectionB) =>
-                connectionA.length - connectionB.length
+        this.sortCornersByAngle();
+        const edgeA = new Line(this.corners[0], this.corners[1]);
+        const edgeB = new Line(this.corners[1], this.corners[2]);
+        const edgeC = new Line(this.corners[2], this.corners[3]);
+        const edgeD = new Line(this.corners[3], this.corners[0]);
+        const width = Math.max(
+            edgeA.length,
+            edgeB.length,
+            edgeC.length,
+            edgeD.length
         );
-        return sortedConnections[0].length;
+        if (width === edgeA.length || width === edgeC.length) {
+            return Math.max(edgeB.length, edgeD.length);
+        } else {
+            return Math.max(edgeA.length, edgeC.length);
+        }
+    }
+
+    public sortCornersByAngle() {
+        const center = this.centroid;
+        // Sorting by https://math.stackexchange.com/questions/978642/how-to-sort-vertices-of-a-polygon-in-counter-clockwise-order
+        this.corners.sort((a, b) => {
+            const a1 =
+                (radiansToDegrees(Math.atan2(a.x - center.x, a.y - center.y)) +
+                    360) %
+                360;
+            const a2 =
+                (radiansToDegrees(Math.atan2(b.x - center.x, b.y - center.y)) +
+                    360) %
+                360;
+            return a1 - a2;
+        });
     }
 
     public copy(): SlaveScreen {
