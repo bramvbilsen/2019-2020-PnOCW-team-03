@@ -419,14 +419,23 @@ export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
 
     return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };
 }
-
+/**
+ * 
+ * @param centroid 
+ * @param canvas 
+ * @param key 
+ * 
+ * For every part of the screen (divided in 4), check which color it contains. By comparing this found color
+ * to the color expected with a normal orientation, we can return an enum that represents the orientation of that part. 
+ * (this is done four times, makes it more robust for failures)
+ */
 function checkColorOrientation(
     centroid: Point,
     canvas: HTMLCanvasElement,
     key: string
 ) {
-    const RANGE = 3;
-    const THRESHOLD = 18;
+    const RANGE = 4;
+    const THRESHOLD = 20;
 
     const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
     const nonColoredScreenPixelData = ctx.getImageData(
@@ -492,7 +501,7 @@ function getOrientation(
                 orientations[1] += 1;
             case Orientation.COUNTERCLOCKWISE:
                 orientations[2] += 1;
-            case Orientation.NORMAL:
+            case Orientation.FLIPPED:
                 orientations[3] += 1;
         }
     }
