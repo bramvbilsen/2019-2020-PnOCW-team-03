@@ -24,6 +24,7 @@ export enum imgDisplayFlow {
 export default class SlaveCatCastImgHandler {
     prevSlaveID: string;
     currSlaveID: string;
+    data:string;
     image: HTMLImageElement;
     slaveIDs: string[];
     step: imgDisplayFlow;
@@ -45,7 +46,7 @@ export default class SlaveCatCastImgHandler {
         );
     }
 
-    async defaultImage(){
+    async defaultImage() {
         this.image = await loadImage(
             "http://localhost:3000/images/unicorn.jpeg");
     }
@@ -63,19 +64,23 @@ export default class SlaveCatCastImgHandler {
      */
     cutBoxOutImg() {
         this.step = imgDisplayFlow.CUT_IMG;
+
         this.slaveScreens.forEach(obj => {
             let bb = obj.boundingBox;
             let ctxSlave = this.slavesStartCanvas.getContext('2d');
             ctxSlave.drawImage(this.image, bb.topLeft.x, bb.topLeft.y,
                 bb.width, bb.height, 0, 0, bb.width, bb.height);
             let dataUrl = this.slavesStartCanvas.toDataURL();
+            this.data = dataUrl;
             obj.slavePortionImg.setAttribute('src', dataUrl);
             /**setting corners of slavescreen in relation of its bbox left upper corner in 0,0.*/
             this.resetCoordinates(obj);
+
         });
+        return this.data;
     }
 
-    private resetCoordinates(slaveScreen: SlaveScreen){
+    private resetCoordinates(slaveScreen: SlaveScreen) {
         let x = slaveScreen.boundingBox.topLeft.x;
         let y = slaveScreen.boundingBox.topLeft.y;
         slaveScreen.corners.forEach(corner => {
