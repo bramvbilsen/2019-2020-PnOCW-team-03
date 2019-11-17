@@ -12,9 +12,9 @@ const colorRange: IHSLRange = {
     lRange: 60,
 };
 const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180);
-const rightUpperColor: IHSLColor = rgbToHsl(255, 216, 0);
+const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25);
 const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255);
-const leftUnderColor: IHSLColor = rgbToHsl(0, 255, 25);
+const leftUnderColor: IHSLColor = rgbToHsl(255, 216, 0);
 const colors = [
     leftUpperColor,
     rightUpperColor,
