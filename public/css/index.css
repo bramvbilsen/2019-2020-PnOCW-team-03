@@ -34,6 +34,10 @@
     font-size: 20px;
 }
 
+#main-flow-master {
+    display: none;
+}
+
 #default-slave-state {
     width: 100vw;
     height: 100vh;
@@ -50,6 +54,20 @@
     display: flex;
     justify-content: center;
     padding: 20px 0px;
+}
+
+#display-slave-img-buttons {
+    display: none;
+    width: 100vw;
+    height: 100vw;
+}
+
+#display-slave-img-buttons-content {
+    display: flex;
+    width: 100vw;
+    height: 100vw;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 #image-container-slave {
@@ -75,6 +93,8 @@
     color: rgba(255, 255, 255, 0.75) !important;
     border-color: rgba(255, 255, 255, 0.75) !important;
     background-color: transparent !important;
+    padding: 20px 20px !important;
+    font-size: 30px;
 }
 
 video {

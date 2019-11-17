@@ -9,6 +9,7 @@ import { createCameraOverlayWithPoints } from "../util/canvas";
 export enum WorkflowStep {
     START = "initialize",
     SLAVE_CYCLE = "iterating through slaves",
+    END = "end",
 }
 
 /**
@@ -20,6 +21,7 @@ export default class SlaveFlowHandler {
     prevSlaveID: string;
     currSlaveID: string;
     slaveIDs: string[];
+    origSlaveIDs: string[];
     step: WorkflowStep;
     blancoCanvas: HTMLCanvasElement;
     screens: SlaveScreen[] = [];
@@ -55,13 +57,22 @@ export default class SlaveFlowHandler {
 
     private endSlaveCycle() {
         this.prevSlaveID = this.currSlaveID;
-        this.currSlaveID = this.slaveIDs.pop();
+        if (this.slaveIDs.length !== 0) {
+            this.currSlaveID = this.slaveIDs.pop();
+            $("#next-slave").show();
+        } else {
+            this.step = WorkflowStep.END;
+            $("#slave-flow-buttons").hide();
+            $("#camera").hide();
+            $("#display-slave-img-buttons").show();
+        }
     }
 
     private initialize() {
         const startButton: JQuery<HTMLButtonElement> = $("#start");
         startButton.css("display", "none");
         this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
+        this.origSlaveIDs = [...this.slaveIDs];
         this.currSlaveID = this.slaveIDs.pop();
     }
 
