@@ -4,13 +4,7 @@ import Point from "./Point";
 import Line from "./Line";
 import convexHull from "./hull";
 
-import { IHSLColor, IRGBAColor } from "../../types/Color";
-
-interface IHSLRange {
-    hRange: number;
-    sRange: number;
-    lRange: number;
-}
+import { IHSLColor, IRGBAColor, IHSLRange } from "../../types/Color";
 
 const similarPinkRange: IHSLRange = {
     hRange: 50,
@@ -397,7 +391,7 @@ function isSimilarHSLColor(
  * @param height - Height of the image.
  * @param hslColor - Color to be checked.
  */
-function amountOfNeighboringPixelsWithColor(
+export function amountOfNeighboringPixelsWithColor(
     pixels: Uint8ClampedArray,
     searchRange: number,
     x: number,

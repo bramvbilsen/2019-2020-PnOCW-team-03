@@ -10,3 +10,9 @@ export interface IRGBAColor {
     b: number;
     a: number;
 }
+
+export interface IHSLRange {
+    hRange: number;
+    sRange: number;
+    lRange: number;
+}

@@ -239,7 +239,7 @@ class Client {
             ctx.fillStyle = "rgb(255, 0, 0)";
             ctx.fillRect(50, 50, 300, 300);
         }
-        uploadSlaveImgCanvas(this.id, canvas).then(({ imgPath }) => {
+        uploadSlaveImgCanvas(slaveId, canvas).then(({ imgPath }) => {
             console.log(imgPath);
             this._socket.emit(MasterEventTypes.DisplayImageOnSlave, {
                 imgUrl: `${env.baseUrl}${imgPath}`,
