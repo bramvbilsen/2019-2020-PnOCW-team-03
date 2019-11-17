@@ -1,3 +1,5 @@
+import env from "../../env/env";
+
 export function uploadSlaveImgCanvas(
     slaveId: string,
     canvas: HTMLCanvasElement
@@ -8,7 +10,7 @@ export function uploadSlaveImgCanvas(
             formData.append("image", blob, `${slaveId}.png`);
             formData.append("slaveId", slaveId);
             $.ajax({
-                url: "http://localhost:3000/slaveImg",
+                url: env.baseUrl + "/slaveImg",
                 type: "POST",
                 contentType: false,
                 cache: false,

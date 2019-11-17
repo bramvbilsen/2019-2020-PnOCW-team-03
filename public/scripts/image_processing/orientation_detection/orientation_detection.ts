@@ -252,15 +252,7 @@ export default function getOrientationAngle(
     const points = screen.corners;
     const centroids = getAllCentroids(screen);
     let angle = getAngle(points[0], points[1], points[2], points[3]);
-    // console.log(`ANGLE: ${angle}`);
-    // if (angle >= 0) {
-    //     return angle;
-    // } else {
-    //     while (angle < 0) {
-    //         angle += 360;
-    //         return angle;
-    //     }
-    // }
+
     const orientation = getOrientation(centroids, canvas);
     console.log(orientation);
     switch (orientation) {
@@ -434,8 +426,8 @@ function checkColorOrientation(
     canvas: HTMLCanvasElement,
     key: string
 ) {
-    const RANGE = 4;
-    const THRESHOLD = 20;
+    const RANGE = 3;
+    const THRESHOLD = 15;
 
     const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
     const nonColoredScreenPixelData = ctx.getImageData(
@@ -486,7 +478,7 @@ function getOrientation(
     canvas: HTMLCanvasElement
 ): Orientation {
     let centroid: Point;
-    const orientations = [];
+    let orientations = [];
     orientations[0] = 0;
     orientations[1] = 0;
     orientations[2] = 0;

@@ -36,6 +36,9 @@ function rotateAndDrawImageForSlave(
 ): HTMLCanvasElement {
     const screenCenter = screen.centroid;
 
+    // TODO: DELETE THIS!!!!
+    screen.orientation = 0;
+
     // Rotate the image to the same rotation as the screen
     const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const rotatedImgCtx = rotatedImg.getContext("2d");

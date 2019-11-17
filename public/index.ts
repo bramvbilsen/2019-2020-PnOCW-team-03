@@ -5,8 +5,13 @@ import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
 import run_tests from "./tests/run";
 import downloadTests from "./tests/download";
+import { createCanvas } from "./scripts/image_processing/screen_detection/screen_detection";
 import env from "./env/env";
 import SlaveCatCastImgHandler from "./scripts/image_processing/imageDisplayHandler";
+import { loadImage } from "./scripts/util/images";
+import { BoundingBox } from "./scripts/util/BoundingBox";
+import { flattenOneLevel } from "./scripts/util/arrays";
+import { createImageCanvasForSlave } from "./scripts/util/ImageCutHandler";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -103,6 +108,29 @@ $(() => {
             let data = imageDisplayHandler.cutBoxOutImg();
             $("#result-img").attr("src", data);
         });
+
+        $("#display-unicorn-img-button")
+            .off()
+            .on("click", async () => {
+                const img = await loadImage(
+                    env.baseUrl + "/images/unicorn.jpeg"
+                );
+                const imgCanvas = createCanvas(img.width, img.height);
+                imgCanvas.getContext("2d").drawImage(img, 0, 0);
+                const globalBoundingBox = new BoundingBox(
+                    flattenOneLevel(
+                        slaveFlowHandler.screens.map(screen => screen.corners)
+                    )
+                );
+                slaveFlowHandler.screens.forEach(screen => {
+                    const slaveImg = createImageCanvasForSlave(
+                        globalBoundingBox,
+                        screen,
+                        imgCanvas
+                    );
+                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                });
+            });
 
         $(".pink")
             .off()
