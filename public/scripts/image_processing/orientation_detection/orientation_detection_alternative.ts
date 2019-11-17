@@ -1,7 +1,5 @@
 import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
-import { IHSLColor, IRGBAColor, IHSLRange } from "../../types/Color";
-import Point from "../screen_detection/Point";
 
 /**
  * Initializing constants
@@ -10,19 +8,55 @@ import Point from "../screen_detection/Point";
 
 const colorRange: IHSLRange = {
     hRange: 35,
-    sRange: 60,
-    lRange: 60,
+    sRange: 35,
+    lRange: 35,
 };
-const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180);
-const rightUpperColor: IHSLColor = rgbToHsl(255, 216, 0);
-const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255);
-const leftUnderColor: IHSLColor = rgbToHsl(0, 255, 25);
+const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180); //pink
+const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25); // green
+const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255); // blue
+const leftUnderColor: IHSLColor = rgbToHsl(255, 216, 0); // yellow
 const colors = [
     leftUpperColor,
     rightUpperColor,
     rightUnderColor,
     leftUnderColor,
 ];
+
+class Point {
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+
+    distanceTo(point: Point) {
+        return Math.sqrt(
+            Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2)
+        );
+    }
+}
+
+interface IRGBAColor {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+}
+
+interface IHSLRange {
+    hRange: number;
+    sRange: number;
+    lRange: number;
+}
+
+interface IHSLColor {
+    h: number;
+    s: number;
+    l: number;
+}
+
 function amountOfNeighboringPixelsWithColor(
     pixels: Uint8ClampedArray,
     searchRange: number,
@@ -208,7 +242,7 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
  * @param points List of points representing the 4 corner-points to get the centroid for.
  * @returns The orientation if the screen has corners. Otherwise `0`.
  */
-export default function getOrientationAngle(
+export function getOrientationAngle(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
 ): number {
@@ -218,15 +252,7 @@ export default function getOrientationAngle(
     const points = screen.corners;
     const centroids = getAllCentroids(screen);
     let angle = getAngle(points[0], points[1], points[2], points[3]);
-    console.log(`ANGLE: ${angle}`);
-    if (angle >= 0) {
-        return angle;
-    } else {
-        while (angle < 0) {
-            angle += 360;
-            return angle;
-        }
-    }
+
     const orientation = getOrientation(centroids, canvas);
     console.log(orientation);
     switch (orientation) {
@@ -385,14 +411,23 @@ export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
 
     return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };
 }
-
+/**
+ *
+ * @param centroid
+ * @param canvas
+ * @param key
+ *
+ * For every part of the screen (divided in 4), check which color it contains. By comparing this found color
+ * to the color expected with a normal orientation, we can return an enum that represents the orientation of that part.
+ * (this is done four times, makes it more robust for failures)
+ */
 function checkColorOrientation(
     centroid: Point,
     canvas: HTMLCanvasElement,
     key: string
 ) {
     const RANGE = 3;
-    const THRESHOLD = 18;
+    const THRESHOLD = 15;
 
     const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
     const nonColoredScreenPixelData = ctx.getImageData(
@@ -443,7 +478,7 @@ function getOrientation(
     canvas: HTMLCanvasElement
 ): Orientation {
     let centroid: Point;
-    const orientations = [];
+    let orientations = [];
     orientations[0] = 0;
     orientations[1] = 0;
     orientations[2] = 0;
@@ -458,7 +493,7 @@ function getOrientation(
                 orientations[1] += 1;
             case Orientation.COUNTERCLOCKWISE:
                 orientations[2] += 1;
-            case Orientation.NORMAL:
+            case Orientation.FLIPPED:
                 orientations[3] += 1;
         }
     }
@@ -482,4 +517,80 @@ function getOrientation(
     }
 
     return Orientation.NONE;
+}
+
+enum OrientationType {
+    QUADRANT_1 = 0,
+    QUADRANT_2 = 90,
+    QUADRANT_3 = 180,
+    QUADRANT_4 = 270,
+}
+
+export default function calculateOrientation(
+    screen: SlaveScreen,
+    canvas: HTMLCanvasElement
+) {
+    const pixels = canvas
+        .getContext("2d")
+        .getImageData(0, 0, canvas.width, canvas.height).data;
+    const center = screen.centroid;
+
+    const pointAboveCenter = new Point(center.x, center.y - screen.height / 4);
+    const pointAboveCenter_topLeftColorAmt = amountOfNeighboringPixelsWithColor(
+        pixels,
+        10,
+        pointAboveCenter.x,
+        pointAboveCenter.y,
+        canvas.width,
+        canvas.height,
+        leftUpperColor,
+        colorRange
+    );
+    const pointAboveCenter_topRightColorAmt = amountOfNeighboringPixelsWithColor(
+        pixels,
+        10,
+        pointAboveCenter.x,
+        pointAboveCenter.y,
+        canvas.width,
+        canvas.height,
+        rightUpperColor,
+        colorRange
+    );
+    const pointAboveCenter_bottomLeftColorAmt = amountOfNeighboringPixelsWithColor(
+        pixels,
+        10,
+        pointAboveCenter.x,
+        pointAboveCenter.y,
+        canvas.width,
+        canvas.height,
+        leftUnderColor,
+        colorRange
+    );
+    const pointAboveCenter_bottomRightColorAmt = amountOfNeighboringPixelsWithColor(
+        pixels,
+        10,
+        pointAboveCenter.x,
+        pointAboveCenter.y,
+        canvas.width,
+        canvas.height,
+        rightUnderColor,
+        colorRange
+    );
+
+    const maxColor = Math.max(
+        pointAboveCenter_topLeftColorAmt,
+        pointAboveCenter_topRightColorAmt,
+        pointAboveCenter_bottomLeftColorAmt,
+        pointAboveCenter_bottomRightColorAmt
+    );
+
+    if (maxColor === pointAboveCenter_topLeftColorAmt) {
+        return OrientationType.QUADRANT_1;
+    } else if (maxColor === pointAboveCenter_bottomLeftColorAmt) {
+        return OrientationType.QUADRANT_2;
+    } else if (maxColor === pointAboveCenter_bottomRightColorAmt) {
+        return OrientationType.QUADRANT_3;
+    } else {
+        return OrientationType.QUADRANT_4;
+    }
 }

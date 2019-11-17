@@ -3,6 +3,7 @@ import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
+import calculateOrientation from "./orientation_detection/orientation_detection";
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
 import { createCameraOverlayWithPoints } from "../util/canvas";
 
@@ -175,11 +176,6 @@ export default class SlaveFlowHandler {
     }
 
     takePictureOfSlaveOrientation() {
-        console.log(
-            "MY NEW ANGLE: " +
-                this.screens[this.screens.length - 1].widthEdge
-                    .angleBetweenEndpoints
-        );
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
@@ -207,7 +203,15 @@ export default class SlaveFlowHandler {
             currScreen,
             orientationCanvas
         );
-        console.log(currScreen.orientation);
+        currScreen.orientation = calculateOrientation(
+            currScreen,
+            orientationCanvas
+        );
+        console.log("ORIENTATION: " + currScreen.orientation);
+        currScreen.orientation =
+            calculateOrientation(currScreen, orientationCanvas) +
+            currScreen.widthEdge.angleBetweenEndpoints;
+        console.log("ANGLE: " + currScreen.orientation);
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
         this.endSlaveCycle();
     }

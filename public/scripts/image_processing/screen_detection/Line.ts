@@ -26,10 +26,10 @@ export default class Line {
     }
 
     get angleBetweenEndpoints() {
-        return (
-            (Math.atan2(this.b.y - this.a.y, this.b.x - this.a.x) * 180) /
-            Math.PI
-        );
+        const sorted = this.endPoints.sort((a, b) => a.x - b.x);
+        const a = sorted[0];
+        const b = sorted[1];
+        return (Math.atan2(b.x - a.x, -b.y - -a.y) * 180) / Math.PI;
     }
 
     lineAbove(line: Line, index: number) {
