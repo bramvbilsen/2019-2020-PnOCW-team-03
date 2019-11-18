@@ -21,6 +21,10 @@ export function createImageCanvasForSlave(
         imgCanvas,
         globalBoundingBox
     );
+    const outputIm = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    outputIm.attr("src", imgCanvas.toDataURL());
+    $("#result-img-container").append($("<h1>NEW SCREEN</h1>"));
+    $("#result-img-container").append(outputIm);
     return rotateAndDrawImageForSlave(globalBoundingBox, screen, imgCanvas);
 }
 
@@ -50,6 +54,10 @@ function rotateAndDrawImageForSlave(
     rotatedImgCtx.rotate(degreesToRadians(screen.orientation));
     rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
     rotatedImgCtx.drawImage(imgCanvas, 0, 0);
+    let outputIm = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    outputIm.attr("src", rotatedImg.toDataURL());
+    $("#result-img-container").append($("<h3>ROTATED IMG</h3>"));
+    $("#result-img-container").append(outputIm);
 
     // Rotate the screen to have a 0deg angle.
     screen.sortCornersByAngle();
@@ -76,17 +84,35 @@ function rotateAndDrawImageForSlave(
         corners[3].y - globalBoundingBox.topLeft.y
     );
     slaveScreenMaskCtx.fill();
+    outputIm = $(
+        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+    );
+    outputIm.attr("src", slaveScreenMask.toDataURL());
+    $("#result-img-container").append($("<h3>SLAVE SCREEN MASK</h3>"));
+    $("#result-img-container").append(outputIm);
 
     const maskedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const maskedImgCtx = maskedImg.getContext("2d");
     maskedImgCtx.drawImage(slaveScreenMask, 0, 0);
     maskedImgCtx.globalCompositeOperation = "source-in";
     maskedImgCtx.drawImage(rotatedImg, 0, 0);
+    outputIm = $(
+        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+    );
+    outputIm.attr("src", maskedImg.toDataURL());
+    $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
+    $("#result-img-container").append(outputIm);
 
     const slaveImg = createCanvas(screen.width, screen.height);
     const slaveImgCtx = slaveImg.getContext("2d");
     const boundingBoxCorners = calculateBoundingBox(corners);
     slaveImgCtx.drawImage(maskedImg, 0, 0, screen.width, screen.height);
+    outputIm = $(
+        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+    );
+    outputIm.attr("src", slaveImg.toDataURL());
+    $("#result-img-container").append($("<h3>SLAVE IMAGE</h3>"));
+    $("#result-img-container").append(outputIm);
 
     return slaveImg;
 }

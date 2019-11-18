@@ -299,9 +299,6 @@ class Client {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
         $("#main-flow-slave").hide();
         $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
-        const im = $("#slave").replaceWith(
-            $(`<img id="image" src="${data.imgUrl}?${Math.random()}" />`)
-        );
     };
 
     /**
