@@ -163,11 +163,12 @@ export default class SlaveScreen {
             leftUnderCoordinate = corners[0];
         }
 
+        // Is not ideal
         return {
-            LeftUp: leftUpperCoordinate,
-            RightUp: rightUpperCoordinate,
-            RightUnder: rightUnderCoordinate,
-            LeftUnder: leftUnderCoordinate,
+            LeftUp: leftUnderCoordinate,
+            RightUp: rightUnderCoordinate,
+            RightUnder: rightUpperCoordinate,
+            LeftUnder: leftUpperCoordinate,
         };
     }
 
