@@ -67,20 +67,6 @@ img {
     background-color: #ff0;
 }
 
-#countdown {
-    position: absolute;
-    z-index: 5;
-    width: 100vw;
-    height: 100vh;
-    color: black;
-}
-#countdown-text {
-    width: 100vw;
-    height: 100vh;
-    justify-content: center;
-    align-items: center;
-}
-
 #display-slave-img-buttons-content {
     display: flex;
     width: 100vw;
