@@ -114,8 +114,8 @@ function rotateAndDrawImageForSlave(
     cDctx.fillStyle = "rgb(255, 0, 0)";
     cDctx.beginPath();
     cDctx.arc(
-        sortedCorners.LeftUp.x,
-        sortedCorners.LeftUp.y,
+        sortedCorners.LeftUp.x - globalBoundingBox.topLeft.x,
+        sortedCorners.LeftUp.y - globalBoundingBox.topLeft.y,
         20,
         0,
         Math.PI * 2
@@ -124,8 +124,8 @@ function rotateAndDrawImageForSlave(
     cDctx.closePath();
     cDctx.beginPath();
     cDctx.arc(
-        sortedCorners.LeftUnder.x,
-        sortedCorners.LeftUnder.y,
+        sortedCorners.LeftUnder.x - globalBoundingBox.topLeft.x,
+        sortedCorners.LeftUnder.y - globalBoundingBox.topLeft.y,
         20,
         0,
         Math.PI * 2
@@ -134,8 +134,8 @@ function rotateAndDrawImageForSlave(
     cDctx.closePath();
     cDctx.beginPath();
     cDctx.arc(
-        sortedCorners.RightUp.x,
-        sortedCorners.RightUp.y,
+        sortedCorners.RightUp.x - globalBoundingBox.topLeft.x,
+        sortedCorners.RightUp.y - globalBoundingBox.topLeft.y,
         20,
         0,
         Math.PI * 2
@@ -144,8 +144,8 @@ function rotateAndDrawImageForSlave(
     cDctx.closePath();
     cDctx.beginPath();
     cDctx.arc(
-        sortedCorners.RightUnder.x,
-        sortedCorners.RightUnder.y,
+        sortedCorners.RightUnder.x - globalBoundingBox.topLeft.x,
+        sortedCorners.RightUnder.y - globalBoundingBox.topLeft.y,
         20,
         0,
         Math.PI * 2
