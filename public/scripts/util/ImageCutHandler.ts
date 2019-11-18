@@ -55,16 +55,25 @@ function rotateAndDrawImageForSlave(
     const slaveScreenMask = createCanvas(imgCanvas.width, imgCanvas.height);
     const slaveScreenMaskCtx = slaveScreenMask.getContext("2d");
     slaveScreenMaskCtx.beginPath();
-    slaveScreenMaskCtx.moveTo(corners[0].x, corners[0].y);
-    slaveScreenMaskCtx.lineTo(corners[1].x, corners[1].y);
-    slaveScreenMaskCtx.lineTo(corners[2].x, corners[2].y);
-    slaveScreenMaskCtx.lineTo(corners[3].x, corners[3].y);
+    slaveScreenMaskCtx.moveTo(
+        corners[0].x - globalBoundingBox.topLeft.x,
+        corners[0].y - globalBoundingBox.topLeft.y
+    );
+    slaveScreenMaskCtx.lineTo(
+        corners[1].x - globalBoundingBox.topLeft.x,
+        corners[1].y - globalBoundingBox.topLeft.y
+    );
+    slaveScreenMaskCtx.lineTo(
+        corners[2].x - globalBoundingBox.topLeft.x,
+        corners[2].y - globalBoundingBox.topLeft.y
+    );
+    slaveScreenMaskCtx.lineTo(
+        corners[3].x - globalBoundingBox.topLeft.x,
+        corners[3].y - globalBoundingBox.topLeft.y
+    );
     slaveScreenMaskCtx.fill();
 
-    const maskedImg = createCanvas(
-        globalBoundingBox.width + globalBoundingBox.topLeft.x,
-        globalBoundingBox.height + globalBoundingBox.topLeft.y
-    );
+    const maskedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const maskedImgCtx = maskedImg.getContext("2d");
     maskedImgCtx.drawImage(slaveScreenMask, 0, 0);
     maskedImgCtx.globalCompositeOperation = "source-in";
@@ -75,14 +84,14 @@ function rotateAndDrawImageForSlave(
     const boundingBoxCorners = calculateBoundingBox(corners);
     slaveImgCtx.drawImage(
         maskedImg,
-        boundingBoxCorners.topLeft.x,
-        boundingBoxCorners.topLeft.y,
-        boundingBoxCorners.topLeft.x + screen.width,
-        boundingBoxCorners.topLeft.y + screen.height,
         0,
         0,
-        boundingBoxCorners.topLeft.x + screen.width,
-        boundingBoxCorners.topLeft.y + screen.height
+        screen.width,
+        screen.height,
+        0,
+        0,
+        screen.width,
+        screen.height
     );
 
     return slaveImg;
