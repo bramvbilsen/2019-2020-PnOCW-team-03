@@ -43,6 +43,8 @@ function rotateAndDrawImageForSlave(
         screen.centroid.x - globalBoundingBox.topLeft.x,
         screen.centroid.y - globalBoundingBox.topLeft.y
     );
+    const screenWidth = screen.width;
+    const screenHeight = screen.height;
 
     // TODO: DELETE THIS!!!!
     screen.orientation = 0;
@@ -172,12 +174,12 @@ function rotateAndDrawImageForSlave(
         sortedCorners.RightUnder.y - globalBoundingBox.topLeft.y,
         0,
         0,
-        screen.width,
+        screenWidth,
         0,
-        screen.height,
+        screenHeight,
         0,
-        screen.width,
-        screen.height
+        screenWidth,
+        screenHeight
     );
 
     return slaveImg;
