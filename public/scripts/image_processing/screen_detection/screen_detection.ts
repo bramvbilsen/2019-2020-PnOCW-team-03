@@ -291,7 +291,7 @@ export function createCanvas(width: number, height: number): HTMLCanvasElement {
 }
 
 // From: https://gist.github.com/mjackson/5311256
-function rgbToHsl(r: number, g: number, b: number): IHSLColor {
+export function rgbToHsl(r: number, g: number, b: number): IHSLColor {
     (r /= 255), (g /= 255), (b /= 255);
     let max = Math.max(r, g, b),
         min = Math.min(r, g, b);
@@ -349,7 +349,7 @@ function getRGBAColorForPixel(
  * @param width - Width of the image.
  * @param pixels - Pixels of the image.
  */
-function getHSLColorForPixel(
+export function getHSLColorForPixel(
     x: number,
     y: number,
     width: number,
@@ -365,7 +365,7 @@ function getHSLColorForPixel(
  * @param colorB - Color to compare to `colorA`
  * @param params - Range to controll how similar both colors have to be.
  */
-function isSimilarHSLColor(
+export function isSimilarHSLColor(
     colorA: IHSLColor,
     colorB: IHSLColor,
     params: IHSLRange

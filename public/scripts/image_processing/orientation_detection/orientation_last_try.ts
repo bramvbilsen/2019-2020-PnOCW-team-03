@@ -1,5 +1,8 @@
 import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
+import Point from "../screen_detection/Point";
+import { IHSLColor, IRGBAColor, IHSLRange } from "../../types/Color";
+import { isSimilarHSLColor, getHSLColorForPixel, rgbToHsl } from "../screen_detection/screen_detection";
 
 /**
  * Initializing constants
@@ -22,40 +25,9 @@ const colors = [
     leftUnderColor,
 ];
 
-class Point {
-    x: number;
-    y: number;
 
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
 
-    distanceTo(point: Point) {
-        return Math.sqrt(
-            Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2)
-        );
-    }
-}
 
-interface IRGBAColor {
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-}
-
-interface IHSLRange {
-    hRange: number;
-    sRange: number;
-    lRange: number;
-}
-
-interface IHSLColor {
-    h: number;
-    s: number;
-    l: number;
-}
 
 function amountOfNeighboringPixelsWithColor(
     pixels: Uint8ClampedArray,
@@ -160,79 +132,7 @@ function amountOfNeighboringPixelsWithColor(
     return result;
 }
 
-function getHSLColorForPixel(
-    x: number,
-    y: number,
-    width: number,
-    pixels: Uint8ClampedArray
-): IHSLColor {
-    const rgba = getRGBAColorForPixel(x, y, width, pixels);
-    return rgbToHsl(rgba.r, rgba.g, rgba.b);
-}
 
-function getRGBAColorForPixel(
-    x: number,
-    y: number,
-    width: number,
-    pixels: Uint8ClampedArray
-): IRGBAColor {
-    const i = y * (width * 4) + x * 4;
-    return {
-        r: pixels[i],
-        g: pixels[i + 1],
-        b: pixels[i + 2],
-        a: pixels[i + 3],
-    };
-}
-
-/**
- *
- * @param colorA - Color to compare to `colorB`
- * @param colorB - Color to compare to `colorA`
- * @param params - Range to controll how similar both colors have to be.
- */
-function isSimilarHSLColor(
-    colorA: IHSLColor,
-    colorB: IHSLColor,
-    params: IHSLRange
-): boolean {
-    if (
-        Math.abs(colorA.h - colorB.h) <= params.hRange &&
-        Math.abs(colorA.s - colorB.s) <= params.sRange &&
-        Math.abs(colorA.l - colorB.l) <= params.lRange
-    ) {
-        return true;
-    }
-    return false;
-}
-
-function rgbToHsl(r: number, g: number, b: number): IHSLColor {
-    (r /= 255), (g /= 255), (b /= 255);
-    let max = Math.max(r, g, b),
-        min = Math.min(r, g, b);
-    let h = 0,
-        s = 0,
-        l = (max + min) / 2;
-    if (max == min) {
-        h = s = 0; // achromatic
-    } else {
-        let d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r:
-                h = (g - b) / d + (g < b ? 6 : 0);
-                break;
-            case g:
-                h = (b - r) / d + 2;
-                break;
-            case b:
-                h = (r - g) / d + 4;
-                break;
-        }
-        h /= 6;
-    }
-    return { h: h * 360, s: s * 100, l: l * 100 };
-}
 
 /**
  * 1) Get screen_centroid
@@ -384,13 +284,13 @@ export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
     );
 
     const centroid = getCentroidOf(points);
-    const centroid1 = getCentroidOf([
+    const centroid0 = getCentroidOf([
         leftUpper,
         upperMiddle,
         leftMiddle,
         centroid,
     ]);
-    const centroid2 = getCentroidOf([
+    const centroid1 = getCentroidOf([
         upperMiddle,
         rightUpper,
         centroid,
@@ -402,14 +302,14 @@ export function getAllCentroids(screen: SlaveScreen): { [key: string]: Point } {
         leftUnder,
         lowerMiddle,
     ]);
-    const centroid4 = getCentroidOf([
+    const centroid2 = getCentroidOf([
         centroid,
         rightMiddle,
         lowerMiddle,
         rightUnder,
     ]);
 
-    return { "0": centroid1, "1": centroid2, "3": centroid3, "2": centroid4 };
+    return { "0": centroid0, "1": centroid1, "2": centroid2, "3": centroid3 };
 }
 /**
  *
