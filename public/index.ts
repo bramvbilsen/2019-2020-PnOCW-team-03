@@ -35,7 +35,6 @@ $(() => {
         delay: 5000,
         animation: true,
     });
-    $("#countdown").hide();
     const startMasterButton = $("#start-master-button");
     startMasterButton.off().on("click", () => {
         if (client.slaves.length === 0) {
@@ -211,6 +210,7 @@ function onConnectionTypeChange(type: ConnectionType) {
         slaveFlowHandler.reset();
     }
     if (client.type == ConnectionType.MASTER) {
+        $("#countdown").css("display", "none");
         loadingElem.css("display", "none");
         $("#slave").css("display", "none");
         $("#master").css("display", "inherit");
