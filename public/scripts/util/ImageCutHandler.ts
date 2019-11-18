@@ -146,32 +146,32 @@ function rotateAndDrawImageForSlave(
     const topLeft = sortedCorners.LeftUp;
 
     //@ts-ignore
-    window.transform(
-        maskedImg,
-        topLeft.x - globalBoundingBox.topLeft.x,
-        topLeft.y - globalBoundingBox.topLeft.y,
-        sortedCorners.RightUp.x - globalBoundingBox.topLeft.x,
-        sortedCorners.RightUp.y - globalBoundingBox.topLeft.y,
-        sortedCorners.LeftUnder.x - globalBoundingBox.topLeft.x,
-        sortedCorners.LeftUnder.y - globalBoundingBox.topLeft.y,
-        sortedCorners.RightUnder.x - globalBoundingBox.topLeft.x,
-        sortedCorners.RightUnder.y - globalBoundingBox.topLeft.y,
+    // window.transform(
+    //     maskedImg,
+    //     topLeft.x - globalBoundingBox.topLeft.x,
+    //     topLeft.y - globalBoundingBox.topLeft.y,
+    //     sortedCorners.RightUp.x - globalBoundingBox.topLeft.x,
+    //     sortedCorners.RightUp.y - globalBoundingBox.topLeft.y,
+    //     sortedCorners.LeftUnder.x - globalBoundingBox.topLeft.x,
+    //     sortedCorners.LeftUnder.y - globalBoundingBox.topLeft.y,
+    //     sortedCorners.RightUnder.x - globalBoundingBox.topLeft.x,
+    //     sortedCorners.RightUnder.y - globalBoundingBox.topLeft.y,
 
-        topLeft.x - globalBoundingBox.topLeft.x,
-        topLeft.y - globalBoundingBox.topLeft.y,
-        topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
-        topLeft.y - globalBoundingBox.topLeft.y,
-        topLeft.x - globalBoundingBox.topLeft.x,
-        topLeft.y + screenHeight - globalBoundingBox.topLeft.y,
-        topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
-        topLeft.y + screenHeight - globalBoundingBox.topLeft.y
-    );
-    outputIm = $(
-        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
-    );
-    outputIm.attr("src", maskedImg.toDataURL());
-    $("#result-img-container").append($("<h3>TRANSFORMED VIA OPEN CV</h3>"));
-    $("#result-img-container").append(outputIm);
+    //     topLeft.x - globalBoundingBox.topLeft.x,
+    //     topLeft.y - globalBoundingBox.topLeft.y,
+    //     topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
+    //     topLeft.y - globalBoundingBox.topLeft.y,
+    //     topLeft.x - globalBoundingBox.topLeft.x,
+    //     topLeft.y + screenHeight - globalBoundingBox.topLeft.y,
+    //     topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
+    //     topLeft.y + screenHeight - globalBoundingBox.topLeft.y
+    // );
+    // outputIm = $(
+    //     `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+    // );
+    // outputIm.attr("src", maskedImg.toDataURL());
+    // $("#result-img-container").append($("<h3>TRANSFORMED VIA OPEN CV</h3>"));
+    // $("#result-img-container").append(outputIm);
 
     const slaveImg = createCanvas(screenWidth, screenHeight);
     const slaveImgCtx = slaveImg.getContext("2d");

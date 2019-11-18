@@ -385,7 +385,7 @@ class Client {
                 globalBoundingBox.height
             );
             const ctx = canvas.getContext("2d");
-            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.strokeStyle = "rgb(0,0,0)";
             triangulation.forEach((line: Line) => {
                 let endPoints = line.endPoints;
                 ctx.beginPath();
