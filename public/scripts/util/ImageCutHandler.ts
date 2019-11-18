@@ -84,11 +84,26 @@ function rotateAndDrawImageForSlave(
         corners[3].y - globalBoundingBox.topLeft.y
     );
     slaveScreenMaskCtx.fill();
+    const cD = createCanvas(imgCanvas.width, imgCanvas.height);
+    const cDctx = cD.getContext("2d");
+    cDctx.drawImage(slaveScreenMask, 0, 0);
+    cDctx.fillStyle = "rgb(255, 0, 0)";
+    cDctx.beginPath();
+    cDctx.arc(
+        screen.topLeftCorner.x,
+        screen.topLeftCorner.y,
+        20,
+        0,
+        Math.PI * 2
+    );
+    cDctx.closePath();
     outputIm = $(
         `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
     );
-    outputIm.attr("src", slaveScreenMask.toDataURL());
-    $("#result-img-container").append($("<h3>SLAVE SCREEN MASK</h3>"));
+    outputIm.attr("src", cD.toDataURL());
+    $("#result-img-container").append(
+        $("<h3>SLAVE SCREEN MASK WITH CORNER</h3>")
+    );
     $("#result-img-container").append(outputIm);
 
     const maskedImg = createCanvas(imgCanvas.width, imgCanvas.height);
