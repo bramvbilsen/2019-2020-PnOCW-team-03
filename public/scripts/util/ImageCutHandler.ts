@@ -165,6 +165,12 @@ function rotateAndDrawImageForSlave(
         topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
         topLeft.y + screenHeight - globalBoundingBox.topLeft.y
     );
+    outputIm = $(
+        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+    );
+    outputIm.attr("src", maskedImg.toDataURL());
+    $("#result-img-container").append($("<h3>TRANSFORMED VIA OPEN CV</h3>"));
+    $("#result-img-container").append(outputIm);
 
     const slaveImg = createCanvas(screenWidth, screenHeight);
     const slaveImgCtx = slaveImg.getContext("2d");
