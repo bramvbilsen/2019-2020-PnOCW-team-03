@@ -224,7 +224,6 @@
                         const dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [dstPoints[0], dstPoints[1], dstPoints[2], dstPoints[3], dstPoints[4], dstPoints[5], dstPoints[6], dstPoints[7]]);
                         const M = cv.getPerspectiveTransform(srcTri, dstTri);
                         cv.warpPerspective(src, dst, M, dsize, cv.INTER_LINEAR, cv.BORDER_CONSTANT, new cv.Scalar());
-                        const outputcanvas = createCanvas(200, 200);
                         cv.imshow(canvas, dst);
                         src.delete(); dst.delete(); M.delete(); srcTri.delete(); dstTri.delete();
                     }
