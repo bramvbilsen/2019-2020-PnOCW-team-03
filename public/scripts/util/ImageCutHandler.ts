@@ -61,6 +61,28 @@ function rotateAndDrawImageForSlave(
     $("#result-img-container").append($("<h3>ROTATED IMG</h3>"));
     $("#result-img-container").append(outputIm);
 
+    const sortedCorners = screen.sortedCorners;
+    sortedCorners.LeftUp = rotatePointAroundAnchor(
+        sortedCorners.LeftUp,
+        screen.centroid,
+        -screen.orientation
+    );
+    sortedCorners.RightUp = rotatePointAroundAnchor(
+        sortedCorners.RightUp,
+        screen.centroid,
+        -screen.orientation
+    );
+    sortedCorners.LeftUnder = rotatePointAroundAnchor(
+        sortedCorners.LeftUnder,
+        screen.centroid,
+        -screen.orientation
+    );
+    sortedCorners.RightUnder = rotatePointAroundAnchor(
+        sortedCorners.RightUnder,
+        screen.centroid,
+        -screen.orientation
+    );
+
     // Rotate the screen to have a 0deg angle.
     screen.sortCornersByAngle();
     const corners = screen.corners.map(corner =>
@@ -92,12 +114,43 @@ function rotateAndDrawImageForSlave(
     cDctx.fillStyle = "rgb(255, 0, 0)";
     cDctx.beginPath();
     cDctx.arc(
-        screen.topLeftCorner.x,
-        screen.topLeftCorner.y,
+        sortedCorners.LeftUp.x,
+        sortedCorners.LeftUp.y,
         20,
         0,
         Math.PI * 2
     );
+    cDctx.fill();
+    cDctx.closePath();
+    cDctx.beginPath();
+    cDctx.arc(
+        sortedCorners.LeftUnder.x,
+        sortedCorners.LeftUnder.y,
+        20,
+        0,
+        Math.PI * 2
+    );
+    cDctx.fill();
+    cDctx.closePath();
+    cDctx.beginPath();
+    cDctx.arc(
+        sortedCorners.RightUp.x,
+        sortedCorners.RightUp.y,
+        20,
+        0,
+        Math.PI * 2
+    );
+    cDctx.fill();
+    cDctx.closePath();
+    cDctx.beginPath();
+    cDctx.arc(
+        sortedCorners.RightUnder.x,
+        sortedCorners.RightUnder.y,
+        20,
+        0,
+        Math.PI * 2
+    );
+    cDctx.fill();
     cDctx.closePath();
     outputIm = $(
         `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
@@ -119,28 +172,6 @@ function rotateAndDrawImageForSlave(
     outputIm.attr("src", maskedImg.toDataURL());
     $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
     $("#result-img-container").append(outputIm);
-
-    const sortedCorners = screen.sortedCorners;
-    sortedCorners.LeftUp = rotatePointAroundAnchor(
-        sortedCorners.LeftUp,
-        screen.centroid,
-        -screen.orientation
-    );
-    sortedCorners.RightUp = rotatePointAroundAnchor(
-        sortedCorners.RightUp,
-        screen.centroid,
-        -screen.orientation
-    );
-    sortedCorners.LeftUnder = rotatePointAroundAnchor(
-        sortedCorners.LeftUnder,
-        screen.centroid,
-        -screen.orientation
-    );
-    sortedCorners.RightUnder = rotatePointAroundAnchor(
-        sortedCorners.RightUnder,
-        screen.centroid,
-        -screen.orientation
-    );
 
     const topLeft = screen.topLeftCorner;
 
