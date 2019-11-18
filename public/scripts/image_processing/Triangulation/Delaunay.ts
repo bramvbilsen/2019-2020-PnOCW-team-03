@@ -14,7 +14,7 @@ var gauss = require("gaussian-elimination");
 // }
 //});
 
-export  default function delauney(points: Point[]): Triangulation {
+export default function delauney(points: Point[]): Triangulation {
     //basisgevallen, geven triangulaties terug
     if (points.length == 3) {
         let line1 = new Line(points[0], points[1]);
@@ -80,14 +80,14 @@ function findbase(left: Triangulation, right: Triangulation) {
     let pointsRight = right.points;
     pointsLeft.sort(function(a, b) {
         if (a.y - b.y == 0) {
-            return a.x + b.x;
+            return a.x - b.x;
         } else {
             return a.y - b.y;
         }
     });
     pointsRight.sort(function(a, b) {
         if (a.y - b.y == 0) {
-            return a.x - b.x;
+            return b.x - a.x;
         } else {
             return a.y - b.y;
         }
