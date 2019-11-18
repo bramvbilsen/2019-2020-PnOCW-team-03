@@ -143,7 +143,7 @@ function rotateAndDrawImageForSlave(
     $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
     $("#result-img-container").append(outputIm);
 
-    const topLeft = screen.topLeftCorner;
+    const topLeft = sortedCorners.LeftUp;
 
     //@ts-ignore
     window.transform(
