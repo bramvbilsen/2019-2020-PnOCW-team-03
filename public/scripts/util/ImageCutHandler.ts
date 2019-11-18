@@ -124,7 +124,7 @@ function rotateAndDrawImageForSlave(
     slaveImgCtx.drawImage(
         maskedImg,
         0,
-        screen.topLeftCorner.y - globalBoundingBox.topLeft.x,
+        screen.topLeftCorner.y - globalBoundingBox.topLeft.y,
         screen.width,
         screen.height,
         0,
