@@ -35,6 +35,7 @@ $(() => {
         delay: 5000,
         animation: true,
     });
+    $("#countdown").hide();
     const startMasterButton = $("#start-master-button");
     startMasterButton.off().on("click", () => {
         if (client.slaves.length === 0) {
