@@ -121,7 +121,7 @@ export default class SlaveScreen {
         RightUnder: Point;
         LeftUnder: Point;
     } {
-        const corners = [...this.corners];
+        let corners = [...this.corners];
         const sums = [];
         let min = Number.POSITIVE_INFINITY;
         let max = Number.NEGATIVE_INFINITY;
@@ -140,18 +140,16 @@ export default class SlaveScreen {
         for (let i = 0; i < sums.length; i++) {
             if (sums[i] >= max) {
                 max = sums[i];
-                rightUnderIndex = i;
                 rightUnderCoordinate = corners[i];
             }
             if (sums[i] <= min) {
                 min = sums[i];
-                leftUpperIndex = i;
                 leftUpperCoordinate = corners[i];
             }
         }
         // Remove those two
-        corners.splice(rightUnderIndex, 1);
-        corners.splice(leftUpperIndex, 1);
+        corners.splice(corners.indexOf(rightUnderCoordinate), 1);
+        corners.splice(corners.indexOf(leftUpperCoordinate), 1);
 
         /* 2) REST */
         if (
