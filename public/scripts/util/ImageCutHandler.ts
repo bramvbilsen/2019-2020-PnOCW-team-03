@@ -4,6 +4,7 @@ import { createCanvas } from "../image_processing/screen_detection/screen_detect
 import SlaveScreen from "./SlaveScreen";
 import { degreesToRadians, rotatePointAroundAnchor } from "./angles";
 import { calculateBoundingBox } from "./shapes";
+import Point from "../image_processing/screen_detection/Point";
 
 /**
  * Creates/cuts images to display on slaves
@@ -34,7 +35,10 @@ function rotateAndDrawImageForSlave(
     screen: SlaveScreen,
     imgCanvas: HTMLCanvasElement
 ): HTMLCanvasElement {
-    const screenCenter = screen.centroid;
+    const screenCenter = new Point(
+        screen.centroid.x - globalBoundingBox.topLeft.x,
+        screen.centroid.y - globalBoundingBox.topLeft.y
+    );
 
     // TODO: DELETE THIS!!!!
     screen.orientation = 0;
