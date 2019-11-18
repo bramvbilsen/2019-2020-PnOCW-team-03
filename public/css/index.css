@@ -72,6 +72,7 @@ img {
     z-index: 5;
     width: 100vw;
     height: 100vh;
+    color: black;
 }
 #countdown-text {
     width: 100vw;
