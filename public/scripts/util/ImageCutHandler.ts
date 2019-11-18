@@ -160,7 +160,7 @@ function rotateAndDrawImageForSlave(
         topLeft.x - globalBoundingBox.topLeft.x,
         topLeft.y - globalBoundingBox.topLeft.y,
         topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
-        topLeft.y - globalBoundingBox.topLeft.x,
+        topLeft.y - globalBoundingBox.topLeft.y,
         topLeft.x - globalBoundingBox.topLeft.x,
         topLeft.y + screenHeight - globalBoundingBox.topLeft.y,
         topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
