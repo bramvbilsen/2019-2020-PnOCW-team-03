@@ -138,5 +138,47 @@ function rotateAndDrawImageForSlave(
     $("#result-img-container").append($("<h3>SLAVE IMAGE</h3>"));
     $("#result-img-container").append(outputIm);
 
+    const sortedCorners = screen.sortedCorners;
+    sortedCorners.LeftUp = rotatePointAroundAnchor(
+        sortedCorners.LeftUp,
+        screen.centroid,
+        -screen.orientation
+    );
+    sortedCorners.RightUp = rotatePointAroundAnchor(
+        sortedCorners.RightUp,
+        screen.centroid,
+        -screen.orientation
+    )
+    sortedCorners.LeftUnder = rotatePointAroundAnchor(
+        sortedCorners.LeftUnder,
+        screen.centroid,
+        -screen.orientation
+    )
+    sortedCorners.RightUnder = rotatePointAroundAnchor(
+        sortedCorners.RightUnder,
+        screen.centroid,
+        -screen.orientation
+    );
+
+    //@ts-ignore
+    window.transform(slaveImg,
+        sortedCorners.LeftUp.x - globalBoundingBox.topLeft.x,
+        sortedCorners.LeftUp.y - globalBoundingBox.topLeft.y,
+        sortedCorners.RightUp.x - globalBoundingBox.topLeft.x,
+        sortedCorners.RightUp.y - globalBoundingBox.topLeft.y,
+        sortedCorners.LeftUnder.x - globalBoundingBox.topLeft.x,
+        sortedCorners.LeftUnder.y - globalBoundingBox.topLeft.y,
+        sortedCorners.RightUnder.x - globalBoundingBox.topLeft.x,
+        sortedCorners.RightUnder.y - globalBoundingBox.topLeft.y,
+        0,
+        0,
+        screen.width,
+        0,
+        screen.height,
+        0,
+        screen.width,
+        screen.height
+    );
+
     return slaveImg;
 }
