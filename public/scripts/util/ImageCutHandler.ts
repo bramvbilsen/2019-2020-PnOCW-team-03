@@ -86,17 +86,7 @@ function rotateAndDrawImageForSlave(
     const slaveImg = createCanvas(screen.width, screen.height);
     const slaveImgCtx = slaveImg.getContext("2d");
     const boundingBoxCorners = calculateBoundingBox(corners);
-    slaveImgCtx.drawImage(
-        maskedImg,
-        0,
-        0,
-        screen.width,
-        screen.height,
-        0,
-        0,
-        screen.width,
-        screen.height
-    );
+    slaveImgCtx.drawImage(maskedImg, 0, 0, screen.width, screen.height);
 
     return slaveImg;
 }
