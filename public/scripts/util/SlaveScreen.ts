@@ -121,55 +121,92 @@ export default class SlaveScreen {
         RightUnder: Point;
         LeftUnder: Point;
     } {
-        let corners = [...this.corners];
-        const sums = [];
-        let min = Number.POSITIVE_INFINITY;
-        let max = Number.NEGATIVE_INFINITY;
-        let rightUnderIndex, leftUpperIndex;
-        let rightUpperCoordinate: Point,
-            leftUnderCoordinate: Point,
-            leftUpperCoordinate: Point,
-            rightUnderCoordinate: Point;
+        //sorteer
+        const corners = [...this.corners];
+        corners.sort((a, b) => {
+            const res = a.x - b.x;
+            if (res === 0) {
+                return a.y - b.y;
+            }
+            return res;
+        });
+        let LeftUp: Point;
+        let RightUp: Point;
+        let RightUnder: Point;
+        let LeftUnder: Point;
+        if (corners[0].y < corners[1].y) {
+            LeftUp = corners[0];
+            LeftUnder = corners[1];
+        } else {
+            LeftUp = corners[1];
+            LeftUnder = corners[0];
+        }
+        if (corners[2].y < corners[3].y) {
+            RightUp = corners[2];
+            RightUnder = corners[3];
+        } else {
+            RightUp = corners[3];
+            RightUnder = corners[2];
+        }
 
-        sums[0] = this.corners[0].x + this.corners[0].y;
-        sums[1] = this.corners[1].x + this.corners[1].y;
-        sums[2] = this.corners[2].x + this.corners[2].y;
-        sums[3] = this.corners[3].x + this.corners[3].y;
+        return {
+            LeftUp,
+            LeftUnder,
+            RightUp,
+            RightUnder,
+        };
 
         /* 1) LEFT-UPPER & RIGHT-UNDER */
-        for (let i = 0; i < sums.length; i++) {
-            if (sums[i] >= max) {
-                max = sums[i];
-                rightUnderCoordinate = corners[i];
-            }
-            if (sums[i] <= min) {
-                min = sums[i];
-                leftUpperCoordinate = corners[i];
-            }
-        }
-        // Remove those two
-        corners.splice(corners.indexOf(rightUnderCoordinate), 1);
-        corners.splice(corners.indexOf(leftUpperCoordinate), 1);
 
-        /* 2) REST */
-        if (
-            corners[0].x - corners[1].x >= 0 &&
-            corners[0].y - corners[1].y <= 0
-        ) {
-            rightUpperCoordinate = corners[0];
-            leftUnderCoordinate = corners[1];
-        } else {
-            rightUpperCoordinate = corners[1];
-            leftUnderCoordinate = corners[0];
-        }
+        // let corners = [...this.corners];
+        // const sums = [];
+        // let min = Number.POSITIVE_INFINITY;
+        // let max = Number.NEGATIVE_INFINITY;
+        // let rightUnderIndex, leftUpperIndex;
+        // let rightUpperCoordinate: Point,
+        //     leftUnderCoordinate: Point,
+        //     leftUpperCoordinate: Point,
+        //     rightUnderCoordinate: Point;
 
-        // Is not ideal
-        return {
-            LeftUp: leftUnderCoordinate,
-            RightUp: rightUnderCoordinate,
-            RightUnder: rightUpperCoordinate,
-            LeftUnder: leftUpperCoordinate,
-        };
+        // sums[0] = this.corners[0].x + this.corners[0].y;
+        // sums[1] = this.corners[1].x + this.corners[1].y;
+        // sums[2] = this.corners[2].x + this.corners[2].y;
+        // sums[3] = this.corners[3].x + this.corners[3].y;
+
+        // /* 1) LEFT-UPPER & RIGHT-UNDER */
+        // for (let i = 0; i < sums.length; i++) {
+        //     if (sums[i] >= max) {
+        //         max = sums[i];
+        //         rightUnderCoordinate = corners[i];
+        //     }
+        //     if (sums[i] <= min) {
+        //         min = sums[i];
+        //         leftUpperCoordinate = corners[i];
+        //     }
+        // }
+        // // Remove those two
+        // corners.splice(corners.indexOf(rightUnderCoordinate), 1);
+        // corners.splice(corners.indexOf(leftUpperCoordinate), 1);
+
+        // /* 2) REST */
+        // if (
+        //     corners[0].x - corners[1].x >= 0 &&
+        //     corners[0].y - corners[1].y <= 0
+        // ) {
+        //     rightUpperCoordinate = corners[0];
+        //     leftUnderCoordinate = corners[1];
+        // } else {
+        //     rightUpperCoordinate = corners[1];
+        //     leftUnderCoordinate = corners[0];
+        // }
+
+        // // Is not ideal
+        // return {
+        //     LeftUp: leftUnderCoordinate,
+        //     RightUp: rightUnderCoordinate,
+        //     RightUnder: rightUpperCoordinate,
+        //     LeftUnder: leftUpperCoordinate,
+        // };
     }
 
     public sortCornersByAngle() {
