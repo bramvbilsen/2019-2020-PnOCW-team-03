@@ -299,6 +299,9 @@ class Client {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
         $("#main-flow-slave").hide();
         $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
+        const im = $("#slave").replaceWith(
+            $(`<img id="image" src="${data.imgUrl}?${Math.random()}" />`)
+        );
     };
 
     /**
@@ -364,7 +367,7 @@ class Client {
                     slaveFlowHandler.screens.map(screen => screen.corners)
                 )
             );
-            const leftCorner= globalBoundingBox.topLeft;
+            const leftCorner = globalBoundingBox.topLeft;
             slaves.forEach(slave => {
                 let centroid = slave.centroid;
                 centroid.x -= leftCorner.x;
@@ -380,7 +383,10 @@ class Client {
                 }
             });
             let triangulation = delauney(middlePoints).lines;
-            const canvas = createCanvas(globalBoundingBox.width, globalBoundingBox.height);
+            const canvas = createCanvas(
+                globalBoundingBox.width,
+                globalBoundingBox.height
+            );
             const ctx = canvas.getContext("2d");
             ctx.strokeStyle = "rgb(255,0,0)";
             triangulation.forEach((line: Line) => {
