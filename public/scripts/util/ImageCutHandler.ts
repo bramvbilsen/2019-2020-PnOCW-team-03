@@ -166,18 +166,18 @@ function rotateAndDrawImageForSlave(
         topLeft.y + screenHeight - globalBoundingBox.topLeft.y
     );
 
-    const slaveImg = createCanvas(screen.width, screen.height);
+    const slaveImg = createCanvas(screenWidth, screenHeight);
     const slaveImgCtx = slaveImg.getContext("2d");
     slaveImgCtx.drawImage(
         maskedImg,
         screen.topLeftCorner.x - globalBoundingBox.topLeft.x,
         screen.topLeftCorner.y - globalBoundingBox.topLeft.y,
-        screen.width,
+        screenWidth,
         screen.height,
         0,
         0,
-        screen.width,
-        screen.height
+        screenWidth,
+        screenHeight
     );
     outputIm = $(
         `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
