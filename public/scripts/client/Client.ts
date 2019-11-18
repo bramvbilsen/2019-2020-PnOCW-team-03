@@ -337,10 +337,10 @@ class Client {
                 const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
                 if (t > 0) {
-                    $("#countdown").html(`<h2>${t}</h2>`);
+                    $("#countdown-text").html(`<h2>${t}</h2>`);
                 } else {
                     $("#loading").css("display", "none");
-                    $("#countdown").html("<h1>BOOOOOMMM</h1>");
+                    $("#countdown-text").html("<h1>BOOOOOMMM</h1>");
                     clearinterval();
                 }
             }, 1);
