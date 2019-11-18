@@ -120,10 +120,9 @@ function rotateAndDrawImageForSlave(
 
     const slaveImg = createCanvas(screen.width, screen.height);
     const slaveImgCtx = slaveImg.getContext("2d");
-    // slaveImgCtx.drawImage(maskedImg, 0, 0, screen.width, screen.height);
     slaveImgCtx.drawImage(
         maskedImg,
-        0,
+        screen.topLeftCorner.x - globalBoundingBox.topLeft.x,
         screen.topLeftCorner.y - globalBoundingBox.topLeft.y,
         screen.width,
         screen.height,
