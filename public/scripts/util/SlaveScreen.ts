@@ -3,6 +3,7 @@ import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
 import { rotatePointsAroundCenter } from "../../tests/image_processing/helpers";
 import { radiansToDegrees } from "./angles";
+import { amountOfNeighboringPixelsWithColor } from "../image_processing/screen_detection/screen_detection";
 
 export default class SlaveScreen {
     corners: Point[];
@@ -101,6 +102,16 @@ export default class SlaveScreen {
             const longestLength = Math.max(edgeA.length, edgeC.length);
             if (longestLength === edgeA.length) return edgeA;
             if (longestLength === edgeC.length) return edgeC;
+        }
+    }
+
+    get topLeftCorner(): Point {
+        const corners = [...this.corners];
+        corners.sort((a, b) => a.y - b.y);
+        if (corners[0].x < corners[1].x) {
+            return corners[0];
+        } else {
+            return corners[1];
         }
     }
 
