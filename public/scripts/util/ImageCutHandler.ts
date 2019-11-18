@@ -62,8 +62,8 @@ function rotateAndDrawImageForSlave(
     slaveScreenMaskCtx.fill();
 
     const maskedImg = createCanvas(
-        globalBoundingBox.width,
-        globalBoundingBox.height
+        globalBoundingBox.width + globalBoundingBox.topLeft.x,
+        globalBoundingBox.height + globalBoundingBox.topLeft.y
     );
     const maskedImgCtx = maskedImg.getContext("2d");
     maskedImgCtx.drawImage(slaveScreenMask, 0, 0);
