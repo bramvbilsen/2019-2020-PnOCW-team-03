@@ -470,7 +470,7 @@ class Client {
         );
         ctx.font = "50px Arial";
         ctx.fillText("*", msg.centroid.x - 10, msg.centroid.y + 25);
-        $("#result-img").attr("src", canvas.toDataURL());
+        $("#image-slave").attr("src", canvas.toDataURL());
     };
 }
 
