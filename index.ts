@@ -155,16 +155,17 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     });
 
-    socket.on(MasterEventTypes.SendTriangulationOnSlave, ( msg:{
-        slaveId: string,
-        centroid: {x: number, y: number},
-        lines: any,
-    }   
-    ) => {
-        if (socket.id === connections.master.id) {
-            io.to(msg.slaveId).emit(SlaveEventTypes.DisplayTriangulationOnSlave,msg)
+    socket.on(
+        MasterEventTypes.SendTriangulationOnSlave,
+        (msg: { slaveId: string; angles: any }) => {
+            if (socket.id === connections.master.id) {
+                io.to(msg.slaveId).emit(
+                    SlaveEventTypes.DisplayTriangulationOnSlave,
+                    msg
+                );
+            }
         }
-    });
+    );
 });
 
 server.listen(port, () => {
