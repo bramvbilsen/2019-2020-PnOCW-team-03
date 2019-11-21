@@ -76,6 +76,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.DisplayImage,
                             this.displayImage
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.DisplayTriangulationOnSlave,
+                            this.showTriangulation
                         )
                     );
                 } else {
@@ -400,6 +404,72 @@ class Client {
             $("#result-img").attr("src", canvas.toDataURL());
             return canvas;
         }
+    };
+
+    public sendTriangulationOnSlave = () => {
+        if (this.type === ConnectionType.MASTER) {
+            let slaves = slaveFlowHandler.screens;
+            let middlePoints: Point[] = [];
+            slaves.forEach(slave => {
+                let centroid = slave.centroid;
+                middlePoints.push(centroid);
+            });
+            middlePoints.sort(function(a, b) {
+                if (a.x - b.x == 0) {
+                    return a.y - b.y;
+                } else {
+                    return a.x - b.x;
+                }
+            });
+            let triangulation = delauney(middlePoints).lines;
+            for (let i = 0; i < slaves.length; i++) {
+                const slave = slaves[i];
+                const centroid = middlePoints[i];
+                let lines: Line[] = [];
+                const leftUp = slave.sortedCorners.LeftUp;
+
+                triangulation.forEach(line => {
+                    if (line.endPoints.includes(centroid)) {
+                        lines.push(line);
+                    }
+                });
+                const rotation = slave.widthEdge.angleBetweenEndpoints;
+                this._socket.emit(MasterEventTypes.SendTriangulationOnSlave, {
+                    slaveId: slave.slaveID,
+                    centroid: {
+                        x: centroid.x - leftUp.x,
+                        y: centroid.y - leftUp.y,
+                    },
+                    lines: lines.map(line => {
+                        return {
+                            x0: line.endPoints[0].x - leftUp.x,
+                            y0: line.endPoints[0].y - leftUp.y,
+                            x1: line.endPoints[1].x - leftUp.x,
+                            y1: line.endPoints[1].y - leftUp.y,
+                        };
+                    }),
+                });
+            }
+        }
+    };
+    public showTriangulation = (msg: {
+        slaveId: string;
+        centroid: { x: number; y: number };
+        lines: Array<{ x0: number; y0: number; x1: number; y1: number }>;
+    }) => {
+        const canvas = createCanvas(window.innerWidth, window.innerHeight);
+        const ctx = canvas.getContext("2d");
+        ctx.strokeStyle = "rgb(0,0,0)";
+        msg.lines.forEach(
+            (line: { x0: number; y0: number; x1: number; y1: number }) => {
+                ctx.beginPath();
+                ctx.moveTo(line.x0, line.y0);
+                ctx.lineTo(line.x1, line.y1);
+                ctx.stroke();
+            }
+        );
+        ctx.font = "50px Arial";
+        ctx.fillText("*", msg.centroid.x - 10, msg.centroid.y + 25);
     };
 }
 
