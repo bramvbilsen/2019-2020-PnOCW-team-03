@@ -114,5 +114,20 @@ TC1: Debuggen alsook het optimaliseren van cornerdetection. Hij zal de veranderd
 
 CTO: Heeft het design schematic gemaakt voor ons project.
 
-CR1: Verder gewerkt aan triangulatie(still?).
+CR1: Verder gewerkt aan triangulatie.
+
+### 18/11:
+We hebben allemaal verder gewerkt aan debuggen van rotatie om dit alsnog werkende te krijgen tegen het uur van de demo(niet gelukt). Uur van samenkomst deze dag 10h 's ochtends. 
+
+### 21/11:
+We hebben besloten een andere aanpak te nemen van het bijhouden van alle gewerkte uren/samenwerking te beteren wanneer we apart staan te werken. Dit resultaat kan gevonden worden binnen volgende spreadsheet: https://docs.google.com/spreadsheets/d/1blanTZo74KsYeqMdYDYGGmVxOopSQWIHU8pJkU0acM0/edit?usp=sharing
+
+CEO&CTO: Maken van de spreadsheet(CEO) en eerste reviews samen(CEO&CTO) rond orientation detection. Dit zal herschreven moeten worden. **Deadline 25/11
+
+TC2: Perspective transformation werkende krijgen binnen ons project gegeven een afbeelding. Werkt buiten ons project in een aparte simulator, moet lukken. **Deadline 25/11
+
+TC1 & CR1: Triangulatie implementeren zonder het gebruik van img casting van voorheen op 18/11. **Deadline 25/11
+
+CR2: Simulator maken voor de random generator die zal gebruikt worden bij de final task telkens de cirkel een corner bereikt in onze triangulatie. **Deadline 25/11.
+
 
