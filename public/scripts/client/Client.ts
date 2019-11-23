@@ -450,52 +450,60 @@ class Client {
             for (let i = 0; i < slaves.length; i++) {
                 const slave = slaves[i];
                 const centroid = middlePoints[i];
-                let lines: Line[] = [];
-                const leftUp = slave.sortedCorners.LeftUp;
+                let angles: number[] = [];
 
                 triangulation.forEach(line => {
-                    if (line.endPoints.includes(centroid)) {
-                        lines.push(line);
+                    const endPoints = line.endPoints;
+                    if (endPoints.includes(centroid)) {
+                        let other: Point;
+                        if (endPoints[0] == centroid) {
+                            other = endPoints[1];
+                        } else {
+                            other = endPoints[0];
+                        }
+                        angles.push(
+                            Math.atan2(
+                                other.y - centroid.y,
+                                other.x - centroid.x
+                            )
+                        );
                     }
                 });
                 const rotation = slave.widthEdge.angleBetweenEndpoints;
                 this._socket.emit(MasterEventTypes.SendTriangulationOnSlave, {
                     slaveId: slave.slaveID,
-                    centroid: {
-                        x: centroid.x - leftUp.x,
-                        y: centroid.y - leftUp.y,
-                    },
-                    lines: lines.map(line => {
-                        return {
-                            x0: line.endPoints[0].x - leftUp.x,
-                            y0: line.endPoints[0].y - leftUp.y,
-                            x1: line.endPoints[1].x - leftUp.x,
-                            y1: line.endPoints[1].y - leftUp.y,
-                        };
-                    }),
+                    angles,
                 });
             }
         }
     };
     public showTriangulation = (msg: {
         slaveId: string;
-        centroid: { x: number; y: number };
-        lines: Array<{ x0: number; y0: number; x1: number; y1: number }>;
+        angles: Array<number>;
     }) => {
         const canvas = createCanvas(window.innerWidth, window.innerHeight);
         const ctx = canvas.getContext("2d");
         ctx.strokeStyle = "rgb(0,0,0)";
-        msg.lines.forEach(
-            (line: { x0: number; y0: number; x1: number; y1: number }) => {
-                ctx.beginPath();
-                ctx.moveTo(line.x0, line.y0);
-                ctx.lineTo(line.x1, line.y1);
-                ctx.stroke();
-            }
-        );
+        msg.angles.forEach(angle => {
+            let radius = Math.sqrt(
+                Math.pow(window.innerWidth / 2, 2) +
+                    Math.pow(window.innerHeight / 2, 2)
+            );
+            ctx.beginPath();
+            ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
+            ctx.lineTo(
+                window.innerWidth / 2 + radius * Math.cos(angle),
+                window.innerHeight / 2 + radius * Math.sin(angle)
+            );
+            ctx.stroke();
+        });
         ctx.font = "50px Arial";
-        ctx.fillText("*", msg.centroid.x - 10, msg.centroid.y + 25);
-        $("#result-img").attr("src", canvas.toDataURL());
+        ctx.fillText(
+            "*",
+            window.innerWidth / 2 - 10,
+            window.innerHeight / 2 + 25
+        );
+        $("#image-slave").attr("src", canvas.toDataURL());
     };
 }
 
