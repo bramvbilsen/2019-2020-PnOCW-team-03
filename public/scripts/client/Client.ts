@@ -50,6 +50,7 @@ class Client {
             (data: { type: ConnectionType }) => {
                 this._type = data.type;
                 this._slaves = [];
+                this.removeNewSocketIOEmitters();
                 const socketIOEmittersForNewType: Array<SocketIOClient.Emitter> = [];
                 if (this.type === ConnectionType.SLAVE) {
                     socketIOEmittersForNewType.push(
@@ -254,10 +255,34 @@ class Client {
         });
     };
 
+    /**
+     * Passes master to the slave that connected after the master or to the slave with `slaveId` if provided.
+     * @argument slaveId
+     */
+    public giveUpMaster(slaveId?: string) {
+        this._socket.emit(MasterEventTypes.GiveUpMaster, { slaveId });
+    }
+
     private setNewSocketIOEmitters = (
         newEmitters: Array<SocketIOClient.Emitter>
     ) => {
         this._socketIOEmitters = newEmitters;
+    };
+
+    private removeNewSocketIOEmitters = () => {
+        Object.keys(MasterEventTypes).forEach(
+            (key: keyof typeof MasterEventTypes) => {
+                const eventType: string = MasterEventTypes[key];
+                this._socket.off(eventType);
+            }
+        );
+        Object.keys(SlaveEventTypes).forEach(
+            (key: keyof typeof SlaveEventTypes) => {
+                const eventType: string = SlaveEventTypes[key];
+                this._socket.off(eventType);
+            }
+        );
+        this._socketIOEmitters = [];
     };
 
     private changeBackground = (data: {

@@ -1,10 +1,10 @@
-export const enum SharedEventTypes {
+export enum SharedEventTypes {
     NotifyOfTypeChange = "notify-of-type-change",
     TimeSyncClient = "time-sync-client",
     TimeSyncServer = "time-sync-server",
 }
 
-export const enum SlaveEventTypes {
+export enum SlaveEventTypes {
     ChangeBackground = "change-background",
     ChangeOrientationColors = "change-orientation-colors",
     DisplayArrowUp = "display-arrow-up",
@@ -12,10 +12,10 @@ export const enum SlaveEventTypes {
     SetCounterEvent = "set-counter-event",
     ToggleOrientationColors = "toggle-orientation-colors",
     DisplayImage = "display-image",
-    DisplayTriangulationOnSlave = "display-triangulation-on-slave"
+    DisplayTriangulationOnSlave = "display-triangulation-on-slave",
 }
 
-export const enum MasterEventTypes {
+export enum MasterEventTypes {
     ChangeSlaveBackgrounds = "change-slave-backgrounds",
     ChangeSlaveBackground = "change-slave-background",
     ToggleSlaveOrientationColors = "toggle-slave-orientation-colors",
@@ -24,6 +24,6 @@ export const enum MasterEventTypes {
     SendArrowsRight = "send-arrows-right",
     NotifySlavesOfStartTimeCounter = "notify-slaves-of-start-time-counter",
     DisplayImageOnSlave = "display-image-on-slave",
-    SendTriangulationOnSlave = "send-triangulation-on-slave"
+    SendTriangulationOnSlave = "send-triangulation-on-slave",
+    GiveUpMaster = "give-up-master",
 }
-

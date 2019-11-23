@@ -1,4 +1,4 @@
-import { client } from "../../index";
+import { client, resetMaster } from "../../index";
 import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
@@ -32,15 +32,8 @@ export default class SlaveFlowHandler {
     }
 
     public reset() {
-        $("#capture").css("capture-slave", "none");
-        $("#next-slave").css("display", "none");
-        $("#show-orientation-button").css("display", "none");
-        $("#capture-orientation").css("display", "none");
-        $("#start").css("display", "inherit");
-        $("#loading-master-indicator").css("display", "none");
-        $("#player-overlay").removeAttr("src");
         const color = { ...client.color };
-        client.color = { r: 255, g: 255, b: 255, a: 255 };
+        client.color = { r: 76, g: 175, b: 80, a: 255 };
         if (this.prevSlaveID) {
             client.showColorOnSlave(this.prevSlaveID);
         }
@@ -48,6 +41,7 @@ export default class SlaveFlowHandler {
             client.showColorOnSlave(this.currSlaveID);
         }
         client.color = color;
+        resetMaster();
         this.resetDebug();
     }
 

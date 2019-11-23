@@ -103,6 +103,19 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
+    socket.on(MasterEventTypes.GiveUpMaster, (msg: { slaveId?: string }) => {
+        if (socket.id === connections.master.id) {
+            console.log("Attempting to give up master");
+            const slaveId = msg.slaveId;
+            let socket = connections.getSocketFromId(slaveId);
+            if (socket) {
+                connections.changeMaster(socket);
+            } else {
+                connections.changeMaster(connections.slaves[0]);
+            }
+        }
+    });
+
     socket.on(
         MasterEventTypes.NotifySlavesOfStartTimeCounter,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
@@ -155,16 +168,21 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     });
 
-    socket.on(MasterEventTypes.SendTriangulationOnSlave, ( msg:{
-        slaveId: string,
-        centroid: {x: number, y: number},
-        lines: any,
-    }   
-    ) => {
-        if (socket.id === connections.master.id) {
-            io.to(msg.slaveId).emit(SlaveEventTypes.DisplayTriangulationOnSlave,msg)
+    socket.on(
+        MasterEventTypes.SendTriangulationOnSlave,
+        (msg: {
+            slaveId: string;
+            centroid: { x: number; y: number };
+            lines: any;
+        }) => {
+            if (socket.id === connections.master.id) {
+                io.to(msg.slaveId).emit(
+                    SlaveEventTypes.DisplayTriangulationOnSlave,
+                    msg
+                );
+            }
         }
-    });
+    );
 });
 
 server.listen(port, () => {
