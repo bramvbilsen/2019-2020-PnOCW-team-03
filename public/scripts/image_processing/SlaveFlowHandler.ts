@@ -140,6 +140,14 @@ export default class SlaveFlowHandler {
             client.color,
             client.DEBUG
         );
+
+        //if no screen found, delete slave from client.slaves.
+        if(corners.length <4){
+            let slaveToRemove = client.slaves.indexOf(this.currSlaveID);
+            client.slaves.splice(slaveToRemove,1);
+            return
+        }
+
         this.resetDebug();
         const resultCanvasWithBg = createCameraOverlayWithPoints(
             corners,
