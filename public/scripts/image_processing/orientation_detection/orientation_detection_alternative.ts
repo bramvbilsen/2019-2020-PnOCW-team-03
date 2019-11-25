@@ -572,18 +572,13 @@ export default function calculateOrientation(
     /** iterate over certain points between leftupperCoorinate and rightUpperCoordinate, stop until you found the color,
         if both bottom colors are displayed on top, we say orientation.flipped, else orientation.normal*/
     for (let i = listOfLinePoints.length - 1; i >= 0; i--) {
-        if (
-            isSimilarHSLColor(
-                getHSLColorForPixel(
-                    listOfLinePoints[i].x,
-                    listOfLinePoints[i].y,
-                    2,
-                    pixels
-                ),
-                leftUnderColor,
-                colorRange
-            )
-        ) {
+        const pixelColor = getHSLColorForPixel(
+            listOfLinePoints[i].x,
+            listOfLinePoints[i].y,
+            2,
+            pixels
+        );
+        if (isSimilarHSLColor(pixelColor, leftUnderColor, colorRange)) {
             for (let point of listOfLinePoints) {
                 if (
                     isSimilarHSLColor(
