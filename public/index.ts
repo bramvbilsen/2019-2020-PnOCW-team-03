@@ -233,12 +233,12 @@ $(() => {
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("Changed type to: " + type);
     const page: JQuery<HTMLBodyElement> = $("#page");
-    page.css("background-color", `rgb(76, 175, 80)`);
     const loadingElem = $("#loading");
     if (slaveFlowHandler) {
         slaveFlowHandler.reset();
     }
     if (client.type == ConnectionType.MASTER) {
+        page.css("background-color", `rgb(77, 154, 227)`);//changing master color to sky blue
         $("#countdown").css("display", "none");
         loadingElem.css("display", "none");
         $("#slave").css("display", "none");
@@ -247,6 +247,7 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#main-flow-master").css("display", "none");
         handleCameraInput();
     } else {
+        page.css("background-color", `rgb(76, 175, 80)`);//changing client color to leprechaun green
         loadingElem.css("display", "none");
         $("#master").css("display", "none");
         $("#slave").css("display", "inherit");
