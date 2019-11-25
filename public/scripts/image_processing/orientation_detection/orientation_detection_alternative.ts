@@ -527,15 +527,14 @@ enum OrientationType {
 }
 
 function calculateLineBetweenTwoPoints(left: Point, right: Point) {
-    let difX = right.x - left.x;
-    let difY = right.y - left.y;
-    let pointNum = Math.floor(difX);
+    let difX = Math.floor(right.x - left.x);
+    let difY = Math.floor(right.y - left.y);
     let listOfPoints: Array<Point> = [];
 
-    let intervalX = difX / (pointNum + 1);
-    let intervalY = difY / (pointNum + 1);
+    let intervalX = difX / (difX + 1);
+    let intervalY = difY / (difX + 1);
 
-    for (let i = 1; i <= pointNum; i++) {
+    for (let i = 1; i <= difX; i++) {
         listOfPoints.push(
             new Point(left.x + intervalX * i, right.y + intervalY * i)
         );
