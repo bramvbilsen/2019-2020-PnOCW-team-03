@@ -7,9 +7,9 @@ import SlaveScreen from "../../util/SlaveScreen";
  */
 
 const colorRange: IHSLRange = {
-    hRange: 35,
-    sRange: 35,
-    lRange: 35,
+    hRange: 40,
+    sRange: 40,
+    lRange: 50,
 };
 const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180); //pink
 const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25); // green
@@ -526,17 +526,21 @@ enum OrientationType {
     QUADRANT_4 = 270,
 }
 
-function calculateLineBetweenTwoPoints(left: Point, right: Point) {
-    let difX = Math.floor(right.x - left.x);
-    let difY = Math.floor(right.y - left.y);
+function calculateLineBetweenTwoPoints(center: Point) {
+    //let intervalX = Math.floor(width / 50);
+    //let intervalRemainder = width % 50;
     let listOfPoints: Array<Point> = [];
+    //const leftX = Math.floor(left.x);
 
-    let intervalX = difX / (difX + 1);
-    let intervalY = difY / (difX + 1);
-
-    for (let i = 1; i <= difX; i++) {
+    for (let i = 1; i <= 5; i++) {
         listOfPoints.push(
-            new Point(left.x + intervalX * i, right.y + intervalY * i)
+            new Point(center.x - i, center.y + 5)
+        );
+    }
+
+    for (let i = 1; i <= 5; i++) {
+        listOfPoints.push(
+            new Point(center.x + i, center.y + 5)
         );
     }
     return listOfPoints;
@@ -555,17 +559,16 @@ export default function calculateOrientation(
 
     /**Points in first 2 quadrants can determine full orientation*/
     const leftUpperColorCoordinate = new Point(
-        center.x - screen.width / 4,
-        center.y - screen.height / 4
+        Math.floor(center.x - screen.width / 4),
+        Math.floor(center.y - screen.height / 4)
     );
     const rightUpperColorCoordinate = new Point(
-        center.x + screen.width / 4,
-        center.y - screen.height / 4
+        Math.floor(center.x + screen.width / 4),
+        Math.floor(center.y - screen.height / 4)
     );
 
     let listOfLinePoints: Array<Point> = calculateLineBetweenTwoPoints(
-        leftUpperColorCoordinate,
-        rightUpperColorCoordinate
+        center
     );
 
     /** iterate over certain points between leftupperCoorinate and rightUpperCoordinate, stop until you found the color,
@@ -574,14 +577,14 @@ export default function calculateOrientation(
         const pixelColor = getHSLColorForPixel(
             listOfLinePoints[i].x,
             listOfLinePoints[i].y,
-            2,
+            canvas.width,
             pixels
         );
         if (isSimilarHSLColor(pixelColor, leftUnderColor, colorRange)) {
             for (let point of listOfLinePoints) {
                 if (
                     isSimilarHSLColor(
-                        getHSLColorForPixel(point.x, point.y, 2, pixels),
+                        getHSLColorForPixel(point.x, point.y, canvas.width, pixels),
                         rightUnderColor,
                         colorRange
                     )
