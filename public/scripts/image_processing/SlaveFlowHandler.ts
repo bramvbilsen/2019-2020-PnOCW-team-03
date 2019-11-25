@@ -3,7 +3,7 @@ import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
-import calculateOrientation from "./orientation_detection/orientation_detection";
+import calculateOrientation from "./orientation_detection/orientation_detection_alternative";
 import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
 import { createCameraOverlayWithPoints } from "../util/canvas";
 
@@ -142,10 +142,10 @@ export default class SlaveFlowHandler {
         );
 
         //if no screen found, delete slave from client.slaves.
-        if(corners.length <4){
+        if (corners.length < 4) {
             let slaveToRemove = client.slaves.indexOf(this.currSlaveID);
-            client.slaves.splice(slaveToRemove,1);
-            return
+            client.slaves.splice(slaveToRemove, 1);
+            return;
         }
 
         this.resetDebug();
@@ -205,10 +205,8 @@ export default class SlaveFlowHandler {
             currScreen,
             orientationCanvas
         );
-        currScreen.orientation = calculateOrientation(
-            currScreen,
-            orientationCanvas
-        );
+        const orientation = calculateOrientation(currScreen, orientationCanvas);
+        console.log(currScreen.widthEdge.angleBetweenEndpoints);
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
         this.endSlaveCycle();
     }
