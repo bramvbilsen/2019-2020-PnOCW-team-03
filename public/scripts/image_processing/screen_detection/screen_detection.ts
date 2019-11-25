@@ -67,7 +67,7 @@ export default async function findScreen(
     const IMMEDIATE_NEIGHBOR_RANGE = 3;
     // 20% of pixels in range
     const LOST_PIXEL_THRESHOLD_SHORT =
-        0.35 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
+        0.5 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
     const MAX_CORNER_NEIGHBORS =
         0.55 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
 
