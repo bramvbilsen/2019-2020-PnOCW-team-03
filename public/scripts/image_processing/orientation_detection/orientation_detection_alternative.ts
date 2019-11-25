@@ -565,6 +565,7 @@ export default function calculateOrientation(
         if (isSimilarHSLColor(getHSLColorForPixel(listOfLinePoints[i].x, listOfLinePoints[i].y, 2, pixels), leftUnderColor, colorRange)) {
             for (let point of listOfLinePoints) {
                 if (isSimilarHSLColor(getHSLColorForPixel(point.x, point.y, 2, pixels), rightUnderColor, colorRange)) {
+                    console.log(Orientation.FLIPPED);
                     return Orientation.FLIPPED;
                 }
             }
@@ -580,6 +581,7 @@ export default function calculateOrientation(
             }
         }*/
     }
+    console.log(Orientation.NORMAL);
     return Orientation.NORMAL;
 
 
