@@ -1,0 +1,565 @@
+internal/modules/cjs/loader.js:797
+    throw err;
+    ^
+
+Error: Cannot find module '/cw/penocw/pocw1903/2019-2020-PnOCW-team-03/index.js'
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:794:15)
+    at Function.Module._load (internal/modules/cjs/loader.js:687:27)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1025:10)
+    at internal/main/run_main_module.js:17:11 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+Starting server...
+Server listening on port: 8003
+New connection: JeYGJGdj1ALRkFRyAAAA
+Total connected: 1
+New connection: O3-HQwouw0GMDe4HAAAB
+Total connected: 2
+New connection: bo84v9FJ68fQ9h8kAAAC
+Total connected: 3
+New connection: I2QIsC9gw6PsNxFuAAAD
+Total connected: 4
+New connection: e5sfMN3qIYF4vLEJAAAE
+Total connected: 5
+New connection: tQ3_Q7dqp-lsFbLBAAAF
+Total connected: 6
+New connection: 6L9Bz9vSxriUBS1vAAAG
+Total connected: 7
+New connection: rC4vg81JL7DM8R15AAAH
+Total connected: 8
+New connection: GtL-NyL0AF5lHIGPAAAI
+Total connected: 9
+New connection: OEOZjrtQm1r05yCeAAAJ
+Total connected: 10
+New connection: Jnb9RvEfuXR1v6n3AAAK
+Total connected: 11
+New connection: pV9326dUAtPZsq42AAAL
+Total connected: 12
+New connection: wwLAnKNg7SXCqoqxAAAM
+Total connected: 13
+New connection: xH21Lfi2XxGNN0q6AAAN
+Total connected: 14
+New connection: lWw4G7fYb6PQ7UOjAAAO
+Total connected: 15
+New connection: gH3yKir64aU3ZWAYAAAP
+Total connected: 16
+New connection: A8hLaWjry0GJC00gAAAQ
+Total connected: 17
+New connection: aQaEtoT7bzFPRxJTAAAR
+Total connected: 18
+New connection: HayI79Cu_A5Dzlq-AAAS
+Total connected: 19
+New connection: UW8ha-nJQipQdaphAAAT
+Total connected: 20
+New connection: 1bCT7m-3LzX69yqLAAAU
+Total connected: 21
+New connection: j-mtb0B9iSkCaCB2AAAV
+Total connected: 22
+New connection: Vok6zGAA0hX7QjBQAAAW
+Total connected: 23
+New connection: WC7HzCBlK7ny76byAAAX
+Total connected: 24
+Client disconnected: Vok6zGAA0hX7QjBQAAAW
+Total connected: 23
+Starting server...
+Server listening on port: 8003
+New connection: BB82nvnjlvpOIjswAAAA
+Total connected: 1
+New connection: l95bwJOATfSaPps0AAAB
+Total connected: 2
+New connection: NRmEiMQPueabq4_OAAAC
+Total connected: 3
+New connection: 0Ad3q2gCjXlattA8AAAD
+Total connected: 4
+Client disconnected: BB82nvnjlvpOIjswAAAA
+Total connected: 3
+Client disconnected: NRmEiMQPueabq4_OAAAC
+Total connected: 2
+New connection: BzuNlbNi7OB5e2QuAAAE
+Total connected: 3
+Client disconnected: BzuNlbNi7OB5e2QuAAAE
+Total connected: 2
+Client disconnected: 0Ad3q2gCjXlattA8AAAD
+Total connected: 1
+Starting server...
+events.js:187
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::8003
+    at Server.setupListenHandle [as _listen2] (net.js:1300:14)
+    at listenInCluster (net.js:1348:12)
+    at Server.listen (net.js:1436:7)
+    at Object.<anonymous> (/cw/penocw/pocw1903/2019-2020-PnOCW-team-03/build/index.js:117:8)
+    at Module._compile (internal/modules/cjs/loader.js:956:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:973:10)
+    at Module.load (internal/modules/cjs/loader.js:812:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:724:14)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1025:10)
+    at internal/main/run_main_module.js:17:11
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (net.js:1327:8)
+    at processTicksAndRejections (internal/process/task_queues.js:80:21) {
+  code: 'EADDRINUSE',
+  errno: 'EADDRINUSE',
+  syscall: 'listen',
+  address: '::',
+  port: 8003
+}
+New connection: ZWulXX6HJ2AiBlr9AAAF
+Total connected: 2
+Starting server...
+Server listening on port: 8003
+New connection: gMxykl5dCptOTP6_AAAA
+Total connected: 1
+New connection: 4WU66jE1xF4r4MrVAAAB
+Total connected: 2
+Client disconnected: 4WU66jE1xF4r4MrVAAAB
+Total connected: 1
+Starting server...
+Server listening on port: 8003
+New connection: FwabOrPwZ67yPi8LAAAA
+Total connected: 1
+New connection: VskEzRnhzL716bZfAAAB
+Total connected: 2
+Client disconnected: VskEzRnhzL716bZfAAAB
+Total connected: 1
+Client disconnected: FwabOrPwZ67yPi8LAAAA
+Total connected: 0
+Starting server...
+Server listening on port: 8003
+New connection: 2MdwaGr4sElcVsoHAAAA
+Total connected: 1
+Client disconnected: 2MdwaGr4sElcVsoHAAAA
+Total connected: 0
+New connection: Y6lXIVOG27qo5kq1AAAB
+Total connected: 1
+Client disconnected: Y6lXIVOG27qo5kq1AAAB
+Total connected: 0
+Starting server...
+Server listening on port: 8003
+New connection: gQgp-Kp3VedsYDZVAAAA
+Total connected: 1
+New connection: f2gGco0ucgUErBShAAAB
+Total connected: 2
+New connection: OmOasj2e7QyjIhjhAAAC
+Total connected: 3
+New connection: Ymg0YDhJbOonIKRPAAAD
+Total connected: 4
+Starting server...
+Server listening on port: 8003
+New connection: Pqs0-1lYvO00DhdFAAAA
+Total connected: 1
+Client disconnected: Pqs0-1lYvO00DhdFAAAA
+Total connected: 0
+New connection: AgZLVVVqIkc3tVI-AAAB
+Total connected: 1
+Client disconnected: AgZLVVVqIkc3tVI-AAAB
+Total connected: 0
+New connection: WQh4gI3pz42S5_X7AAAC
+Total connected: 1
+Client disconnected: WQh4gI3pz42S5_X7AAAC
+Total connected: 0
+New connection: l7qS4jl9SFJWhLviAAAD
+Total connected: 1
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: l7qS4jl9SFJWhLviAAAD
+Total connected: 0
+New connection: 9t6dKvZLPrnZmCqsAAAE
+Total connected: 1
+New connection: 5PrfTN5XfO0ZmZRHAAAF
+Total connected: 2
+Client disconnected: 5PrfTN5XfO0ZmZRHAAAF
+Total connected: 1
+New connection: MX5JYs3LGe4zEYYhAAAG
+Total connected: 2
+Client disconnected: 9t6dKvZLPrnZmCqsAAAE
+Total connected: 1
+Attempting to change background by master
+New connection: CcmP3K2_m2RjS3GrAAAH
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: CcmP3K2_m2RjS3GrAAAH
+Total connected: 1
+Client disconnected: MX5JYs3LGe4zEYYhAAAG
+Total connected: 0
+New connection: 81E1D_1vqzYIznKHAAAI
+Total connected: 1
+Client disconnected: 81E1D_1vqzYIznKHAAAI
+Total connected: 0
+New connection: Zi_Kh8ZOOqUOqm7_AAAJ
+Total connected: 1
+Attempting to change background by master
+Attempting to change background by master
+New connection: Y3V4yDllx1YSjFH0AAAK
+Total connected: 2
+Client disconnected: Zi_Kh8ZOOqUOqm7_AAAJ
+Total connected: 1
+Client disconnected: Y3V4yDllx1YSjFH0AAAK
+Total connected: 0
+New connection: T8e8EgrsC8e-EBY1AAAL
+Total connected: 1
+New connection: k6fX1gjw0HsTZZu7AAAM
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: k6fX1gjw0HsTZZu7AAAM
+Total connected: 1
+Client disconnected: T8e8EgrsC8e-EBY1AAAL
+Total connected: 0
+New connection: e-ec_tcIHUGm5Rs3AAAN
+Total connected: 1
+New connection: 79CKVZ3vEv2HcLhNAAAO
+Total connected: 2
+New connection: 0bkoPaH-jkuJzgvSAAAP
+Total connected: 3
+New connection: HWgI2pC7iV7f5-NfAAAQ
+Total connected: 4
+Client disconnected: e-ec_tcIHUGm5Rs3AAAN
+Total connected: 3
+Client disconnected: HWgI2pC7iV7f5-NfAAAQ
+Total connected: 2
+New connection: yZXQW7CAp60A_ly5AAAR
+Total connected: 3
+Client disconnected: 0bkoPaH-jkuJzgvSAAAP
+Total connected: 1
+Client disconnected: 79CKVZ3vEv2HcLhNAAAO
+Total connected: 1
+New connection: iRe7IHzuHWZXbmj4AAAS
+Total connected: 2
+New connection: xDjl4vuhioRw9a6QAAAT
+Total connected: 3
+Attempting to change background by master
+New connection: BGIrU3eTI_AL6DXeAAAU
+Total connected: 4
+Client disconnected: BGIrU3eTI_AL6DXeAAAU
+Total connected: 3
+New connection: kPFFmB24TBCh87SVAAAV
+Total connected: 4
+Client disconnected: kPFFmB24TBCh87SVAAAV
+Total connected: 3
+Client disconnected: iRe7IHzuHWZXbmj4AAAS
+Total connected: 2
+Client disconnected: xDjl4vuhioRw9a6QAAAT
+Total connected: 1
+New connection: 0Lhe7a2TH9zgcZcLAAAW
+Total connected: 2
+New connection: 9l81r4fF5K5EvxfdAAAX
+Total connected: 3
+Client disconnected: yZXQW7CAp60A_ly5AAAR
+Total connected: 2
+Client disconnected: 0Lhe7a2TH9zgcZcLAAAW
+Total connected: 1
+New connection: mJ6gHZdwgd7RWlx6AAAY
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: 9l81r4fF5K5EvxfdAAAX
+Total connected: 1
+Client disconnected: mJ6gHZdwgd7RWlx6AAAY
+Total connected: 0
+New connection: dwg6ygac3FCsBQltAAAZ
+Total connected: 1
+New connection: e702r4LM6u4Epm25AAAa
+Total connected: 2
+Client disconnected: e702r4LM6u4Epm25AAAa
+Total connected: 1
+New connection: Iumx4b4G-CwuQwOJAAAb
+Total connected: 2
+New connection: -vy6AgJ518zQomc7AAAc
+Total connected: 3
+Client disconnected: -vy6AgJ518zQomc7AAAc
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: dwg6ygac3FCsBQltAAAZ
+Total connected: 1
+Client disconnected: Iumx4b4G-CwuQwOJAAAb
+Total connected: 0
+New connection: Ueg8cUEf9pshQy4LAAAd
+Total connected: 1
+New connection: pJ2oLwbRLQBtHxmOAAAe
+Total connected: 2
+Client disconnected: pJ2oLwbRLQBtHxmOAAAe
+Total connected: 1
+New connection: OhxFbCLa3yR57uNnAAAf
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: OhxFbCLa3yR57uNnAAAf
+Total connected: 1
+New connection: gb8BH7jCco9smY5UAAAg
+Total connected: 2
+Client disconnected: Ueg8cUEf9pshQy4LAAAd
+Total connected: 1
+New connection: aFh4MabCabxTCBxWAAAh
+Total connected: 2
+Client disconnected: gb8BH7jCco9smY5UAAAg
+Total connected: 1
+New connection: EDZdsK6V06QuO2WRAAAi
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: EDZdsK6V06QuO2WRAAAi
+Total connected: 1
+Client disconnected: aFh4MabCabxTCBxWAAAh
+Total connected: 0
+New connection: bd27BIzzMpBuv1BZAAAj
+Total connected: 1
+New connection: a8-6SV0Jgucu1t-PAAAk
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: a8-6SV0Jgucu1t-PAAAk
+Total connected: 1
+Client disconnected: bd27BIzzMpBuv1BZAAAj
+Total connected: 0
+New connection: ARwwFQympa6s1muJAAAl
+Total connected: 1
+New connection: Go2z7bzZhhX-zMt2AAAm
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: Go2z7bzZhhX-zMt2AAAm
+Total connected: 1
+Client disconnected: ARwwFQympa6s1muJAAAl
+Total connected: 0
+New connection: XIAaYInTeHIuGqtyAAAn
+Total connected: 1
+New connection: 3DFWh9TLufedqHtMAAAo
+Total connected: 2
+Attempting to change background by master
+Attempting to change background by master
+Client disconnected: 3DFWh9TLufedqHtMAAAo
+Total connected: 1
+Starting server...
+Server listening on port: 8003
+New connection: EtFthxerNfpjoYt4AAAA
+Total connected: 1
+Client disconnected: EtFthxerNfpjoYt4AAAA
+Total connected: 0
+New connection: n6N1p5UaeF9TSo_IAAAB
+Total connected: 1
+Client disconnected: n6N1p5UaeF9TSo_IAAAB
+Total connected: 0
+New connection: XyLFAxCBbz9lNq2UAAAC
+Total connected: 1
+Client disconnected: XyLFAxCBbz9lNq2UAAAC
+Total connected: 0
+New connection: _Ou85WiGiC5DnOgBAAAD
+Total connected: 1
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+Attempting to change background by master
+Client disconnected: _Ou85WiGiC5DnOgBAAAD
+Total connected: 0
+New connection: jbzwGaEN4gozd8SKAAAE
+Total connected: 1
+Client disconnected: jbzwGaEN4gozd8SKAAAE
+Total connected: 0
+New connection: a8OcNzfVJZRvguyRAAAF
+Total connected: 1
+Client disconnected: a8OcNzfVJZRvguyRAAAF
+Total connected: 0
+New connection: eiXOl0rZhlczE6M_AAAG
+Total connected: 1
+Client disconnected: eiXOl0rZhlczE6M_AAAG
+Total connected: 0
+Starting server...
+Server listening on port: 8003
+New connection: AFGRjanq4OFDd9eUAAAA
+Total connected: 1
+Client disconnected: AFGRjanq4OFDd9eUAAAA
+Total connected: 0
+New connection: 12fGF_VehL7ZXuCWAAAB
+Total connected: 1
+Client disconnected: 12fGF_VehL7ZXuCWAAAB
+Total connected: 0
+Starting server...
+Server listening on port: 8003
+New connection: Nd-1dm-Qx71UiubnAAAA
+Total connected: 1
+Attempting to change background by master
+Starting server...
+Server listening on port: 8003
+New connection: BE5SqiIFYxuxa5PYAAAA
+Total connected: 1
+Client disconnected: BE5SqiIFYxuxa5PYAAAA
+Total connected: 0
+New connection: tVMRZ8S7vrSxfULjAAAB
+Total connected: 1
+Client disconnected: tVMRZ8S7vrSxfULjAAAB
+Total connected: 0
+New connection: sxz--DSb8Slcv1OHAAAC
+Total connected: 1
+Client disconnected: sxz--DSb8Slcv1OHAAAC
+Total connected: 0
+Starting server...
+Server listening on port: 8003
+New connection: Fc66Zc215aUYOiYfAAAA
+Total connected: 1
+New connection: LC_OAwW1DQhG5-fAAAAB
+Total connected: 2
+New connection: hiUIW2OwEa-9mWa9AAAC
+Total connected: 3
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+POSTED IMAGE
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/hiUIW2OwEa-9mWa9AAAC.png
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/LC_OAwW1DQhG5-fAAAAB.png
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/hiUIW2OwEa-9mWa9AAAC.png
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/LC_OAwW1DQhG5-fAAAAB.png
+Client disconnected: hiUIW2OwEa-9mWa9AAAC
+Total connected: 2
+Client disconnected: LC_OAwW1DQhG5-fAAAAB
+Total connected: 1
+Client disconnected: Fc66Zc215aUYOiYfAAAA
+Total connected: 0
+New connection: CrCJ_OhFqW_SLMTkAAAD
+Total connected: 1
+New connection: CIjXVUOQj4YK2pP7AAAE
+Total connected: 2
+New connection: L1mJ9NXUL3UsTIqEAAAF
+Total connected: 3
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+Attempting to change background by master
+Client disconnected: L1mJ9NXUL3UsTIqEAAAF
+Total connected: 2
+Client disconnected: CIjXVUOQj4YK2pP7AAAE
+Total connected: 1
+Client disconnected: CrCJ_OhFqW_SLMTkAAAD
+Total connected: 0
+New connection: en60R_7oLFrSynbGAAAG
+Total connected: 1
+New connection: 4c8syj5BXjUU4KRBAAAH
+Total connected: 2
+New connection: ITaiS6-cEg7ytKoHAAAI
+Total connected: 3
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+POSTED IMAGE
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/ITaiS6-cEg7ytKoHAAAI.png
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/4c8syj5BXjUU4KRBAAAH.png
+POSTED IMAGE
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/ITaiS6-cEg7ytKoHAAAI.png
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/4c8syj5BXjUU4KRBAAAH.png
+POSTED IMAGE
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/ITaiS6-cEg7ytKoHAAAI.png
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/4c8syj5BXjUU4KRBAAAH.png
+Attempting to start timer by master
+Client disconnected: ITaiS6-cEg7ytKoHAAAI
+Total connected: 2
+Client disconnected: 4c8syj5BXjUU4KRBAAAH
+Total connected: 1
+Client disconnected: en60R_7oLFrSynbGAAAG
+Total connected: 0
+New connection: S2uwHP2ViZZs1ILMAAAJ
+Total connected: 1
+New connection: 3eciCMwlUL4mOnMYAAAK
+Total connected: 2
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/3eciCMwlUL4mOnMYAAAK.png
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/3eciCMwlUL4mOnMYAAAK.png
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/3eciCMwlUL4mOnMYAAAK.png
+New connection: U28U87vYC1BboYchAAAL
+Total connected: 3
+Client disconnected: 3eciCMwlUL4mOnMYAAAK
+Total connected: 2
+Client disconnected: U28U87vYC1BboYchAAAL
+Total connected: 1
+Client disconnected: S2uwHP2ViZZs1ILMAAAJ
+Total connected: 0
+New connection: tD8-ovesJmbDJ6OnAAAM
+Total connected: 1
+New connection: Y1VQKPBt7AohOwWjAAAN
+Total connected: 2
+New connection: 5q2ss1ZbCdEA9QNqAAAO
+Total connected: 3
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+Attempting to change background by master
+Attempting to change orientation by master
+Attempting to change orientation by master
+POSTED IMAGE
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/5q2ss1ZbCdEA9QNqAAAO.png
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/Y1VQKPBt7AohOwWjAAAN.png
+POSTED IMAGE
+POSTED IMAGE
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/5q2ss1ZbCdEA9QNqAAAO.png
+Attempting to display image by master, imgurl: https://penocw03.student.cs.kuleuven.be/slave_images/Y1VQKPBt7AohOwWjAAAN.png
+Attempting to start timer by master
+Client disconnected: 5q2ss1ZbCdEA9QNqAAAO
+Total connected: 2
+Client disconnected: tD8-ovesJmbDJ6OnAAAM
+Total connected: 1
+New connection: BvVhohYZG4zkkKtiAAAP
+Total connected: 2
+Client disconnected: Y1VQKPBt7AohOwWjAAAN
+Total connected: 1
+New connection: FVomifcA8tyMUMNuAAAQ
+Total connected: 2
+Client disconnected: FVomifcA8tyMUMNuAAAQ
+Total connected: 1
+Starting server...
+events.js:187
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::8003
+    at Server.setupListenHandle [as _listen2] (net.js:1300:14)
+    at listenInCluster (net.js:1348:12)
+    at Server.listen (net.js:1436:7)
+    at Object.<anonymous> (/cw/penocw/pocw1903/2019-2020-PnOCW-team-03/build/index.js:127:8)
+    at Module._compile (internal/modules/cjs/loader.js:956:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:973:10)
+    at Module.load (internal/modules/cjs/loader.js:812:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:724:14)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1025:10)
+    at internal/main/run_main_module.js:17:11
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (net.js:1327:8)
+    at processTicksAndRejections (internal/process/task_queues.js:80:21) {
+  code: 'EADDRINUSE',
+  errno: 'EADDRINUSE',
+  syscall: 'listen',
+  address: '::',
+  port: 8003
+}

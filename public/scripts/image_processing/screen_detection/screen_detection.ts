@@ -64,12 +64,10 @@ export default async function findScreen(
         screenColorRGBA.b
     );
 
-    const IMMEDIATE_NEIGHBOR_RANGE = 3;
-    // 20% of pixels in range
-    const LOST_PIXEL_THRESHOLD_SHORT =
-        0.5 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
-    const MAX_CORNER_NEIGHBORS =
-        0.55 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
+    const IMMEDIATE_NEIGHBOR_RANGE = 1;
+
+    const LOST_PIXEL_THRESHOLD_SHORT = 4;
+    const MAX_CORNER_NEIGHBORS = 5;
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -167,8 +165,7 @@ export default async function findScreen(
                     screenColorHSL
                 );
                 if (
-                    coloredNeighbors > LOST_PIXEL_THRESHOLD_SHORT &&
-                    coloredNeighbors <= MAX_CORNER_NEIGHBORS
+                    coloredNeighbors === LOST_PIXEL_THRESHOLD_SHORT || coloredNeighbors === MAX_CORNER_NEIGHBORS
                 ) {
                     resultingPixels[linearizedIndex] = screenColorRGBA.r;
                     resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
