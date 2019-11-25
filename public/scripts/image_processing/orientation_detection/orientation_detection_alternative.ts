@@ -560,7 +560,7 @@ export default function calculateOrientation(
         center.y - screen.height / 4
     );
     const rightUpperColorCoordinate = new Point(
-        center.x + screen.width,
+        center.x + screen.width / 4,
         center.y - screen.height / 4
     );
 
