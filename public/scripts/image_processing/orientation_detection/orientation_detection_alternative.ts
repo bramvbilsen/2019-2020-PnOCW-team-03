@@ -1,4 +1,4 @@
-import {Orientation} from "./orientations";
+import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
 
 /**
@@ -12,9 +12,9 @@ const colorRange: IHSLRange = {
     lRange: 35,
 };
 const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180); //pink
-const leftUnderColor: IHSLColor = rgbToHsl(0, 255, 25); // green
+const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25); // green
 const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255); // blue
-const rightUpperColor: IHSLColor = rgbToHsl(255, 216, 0); // yellow
+const leftUnderColor: IHSLColor = rgbToHsl(255, 216, 0); // yellow
 const colors = [
     leftUpperColor,
     rightUpperColor,
@@ -526,19 +526,21 @@ enum OrientationType {
     QUADRANT_4 = 270,
 }
 
-function calculateLineBetweenTwoPoints(left:Point, right:Point){
+function calculateLineBetweenTwoPoints(left: Point, right: Point) {
     let difX = right.x - left.x;
     let difY = right.y - left.y;
     let pointNum = Math.floor(difX);
-    let listOfPoints:Array<Point>= [];
+    let listOfPoints: Array<Point> = [];
 
-    let intervalX = difX/(pointNum+1);
-    let intervalY = difY/(pointNum+1);
+    let intervalX = difX / (pointNum + 1);
+    let intervalY = difY / (pointNum + 1);
 
-    for(let i  = 1; i<=pointNum; i++){
-        listOfPoints.push(new Point(left.x+intervalX*i,right.y+intervalY*i));
+    for (let i = 1; i <= pointNum; i++) {
+        listOfPoints.push(
+            new Point(left.x + intervalX * i, right.y + intervalY * i)
+        );
     }
-    return listOfPoints
+    return listOfPoints;
 }
 
 export default function calculateOrientation(
@@ -553,18 +555,43 @@ export default function calculateOrientation(
     const pointAboveCenter = new Point(center.x, center.y - screen.height / 4);
 
     /**Points in first 2 quadrants can determine full orientation*/
-    const leftUpperColorCoordinate = new Point(center.x - screen.width/4, center.y-screen.height/4);
-    const rightUpperColorCoordinate = new Point(center.x + screen.width, center.y-screen.height/4);
+    const leftUpperColorCoordinate = new Point(
+        center.x - screen.width / 4,
+        center.y - screen.height / 4
+    );
+    const rightUpperColorCoordinate = new Point(
+        center.x + screen.width,
+        center.y - screen.height / 4
+    );
 
-    let listOfLinePoints:Array<Point> = calculateLineBetweenTwoPoints(leftUpperColorCoordinate, rightUpperColorCoordinate);
-
+    let listOfLinePoints: Array<Point> = calculateLineBetweenTwoPoints(
+        leftUpperColorCoordinate,
+        rightUpperColorCoordinate
+    );
 
     /** iterate over certain points between leftupperCoorinate and rightUpperCoordinate, stop until you found the color,
         if both bottom colors are displayed on top, we say orientation.flipped, else orientation.normal*/
-    for(let i = listOfLinePoints.length-1; i >= 0; i--) {
-        if (isSimilarHSLColor(getHSLColorForPixel(listOfLinePoints[i].x, listOfLinePoints[i].y, 2, pixels), leftUnderColor, colorRange)) {
+    for (let i = listOfLinePoints.length - 1; i >= 0; i--) {
+        if (
+            isSimilarHSLColor(
+                getHSLColorForPixel(
+                    listOfLinePoints[i].x,
+                    listOfLinePoints[i].y,
+                    2,
+                    pixels
+                ),
+                leftUnderColor,
+                colorRange
+            )
+        ) {
             for (let point of listOfLinePoints) {
-                if (isSimilarHSLColor(getHSLColorForPixel(point.x, point.y, 2, pixels), rightUnderColor, colorRange)) {
+                if (
+                    isSimilarHSLColor(
+                        getHSLColorForPixel(point.x, point.y, 2, pixels),
+                        rightUnderColor,
+                        colorRange
+                    )
+                ) {
                     console.log(Orientation.FLIPPED);
                     return Orientation.FLIPPED;
                 }
@@ -584,8 +611,7 @@ export default function calculateOrientation(
     console.log(Orientation.NORMAL);
     return Orientation.NORMAL;
 
-
-/**
+    /**
     const pointAboveCenter_topLeftColorAmt = amountOfNeighboringPixelsWithColor(
         pixels,
         10,
