@@ -35,6 +35,13 @@ const wait = async (ms: number) => {
     });
 };
 
+const calcNeighborPixelsInRange = (range: number) => {
+    return Array(range)
+        .fill(1)
+        .map((_, index) => 8 * (index + 1))
+        .reduce((a, b) => a + b, 0);
+};
+
 /**
  *
  * @param nonColoredImgPath - Path to image for slave without color.
@@ -58,8 +65,11 @@ export default async function findScreen(
     );
 
     const IMMEDIATE_NEIGHBOR_RANGE = 3;
-    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.2;
-    const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.6;
+    // 20% of pixels in range
+    const LOST_PIXEL_THRESHOLD_SHORT =
+        0.35 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
+    const MAX_CORNER_NEIGHBORS =
+        0.55 * calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE);
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -202,11 +212,7 @@ export default async function findScreen(
         return possibleCorners;
     }
 
-    possibleCorners = removeOutliers(
-        possibleCorners,
-        coloredScreenPixels,
-        screenColorHSL
-    );
+    possibleCorners = removeOutliers(possibleCorners);
 
     if (DEBUG) {
         const _canvas = createCanvas(width, height);
@@ -507,11 +513,7 @@ function createConnections(points: Point[]) {
     return connections;
 }
 
-function removeOutliers(
-    possibleCorners: Point[],
-    originalColoredScreenPixels: Uint8ClampedArray,
-    color: IHSLColor
-) {
+function removeOutliers(possibleCorners: Point[]) {
     const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
 
     /**
