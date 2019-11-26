@@ -12,6 +12,7 @@ import { loadImage } from "./scripts/util/images";
 import { BoundingBox } from "./scripts/util/BoundingBox";
 import { flattenOneLevel } from "./scripts/util/arrays";
 import { createImageCanvasForSlave } from "./scripts/util/ImageCutHandler";
+import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -35,26 +36,37 @@ export function resetMaster() {
     const captureOrientationButton = $("#capture-orientation");
     const loadingMasterIndicator = $("#loading-master-indicator");
     const resetButton = $("#reset");
+    const welcomeMaster = $("#welcome-master");
+    const startMasterButton = $("#start-master-button");
+    const mainFlowMaster = $("#main-flow-master");
+    const resultImgContainer = $("#result-img-container");
 
     const uploadImage = $("#upload-image-to-display");
-    const displayBaseImage = $("#display-standard-image");
     const displayImage = $("#display-uploaded-image");
 
+    const {
+        canvas: triangulationCanvas,
+        id: triangulationCanvasID,
+    } = createTriangulationCanvas();
+    welcomeMaster.append(triangulationCanvas);
+
+    mainFlowMaster.hide();
     startButton.hide();
     nextSlaveButton.hide();
     captureSlaveButton.hide();
     showOrientationButton.hide();
-    captureOrientationButton.hide();
     loadingMasterIndicator.hide();
-
+    captureOrientationButton.hide();
+    resultImgContainer.removeAttr("src");
     //@ts-ignore
     $("#welcome-master-no-slave-toast").toast({
         delay: 5000,
         animation: true,
     });
-    const startMasterButton = $("#start-master-button");
-    $("#welcome-master").css("display", "inherit");
+    welcomeMaster.css("display", "inherit");
+
     startMasterButton.off().on("click", () => {
+        triangulationCanvas.remove();
         if (client.slaves.length === 0) {
             //@ts-ignore
             $("#welcome-master-no-slave-toast").toast("show");
@@ -64,8 +76,8 @@ export function resetMaster() {
         //@ts-ignore
         window.slaveFlowHandler = slaveFlowHandler;
 
-        $("#welcome-master").css("display", "none");
-        $("#main-flow-master").css("display", "inherit");
+        welcomeMaster.css("display", "none");
+        mainFlowMaster.css("display", "inherit");
         const player: JQuery<HTMLVideoElement> = $("#player");
         $("#player-overlay").width(player.width());
         $("#player-overlay").height(player.height());
@@ -227,6 +239,13 @@ export function resetMaster() {
 }
 
 $(() => {
+    $(document).keyup(e => {
+        if (e.key === "r") {
+            if (slaveFlowHandler) {
+                slaveFlowHandler.reset();
+            }
+        }
+    });
     resetMaster();
 });
 
@@ -238,7 +257,7 @@ function onConnectionTypeChange(type: ConnectionType) {
         slaveFlowHandler.reset();
     }
     if (client.type == ConnectionType.MASTER) {
-        page.css("background-color", `rgb(77, 154, 227)`);//changing master color to sky blue
+        page.css("background-color", `rgb(77, 154, 227)`); //changing master color to sky blue
         $("#countdown").css("display", "none");
         loadingElem.css("display", "none");
         $("#slave").css("display", "none");
@@ -247,7 +266,7 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#main-flow-master").css("display", "none");
         handleCameraInput();
     } else {
-        page.css("background-color", `rgb(76, 175, 80)`);//changing client color to leprechaun green
+        page.css("background-color", `rgb(76, 175, 80)`); //changing client color to leprechaun green
         loadingElem.css("display", "none");
         $("#master").css("display", "none");
         $("#slave").css("display", "inherit");
