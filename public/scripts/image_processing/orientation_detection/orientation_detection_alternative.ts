@@ -239,7 +239,7 @@ export default function calculateOrientation(
     let counterFlipped = 0;
 
     for (let point of leftUpCoordinates) {
-        leftUpperPixelColor = getHSLColorForPixel(
+        let leftUpperPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
@@ -259,7 +259,7 @@ export default function calculateOrientation(
     }
 
     for (let point of rightUpCoordinates) {
-        rightUpperPixelColor = getHSLColorForPixel(
+        let rightUpperPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
@@ -279,7 +279,7 @@ export default function calculateOrientation(
     }
 
     for (let point of leftUnderCoordinates) {
-        leftUnderPixelColor = getHSLColorForPixel(
+        let leftUnderPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
@@ -300,7 +300,7 @@ export default function calculateOrientation(
 
 
     for (let point of rightUnderCoordinates) {
-        rightUnderPixelColor = getHSLColorForPixel(
+        let rightUnderPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
