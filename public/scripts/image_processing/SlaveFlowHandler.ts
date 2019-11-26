@@ -41,6 +41,9 @@ export default class SlaveFlowHandler {
             client.showColorOnSlave(this.currSlaveID);
         }
         client.color = color;
+        $("#slave-flow-buttons").show();
+        $("#camera").show();
+        $("#display-slave-img-buttons").hide();
         resetMaster();
         this.resetDebug();
     }
