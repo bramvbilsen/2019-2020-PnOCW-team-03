@@ -19,6 +19,7 @@ export enum WorkflowStep {
     REMOVE_ORIENTATION_COLOR = "remove orientation color",
     TAKE_AND_PROCESS_SCREEN = "take image and process slave screen",
     TAKE_AND_PROCESS_ORIENTATION = "take image and process slave orientation",
+    END_CYCLE = "end slave cycle",
     END = "end",
 }
 
@@ -122,6 +123,9 @@ export default class SlaveFlowHandler {
                 break;
             case WorkflowStep.REMOVE_ORIENTATION_COLOR:
                 this.removeOrientationColorOnSlave();
+                break;
+            case WorkflowStep.END_CYCLE:
+                this.endSlaveCycle();
                 break;
             default:
                 console.log(
@@ -298,7 +302,7 @@ export default class SlaveFlowHandler {
     }
 
     removeOrientationColorOnSlave() {
+        this.step = WorkflowStep.END_CYCLE;
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
-        this.endSlaveCycle();
     }
 }
