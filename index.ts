@@ -59,6 +59,13 @@ io.on("connect", (socket: socketio.Socket) => {
         });
     });
 
+    socket.on(SlaveEventTypes.NotifyMasterThatPictureCanBeTaken, _ => {
+        console.log("AUTOMATED: MASTER CAN TAKE PICTURE!");
+        socket
+            .to(connections.masterID)
+            .emit(MasterEventTypes.HandleNextSlaveFlowHanlderStep, {});
+    });
+
     socket.on(
         MasterEventTypes.ChangeSlaveBackgrounds,
         (msg: { [key: string]: string }) => {

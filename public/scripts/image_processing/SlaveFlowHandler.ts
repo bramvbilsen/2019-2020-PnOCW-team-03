@@ -4,12 +4,21 @@ import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
 import calculateOrientation from "./orientation_detection/orientation_detection_alternative";
-import { PREFERRED_CANVAS_HEIGHT, PREFERRED_CANVAS_WIDTH } from "../CONSTANTS";
+import {
+    PREFERRED_CANVAS_HEIGHT,
+    PREFERRED_CANVAS_WIDTH,
+    DEFAULT_NON_COLORED_SLAVE_COLOR,
+} from "../CONSTANTS";
 import { createCameraOverlayWithPoints } from "../util/canvas";
 
 export enum WorkflowStep {
-    START = "initialize",
-    SLAVE_CYCLE = "iterating through slaves",
+    BLANCO_IMAGE = "blanco image",
+    DISPLAY_SCREEN_COLOR = "display screen color",
+    DISPLAY_ORIENTATION_COLOR = "display orientation color",
+    REMOVE_SCREEN_COLOR = "remove screen color",
+    REMOVE_ORIENTATION_COLOR = "remove orientation color",
+    TAKE_AND_PROCESS_SCREEN = "take image and process slave screen",
+    TAKE_AND_PROCESS_ORIENTATION = "take image and process slave orientation",
     END = "end",
 }
 
@@ -21,14 +30,19 @@ export enum WorkflowStep {
 export default class SlaveFlowHandler {
     prevSlaveID: string;
     currSlaveID: string;
+    currSlaveScreenFound = false;
     slaveIDs: string[];
     origSlaveIDs: string[];
     step: WorkflowStep;
     blancoCanvas: HTMLCanvasElement;
     screens: SlaveScreen[] = [];
+    automated: boolean = false;
 
-    constructor() {
-        this.step = WorkflowStep.START;
+    constructor(automated?: boolean) {
+        if (automated) {
+            this.automated = automated;
+        }
+        this.step = WorkflowStep.BLANCO_IMAGE;
     }
 
     public reset() {
@@ -56,8 +70,10 @@ export default class SlaveFlowHandler {
     private endSlaveCycle() {
         this.prevSlaveID = this.currSlaveID;
         if (this.slaveIDs.length !== 0) {
+            this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
             this.currSlaveID = this.slaveIDs.pop();
             $("#next-slave").show();
+            this.currSlaveScreenFound = true;
         } else {
             this.step = WorkflowStep.END;
             $("#slave-flow-buttons").hide();
@@ -74,8 +90,37 @@ export default class SlaveFlowHandler {
         this.currSlaveID = this.slaveIDs.pop();
     }
 
-    takeNoColorPicture() {
+    /**
+     * Only for automated flow
+     */
+    async nextStep() {
+        if (!this.automated) return;
+        switch (this.step) {
+            case WorkflowStep.BLANCO_IMAGE:
+                this.takeNoColorPicture();
+            case WorkflowStep.DISPLAY_SCREEN_COLOR:
+                this.showColorOnNextSlave();
+            case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
+                await this.takePictureOfColoredScreen();
+            case WorkflowStep.REMOVE_SCREEN_COLOR:
+                await this.removeScreenColorOnSlave();
+            case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
+                this.showOrientationOnSlave();
+            case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
+                this.takePictureOfSlaveOrientation();
+            case WorkflowStep.REMOVE_ORIENTATION_COLOR:
+                this.removeOrientationColorOnSlave();
+            default:
+                console.log(
+                    "TRIED EXECUTING UNKOWN/UNWANTED STEP: " + this.step
+                );
+        }
+    }
+
+    async takeNoColorPicture() {
+        this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
         this.initialize();
+        this.currSlaveScreenFound = true;
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
@@ -100,13 +145,16 @@ export default class SlaveFlowHandler {
             cameraHeight * scale
         );
         $("#result-img").attr("src", this.blancoCanvas.toDataURL());
-        this.step = WorkflowStep.SLAVE_CYCLE;
+        if (this.automated) {
+            await this.nextStep();
+        }
     }
 
     /**
      * First we show the color on the slave.
      */
     showColorOnNextSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_SCREEN;
         console.log("Showing color on slave");
         client.showColorOnSlave(this.currSlaveID);
     }
@@ -115,6 +163,7 @@ export default class SlaveFlowHandler {
      * Should be called after `showColorOnNextSlave`.
      */
     async takePictureOfColoredScreen() {
+        this.step = WorkflowStep.REMOVE_SCREEN_COLOR;
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
@@ -144,43 +193,61 @@ export default class SlaveFlowHandler {
             client.DEBUG
         );
 
-        //if no screen found, delete slave from client.slaves.
-        if (corners.length < 4) {
-            let slaveToRemove = client.slaves.indexOf(this.currSlaveID);
-            client.slaves.splice(slaveToRemove, 1);
-            return;
-        }
-
         this.resetDebug();
-        const resultCanvasWithBg = createCameraOverlayWithPoints(
-            corners,
-            cameraWidth,
-            cameraHeight,
-            scale,
-            scaledAlong,
-            this.blancoCanvas
-        );
-        const resultCanvas = createCameraOverlayWithPoints(
-            corners,
-            cameraWidth,
-            cameraHeight,
-            scale,
-            scaledAlong
-        );
-        $("#result-img").attr("src", resultCanvasWithBg.toDataURL());
-        $("#player-overlay").attr("src", resultCanvas.toDataURL());
 
-        this.screens.push(new SlaveScreen(corners, this.currSlaveID));
+        if (corners.length !== 4) {
+            this.currSlaveScreenFound = false;
+        } else {
+            const resultCanvasWithBg = createCameraOverlayWithPoints(
+                corners,
+                cameraWidth,
+                cameraHeight,
+                scale,
+                scaledAlong,
+                this.blancoCanvas
+            );
+            const resultCanvas = createCameraOverlayWithPoints(
+                corners,
+                cameraWidth,
+                cameraHeight,
+                scale,
+                scaledAlong
+            );
+            $("#result-img").attr("src", resultCanvasWithBg.toDataURL());
+            $("#player-overlay").attr("src", resultCanvas.toDataURL());
+            this.screens.push(new SlaveScreen(corners, this.currSlaveID));
+        }
         $("#show-orientation-button").toggle();
         $("#loading-master-indicator").toggle();
+        if (this.automated) {
+            await this.nextStep();
+        }
+    }
+
+    removeScreenColorOnSlave() {
+        this.step = WorkflowStep.DISPLAY_ORIENTATION_COLOR;
+        client.showColorOnSlave(
+            this.currSlaveID,
+            DEFAULT_NON_COLORED_SLAVE_COLOR
+        );
     }
 
     showOrientationOnSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_ORIENTATION;
         console.log("showing or colors");
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
     }
 
-    takePictureOfSlaveOrientation() {
+    async takePictureOfSlaveOrientation() {
+        this.step = WorkflowStep.REMOVE_ORIENTATION_COLOR;
+        if (!this.currSlaveScreenFound) {
+            if (this.automated) {
+                this.nextStep();
+            } else {
+                this.removeOrientationColorOnSlave();
+            }
+            return;
+        }
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
             cameraHeight = player[0].videoHeight;
@@ -210,6 +277,14 @@ export default class SlaveFlowHandler {
         );
         const orientation = calculateOrientation(currScreen, orientationCanvas);
         console.log(currScreen.widthEdge.angleBetweenEndpoints);
+        if (this.automated) {
+            await this.nextStep();
+        } else {
+            this.removeOrientationColorOnSlave();
+        }
+    }
+
+    removeOrientationColorOnSlave() {
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
         this.endSlaveCycle();
     }

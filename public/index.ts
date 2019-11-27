@@ -30,6 +30,7 @@ window.findScreen = findScreen;
 
 export function resetMaster() {
     const startButton = $("#start");
+    const startAutomatedButton = $("#start-automated");
     const nextSlaveButton = $("#next-slave");
     const captureSlaveButton = $("#capture-slave");
     const showOrientationButton = $("#show-orientation-button");
@@ -83,8 +84,16 @@ export function resetMaster() {
         $("#player-overlay").height(player.height());
 
         startButton.show();
+        startAutomatedButton.show();
 
+        startAutomatedButton.off().on("click", () => {
+            slaveFlowHandler.automated = true;
+            startAutomatedButton.hide();
+            startButton.hide();
+            slaveFlowHandler.nextStep();
+        });
         startButton.off().on("click", () => {
+            startAutomatedButton.hide();
             slaveFlowHandler.takeNoColorPicture();
             nextSlaveButton.toggle();
         });
