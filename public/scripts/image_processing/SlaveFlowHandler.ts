@@ -73,7 +73,9 @@ export default class SlaveFlowHandler {
         if (this.slaveIDs.length !== 0) {
             this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
             this.currSlaveID = this.slaveIDs.pop();
-            $("#next-slave").show();
+            if (!this.automated) {
+                $("#next-slave").show();
+            }
             this.currSlaveScreenFound = true;
         } else {
             this.step = WorkflowStep.END;
