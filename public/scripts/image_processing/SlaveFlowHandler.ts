@@ -94,22 +94,35 @@ export default class SlaveFlowHandler {
      * Only for automated flow
      */
     async nextStep() {
+        const wait = async () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => resolve(), 5000);
+            });
+        };
+        await wait();
         if (!this.automated) return;
         switch (this.step) {
             case WorkflowStep.BLANCO_IMAGE:
-                this.takeNoColorPicture();
+                await this.takeNoColorPicture();
+                break;
             case WorkflowStep.DISPLAY_SCREEN_COLOR:
                 this.showColorOnNextSlave();
+                break;
             case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
                 await this.takePictureOfColoredScreen();
+                break;
             case WorkflowStep.REMOVE_SCREEN_COLOR:
-                await this.removeScreenColorOnSlave();
+                this.removeScreenColorOnSlave();
+                break;
             case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
                 this.showOrientationOnSlave();
+                break;
             case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
-                this.takePictureOfSlaveOrientation();
+                await this.takePictureOfSlaveOrientation();
+                break;
             case WorkflowStep.REMOVE_ORIENTATION_COLOR:
                 this.removeOrientationColorOnSlave();
+                break;
             default:
                 console.log(
                     "TRIED EXECUTING UNKOWN/UNWANTED STEP: " + this.step

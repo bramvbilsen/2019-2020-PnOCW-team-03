@@ -5,6 +5,7 @@ import * as path from "path";
 import multer from "multer";
 import Connections from "./server/Connections";
 import handleImageUpload from "./server/handleImageUpload";
+import startListeningForServerCommands from "./server/input";
 import {
     MasterEventTypes,
     SlaveEventTypes,
@@ -24,7 +25,7 @@ const imgFolder = path.resolve(staticFolder + "/img");
 export const htmlFolder = path.resolve(staticFolder + "/html");
 const slaveImgUploadFolder = path.resolve(__dirname + "/server/uploads/slaves");
 
-let connections: Connections = new Connections();
+const connections: Connections = new Connections();
 
 app.use(express.static(staticFolder));
 app.use("/images", express.static(imgFolder));
@@ -189,5 +190,22 @@ io.on("connect", (socket: socketio.Socket) => {
 });
 
 server.listen(port, () => {
-    return console.log(`Server listening on port: ${port}`);
+    console.log(`Server listening on port: ${port}`);
+    startListeningForServerCommands(input => {
+        switch (input) {
+            case "kill_all":
+                if (connections.master) connections.master.disconnect();
+                connections.slaves.forEach(slave => slave.disconnect());
+                console.log("All connections closed");
+                break;
+            case "kill_master":
+                if (connections.master) connections.master.disconnect();
+                console.log("Master connection closed");
+                break;
+            case "kill_slaves":
+                connections.slaves.forEach(slave => slave.disconnect());
+                console.log("Slave connections closed");
+                break;
+        }
+    });
 });
