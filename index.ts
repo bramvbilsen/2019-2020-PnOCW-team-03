@@ -102,7 +102,7 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log(
                     "Attempting to display image by master, imgurl: " +
-                        msg.imgUrl
+                    msg.imgUrl
                 );
                 io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
                     imgUrl: msg.imgUrl,
@@ -194,8 +194,8 @@ server.listen(port, () => {
     startListeningForServerCommands(input => {
         switch (input) {
             case "kill_all":
-                if (connections.master) connections.master.disconnect();
                 connections.slaves.forEach(slave => slave.disconnect());
+                if (connections.master) connections.master.disconnect();
                 console.log("All connections closed");
                 break;
             case "kill_master":
