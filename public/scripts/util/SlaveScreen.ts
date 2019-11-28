@@ -10,6 +10,14 @@ export default class SlaveScreen {
     slaveID: string;
     orientation: number | undefined;
     slavePortionImg: HTMLCanvasElement;
+    triangulation: {
+        //de lijnen die zeker moeten getekend worden
+        angles: Array<{ string: string; point: Point }>;
+        lines: Array<{ string: string; point1: Point; point2: Point }>;
+    } = {
+        angles: [],
+        lines: [],
+    };
 
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;

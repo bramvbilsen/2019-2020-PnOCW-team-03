@@ -179,6 +179,22 @@ io.on("connect", (socket: socketio.Socket) => {
             }
         }
     );
+
+    socket.on(
+        MasterEventTypes.ShowAnimationOnSlave,
+        (msg: {
+            slaveId: string;
+            startTime: any;
+            animationLine: any;
+            angles: any;
+            lines: any;
+            duration: any;
+        }) => {
+            if (socket.id === connections.master.id) {
+                io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
+            }
+        }
+    );
 });
 
 server.listen(port, () => {
