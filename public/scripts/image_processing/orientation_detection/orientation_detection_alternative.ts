@@ -323,18 +323,22 @@ export default function calculateOrientation(
     list.sort();
 
     if(list[0]===counterNormal){
+        console.log(Orientation.NORMAL);
         return Orientation.NORMAL;
     }
 
     if(list[0]===counterCounterClockwise){
+        console.log(Orientation.COUNTERCLOCKWISE);
         return Orientation.COUNTERCLOCKWISE;
     }
 
     if(list[0]===counterFlipped){
+        console.log(Orientation.FLIPPED);
         return Orientation.FLIPPED;
     }
 
     if(list[0]===counterClockwise){
+        console.log(Orientation.CLOCKWISE);
         return Orientation.CLOCKWISE;
     }
 

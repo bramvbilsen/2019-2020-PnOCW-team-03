@@ -13,7 +13,10 @@ export enum SlaveEventTypes {
     ToggleOrientationColors = "toggle-orientation-colors",
     DisplayImage = "display-image",
     DisplayTriangulationOnSlave = "display-triangulation-on-slave",
+    showAnimation = "show-animation",
     NotifyMasterThatPictureCanBeTaken = "notify-master-that-picture-can-be-taken",
+    NotifyMasterThatSlaveScreenIsOn = "notify-master-that-slave-screen-is-on",
+    NotifyMasterThatSlaveOrientationIsOn = "notify-master-that-slave-orientation-is-on",
 }
 
 export enum MasterEventTypes {
@@ -27,5 +30,6 @@ export enum MasterEventTypes {
     DisplayImageOnSlave = "display-image-on-slave",
     SendTriangulationOnSlave = "send-triangulation-on-slave",
     GiveUpMaster = "give-up-master",
+    ShowAnimationOnSlave = "show-animation-on-slave",
     HandleNextSlaveFlowHanlderStep = "handle-next-slave-flow-handler-step",
 }

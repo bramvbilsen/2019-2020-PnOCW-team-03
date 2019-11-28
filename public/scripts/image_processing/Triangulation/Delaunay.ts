@@ -83,7 +83,7 @@ function findbase(left: Triangulation, right: Triangulation) {
             return a.x - b.x;
         } else {
             return a.y - b.y;
-        } 
+        }
     });
     pointsRight.sort(function(a, b) {
         if (a.y - b.y == 0) {
