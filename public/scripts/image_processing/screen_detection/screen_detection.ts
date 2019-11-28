@@ -64,10 +64,10 @@ export default async function findScreen(
         screenColorRGBA.b
     );
 
-    const IMMEDIATE_NEIGHBOR_RANGE = 1;
+    const IMMEDIATE_NEIGHBOR_RANGE = 2;
 
-    const LOST_PIXEL_THRESHOLD_SHORT = 4;
-    const MAX_CORNER_NEIGHBORS = 5;
+    const LOST_PIXEL_THRESHOLD_SHORT = Math.floor(calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE) * 0.35);
+    const MAX_CORNER_NEIGHBORS = Math.floor(calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE) * 0.65);
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -165,7 +165,7 @@ export default async function findScreen(
                     screenColorHSL
                 );
                 if (
-                    coloredNeighbors === LOST_PIXEL_THRESHOLD_SHORT || coloredNeighbors === MAX_CORNER_NEIGHBORS
+                    coloredNeighbors >= LOST_PIXEL_THRESHOLD_SHORT && coloredNeighbors <= MAX_CORNER_NEIGHBORS
                 ) {
                     resultingPixels[linearizedIndex] = screenColorRGBA.r;
                     resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
@@ -280,22 +280,25 @@ export default async function findScreen(
     }
 
     const corners = findFinalCorners(possibleCornerConnections);
+    corners.forEach(corner => {
+        console.log(corner.toString());
+    });
 
     if (DEBUG) {
         const _canvas = createCanvas(width, height);
         _canvas.id = "canvas";
         const _ctx = _canvas.getContext("2d");
         _ctx.fillStyle = "rgb(0, 255, 255)";
-        possibleCorners.forEach(corner => {
+        corners.forEach(corner => {
             _ctx.beginPath();
             _ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
             _ctx.fill();
             _ctx.closePath();
         });
         displayDebugResult(_canvas);
-        console.log("No outliers displayed!");
+        console.log("Displaying final corners!");
         //@ts-ignore
-        while (currentStep !== 4) {
+        while (currentStep !== 7) {
             await wait(250);
         }
     }
@@ -530,7 +533,7 @@ function createConnections(points: Point[]) {
 }
 
 function removeOutliers(possibleCorners: Point[]) {
-    const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
+    const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.15;
 
     /**
      * Keeps an object with the index of the corners as the keys and the longest connection as the value

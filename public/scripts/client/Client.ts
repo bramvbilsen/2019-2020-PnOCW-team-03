@@ -747,6 +747,7 @@ class Client {
         let triangulation: Triangulation = this.calculateTriangulation();
         let points = triangulation.points;
         let currentPoint = points[Math.floor(Math.random() * points.length)];
+        const self = this;
         nextLine(currentPoint, new Date().getTime() + 10); //een beetje tijd voor er gestart wordt
 
         function nextLine(nextPoint: Point, startTime: number) {
@@ -856,7 +857,7 @@ class Client {
                         Math.pow(endPoint.y - startPoint.y, 2)
                     ) / speed;
                 //emit voor elke slave
-                this._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
+                self._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
                     startTime: start,
                     slaveId: slaveID,
                     animationLine: ratioAnimationLine,
@@ -885,7 +886,8 @@ class Client {
                 ) /
                 5 +
                 startTime;
-            nextLine(newPoint, newStartTime);
+            setTimeout(() => nextLine(newPoint, newStartTime), 1000);
+            // nextLine(newPoint, newStartTime);
         }
 
         //juiste info doorsturen + nog een appart voor de animatielijn de juiste orientatie te vinden
