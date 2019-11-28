@@ -1,8 +1,14 @@
 import Point from "../screen_detection/Point";
 import Line from "../screen_detection/Line";
+import SlaveScreen from "../../util/SlaveScreen";
 
 export default class Triangulation {
     line: Line[];
+    slaves: Array<{
+        line: Line;
+        slaves: Array<{ slaveId: string; points: Point[]; orient: string }>;
+    }> = [];
+    middlePoints: Array<{ point: Point; lines: Array<Line> }> = [];
 
     constructor(line: Line[]) {
         this.line = line;
@@ -45,5 +51,27 @@ export default class Triangulation {
 
     remove(line: Line) {
         this.lines.splice(this.lines.indexOf(line), 1);
+    }
+
+    //lijst moet gesorteerd zijn van links naar rechts
+    addSlaves(
+        line: Line,
+        slaves: Array<{ slaveId: string; points: Point[]; orient: string }>
+    ) {
+        this.slaves.push({ line: line, slaves });
+    }
+
+    linkMiddlePointsToLines() {
+        const points = this.points;
+        const lines = this.lines;
+        points.forEach(point => {
+            let linesWithPoint: Line[] = [];
+            lines.forEach(line => {
+                if (line.endPoints.includes(point)) {
+                    linesWithPoint.push(line);
+                }
+            });
+            this.middlePoints.push({ point, lines: linesWithPoint });
+        });
     }
 }
