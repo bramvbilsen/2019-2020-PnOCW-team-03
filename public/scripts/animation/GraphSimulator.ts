@@ -1,5 +1,4 @@
 import Entity from "./Entity";
-import EdgePoint from "./EdgePoint";
 import Line from "../image_processing/screen_detection/Line";
 import Point from "../image_processing/screen_detection/Point";
 
@@ -48,7 +47,7 @@ export default class GraphSimulator {
             if (line.endPoints[1].equals(start)) targets.push(line.endPoints[0]);
         });
 
-        return targets[Math.floor(Math.random() * (targets.length + 1))];
+        return targets.length > 0 ? targets[Math.floor(Math.random() * (targets.length + 1))] : undefined;
     }
 
 }

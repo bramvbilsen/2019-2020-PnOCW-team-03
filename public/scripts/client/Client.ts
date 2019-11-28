@@ -395,11 +395,13 @@ class Client {
                     $("#fullScreen").html(`<div style="font-size:500px;"><center>${t}</center></div>`);
                 } else {
                     $("#loading").css("display", "none");
-                    $("#fullScreen").html('<div style="font-size:500px;"><center>BOOOOOMMM</center></div>');
+                    $("#fullScreen").html('<div style="font-size:500px;"><center>ZO GROOT GENOEG ?!</center></div>');
                     clearinterval();
                     // Restore the counter div
-                    console.log("Restore");
-                    $("#fullScreen").replaceWith('<div id="countdown"></div>');
+                    setTimeout(function () {
+                        console.log("Restore");
+                        $("#fullScreen").replaceWith('<div id="countdown"></div>');
+                    }, 3000);
                 }
             }, 1);
             function clearinterval() {
