@@ -97,6 +97,22 @@ const tests: Tests<number> = {
 
         return { expected: 135, result: angle };
     },
+    "179deg rotation": async function () {
+        const nonRotatedPoints = [
+            new Point(500, 200),
+            new Point(800, 200),
+            new Point(800, 400),
+            new Point(500, 400),
+        ];
+        const corners: Point[] = nonRotatedPoints.map(point => {
+            return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 179);
+        });
+
+        const screen = new SlaveScreen(corners, "1");
+        const angle = screen.widthEdge.angleBetweenEndpoints;
+
+        return { expected: 179, result: angle };
+    },
     "Random rotation": async function () {
         const r = Math.random();
         const nonRotatedPoints = [

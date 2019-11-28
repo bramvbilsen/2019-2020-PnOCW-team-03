@@ -25,6 +25,9 @@ export default class Line {
         );
     }
 
+    /**
+     * Will return an angle between 0 and 179 deg.
+     */
     get angleBetweenEndpoints(): number {
         const sorted = this.endPoints.sort((a, b) => a.x - b.x);
         const a = sorted[0];
