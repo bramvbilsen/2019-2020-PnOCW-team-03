@@ -39,7 +39,8 @@
                     <span id="welcome-master-connected-slaves-amt">0</span>
                     ---
                 </div>
-                <button type="button" title="Start" id="start-master-button" class="btn btn-outline-light thin-font">
+                <button type="button" title="Start" id="start-master-button" class="btn btn-outline-light thin-font"
+                    title="start-master-button">
                     Start
                 </button>
             </div>
@@ -54,24 +55,29 @@
             </div>
             <div id="slave-flow-buttons">
                 <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center;">
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start">
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start"
+                        title="Start screen detection. (screens must be in view of the camera)">
                         <i class="fa fa-camera-retro"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start-automated">
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start-automated"
+                        title="Start automated screen detection. (screens must be in view of the camera)">
                         <i class="fa fa-play"></i>
                     </button>
                 </div>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="next-slave">
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="next-slave"
+                    title="Switch to the next slave.">
                     <i class="fa fa-step-forward"></i>
                 </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-slave">
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-slave"
+                    title="Capture the image of the slave.">
                     <i class="fa fa-camera-retro"></i>
                 </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                    id="show-orientation-button">
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="show-orientation-button"
+                    title="Show the background for orientation detection.">
                     <i class="fa fa-compass"></i>
                 </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-orientation">
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-orientation"
+                    title="Capture the image of the slave.">
                     <i class="fa fa-camera-retro"></i>
                 </button>
                 <div id="loading-master-indicator" class="spinner-grow text-light" role="status">
@@ -80,17 +86,20 @@
             </div>
             <div id="display-slave-img-buttons">
                 <div id="display-slave-img-buttons-content">
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-countdown-button">
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-countdown-button"
+                        title="Display the countdown.">
                         Display countdown
                     </button>
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-unicorn-img-button">
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-unicorn-img-button"
+                        title="Display the standard unicorn image.">
                         Display unicorn
                     </button>
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-master-img-button">
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-master-img-button"
+                        title="Display the image taken from the master's perspective.">
                         Display master image
                     </button>
-                    <button type="button" class="btn btn-danger outlined-button-white"
-                        id="display-delaunay-triangulation-button">
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-delaunay-triangulation-button"
+                        title="Display the delaunay triangulation.">
                         Display triangulation
                     </button>
                 </div>
@@ -98,16 +107,19 @@
                 <!-- Van Liam-->
                 <div id="image-display-buttons">
                     <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                        id="upload-image-to-display">
+                        id="upload-image-to-display"
+                        title="Upload the image to display.">
                         <i class="fa fa-caret-square-up"></i>
                     </button>
                     <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                        id="display-uploaded-image">
+                        id="display-uploaded-image"
+                        title="Display the uploaded image.">
                         <i class="fa fa-tv"></i>
                     </button>
 
                     <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                        id="display-standard-image">
+                        id="display-standard-image"
+                        title="Display the standard image.">
                         <i class="fa fa-database"></i>
                     </button>
                 </div>
