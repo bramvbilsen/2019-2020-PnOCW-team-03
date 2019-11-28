@@ -372,6 +372,10 @@ class Client {
     };
 
     private startCounterEvent = (msg: { startTime: number }): void => {
+        // Destroy the counter div
+        console.log("Destroy");
+        $("#countdown").replaceWith('<div id="fullScreen"></div>');
+
         $("#loading").css("display", "inherit");
         let { startTime } = msg;
         startTime += this.serverTimeDiff;
@@ -388,11 +392,14 @@ class Client {
                 const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
                 if (t > 0) {
-                    $("#countdown").html(`<h2>${t}</h2>`);
+                    $("#fullScreen").html(`<div style="font-size:500px;"><center>${t}</center></div>`);
                 } else {
                     $("#loading").css("display", "none");
-                    $("#countdown").html("<h1>BOOOOOMMM</h1>");
+                    $("#fullScreen").html('<div style="font-size:500px;"><center>BOOOOOMMM</center></div>');
                     clearinterval();
+                    // Restore the counter div
+                    console.log("Restore");
+                    $("#fullScreen").replaceWith('<div id="countdown"></div>');
                 }
             }, 1);
             function clearinterval() {
