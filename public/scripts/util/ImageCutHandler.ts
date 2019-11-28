@@ -190,6 +190,15 @@ function rotateAndDrawImageForSlave(
         `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
     );
     outputIm.attr("src", slaveImg.toDataURL());
+    
+    let dst = [[corners[0].x - globalBoundingBox.topLeft.x, corners[0].y - globalBoundingBox.topLeft.y],
+    [corners[1].x - globalBoundingBox.topLeft.x, corners[1].y - globalBoundingBox.topLeft.y], 
+    [corners[2].x - globalBoundingBox.topLeft.x, corners[2].y - globalBoundingBox.topLeft.y], 
+    [corners[3].x - globalBoundingBox.topLeft.x, corners[3].y - globalBoundingBox.topLeft.y]];
+    let src = [[0, 0], [screenWidth, 0], [screenWidth, screenHeight], [0, screenHeight]];
+    //@ts-ignore
+    window.applyTransform(dst, src, outputIm);
+
     $("#result-img-container").append($("<h3>SLAVE IMAGE</h3>"));
     $("#result-img-container").append(outputIm);
 

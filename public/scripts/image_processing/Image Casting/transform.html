@@ -11,7 +11,7 @@
 <img id="img" src="testfile.png"/>
 <div class="crop">
     <img id="imgoutput" src="testfile.png" />
-</div>
+</div>z
 <canvas id="my-canvas" width="300px" height="200px" >
 <canvas id="canvasoutput" width="300px" height="200px" >
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
@@ -71,10 +71,9 @@ function computeTransform(src, dst) {
 }
 
 // Collect the four corners
-function applyTransform(dst, src) {
+function applyTransform(dst, src, img) {
   if (dst.length == 4) {
     // Once we have all corners, compute the transform.
-    var img = document.getElementById('imgoutput');
     var w = img.width,
         h = img.height;
     var transform = computeTransform(
@@ -82,16 +81,14 @@ function applyTransform(dst, src) {
       src
     );
     
-    document.getElementById('imgoutput').style.transformOrigin = '0 0';
-    document.getElementById('imgoutput').style.transform = transform;
-    document.getElementById('my-canvas').style.transformOrigin = '0 0';
-    document.getElementById('my-canvas').style.transform = transform;
+    img.style.transformOrigin = '0 0';
+    img.style.transform = transform;
 }
 }
 
-var dst = [[133, 12],[ 221, 49], [166, 184], [79, 148]];
+/*var dst = [[133, 12],[ 221, 49], [166, 184], [79, 148]];
 var src = [[0, 0], [300, 0], [300, 200], [0, 200]];
-applyTransform(dst, src);
+applyTransform(dst, src);**/
 
  
 </script>
