@@ -444,10 +444,10 @@ class Client {
                 //voor elke lijn hetzelfde doen
                 let slaveWithLine: {
                     [key: string]: Array<Point>; //string is slaveID
-                };
+                } = {};
                 let orientationslave: {
                     [key: string]: string; //string is slave, othet string is orientation
-                };
+                } = {};
                 for (let i = 0; i < slaves.length; i++) {
                     const slave = slaves[i];
                     const slaveId = slave.slaveID;
