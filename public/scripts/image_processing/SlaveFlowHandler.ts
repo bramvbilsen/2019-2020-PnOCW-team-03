@@ -60,6 +60,9 @@ export default class SlaveFlowHandler {
         $("#camera").show();
         $("#display-slave-img-buttons").hide();
         resetMaster();
+        client.slaves.forEach(slave => {
+            client.showColorOnSlave(slave, { r: 76, g: 175, b: 80, a: 255 });
+        })
         this.resetDebug();
     }
 
@@ -236,6 +239,7 @@ export default class SlaveFlowHandler {
             $("#player-overlay").attr("src", resultCanvas.toDataURL());
             this.screens.push(new SlaveScreen(corners, this.currSlaveID));
         }
+        console.log("Screen found: " + this.currSlaveScreenFound);
         $("#show-orientation-button").toggle();
         $("#loading-master-indicator").toggle();
         if (this.automated) {
@@ -306,5 +310,8 @@ export default class SlaveFlowHandler {
     removeOrientationColorOnSlave() {
         this.step = WorkflowStep.END_CYCLE;
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
+        if (!this.automated) {
+            this.endSlaveCycle();
+        }
     }
 }

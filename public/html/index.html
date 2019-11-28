@@ -1,136 +1,128 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
 
-        <title>Team 3</title>
-        <meta name="description" content="Screen casting app" />
-        <link rel="stylesheet" type="text/css" href="../css/index.css" />
-        <link rel="shortcut icon" href="#" />
-    </head>
+<head>
+    <meta charset="utf-8" />
 
-    <body id="page" style="height: 100vh">
-        <div id="test-results" style="display: none;">
-            <h2>TEST RESULTS</h2>
-            <div id="test-results-text"></div>
-            <div
-                style="width: 100vw; display: flex; align-items: center; flex-direction: column;"
-            >
-                <div>
-                    <h3>Output</h3>
-                </div>
-                <img
-                    id="test-results-visual"
-                    src=""
-                    style="max-width: 100%; max-height: 100%;"
-                />
+    <title>Team 3</title>
+    <meta name="description" content="Screen casting app" />
+    <link rel="stylesheet" type="text/css" href="../css/index.css" />
+    <link rel="shortcut icon" href="#" />
+</head>
+
+<body id="page" style="height: 100vh">
+    <div id="test-results" style="display: none;">
+        <h2>TEST RESULTS</h2>
+        <div id="test-results-text"></div>
+        <div style="width: 100vw; display: flex; align-items: center; flex-direction: column;">
+            <div>
+                <h3>Output</h3>
+            </div>
+            <img id="test-results-visual" src="" style="max-width: 100%; max-height: 100%;" />
+        </div>
+    </div>
+    <div id="countdown"></div>
+    <div id="master" style="display:none;">
+        <div id="welcome-master-no-slave-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body" style="color: black;">
+                Looks like there are no slaves connected yet!
             </div>
         </div>
-        <div id="countdown"></div>
-        <div id="master" style="display:none;">
-            <div
-                id="welcome-master-no-slave-toast"
-                class="toast"
-                role="alert"
-                aria-live="assertive"
-                aria-atomic="true"
-            >
-                <div class="toast-body" style="color: black;">
-                    Looks like there are no slaves connected yet!
+        <div id="welcome-master">
+            <div id="welcome-master-content">
+                <div id="welcome-master-text" class="thin-font">
+                    You are master!
                 </div>
+                <div id="welcome-master-connected-slaves">
+                    --- Connected Slaves:
+                    <span id="welcome-master-connected-slaves-amt">0</span>
+                    ---
+                </div>
+                <button type="button" title="Start" id="start-master-button" class="btn btn-outline-light thin-font">
+                    Start
+                </button>
             </div>
-            <div id="welcome-master">
-                <div id="welcome-master-content">
-                    <div id="welcome-master-text" class="thin-font">
-                        You are master!
-                    </div>
-                    <div id="welcome-master-connected-slaves">
-                        --- Connected Slaves:
-                        <span id="welcome-master-connected-slaves-amt">0</span>
-                        ---
-                    </div>
-                    <button
-                        type="button"
-                        title="Start"
-                        id="start-master-button"
-                        class="btn btn-outline-light thin-font"
-                    >
-                        Start
-                    </button>
-                </div>
+        </div>
+        <div id="main-flow-master">
+            <div class="cameraOutput" id="camera">
+                <video id="player" autoplay></video>
+                <img id="player-overlay" style="opacity: 0.25;">
             </div>
-            <div id="main-flow-master">
-                <div class="cameraOutput" id="camera">
-                    <video id="player" autoplay></video>
-                    <img id="player-overlay" style="opacity: 0.25;">
-                </div>
-                <div id="slave-flow-buttons">
-                    <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center;">
-                        <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start">
-                            <i class="fa fa-camera-retro"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start-automated">
-                            <i class="fa fa-play"></i>
-                        </button>
-                    </div>
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="next-slave">
-                        <i class="fa fa-step-forward"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-slave">
+            <div>
+                <input type="range" id="focus-distance" style="display: none;">
+            </div>
+            <div id="slave-flow-buttons">
+                <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center;">
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start">
                         <i class="fa fa-camera-retro"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="show-orientation-button">
-                        <i class="fa fa-compass"></i>
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start-automated">
+                        <i class="fa fa-play"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-orientation">
-                        <i class="fa fa-camera-retro"></i>
-                    </button>
-                    <div id="loading-master-indicator" class="spinner-grow text-light" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
                 </div>
-                <div id="display-slave-img-buttons">
-                    <div id="display-slave-img-buttons-content">
-                        <button type="button" class="btn btn-danger outlined-button-white" id="display-countdown-button">
-                            Display countdown
-                        </button>
-                        <button type="button" class="btn btn-danger outlined-button-white" id="display-unicorn-img-button">
-                            Display unicorn
-                        </button>
-                        <button type="button" class="btn btn-danger outlined-button-white" id="display-master-img-button">
-                            Display master image
-                        </button>
-                        <button type="button" class="btn btn-danger outlined-button-white" id="display-delaunay-triangulation-button">
-                            Display triangulation
-                        </button>
-                    </div>
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="next-slave">
+                    <i class="fa fa-step-forward"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-slave">
+                    <i class="fa fa-camera-retro"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white"
+                    id="show-orientation-button">
+                    <i class="fa fa-compass"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-orientation">
+                    <i class="fa fa-camera-retro"></i>
+                </button>
+                <div id="loading-master-indicator" class="spinner-grow text-light" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div id="display-slave-img-buttons">
+                <div id="display-slave-img-buttons-content">
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-countdown-button">
+                        Display countdown
+                    </button>
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-unicorn-img-button">
+                        Display unicorn
+                    </button>
+                    <button type="button" class="btn btn-danger outlined-button-white" id="display-master-img-button">
+                        Display master image
+                    </button>
+                    <button type="button" class="btn btn-danger outlined-button-white"
+                        id="display-delaunay-triangulation-button">
+                        Display triangulation
+                    </button>
+                </div>
 
-                    <!-- Van Liam-->
-                    <div id="image-display-buttons">
-                        <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="upload-image-to-display">
-                            <i class="fa fa-caret-square-up"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="display-uploaded-image">
-                            <i class="fa fa-tv"></i>
-                        </button>
-                    
-                        <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="display-standard-image">
-                            <i class="fa fa-database"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="width: 100vw; display: flex; align-items: center; flex-direction: column;">
-                    <div>
-                        <h3>OUTPUT</h3>
-                    </div>
-                    <div id="result-img-container">
-                        <img id="result-img" src="" style="max-width: 100%; max-height: 100%;" />
-                    </div>
+                <!-- Van Liam-->
+                <div id="image-display-buttons">
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white"
+                        id="upload-image-to-display">
+                        <i class="fa fa-caret-square-up"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white"
+                        id="display-uploaded-image">
+                        <i class="fa fa-tv"></i>
+                    </button>
+
+                    <button type="button" class="btn btn-danger btn-circle outlined-button-white"
+                        id="display-standard-image">
+                        <i class="fa fa-database"></i>
+                    </button>
                 </div>
             </div>
-                <!-- <button
+
+            <div style="width: 100vw; display: flex; align-items: center; flex-direction: column;">
+                <div>
+                    <h3>OUTPUT</h3>
+                </div>
+                <div id="result-img-container">
+                    <img id="result-img" src="" style="max-width: 100%; max-height: 100%;" />
+                </div>
+            </div>
+        </div>
+        <!-- <button
                                 class="pink"
                      git            id="Display Pink"
                                 style="vertical-align:middle"
@@ -165,77 +157,62 @@
                             >
                                 <span>Reset</span>
                             </button> -->
-            </div>
-        </div>
-        <div
-            id="slave"
-            style="display:none; width: 100vw; height: 100vh; background-color: transparent;"
-        >
-            <div id="main-flow-slave">
-                <div id="default-slave-state">
-                    <div style="padding-bottom: 20px;">
-                        Waiting on request from master
-                    </div>
-                    <div class="spinner-grow text-light" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
+    </div>
+    </div>
+    <div id="slave" style="display:none; width: 100vw; height: 100vh; background-color: transparent;">
+        <div id="main-flow-slave">
+            <div id="default-slave-state">
+                <div style="padding-bottom: 20px;">
+                    Waiting on request from master
                 </div>
-                <div id="orientation-colors">
-                    <div style="display: flex; width: 100vw; height: 100vh;">
-                        <div
-                            style="display: flex; flex-direction: column; flex: 1"
-                        >
-                            <div
-                                style="flex: 1; background-color: rgb(255, 70, 180);"
-                            ></div>
-                            <div
-                                style="flex: 1; background-color: rgb(255, 216, 0);"
-                            ></div>
-                        </div>
-                        <div
-                            style="display: flex; flex-direction: column; flex: 1"
-                        >
-                            <div
-                                style="flex: 1; background-color: rgb(0, 255, 25);"
-                            ></div>
-                            <div
-                                style="flex: 1; background-color: rgb(12, 0, 255);"
-                            ></div>
-                        </div>
+                <div class="spinner-grow text-light" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            <div id="orientation-colors">
+                <div style="display: flex; width: 100vw; height: 100vh;">
+                    <div style="display: flex; flex-direction: column; flex: 1">
+                        <div style="flex: 1; background-color: rgb(255, 70, 180);"></div>
+                        <div style="flex: 1; background-color: rgb(255, 216, 0);"></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; flex: 1">
+                        <div style="flex: 1; background-color: rgb(0, 255, 25);"></div>
+                        <div style="flex: 1; background-color: rgb(12, 0, 255);"></div>
                     </div>
                 </div>
             </div>
-            <div id="image-container-slave">
-                <img class= "perspectiveImgSlave" id="image-slave" />
-            </div>
         </div>
-        <div
-            id="loading"
-            style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;"
-        >
-            <div class="spinner-grow text-light" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
+        <div id="image-container-slave">
+            <img class="perspectiveImgSlave" id="image-slave" />
         </div>
-        
-        <div id="resources">
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-                crossorigin="anonymous"></script>
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-                integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-                crossorigin="anonymous"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js">
-            </script>
-            <script>
-                window.numeric = numeric;
-            </script>
-            <script src="../bundle.js"></script>
+    </div>
+    <div id="loading" style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;">
+        <div class="spinner-grow text-light" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
-    </body>
+    </div>
+
+    <div id="resources">
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+            crossorigin="anonymous" />
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js">
+        </script>
+        <script>
+            window.numeric = numeric;
+        </script>
+        <script src="../bundle.js"></script>
+    </div>
+</body>
+
 </html>

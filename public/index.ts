@@ -1,4 +1,4 @@
-import handleCameraInput from "./scripts/frontTest";
+import handleCameraInput from "./scripts/camera";
 import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
