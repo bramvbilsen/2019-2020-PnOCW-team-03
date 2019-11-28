@@ -509,7 +509,7 @@ class Client {
                 });
                 triangulation.addSlaves(line, slaveIDs);
             });
-            triangulation.middlePoints;
+            triangulation.linkMiddlePointsToLines();
             return triangulation;
         }
 
