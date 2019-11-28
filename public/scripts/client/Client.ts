@@ -101,6 +101,12 @@ class Client {
                             this.handleSlaveChanges
                         )
                     );
+                    socketIOEmittersForNewType.push(
+                        this._socket.on(
+                            MasterEventTypes.HandleNextSlaveFlowHanlderStep,
+                            this.handleNextSlaveFlowHandlerStep
+                        )
+                    );
                 }
                 this.setNewSocketIOEmitters(socketIOEmittersForNewType);
                 this.onConnectionTypeChange(this.type);
@@ -174,7 +180,10 @@ class Client {
      * This is only permitted if the current `this.type === ConnectionType.MASTER`
      * 	and will thus not send the server request if this is not the case.
      */
-    public showColorOnSlave = (slaveId: string) => {
+    public showColorOnSlave = (
+        slaveId: string,
+        colorToDisplay?: IRGBAColor
+    ) => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
@@ -184,7 +193,7 @@ class Client {
         const { a, ...color } = this.color;
         this._socket.emit(MasterEventTypes.ChangeSlaveBackground, {
             slaveId,
-            color,
+            color: colorToDisplay || color,
         });
     };
 
@@ -304,6 +313,7 @@ class Client {
             "background-color",
             `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
         );
+        this.notifyMasterThatPictureCanBeTaken();
     };
 
     private toggleOrientationColors = (data: {
@@ -320,6 +330,7 @@ class Client {
             this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
         }
         orientationElem.toggle();
+        this.notifyMasterThatPictureCanBeTaken();
     };
 
     private displayArrowUp = (): void => {
@@ -393,6 +404,22 @@ class Client {
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
         $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
+    };
+
+    /**
+     * Go to the next step in the current `SlaveFlowHandler`
+     */
+    public handleNextSlaveFlowHandlerStep = (_: any) => {
+        if (slaveFlowHandler) {
+            slaveFlowHandler.nextStep();
+        }
+    };
+
+    public notifyMasterThatPictureCanBeTaken = () => {
+        this._socket.emit(
+            SlaveEventTypes.NotifyMasterThatPictureCanBeTaken,
+            {}
+        );
     };
 
     public calculateTriangulation = () => {
@@ -600,7 +627,6 @@ class Client {
                 centroid.y -= leftCorner.y;
                 middlePoints.push(centroid);
             });
-            console.log(middlePoints);
             middlePoints.sort(function(a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;

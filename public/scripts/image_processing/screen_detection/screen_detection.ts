@@ -35,6 +35,13 @@ const wait = async (ms: number) => {
     });
 };
 
+const calcNeighborPixelsInRange = (range: number) => {
+    return Array(range)
+        .fill(1)
+        .map((_, index) => 8 * (index + 1))
+        .reduce((a, b) => a + b, 0);
+};
+
 /**
  *
  * @param nonColoredImgPath - Path to image for slave without color.
@@ -57,9 +64,10 @@ export default async function findScreen(
         screenColorRGBA.b
     );
 
-    const IMMEDIATE_NEIGHBOR_RANGE = 3;
-    const LOST_PIXEL_THRESHOLD_SHORT = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.2;
-    const MAX_CORNER_NEIGHBORS = 8 * IMMEDIATE_NEIGHBOR_RANGE * 0.6;
+    const IMMEDIATE_NEIGHBOR_RANGE = 1;
+
+    const LOST_PIXEL_THRESHOLD_SHORT = 4;
+    const MAX_CORNER_NEIGHBORS = 5;
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -72,11 +80,11 @@ export default async function findScreen(
         nonColoredScreenCanvas.getContext("2d")
     );
     const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
@@ -92,11 +100,11 @@ export default async function findScreen(
         coloredScreenCanvas.getContext("2d")
     );
     const coloredScreenPixelData = coloredScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
@@ -115,11 +123,11 @@ export default async function findScreen(
     resultingScreenCtx.fillStyle = "rgb(0, 0, 0)";
     resultingScreenCtx.fillRect(0, 0, width, height);
     const resultingScreenImageData = resultingScreenCtx.getImageData(
-            0,
-            0,
-            width,
-            height
-        ),
+        0,
+        0,
+        width,
+        height
+    ),
         resultingPixels = resultingScreenImageData.data;
 
     let possibleCorners: Point[] = [];
@@ -157,8 +165,7 @@ export default async function findScreen(
                     screenColorHSL
                 );
                 if (
-                    coloredNeighbors > LOST_PIXEL_THRESHOLD_SHORT &&
-                    coloredNeighbors <= MAX_CORNER_NEIGHBORS
+                    coloredNeighbors === LOST_PIXEL_THRESHOLD_SHORT || coloredNeighbors === MAX_CORNER_NEIGHBORS
                 ) {
                     resultingPixels[linearizedIndex] = screenColorRGBA.r;
                     resultingPixels[linearizedIndex + 1] = screenColorRGBA.g;
@@ -202,11 +209,7 @@ export default async function findScreen(
         return possibleCorners;
     }
 
-    possibleCorners = removeOutliers(
-        possibleCorners,
-        coloredScreenPixels,
-        screenColorHSL
-    );
+    possibleCorners = removeOutliers(possibleCorners);
 
     if (DEBUG) {
         const _canvas = createCanvas(width, height);
@@ -277,6 +280,25 @@ export default async function findScreen(
     }
 
     const corners = findFinalCorners(possibleCornerConnections);
+
+    if (DEBUG) {
+        const _canvas = createCanvas(width, height);
+        _canvas.id = "canvas";
+        const _ctx = _canvas.getContext("2d");
+        _ctx.fillStyle = "rgb(0, 255, 255)";
+        possibleCorners.forEach(corner => {
+            _ctx.beginPath();
+            _ctx.arc(corner.x, corner.y, 20, 0, Math.PI * 2);
+            _ctx.fill();
+            _ctx.closePath();
+        });
+        displayDebugResult(_canvas);
+        console.log("No outliers displayed!");
+        //@ts-ignore
+        while (currentStep !== 4) {
+            await wait(250);
+        }
+    }
 
     console.log(+new Date() - +t0 + "ms");
 
@@ -507,11 +529,7 @@ function createConnections(points: Point[]) {
     return connections;
 }
 
-function removeOutliers(
-    possibleCorners: Point[],
-    originalColoredScreenPixels: Uint8ClampedArray,
-    color: IHSLColor
-) {
+function removeOutliers(possibleCorners: Point[]) {
     const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
 
     /**
@@ -582,13 +600,13 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         const connection = sortedPossibleCornersConnections[i];
         if (
             connection.a.distanceTo(firstCornerConnection.a) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.a.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.a) >
-                minDistanceBetweenCorners &&
+            minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.b) >
-                minDistanceBetweenCorners
+            minDistanceBetweenCorners
         ) {
             secondCornerConnection = connection;
             break;

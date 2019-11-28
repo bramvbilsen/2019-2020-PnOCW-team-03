@@ -1,7 +1,7 @@
 //console.log(cornerLabeling([1,3],[3,1.5],[3,3],[1,1]));
 //console.log(cornerLabeling([43,85],[59,60],[60,80],[40,60]));
-console.log(getAngle([1,3],[3,1.5],[3,3],[1,1]));
-console.log(getAngle([43,85],[59,60],[60,80],[40,60]));
+console.log(cornerLabeling([327, 382],[323,461],[171, 458],[176, 379]));
+console.log(cornerLabeling([43,85],[59,60],[60,80],[40,60]));
 
 function cornerLabeling(p1, p2, p3, p4) {
 	var corners = [p1, p2, p3, p4]
