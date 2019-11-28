@@ -193,6 +193,10 @@ export default function calculateOrientation(
     canvas: HTMLCanvasElement
 ) {
 
+    if (screen.corners.length !== 4) {
+        return Orientation.NONE;
+    }
+
     const pixels = canvas
         .getContext("2d")
         .getImageData(0, 0, canvas.width, canvas.height).data;

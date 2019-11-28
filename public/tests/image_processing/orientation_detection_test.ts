@@ -7,7 +7,6 @@ import test_runner, {
     TestResult,
     Tests
 } from "./helpers";
-import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 
 const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;

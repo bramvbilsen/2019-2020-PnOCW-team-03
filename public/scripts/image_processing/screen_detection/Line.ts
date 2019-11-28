@@ -25,11 +25,15 @@ export default class Line {
         );
     }
 
-    get angleBetweenEndpoints() {
+    get angleBetweenEndpoints(): number {
         const sorted = this.endPoints.sort((a, b) => a.x - b.x);
         const a = sorted[0];
         const b = sorted[1];
-        return (Math.atan2(b.x - a.x, -b.y - -a.y) * 180) / Math.PI;
+        let angle = (Math.atan2(b.x - a.x, b.y - a.y) * 180) / Math.PI - 90;
+        if (angle < 0) {
+            angle += 180;
+        }
+        return angle;
     }
 
     lineAbove(line: Line, index: number) {
@@ -47,7 +51,7 @@ export default class Line {
             (this.endPoints[1].x - this.endPoints[0].x);
         if (
             this.endPoints[index].y +
-                rico * (otherPoint.x - this.endPoints[index].x) <
+            rico * (otherPoint.x - this.endPoints[index].x) <
             otherPoint.y
         ) {
             return true;
@@ -94,7 +98,7 @@ export default class Line {
         var middPoint = new Point(solution[0], solution[1]);
         var radius = Math.sqrt(
             Math.pow(this.a.x - middPoint.x, 2) +
-                Math.pow(this.a.y - middPoint.y, 2)
+            Math.pow(this.a.y - middPoint.y, 2)
         );
         var circle = new Circle(middPoint, radius);
         return circle;
