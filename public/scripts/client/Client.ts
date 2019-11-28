@@ -361,27 +361,34 @@ class Client {
     };
 
     private startCounterEvent = (msg: { startTime: number }): void => {
+        // Destroy the counter div
+        console.log("Destroy");
+        $("#countdown").replaceWith('<div id="fullScreen"></div>');
+
         $("#loading").css("display", "inherit");
         let { startTime } = msg;
         startTime += this.serverTimeDiff;
         const eta_ms = startTime - Date.now();
-        setTimeout(function() {
+        setTimeout(function () {
             const elevenseconds = 11000;
             const enddate = new Date(startTime + elevenseconds);
             countdown(enddate.getTime());
         }, eta_ms);
 
         function countdown(endDate: number) {
-            var timer = setInterval(function() {
+            var timer = setInterval(function () {
                 const now = new Date().getTime();
                 const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
                 if (t > 0) {
-                    $("#countdown").html(`<h2>${t}</h2>`);
+                    $("#fullScreen").html(`<div style="font-size:500px;"><center>${t}</center></div>`);
                 } else {
                     $("#loading").css("display", "none");
-                    $("#countdown").html("<h1>BOOOOOMMM</h1>");
+                    $("#fullScreen").html('<div style="font-size:500px;"><center>BOOOOOMMM</center></div>');
                     clearinterval();
+                    // Restore the counter div
+                    console.log("Restore");
+                    $("#fullScreen").replaceWith('<div id="countdown"></div>');
                 }
             }, 1);
             function clearinterval() {
@@ -427,7 +434,7 @@ class Client {
                 centroid.y -= leftCorner.y;
                 middlePoints.push(centroid);
             });
-            middlePoints.sort(function(a, b) {
+            middlePoints.sort(function (a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -465,7 +472,7 @@ class Client {
                 let centroid = slave.centroid;
                 middlePoints.push(centroid);
             });
-            middlePoints.sort(function(a, b) {
+            middlePoints.sort(function (a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -514,7 +521,7 @@ class Client {
         msg.angles.forEach(angle => {
             let radius = Math.sqrt(
                 Math.pow(window.innerWidth / 2, 2) +
-                    Math.pow(window.innerHeight / 2, 2)
+                Math.pow(window.innerHeight / 2, 2)
             );
             ctx.beginPath();
             ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
