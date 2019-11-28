@@ -215,6 +215,12 @@ export default class SlaveFlowHandler {
             client.DEBUG
         );
 
+        console.log("===============");
+        console.log("==========================");
+        corners.forEach(corner => {
+            console.log(corner.toString());
+        });
+
         this.resetDebug();
 
         if (corners.length !== 4) {
@@ -294,9 +300,18 @@ export default class SlaveFlowHandler {
                 cameraHeight * scale
             );
         const currScreen = this.screens[this.screens.length - 1];
+        console.log("==========================");
+        console.log("===============");
+        currScreen.corners.forEach(corner => {
+            console.log(corner.toString());
+        });
         const orientation = calculateOrientation(currScreen, orientationCanvas);
-        // currScreen.orientation = ;
-        console.log(currScreen.widthEdge.angleBetweenEndpoints);
+        console.log("===============");
+        console.log("==========================");
+        currScreen.corners.forEach(corner => {
+            console.log(corner.toString());
+        });
+        currScreen.orientation = currScreen.widthEdge.angleBetweenEndpoints + 90;
         if (this.automated) {
             await this.nextStep();
         } else {

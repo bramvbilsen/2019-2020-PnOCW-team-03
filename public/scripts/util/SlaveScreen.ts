@@ -15,9 +15,9 @@ export default class SlaveScreen {
         angles: Array<{ string: string; point: Point }>;
         lines: Array<{ string: string; point1: Point; point2: Point }>;
     } = {
-        angles: [],
-        lines: [],
-    };
+            angles: [],
+            lines: [],
+        };
 
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;
@@ -163,58 +163,6 @@ export default class SlaveScreen {
             RightUp,
             RightUnder,
         };
-
-        /* 1) LEFT-UPPER & RIGHT-UNDER */
-
-        // let corners = [...this.corners];
-        // const sums = [];
-        // let min = Number.POSITIVE_INFINITY;
-        // let max = Number.NEGATIVE_INFINITY;
-        // let rightUnderIndex, leftUpperIndex;
-        // let rightUpperCoordinate: Point,
-        //     leftUnderCoordinate: Point,
-        //     leftUpperCoordinate: Point,
-        //     rightUnderCoordinate: Point;
-
-        // sums[0] = this.corners[0].x + this.corners[0].y;
-        // sums[1] = this.corners[1].x + this.corners[1].y;
-        // sums[2] = this.corners[2].x + this.corners[2].y;
-        // sums[3] = this.corners[3].x + this.corners[3].y;
-
-        // /* 1) LEFT-UPPER & RIGHT-UNDER */
-        // for (let i = 0; i < sums.length; i++) {
-        //     if (sums[i] >= max) {
-        //         max = sums[i];
-        //         rightUnderCoordinate = corners[i];
-        //     }
-        //     if (sums[i] <= min) {
-        //         min = sums[i];
-        //         leftUpperCoordinate = corners[i];
-        //     }
-        // }
-        // // Remove those two
-        // corners.splice(corners.indexOf(rightUnderCoordinate), 1);
-        // corners.splice(corners.indexOf(leftUpperCoordinate), 1);
-
-        // /* 2) REST */
-        // if (
-        //     corners[0].x - corners[1].x >= 0 &&
-        //     corners[0].y - corners[1].y <= 0
-        // ) {
-        //     rightUpperCoordinate = corners[0];
-        //     leftUnderCoordinate = corners[1];
-        // } else {
-        //     rightUpperCoordinate = corners[1];
-        //     leftUnderCoordinate = corners[0];
-        // }
-
-        // // Is not ideal
-        // return {
-        //     LeftUp: leftUnderCoordinate,
-        //     RightUp: rightUnderCoordinate,
-        //     RightUnder: rightUpperCoordinate,
-        //     LeftUnder: leftUpperCoordinate,
-        // };
     }
 
     public sortCornersByAngle() {

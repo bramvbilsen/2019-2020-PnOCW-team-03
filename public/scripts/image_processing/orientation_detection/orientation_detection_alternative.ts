@@ -199,7 +199,10 @@ export default function calculateOrientation(
 
 
     /**New try with all 4 corners their colors*/
-    let corners = [...screen.corners];
+    let corners: Point[] = [];
+    screen.corners.forEach(corner => {
+        corners.push(corner.copy());
+    });
     let labeledCorners = cornerLabeling(corners[0], corners[1], corners[2], corners[3]);
 
     let leftUpCoordinates: Array<Point> = [];
@@ -320,7 +323,8 @@ export default function calculateOrientation(
     }
 
     let list: Array<number> = [counterClockwise, counterFlipped, counterCounterClockwise, counterNormal];
-    list.sort();
+    list.sort((a, b) => b - a);
+    console.log(list);
 
     if (list[0] === counterNormal) {
         console.log(Orientation.NORMAL);
