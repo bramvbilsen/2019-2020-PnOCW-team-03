@@ -185,7 +185,7 @@ export function resetMaster() {
         $("#display-delaunay-triangulation-button")
             .off()
             .on("click", async () => {
-                const triangCanvas = client.calculateTriangulation();
+                const triangCanvas = client.calculateTriangulationCanvas();
                 const globalBoundingBox = new BoundingBox(
                     flattenOneLevel(
                         slaveFlowHandler.screens.map(screen => screen.corners)

@@ -294,11 +294,8 @@ export default class SlaveFlowHandler {
                 cameraHeight * scale
             );
         const currScreen = this.screens[this.screens.length - 1];
-        currScreen.orientation = getOrientationAngle(
-            currScreen,
-            orientationCanvas
-        );
         const orientation = calculateOrientation(currScreen, orientationCanvas);
+        // currScreen.orientation = ;
         console.log(currScreen.widthEdge.angleBetweenEndpoints);
         if (this.automated) {
             await this.nextStep();

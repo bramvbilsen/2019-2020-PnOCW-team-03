@@ -1,4 +1,4 @@
-import {Orientation} from "./orientations";
+import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
 
 /**
@@ -199,7 +199,7 @@ export default function calculateOrientation(
 
 
     /**New try with all 4 corners their colors*/
-    let corners = screen.corners;
+    let corners = [...screen.corners];
     let labeledCorners = cornerLabeling(corners[0], corners[1], corners[2], corners[3]);
 
     let leftUpCoordinates: Array<Point> = [];
@@ -319,25 +319,25 @@ export default function calculateOrientation(
         }
     }
 
-    let list:Array<number>=[counterClockwise,counterFlipped,counterCounterClockwise,counterNormal];
+    let list: Array<number> = [counterClockwise, counterFlipped, counterCounterClockwise, counterNormal];
     list.sort();
 
-    if(list[0]===counterNormal){
+    if (list[0] === counterNormal) {
         console.log(Orientation.NORMAL);
         return Orientation.NORMAL;
     }
 
-    if(list[0]===counterCounterClockwise){
+    if (list[0] === counterCounterClockwise) {
         console.log(Orientation.COUNTERCLOCKWISE);
         return Orientation.COUNTERCLOCKWISE;
     }
 
-    if(list[0]===counterFlipped){
+    if (list[0] === counterFlipped) {
         console.log(Orientation.FLIPPED);
         return Orientation.FLIPPED;
     }
 
-    if(list[0]===counterClockwise){
+    if (list[0] === counterClockwise) {
         console.log(Orientation.CLOCKWISE);
         return Orientation.CLOCKWISE;
     }
