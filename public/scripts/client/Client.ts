@@ -395,11 +395,13 @@ class Client {
                     $("#fullScreen").html(`<div style="font-size:500px;"><center>${t}</center></div>`);
                 } else {
                     $("#loading").css("display", "none");
-                    $("#fullScreen").html('<div style="font-size:500px;"><center>BOOOOOMMM</center></div>');
+                    $("#fullScreen").html('<div style="font-size:500px;"><center>ZO GROOT GENOEG ?!</center></div>');
                     clearinterval();
                     // Restore the counter div
-                    console.log("Restore");
-                    $("#fullScreen").replaceWith('<div id="countdown"></div>');
+                    setTimeout(function () {
+                        console.log("Restore");
+                        $("#fullScreen").replaceWith('<div id="countdown"></div>');
+                    }, 3000);
                 }
             }, 1);
             function clearinterval() {
@@ -437,7 +439,7 @@ class Client {
                 let centroid = slave.centroid;
                 middlePoints.push(centroid);
             });
-            middlePoints.sort(function(a, b) {
+            middlePoints.sort(function (a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -470,7 +472,7 @@ class Client {
                                 orientatedPoints
                             ).find(key => orientatedPoints[key] === points[0]);
                         } else {
-                            points.sort(function(a, b) {
+                            points.sort(function (a, b) {
                                 //points van links naar reecht(als gelijk van boven naar onder)
                                 if (a.x - b.x == 0) {
                                     return a.y - b.y;
@@ -495,7 +497,7 @@ class Client {
                 }
                 let points: Array<Point[]> = Object.values(slaveWithLine);
                 //sorteren van links naar rechts
-                points.sort(function(a, b) {
+                points.sort(function (a, b) {
                     if (a[0].x - b[0].x == 0) {
                         return a[0].y - b[0].y;
                     } else {
@@ -755,7 +757,7 @@ class Client {
             }).lines;
             let currentLine = //random lijn kiezen om naar toe te gaan
                 potentialLines[
-                    Math.floor(Math.random() * potentialLines.length)
+                Math.floor(Math.random() * potentialLines.length)
                 ];
             let slavesIdWithCurrentLine = slavesLinkedWithLine.find(obj => {
                 return obj.line === currentLine;
@@ -765,7 +767,7 @@ class Client {
             let slaves = slaveFlowHandler.screens;
             slavesIdWithCurrentLine.forEach(slaveId => {
                 slavesWithCurrentLine.push(
-                    slaves.find(function(element) {
+                    slaves.find(function (element) {
                         return element.slaveID == slaveId.slaveId;
                     })
                 );
@@ -838,9 +840,9 @@ class Client {
                     startTime +
                     Math.sqrt(
                         Math.pow(startPoint.x - nextPoint.x, 2) +
-                            Math.pow(startPoint.y - nextPoint.y, 2)
+                        Math.pow(startPoint.y - nextPoint.y, 2)
                     ) /
-                        speed;
+                    speed;
                 //duration berekenen
                 let endPoint: Point;
                 if (animationLine[1] == null) {
@@ -851,7 +853,7 @@ class Client {
                 let duration =
                     Math.sqrt(
                         Math.pow(endPoint.x - startPoint.x, 2) +
-                            Math.pow(endPoint.y - startPoint.y, 2)
+                        Math.pow(endPoint.y - startPoint.y, 2)
                     ) / speed;
                 //emit voor elke slave
                 this._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
@@ -879,9 +881,9 @@ class Client {
             let newStartTime: number =
                 Math.sqrt(
                     Math.pow(nextPoint.x - newPoint.x, 2) +
-                        Math.pow(nextPoint.y - newPoint.y, 2)
+                    Math.pow(nextPoint.y - newPoint.y, 2)
                 ) /
-                    5 +
+                5 +
                 startTime;
             nextLine(newPoint, newStartTime);
         }
@@ -900,32 +902,32 @@ class Client {
                 if (string == "u") {
                     distance = Math.sqrt(
                         Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                            Math.pow(corners.LeftUp.y - corners.RightUp.y, 2)
+                        Math.pow(corners.LeftUp.y - corners.RightUp.y, 2)
                     );
                     distancePoint = Math.sqrt(
                         Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                            Math.pow(element.point.y - corners.LeftUp.y, 2)
+                        Math.pow(element.point.y - corners.LeftUp.y, 2)
                     );
                 } else if (string == "l") {
                     distance = Math.sqrt(
                         Math.pow(corners.LeftUp.x - corners.LeftUnder.x, 2) +
-                            Math.pow(corners.LeftUp.y - corners.LeftUnder.y, 2)
+                        Math.pow(corners.LeftUp.y - corners.LeftUnder.y, 2)
                     );
                     distancePoint = Math.sqrt(
                         Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                            Math.pow(element.point.y - corners.LeftUp.y, 2)
+                        Math.pow(element.point.y - corners.LeftUp.y, 2)
                     );
                 } else if (string == "r") {
                     distance = Math.sqrt(
                         Math.pow(corners.RightUnder.x - corners.RightUp.x, 2) +
-                            Math.pow(
-                                corners.RightUnder.y - corners.RightUp.y,
-                                2
-                            )
+                        Math.pow(
+                            corners.RightUnder.y - corners.RightUp.y,
+                            2
+                        )
                     );
                     distancePoint = Math.sqrt(
                         Math.pow(element.point.x - corners.RightUp.x, 2) +
-                            Math.pow(element.point.y - corners.RightUp.y, 2)
+                        Math.pow(element.point.y - corners.RightUp.y, 2)
                     );
                 } else {
                     distance = Math.sqrt(
@@ -933,14 +935,14 @@ class Client {
                             corners.RightUnder.x - corners.LeftUnder.x,
                             2
                         ) +
-                            Math.pow(
-                                corners.RightUnder.y - corners.LeftUnder.y,
-                                2
-                            )
+                        Math.pow(
+                            corners.RightUnder.y - corners.LeftUnder.y,
+                            2
+                        )
                     );
                     distancePoint = Math.sqrt(
                         Math.pow(element.point.x - corners.LeftUnder.x, 2) +
-                            Math.pow(element.point.y - corners.LeftUnder.y, 2)
+                        Math.pow(element.point.y - corners.LeftUnder.y, 2)
                     );
                 }
                 let ratioNumber = distancePoint / distancePoint;
@@ -974,14 +976,14 @@ class Client {
                                     corners.LeftUp.x - corners.RightUp.x,
                                     2
                                 ) +
-                                    Math.pow(
-                                        corners.LeftUp.y - corners.RightUp.y,
-                                        2
-                                    )
+                                Math.pow(
+                                    corners.LeftUp.y - corners.RightUp.y,
+                                    2
+                                )
                             );
                             distancePoint = Math.sqrt(
                                 Math.pow(point.x - corners.LeftUp.x, 2) +
-                                    Math.pow(point.y - corners.LeftUp.y, 2)
+                                Math.pow(point.y - corners.LeftUp.y, 2)
                             );
                         } else if (string == "l") {
                             distance = Math.sqrt(
@@ -989,14 +991,14 @@ class Client {
                                     corners.LeftUp.x - corners.LeftUnder.x,
                                     2
                                 ) +
-                                    Math.pow(
-                                        corners.LeftUp.y - corners.LeftUnder.y,
-                                        2
-                                    )
+                                Math.pow(
+                                    corners.LeftUp.y - corners.LeftUnder.y,
+                                    2
+                                )
                             );
                             distancePoint = Math.sqrt(
                                 Math.pow(point.x - corners.LeftUp.x, 2) +
-                                    Math.pow(point.y - corners.LeftUp.y, 2)
+                                Math.pow(point.y - corners.LeftUp.y, 2)
                             );
                         } else if (string == "r") {
                             distance = Math.sqrt(
@@ -1004,15 +1006,15 @@ class Client {
                                     corners.RightUnder.x - corners.RightUp.x,
                                     2
                                 ) +
-                                    Math.pow(
-                                        corners.RightUnder.y -
-                                            corners.RightUp.y,
-                                        2
-                                    )
+                                Math.pow(
+                                    corners.RightUnder.y -
+                                    corners.RightUp.y,
+                                    2
+                                )
                             );
                             distancePoint = Math.sqrt(
                                 Math.pow(point.x - corners.RightUp.x, 2) +
-                                    Math.pow(point.y - corners.RightUp.y, 2)
+                                Math.pow(point.y - corners.RightUp.y, 2)
                             );
                         } else {
                             distance = Math.sqrt(
@@ -1020,15 +1022,15 @@ class Client {
                                     corners.RightUnder.x - corners.LeftUnder.x,
                                     2
                                 ) +
-                                    Math.pow(
-                                        corners.RightUnder.y -
-                                            corners.LeftUnder.y,
-                                        2
-                                    )
+                                Math.pow(
+                                    corners.RightUnder.y -
+                                    corners.LeftUnder.y,
+                                    2
+                                )
                             );
                             distancePoint = Math.sqrt(
                                 Math.pow(point.x - corners.LeftUnder.x, 2) +
-                                    Math.pow(point.y - corners.LeftUnder.y, 2)
+                                Math.pow(point.y - corners.LeftUnder.y, 2)
                             );
                         }
                         ratioNumber.push(distancePoint / distancePoint);
@@ -1075,7 +1077,7 @@ class Client {
         let startTime = msg.startTime;
         startTime += this.serverTimeDiff; //syncen
         const eta_ms = startTime - Date.now();
-        setTimeout(function() {
+        setTimeout(function () {
             const enddate = new Date(startTime + msg.duration);
             animation(
                 enddate.getTime(),
@@ -1170,7 +1172,7 @@ class Client {
         ) {
             let x: number = startPoint.x;
             let y: number = startPoint.y;
-            var timer = setInterval(function() {
+            var timer = setInterval(function () {
                 const canvas = createCanvas(
                     window.innerWidth,
                     window.innerHeight
