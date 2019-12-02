@@ -1147,8 +1147,8 @@ class Client {
         directionx /= msg.duration; // pixels/40 ms
         directiony /= msg.duration;
 
-        directionx *= 40;
-        directiony *= 40;
+        directionx *= 100;
+        directiony *= 100;
 
         // directionx *= msg.duration / 1000;
         // directiony *= msg.duration / 1000;
@@ -1299,7 +1299,7 @@ class Client {
                     $("#image-slave").attr("src", canvas.toDataURL());
                     clearinterval();
                 }
-            }, 40);
+            }, 100);
             function clearinterval() {
                 clearInterval(timer);
             }
