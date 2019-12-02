@@ -18,6 +18,7 @@ import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
+import testu from "./animation";
 
 const {
     checkIntersection,
@@ -845,11 +846,12 @@ class Client {
                 }
                 let start =
                     startTime +
-                    Math.sqrt(
+                    (Math.sqrt(
                         Math.pow(startPoint.x - nextPoint.x, 2) +
                             Math.pow(startPoint.y - nextPoint.y, 2)
                     ) /
-                        speed;
+                        speed) *
+                        1000;
                 //duration berekenen
                 let endPoint: Point;
                 if (animationLine[1] == null) {
@@ -858,10 +860,12 @@ class Client {
                     endPoint = animationLine[1];
                 }
                 let duration =
-                    Math.sqrt(
+                    (Math.sqrt(
                         Math.pow(endPoint.x - startPoint.x, 2) +
                             Math.pow(endPoint.y - startPoint.y, 2)
-                    ) / speed;
+                    ) /
+                        speed) *
+                    1000;
                 //emit voor elke slave
                 self._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
                     startTime: start,
@@ -1077,8 +1081,8 @@ class Client {
         let length_direction = Math.sqrt(
             Math.pow(directionx, 2) + Math.pow(directiony, 2)
         );
-        directionx /= length_direction * 1000;
-        directiony /= length_direction * 1000;
+        directionx /= msg.duration;
+        directiony /= msg.duration;
 
         let startPoint = slaveAnimationLine[0];
         //wachten tot de animatie start
@@ -1228,6 +1232,9 @@ class Client {
                 clearInterval(timer);
             }
         }
+    };
+    public testen = () => {
+        testu();
     };
 }
 
