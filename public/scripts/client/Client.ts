@@ -1144,8 +1144,8 @@ class Client {
         let length_direction = Math.sqrt(
             Math.pow(directionx, 2) + Math.pow(directiony, 2)
         );
-        directionx /= msg.duration; // pixels/ms
-        directiony /= msg.duration;
+        directionx /= msg.duration * 40; // pixels/40 ms
+        directiony /= msg.duration * 40;
 
         // directionx *= msg.duration / 1000;
         // directiony *= msg.duration / 1000;
@@ -1296,7 +1296,7 @@ class Client {
                     $("#image-slave").attr("src", canvas.toDataURL());
                     clearinterval();
                 }
-            }, directionx / msg.duration);
+            }, 40);
             function clearinterval() {
                 clearInterval(timer);
             }
