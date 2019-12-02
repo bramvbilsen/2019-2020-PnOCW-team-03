@@ -55,7 +55,7 @@ function rotateAndDrawImageForSlave(
 
 
 
-    const screenCenter = screen.centroid;
+    const screenCenter = screen.centroid.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y);
     const translatedAndRotatedCorners = {
         LeftUp: rotatePointAroundAnchor(screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
         RightUp: rotatePointAroundAnchor(screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
@@ -68,6 +68,8 @@ function rotateAndDrawImageForSlave(
 
     const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const rotatedImgCtx = rotatedImg.getContext("2d");
+    console.log("ANGLE: " + screen.angle);
+    console.log("CENTER: " + screen.centroid);
     if (screen.angle !== 0) {
         rotatedImgCtx.translate(screenCenter.x, screenCenter.y);
         rotatedImgCtx.rotate(degreesToRadians(screen.angle));

@@ -294,7 +294,6 @@ const tests: Tests<number> = {
             ),
             "0"
         );
-        slaveScreen0.widthEdge = new Line(new Point(x0 + 50, y0), new Point(x0 + width0, y0));
 
         const globalBoundingBox = new BoundingBox([
             ...slaveScreen0.corners,

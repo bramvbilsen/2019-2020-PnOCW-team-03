@@ -19,8 +19,6 @@ export default class SlaveScreen {
             lines: [],
         };
 
-    widthEdge: Line;
-
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;
         this.slaveID = slaveID;
@@ -71,12 +69,35 @@ export default class SlaveScreen {
      */
     get angle(): number {
         const normalAngle = this.heightEdge.angleBetweenEndpoints;
-        if (this.orientation === Orientation.FLIPPED) {
+        if (this.orientation === Orientation.FLIPPED || this.orientation === Orientation.COUNTERCLOCKWISE) {
             return normalAngle + 180;
         }
         return normalAngle;
     }
 
+    // TODO: This should be fixed because it won't work for portrait oriented devices.
+    /**
+     * Edge representing the width of the screen
+     */
+    get widthEdge(): Line {
+        this.sortCornersByAngle();
+        const edgeA = new Line(this.corners[0], this.corners[1]);
+        const edgeB = new Line(this.corners[1], this.corners[2]);
+        const edgeC = new Line(this.corners[2], this.corners[3]);
+        const edgeD = new Line(this.corners[3], this.corners[0]);
+        const longestLength = Math.max(
+            edgeA.length,
+            edgeB.length,
+            edgeC.length,
+            edgeD.length
+        );
+        if (edgeA.length === longestLength) return edgeA;
+        if (edgeB.length === longestLength) return edgeB;
+        if (edgeC.length === longestLength) return edgeC;
+        if (edgeD.length === longestLength) return edgeD;
+    }
+
+    // TODO: This should be fixed because it won't work for portrait oriented devices.
     /**
      * Edge representing the height of the screen
      */
@@ -86,8 +107,13 @@ export default class SlaveScreen {
         const edgeB = new Line(this.corners[1], this.corners[2]);
         const edgeC = new Line(this.corners[2], this.corners[3]);
         const edgeD = new Line(this.corners[3], this.corners[0]);
-        const widthLength = this.widthEdge.length;
-        if (widthLength === edgeA.length || widthLength === edgeC.length) {
+        const width = Math.max(
+            edgeA.length,
+            edgeB.length,
+            edgeC.length,
+            edgeD.length
+        );
+        if (width === edgeA.length || width === edgeC.length) {
             const longestLength = Math.max(edgeB.length, edgeD.length);
             if (longestLength === edgeB.length) return edgeB;
             if (longestLength === edgeD.length) return edgeD;

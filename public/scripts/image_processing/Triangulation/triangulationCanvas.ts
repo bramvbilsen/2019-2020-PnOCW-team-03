@@ -10,6 +10,7 @@ export default () => {
     const clickedPoints: Point[] = [];
 
     canvas.addEventListener("click", (e: MouseEvent) => {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
         const boundingRect = canvas.getBoundingClientRect();
         const x = e.clientX - boundingRect.left;
         const y = e.clientY - boundingRect.top;
