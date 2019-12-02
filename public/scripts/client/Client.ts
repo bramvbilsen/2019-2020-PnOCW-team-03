@@ -1133,6 +1133,10 @@ class Client {
         ])[0]; //-> volgorde is de doorloopszin
         let slaveAngles: Array<Point> = ratioToPointsAngle(msg.angles);
         let slaveLines: Array<Point[]> = ratioToPointsLine(msg.lines);
+        console.log(slaveAngles);
+        console.log(slaveAnimationLine);
+        console.log(window.innerWidth / 2);
+        console.log(window.innerHeight / 2);
         //slavaAnimation omzetten naar een aangrijpingspunt met richting en deltax
         let directionx = slaveAnimationLine[1].x - slaveAnimationLine[0].x;
         let directiony = slaveAnimationLine[1].y - slaveAnimationLine[0].y;
