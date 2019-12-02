@@ -15,6 +15,7 @@ export enum SlaveEventTypes {
     DisplayTriangulationOnSlave = "display-triangulation-on-slave",
     showAnimation = "show-animation",
     NotifyMasterThatPictureCanBeTaken = "notify-master-that-picture-can-be-taken",
+    NotifyMasterThatCreeperCanStart = "notify-master-that-creeper-can-start",
     NotifyMasterThatSlaveScreenIsOn = "notify-master-that-slave-screen-is-on",
     NotifyMasterThatSlaveOrientationIsOn = "notify-master-that-slave-orientation-is-on",
 }

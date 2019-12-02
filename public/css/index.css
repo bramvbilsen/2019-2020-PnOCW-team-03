@@ -82,7 +82,7 @@ img {
 }
 
 #image-slave {
-    width: 100%;
+	height: 100vh;
 }
 
 #orientation-colors {
@@ -150,6 +150,7 @@ video {
 }
 
 #fullScreen {
+	background-color: rgb(76, 175, 80);
     position:fixed;
     padding:0;
     margin:0;
