@@ -1146,6 +1146,9 @@ class Client {
         directionx /= length_direction;
         directiony /= length_direction;
 
+        directionx *= 42;
+        directiony *= 42;
+
         let startPoint = slaveAnimationLine[0];
         //wachten tot de animatie start
         let startTime = msg.startTime;
