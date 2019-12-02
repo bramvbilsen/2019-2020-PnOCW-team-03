@@ -1182,8 +1182,8 @@ class Client {
             slaveAngles: Array<Point>,
             slaveLines: Array<Point[]>
         ) {
-            let x: number = startPoint.x;
-            let y: number = startPoint.y;
+            let x: number = window.innerWidth / 2;
+            let y: number = window.innerHeight / 2;
             var timer = setInterval(function() {
                 const canvas = createCanvas(
                     window.innerWidth,
@@ -1220,8 +1220,8 @@ class Client {
                     ctx.beginPath();
                     ctx.arc(x, y, 30, 0, 2 * Math.PI);
                     ctx.stroke();
-                    x += directionx;
-                    y += directiony;
+                    x += 0.5;
+                    //y += directiony;
                     $("#image-slave").attr("src", canvas.toDataURL());
                 } else {
                     //nu geen cirkel meer tekenenen
