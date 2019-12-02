@@ -15,6 +15,7 @@ import Point from "../../scripts/image_processing/screen_detection/Point";
 import { BoundingBox } from "../../scripts/util/BoundingBox";
 import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 import { getCentroidOf } from "../../scripts/util/shapes";
+import Line from "../../scripts/image_processing/screen_detection/Line";
 
 export default function run_tests(
     onNewResult: (testResult: TestResult) => void,
@@ -276,7 +277,7 @@ const tests: Tests<number> = {
         const height0 = 400;
         const rotation0 = 0;
         const corners0 = [
-            new Point(x0, y0 + 50),
+            new Point(x0 + 50, y0),
             new Point(x0 + width0, y0),
             new Point(x0 + width0, y0 + height0),
             new Point(x0, y0 + height0),
@@ -293,7 +294,7 @@ const tests: Tests<number> = {
             ),
             "0"
         );
-        console.log("Rotation 0: " + rotation0);
+        slaveScreen0.widthEdge = new Line(new Point(x0 + 50, y0), new Point(x0 + width0, y0));
 
         const globalBoundingBox = new BoundingBox([
             ...slaveScreen0.corners,

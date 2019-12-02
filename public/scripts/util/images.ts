@@ -35,7 +35,7 @@ export function scaleAndCutImageToBoundingBoxAspectRatio(
 
 export function scaleAndCutBoundingBoxToImgAspectRatio(
     img: HTMLHtmlElement,
-    globalBoundingBox: BoundingBox): HTMLHtmlCanvasElement {
+    globalBoundingBox: BoundingBox) {
     const canvas = createCanvas(img.clientWidth, img.clientHeight);
     const ctx = canvas.getContext("2d");
 

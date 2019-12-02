@@ -1,5 +1,6 @@
-import {Orientation} from "./orientations";
+import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
+import Point from "../screen_detection/Point";
 
 /**
  * Initializing constants
@@ -39,22 +40,6 @@ const colors = [
     rightUnderColor,
     leftUnderColor,
 ];
-
-class Point {
-    x: number;
-    y: number;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    distanceTo(point: Point) {
-        return Math.sqrt(
-            Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2)
-        );
-    }
-}
 
 
 function getHSLColorForPixel(
@@ -131,7 +116,7 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
     return { h: h * 360, s: s * 100, l: l * 100 };
 }
 
-export function getWidthEdgePoints(left:Point, right:Point) {
+export function getWidthEdgePoints(left: Point, right: Point) {
     return [left, right];
 }
 /**
@@ -193,13 +178,13 @@ function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
 export default function calculateOrientation(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
-):{orientation: Orientation,leftWidthPoint:Point,rightWidthPoint:Point} {
+): { orientation: Orientation, leftWidthPoint: Point, rightWidthPoint: Point } {
 
     if (screen.corners.length !== 4) {
-        let p1:Point = new Point(0,0);
-        let p2:Point = new Point(0,0);
+        let p1: Point = new Point(0, 0);
+        let p2: Point = new Point(0, 0);
         let orientation = Orientation.NONE;
-        return {orientation, leftWidthPoint:undefined, rightWidthPoint:undefined};
+        return { orientation, leftWidthPoint: undefined, rightWidthPoint: undefined };
     }
 
     const pixels = canvas
@@ -331,8 +316,8 @@ export default function calculateOrientation(
         }
     }
 
-    const leftWidthPoint:Point = null;
-    const rightWidthPoint:Point = null;
+    const leftWidthPoint: Point = null;
+    const rightWidthPoint: Point = null;
 
     let list: Array<number> = [counterClockwise, counterFlipped, counterCounterClockwise, counterNormal];
     list.sort((a, b) => b - a);
