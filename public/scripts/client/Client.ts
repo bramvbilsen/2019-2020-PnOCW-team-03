@@ -796,7 +796,7 @@ class Client {
     public showAnimationOnSlaves = () => {
         //ook eerst naar slaves juiste lijnen emitten -> nog doen
         let triangulation: Triangulation = this.calculateTriangulation();
-        let points = triangulation.points;
+        let points = triangulation.points.map(point => point.copy());
         let currentPoint = points[Math.floor(Math.random() * points.length)];
         const self = this;
         nextLine(currentPoint, new Date().getTime() + 5000); //een beetje tijd voor er gestart wordt
@@ -858,7 +858,7 @@ class Client {
                 let animation = slavesIdWithCurrentLine.find(obj => {
                     return obj.slaveId === slaveID;
                 });
-                let animationLine = animation.points; //de orientatiestring zit hier niet meer bij
+                let animationLine = animation.points.map(point => point.copy()); //de orientatiestring zit hier niet meer bij
                 let animationOrient = animation.orient;
                 if (animationLine.length == 1) {
                     animationLine.unshift(null); //null gaat overeenkomen met middelpunt
