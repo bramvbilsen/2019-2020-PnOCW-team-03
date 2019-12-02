@@ -41,6 +41,20 @@ function rotateAndDrawImageForSlave(
     screen: SlaveScreen,
     imgCanvas: HTMLCanvasElement
 ): HTMLCanvasElement {
+
+    // const translatedCorners = {
+    //     LeftUp: screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+    //     RightUp: screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+    //     RightUnder: screen.sortedCorners.RightUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+    //     LeftUnder: screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+    // }
+    // const src: [Point, Point, Point, Point] = [translatedCorners.LeftUp, translatedCorners.RightUp, translatedCorners.RightUnder, translatedCorners.LeftUnder];
+
+    // const css3DMatrix = create3DMatrix(src, dst);
+
+
+
+
     const screenCenter = screen.centroid;
     const translatedAndRotatedCorners = {
         LeftUp: rotatePointAroundAnchor(screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
@@ -49,16 +63,14 @@ function rotateAndDrawImageForSlave(
         LeftUnder: rotatePointAroundAnchor(screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
     }
 
-    // const screenCenter = translatedAndRotatedScreen.centroid;
     const screenWidth = screen.width;
     const screenHeight = screen.height;
 
-    // Rotate the image to the same rotation as the screen
     const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const rotatedImgCtx = rotatedImg.getContext("2d");
     if (screen.angle !== 0) {
         rotatedImgCtx.translate(screenCenter.x, screenCenter.y);
-        rotatedImgCtx.rotate(degreesToRadians(screen.angle + 45));
+        rotatedImgCtx.rotate(degreesToRadians(screen.angle));
         rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
     }
     rotatedImgCtx.drawImage(imgCanvas, 0, 0);
@@ -113,21 +125,21 @@ function rotateAndDrawImageForSlave(
     $("#test-results").append(outputIm);
 
 
-    const cornersWithoutPerspective = new BoundingBox((Object.values(translatedAndRotatedCorners)));
+    // const cornersWithoutPerspective = new BoundingBox((Object.values(translatedAndRotatedCorners)));
 
-    const src: [Point, Point, Point, Point] = [translatedAndRotatedCorners.LeftUp, translatedAndRotatedCorners.RightUp, translatedAndRotatedCorners.RightUnder, translatedAndRotatedCorners.LeftUnder];
-    const dst: [Point, Point, Point, Point] = [cornersWithoutPerspective.topLeft, cornersWithoutPerspective.topRight, cornersWithoutPerspective.bottomRight, cornersWithoutPerspective.bottomLeft];
-    console.log("src: " + src);
-    console.log("dst: " + dst);
-    const css3DMatrix = create3DMatrix(src, dst);
-    const imgWithPerspective: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
-    imgWithPerspective.attr("src", maskedImg.toDataURL());
-    imgWithPerspective.css("transform", css3DMatrix);
-    imgWithPerspective.css("transformOrigin", "0 0");
-    $("#result-img-container").append($("<h3>IMG WITH PERSPECTIVE</h3>"));
-    $("#result-img-container").append(imgWithPerspective);
-    $("#result-img-container").append($("<h3>IMG WITH PERSPECTIVE</h3>"));
-    $("#test-results").append(imgWithPerspective);
+    // const src: [Point, Point, Point, Point] = [translatedAndRotatedCorners.LeftUp, translatedAndRotatedCorners.RightUp, translatedAndRotatedCorners.RightUnder, translatedAndRotatedCorners.LeftUnder];
+    // const dst: [Point, Point, Point, Point] = [cornersWithoutPerspective.topLeft, cornersWithoutPerspective.topRight, cornersWithoutPerspective.bottomRight, cornersWithoutPerspective.bottomLeft];
+    // console.log("src: " + src);
+    // console.log("dst: " + dst);
+    // const css3DMatrix = create3DMatrix(src, dst);
+    // const imgWithPerspective: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    // imgWithPerspective.attr("src", maskedImg.toDataURL());
+    // imgWithPerspective.css("transform", css3DMatrix);
+    // imgWithPerspective.css("transformOrigin", "0 0");
+    // $("#result-img-container").append($("<h3>IMG WITH PERSPECTIVE</h3>"));
+    // $("#result-img-container").append(imgWithPerspective);
+    // $("#result-img-container").append($("<h3>IMG WITH PERSPECTIVE</h3>"));
+    // $("#test-results").append(imgWithPerspective);
 
     const slaveImg = createCanvas(screenWidth, screenHeight);
     const slaveImgCtx = slaveImg.getContext("2d");
