@@ -4,6 +4,7 @@ import Triangulation from "./Triangulation";
 import Circle from "./Circle";
 var gauss = require("gaussian-elimination");
 
+//TODO laatste bug er uit halen
 //punten moeten geordend worden volgens dit
 //cd.sort(function(a,b) {
 //  if (a.x-b.x == 0) {
