@@ -2,17 +2,12 @@ import { createCanvas } from "../../scripts/image_processing/screen_detection/sc
 import calculateOrientation from "../../scripts/image_processing/orientation_detection/orientation_detection_alternative";
 import SlaveScreen from "../../scripts/util/SlaveScreen";
 import Point from "../../scripts/image_processing/screen_detection/Point";
-import {Orientation} from "../../scripts/image_processing/orientation_detection/orientations";
+import { Orientation } from "../../scripts/image_processing/orientation_detection/orientations";
 import test_runner, {
-    isCorrectPoints,
-    createRectangularScreensCanvas,
-    rotatePointsAroundCenter,
     TestResult,
-    Tests,
-    pinkRGBA,
+    Tests
 } from "./helpers";
 
-const ORIENTATION_OFFSET_THRESHOLD = 50;
 const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;
 const topLeftColor = "rgb(255, 70, 180)";
@@ -48,8 +43,9 @@ const tests: Tests<Orientation> = {
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
         blancoCtx.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         calculateOrientation(new SlaveScreen([], "1"), blancoCanvas);
-        return { expected: Orientation.NONE, result: Orientation.NONE};
+        return { expected: Orientation.NONE, result: Orientation.NONE };
     },
+
     "Points but no colored screen": async function () {
         const blancoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blancoCanvas.getContext("2d");
@@ -66,11 +62,11 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.NONE, result: Orientation.NONE };
     },
-    
-    "CounterClockwise orientation":async function(){
+
+    "CounterClockwise orientation": async function () {
         const blancoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blancoCanvas.getContext("2d");
         blancoCtx.fillStyle = "rgb(255, 255, 255)";
@@ -127,7 +123,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.COUNTERCLOCKWISE, result };
     },
 
@@ -154,7 +150,7 @@ const tests: Tests<Orientation> = {
             points[3].x / 2,
             points[3].y / 2
         );
-        orientationColorsCtx.fillStyle =topRightColor;
+        orientationColorsCtx.fillStyle = topRightColor;
         orientationColorsCtx.fillRect(
             points[1].x,
             points[1].y / 2,
@@ -188,11 +184,10 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.FLIPPED, result };
     },
 
-    
     "Normal orientation": async function () {
         const blancoCanvas = createCanvas(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         const blancoCtx = blancoCanvas.getContext("2d");
@@ -250,7 +245,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.NORMAL, result };
     },
 
@@ -311,7 +306,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.NORMAL, result };
     },
 };

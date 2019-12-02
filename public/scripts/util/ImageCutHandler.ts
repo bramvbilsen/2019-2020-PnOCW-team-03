@@ -3,8 +3,10 @@ import { scaleAndCutImageToBoundingBoxAspectRatio } from "./images";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import SlaveScreen from "./SlaveScreen";
 import { degreesToRadians, rotatePointAroundAnchor } from "./angles";
-import { calculateBoundingBox } from "./shapes";
 import Point from "../image_processing/screen_detection/Point";
+import create3DMatrix from "../image_processing/Image Casting/perspective";
+import convexHull from "../image_processing/screen_detection/hull";
+import { sortCorners } from "./shapes";
 
 /**
  * Creates/cuts images to display on slaves
@@ -39,97 +41,62 @@ function rotateAndDrawImageForSlave(
     screen: SlaveScreen,
     imgCanvas: HTMLCanvasElement
 ): HTMLCanvasElement {
-    const screenCenter = new Point(
-        screen.centroid.x - globalBoundingBox.topLeft.x,
-        screen.centroid.y - globalBoundingBox.topLeft.y
-    );
+    const screenCenter = screen.centroid;
+    const translatedAndRotatedCorners = {
+        LeftUp: rotatePointAroundAnchor(screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
+        RightUp: rotatePointAroundAnchor(screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
+        RightUnder: rotatePointAroundAnchor(screen.sortedCorners.RightUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
+        LeftUnder: rotatePointAroundAnchor(screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
+    }
+
+    // const screenCenter = translatedAndRotatedScreen.centroid;
     const screenWidth = screen.width;
     const screenHeight = screen.height;
-
-    // TODO: DELETE THIS!!!!
-    screen.orientation = 0;
 
     // Rotate the image to the same rotation as the screen
     const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const rotatedImgCtx = rotatedImg.getContext("2d");
-    rotatedImgCtx.translate(screenCenter.x, screenCenter.y);
-    rotatedImgCtx.rotate(degreesToRadians(screen.orientation));
-    rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
+    if (screen.angle !== 0) {
+        rotatedImgCtx.translate(screenCenter.x, screenCenter.y);
+        rotatedImgCtx.rotate(degreesToRadians(screen.angle + 45));
+        rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
+    }
     rotatedImgCtx.drawImage(imgCanvas, 0, 0);
-    let outputIm = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    let outputIm: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
     outputIm.attr("src", rotatedImg.toDataURL());
     $("#result-img-container").append($("<h3>ROTATED IMG</h3>"));
     $("#result-img-container").append(outputIm);
+    $("#test-results").append($("<h3>ROTATED IMG</h3>"));
+    $("#test-results").append(outputIm);
 
-    const sortedCorners = screen.sortedCorners;
-    sortedCorners.LeftUp = rotatePointAroundAnchor(
-        sortedCorners.LeftUp,
-        screen.centroid,
-        -screen.orientation
-    );
-    sortedCorners.RightUp = rotatePointAroundAnchor(
-        sortedCorners.RightUp,
-        screen.centroid,
-        -screen.orientation
-    );
-    sortedCorners.LeftUnder = rotatePointAroundAnchor(
-        sortedCorners.LeftUnder,
-        screen.centroid,
-        -screen.orientation
-    );
-    sortedCorners.RightUnder = rotatePointAroundAnchor(
-        sortedCorners.RightUnder,
-        screen.centroid,
-        -screen.orientation
-    );
-
-    // Rotate the screen to have a 0deg angle.
-    screen.sortCornersByAngle();
-    const corners = screen.corners.map(corner =>
-        rotatePointAroundAnchor(corner, screenCenter, -screen.orientation)
-    );
     const slaveScreenMask = createCanvas(imgCanvas.width, imgCanvas.height);
     const slaveScreenMaskCtx = slaveScreenMask.getContext("2d");
     slaveScreenMaskCtx.beginPath();
     slaveScreenMaskCtx.moveTo(
-        corners[0].x - globalBoundingBox.topLeft.x,
-        corners[0].y - globalBoundingBox.topLeft.y
+        translatedAndRotatedCorners.LeftUp.x,
+        translatedAndRotatedCorners.LeftUp.y
     );
     slaveScreenMaskCtx.lineTo(
-        corners[1].x - globalBoundingBox.topLeft.x,
-        corners[1].y - globalBoundingBox.topLeft.y
+        translatedAndRotatedCorners.RightUp.x,
+        translatedAndRotatedCorners.RightUp.y
     );
     slaveScreenMaskCtx.lineTo(
-        corners[2].x - globalBoundingBox.topLeft.x,
-        corners[2].y - globalBoundingBox.topLeft.y
+        translatedAndRotatedCorners.RightUnder.x,
+        translatedAndRotatedCorners.RightUnder.y
     );
     slaveScreenMaskCtx.lineTo(
-        corners[3].x - globalBoundingBox.topLeft.x,
-        corners[3].y - globalBoundingBox.topLeft.y
+        translatedAndRotatedCorners.LeftUnder.x,
+        translatedAndRotatedCorners.LeftUnder.y
     );
     slaveScreenMaskCtx.fill();
-    const cD = createCanvas(imgCanvas.width, imgCanvas.height);
-    const cDctx = cD.getContext("2d");
-    cDctx.drawImage(slaveScreenMask, 0, 0);
-    cDctx.fillStyle = "rgb(255, 0, 0)";
-    cDctx.beginPath();
-    cDctx.arc(
-        sortedCorners.LeftUnder.x - globalBoundingBox.topLeft.x,
-        sortedCorners.LeftUnder.y - globalBoundingBox.topLeft.y,
-        20,
-        0,
-        Math.PI * 2
-    );
-    cDctx.fill();
-    cDctx.closePath();
     outputIm = $(
         `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
     );
-    outputIm.attr("src", cD.toDataURL());
-    $("#result-img-container").append(
-        $("<h3>SLAVE SCREEN MASK WITH CORNER</h3>")
-    );
+    outputIm.attr("src", slaveScreenMask.toDataURL());
+    $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
     $("#result-img-container").append(outputIm);
+    $("#test-results").append($("<h3>SCREEN MASK</h3>"));
+    $("#test-results").append(outputIm);
 
     const maskedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const maskedImgCtx = maskedImg.getContext("2d");
@@ -142,43 +109,32 @@ function rotateAndDrawImageForSlave(
     outputIm.attr("src", maskedImg.toDataURL());
     $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
     $("#result-img-container").append(outputIm);
+    $("#test-results").append($("<h3>MASKED IMG</h3>"));
+    $("#test-results").append(outputIm);
 
-    const topLeft = sortedCorners.LeftUp;
 
-    //@ts-ignore
-    // window.transform(
-    //     maskedImg,
-    //     topLeft.x - globalBoundingBox.topLeft.x,
-    //     topLeft.y - globalBoundingBox.topLeft.y,
-    //     sortedCorners.RightUp.x - globalBoundingBox.topLeft.x,
-    //     sortedCorners.RightUp.y - globalBoundingBox.topLeft.y,
-    //     sortedCorners.LeftUnder.x - globalBoundingBox.topLeft.x,
-    //     sortedCorners.LeftUnder.y - globalBoundingBox.topLeft.y,
-    //     sortedCorners.RightUnder.x - globalBoundingBox.topLeft.x,
-    //     sortedCorners.RightUnder.y - globalBoundingBox.topLeft.y,
+    const cornersWithoutPerspective = new BoundingBox((Object.values(translatedAndRotatedCorners)));
 
-    //     topLeft.x - globalBoundingBox.topLeft.x,
-    //     topLeft.y - globalBoundingBox.topLeft.y,
-    //     topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
-    //     topLeft.y - globalBoundingBox.topLeft.y,
-    //     topLeft.x - globalBoundingBox.topLeft.x,
-    //     topLeft.y + screenHeight - globalBoundingBox.topLeft.y,
-    //     topLeft.x + screenWidth - globalBoundingBox.topLeft.x,
-    //     topLeft.y + screenHeight - globalBoundingBox.topLeft.y
-    // );
-    // outputIm = $(
-    //     `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
-    // );
-    // outputIm.attr("src", maskedImg.toDataURL());
-    // $("#result-img-container").append($("<h3>TRANSFORMED VIA OPEN CV</h3>"));
-    // $("#result-img-container").append(outputIm);
+    const src: [Point, Point, Point, Point] = [translatedAndRotatedCorners.LeftUp, translatedAndRotatedCorners.RightUp, translatedAndRotatedCorners.RightUnder, translatedAndRotatedCorners.LeftUnder];
+    const dst: [Point, Point, Point, Point] = [cornersWithoutPerspective.topLeft, cornersWithoutPerspective.topRight, cornersWithoutPerspective.bottomRight, cornersWithoutPerspective.bottomLeft];
+    console.log("src: " + src);
+    console.log("dst: " + dst);
+    const css3DMatrix = create3DMatrix(src, dst);
+    const imgWithPerspective: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    imgWithPerspective.attr("src", maskedImg.toDataURL());
+    imgWithPerspective.css("transform", css3DMatrix);
+    imgWithPerspective.css("transformOrigin", "0 0");
+    $("#result-img-container").append($("<h3>IMG WITH PERSPECTIVE</h3>"));
+    $("#result-img-container").append(imgWithPerspective);
+    $("#result-img-container").append($("<h3>IMG WITH PERSPECTIVE</h3>"));
+    $("#test-results").append(imgWithPerspective);
 
     const slaveImg = createCanvas(screenWidth, screenHeight);
     const slaveImgCtx = slaveImg.getContext("2d");
     slaveImgCtx.drawImage(
         maskedImg,
-        screen.topLeftCorner.x - globalBoundingBox.topLeft.x,
-        screen.topLeftCorner.y - globalBoundingBox.topLeft.y,
+        translatedAndRotatedCorners.LeftUp.x,
+        translatedAndRotatedCorners.LeftUp.y,
         screenWidth,
         screenHeight,
         0,
@@ -190,17 +146,11 @@ function rotateAndDrawImageForSlave(
         `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
     );
     outputIm.attr("src", slaveImg.toDataURL());
-    
-    let dst = [[corners[0].x - globalBoundingBox.topLeft.x, corners[0].y - globalBoundingBox.topLeft.y],
-    [corners[1].x - globalBoundingBox.topLeft.x, corners[1].y - globalBoundingBox.topLeft.y], 
-    [corners[2].x - globalBoundingBox.topLeft.x, corners[2].y - globalBoundingBox.topLeft.y], 
-    [corners[3].x - globalBoundingBox.topLeft.x, corners[3].y - globalBoundingBox.topLeft.y]];
-    let src = [[0, 0], [screenWidth, 0], [screenWidth, screenHeight], [0, screenHeight]];
-    //@ts-ignore
-    window.applyTransform(dst, src, outputIm);
 
     $("#result-img-container").append($("<h3>SLAVE IMAGE</h3>"));
     $("#result-img-container").append(outputIm);
+    $("#test-results").append($("<h3>SLAVE IMAGE</h3>"));
+    $("#test-results").append(outputIm);
 
     return slaveImg;
 }

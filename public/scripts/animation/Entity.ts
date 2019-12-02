@@ -14,7 +14,7 @@ export default class Entity {
     }
 
     distanceTo(entity: Entity) {
-        return Math.sqrt(Math.pow(entity.x() - this.x(), 2) + Math.pow(entity.y() - this.y(), 2));
+        return this.point.distanceTo(entity.point);
     }
 
     toString() {
@@ -53,7 +53,7 @@ export default class Entity {
 
         let movement: number = this.speed * deltaTime;
         if (movement > distance) {
-            this.point = this.target;
+            this.point = this.target.copy();
             this.target = undefined;
         } else {
             this.point.x += xDirection * movement;

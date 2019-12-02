@@ -19,6 +19,8 @@ export function rotatePointAroundAnchor(
     anchorPoint: Point,
     angle: number
 ) {
+    if (angle === 0) return pointToRotate.copy();
+    angle = -angle;
     const rotatedX =
         Math.cos(degreesToRadians(angle)) * (pointToRotate.x - anchorPoint.x) -
         Math.sin(degreesToRadians(angle)) * (pointToRotate.y - anchorPoint.y) +

@@ -295,3 +295,7 @@ export class Screen {
         return new Screen(topLeft, topRight, bottomLeft, bottomRight);
     }
 }
+
+export function numberCompare(a: number, b: number, delta: number) {
+    return Math.abs(a - b) <= delta;
+}

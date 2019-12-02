@@ -10,6 +10,7 @@ import {
     DEFAULT_NON_COLORED_SLAVE_COLOR,
 } from "../CONSTANTS";
 import { createCameraOverlayWithPoints } from "../util/canvas";
+import Line from "./screen_detection/Line";
 
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
@@ -215,6 +216,12 @@ export default class SlaveFlowHandler {
             client.DEBUG
         );
 
+        console.log("===============");
+        console.log("==========================");
+        corners.forEach(corner => {
+            console.log(corner.toString());
+        });
+
         this.resetDebug();
 
         if (corners.length !== 4) {
@@ -294,9 +301,9 @@ export default class SlaveFlowHandler {
                 cameraHeight * scale
             );
         const currScreen = this.screens[this.screens.length - 1];
-        const orientation = calculateOrientation(currScreen, orientationCanvas);
-        // currScreen.orientation = ;
-        console.log(currScreen.widthEdge.angleBetweenEndpoints);
+        const { orientation, leftWidthPoint, rightWidthPoint } = calculateOrientation(currScreen, orientationCanvas);
+        currScreen.orientation = orientation;
+        currScreen.widthEdge = new Line(leftWidthPoint, rightWidthPoint);
         if (this.automated) {
             await this.nextStep();
         } else {

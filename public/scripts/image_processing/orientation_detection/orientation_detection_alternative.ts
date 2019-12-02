@@ -1,5 +1,6 @@
 import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
+import Point from "../screen_detection/Point";
 
 /**
  * Initializing constants
@@ -39,22 +40,6 @@ const colors = [
     rightUnderColor,
     leftUnderColor,
 ];
-
-class Point {
-    x: number;
-    y: number;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    distanceTo(point: Point) {
-        return Math.sqrt(
-            Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2)
-        );
-    }
-}
 
 
 function getHSLColorForPixel(
@@ -131,7 +116,9 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
     return { h: h * 360, s: s * 100, l: l * 100 };
 }
 
-
+export function getWidthEdgePoints(left: Point, right: Point) {
+    return [left, right];
+}
 /**
  * Label all the corners
  */
@@ -191,7 +178,14 @@ function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
 export default function calculateOrientation(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
-) {
+): { orientation: Orientation, leftWidthPoint: Point, rightWidthPoint: Point } {
+
+    if (screen.corners.length !== 4) {
+        let p1: Point = new Point(0, 0);
+        let p2: Point = new Point(0, 0);
+        let orientation = Orientation.NONE;
+        return { orientation, leftWidthPoint: undefined, rightWidthPoint: undefined };
+    }
 
     const pixels = canvas
         .getContext("2d")
@@ -199,7 +193,10 @@ export default function calculateOrientation(
 
 
     /**New try with all 4 corners their colors*/
-    let corners = [...screen.corners];
+    let corners: Point[] = [];
+    screen.corners.forEach(corner => {
+        corners.push(corner.copy());
+    });
     let labeledCorners = cornerLabeling(corners[0], corners[1], corners[2], corners[3]);
 
     let leftUpCoordinates: Array<Point> = [];
@@ -319,27 +316,60 @@ export default function calculateOrientation(
         }
     }
 
+    const leftWidthPoint: Point = null;
+    const rightWidthPoint: Point = null;
+
     let list: Array<number> = [counterClockwise, counterFlipped, counterCounterClockwise, counterNormal];
-    list.sort();
+    list.sort((a, b) => b - a);
+    console.log(list);
+
 
     if (list[0] === counterNormal) {
         console.log(Orientation.NORMAL);
-        return Orientation.NORMAL;
+        let leftWidthPoint = labeledCorners.LeftUp;
+        let rightWidthPoint = labeledCorners.RightUp;
+        let orientation = Orientation.NORMAL;
+        return {
+            orientation,
+            leftWidthPoint,
+            rightWidthPoint,
+        }
     }
 
     if (list[0] === counterCounterClockwise) {
         console.log(Orientation.COUNTERCLOCKWISE);
-        return Orientation.COUNTERCLOCKWISE;
+        let leftWidthPoint = labeledCorners.LeftUnder;
+        let rightWidthPoint = labeledCorners.LeftUp;
+        let orientation = Orientation.COUNTERCLOCKWISE;
+        return {
+            orientation,
+            leftWidthPoint,
+            rightWidthPoint,
+        }
     }
 
     if (list[0] === counterFlipped) {
         console.log(Orientation.FLIPPED);
-        return Orientation.FLIPPED;
+        let leftWidthPoint = labeledCorners.LeftUnder;
+        let rightWidthPoint = labeledCorners.RightUnder;
+        let orientation = Orientation.FLIPPED
+        return {
+            orientation,
+            leftWidthPoint,
+            rightWidthPoint,
+        }
     }
 
     if (list[0] === counterClockwise) {
         console.log(Orientation.CLOCKWISE);
-        return Orientation.CLOCKWISE;
+        let leftWidthPoint = labeledCorners.RightUp;
+        let rightWidthPoint = labeledCorners.RightUnder;
+        let orientation = Orientation.CLOCKWISE
+        return {
+            orientation,
+            leftWidthPoint,
+            rightWidthPoint,
+        }
     }
 
 }
