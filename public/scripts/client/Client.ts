@@ -960,7 +960,7 @@ class Client {
                     Math.pow(nextPoint.x - newPoint.x, 2) +
                         Math.pow(nextPoint.y - newPoint.y, 2)
                 ) / 0.05;
-            setTimeout(() => nextLine(newPoint, newStartTime), 8000);
+            setTimeout(() => nextLine(newPoint, newStartTime), 15000);
             // nextLine(newPoint, newStartTime);
         }
 
