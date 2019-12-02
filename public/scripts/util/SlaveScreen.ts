@@ -1,14 +1,14 @@
 import Point from "../image_processing/screen_detection/Point";
 import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
-import { rotatePointsAroundCenter } from "../../tests/image_processing/helpers";
-import { radiansToDegrees } from "./angles";
-import { amountOfNeighboringPixelsWithColor } from "../image_processing/screen_detection/screen_detection";
+import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
+import { Orientation } from "../image_processing/orientation_detection/orientations";
+import { sortCorners } from "./shapes";
 
 export default class SlaveScreen {
     corners: Point[];
     slaveID: string;
-    orientation: number | undefined;
+    orientation: Orientation | undefined;
     slavePortionImg: HTMLCanvasElement;
     triangulation: {
         //de lijnen die zeker moeten getekend worden
@@ -62,6 +62,17 @@ export default class SlaveScreen {
         } else {
             return Math.max(edgeA.length, edgeC.length);
         }
+    }
+
+    /**
+     * Returns the angle in degrees.
+     */
+    get angle(): number {
+        const normalAngle = this.heightEdge.angleBetweenEndpoints;
+        if (this.orientation === Orientation.FLIPPED) {
+            return normalAngle + 180;
+        }
+        return normalAngle;
     }
 
     // TODO: This should be fixed because it won't work for portrait oriented devices.
@@ -129,40 +140,7 @@ export default class SlaveScreen {
         RightUnder: Point;
         LeftUnder: Point;
     } {
-        //sorteer
-        const corners = [...this.corners];
-        corners.sort((a, b) => {
-            const res = a.x - b.x;
-            if (res === 0) {
-                return a.y - b.y;
-            }
-            return res;
-        });
-        let LeftUp: Point;
-        let RightUp: Point;
-        let RightUnder: Point;
-        let LeftUnder: Point;
-        if (corners[0].y < corners[1].y) {
-            LeftUp = corners[0];
-            LeftUnder = corners[1];
-        } else {
-            LeftUp = corners[1];
-            LeftUnder = corners[0];
-        }
-        if (corners[2].y < corners[3].y) {
-            RightUp = corners[2];
-            RightUnder = corners[3];
-        } else {
-            RightUp = corners[3];
-            RightUnder = corners[2];
-        }
-
-        return {
-            LeftUp,
-            LeftUnder,
-            RightUp,
-            RightUnder,
-        };
+        return sortCorners(this.corners);
     }
 
     public sortCornersByAngle() {

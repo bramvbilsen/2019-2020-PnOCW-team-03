@@ -1,5 +1,3 @@
-import { createCanvas } from "../../scripts/image_processing/screen_detection/screen_detection";
-import calculateOrientation from "../../scripts/image_processing/orientation_detection/orientation_detection_alternative";
 import SlaveScreen from "../../scripts/util/SlaveScreen";
 import Point from "../../scripts/image_processing/screen_detection/Point";
 import test_runner, {
@@ -9,9 +7,6 @@ import test_runner, {
 } from "./helpers";
 import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 import { getCentroidOf } from "../../scripts/util/shapes";
-
-const DEFAULT_WIDTH = 1280;
-const DEFAULT_HEIGHT = 720;
 
 export default function run_tests(
     onNewResult: (testResult: TestResult) => void,
@@ -44,7 +39,7 @@ const tests: Tests<number> = {
         ]
         const screen = new SlaveScreen(corners, "1");
         console.log(screen.widthEdge);
-        const angle = screen.widthEdge.angleBetweenEndpoints;
+        const angle = screen.angle;
 
         return { expected: 0, result: angle };
     },
@@ -61,7 +56,7 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        const angle = screen.widthEdge.angleBetweenEndpoints;
+        const angle = screen.angle;
 
         return { expected: 90, result: angle };
     },
@@ -77,7 +72,7 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        const angle = screen.widthEdge.angleBetweenEndpoints;
+        const angle = screen.angle;
 
         return { expected: 45, result: angle };
     },
@@ -93,7 +88,7 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        const angle = screen.widthEdge.angleBetweenEndpoints;
+        const angle = screen.angle;
 
         return { expected: 135, result: angle };
     },
@@ -109,7 +104,7 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        const angle = screen.widthEdge.angleBetweenEndpoints;
+        const angle = screen.angle;
 
         return { expected: 179, result: angle };
     },
@@ -126,7 +121,7 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        const angle = screen.widthEdge.angleBetweenEndpoints;
+        const angle = screen.angle;
 
         return { expected: r * 180, result: angle };
     }

@@ -311,7 +311,7 @@ export default class SlaveFlowHandler {
         currScreen.corners.forEach(corner => {
             console.log(corner.toString());
         });
-        currScreen.orientation = currScreen.widthEdge.angleBetweenEndpoints + 90;
+        currScreen.orientation = orientation;
         if (this.automated) {
             await this.nextStep();
         } else {

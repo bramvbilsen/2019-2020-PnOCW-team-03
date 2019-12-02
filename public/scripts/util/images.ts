@@ -30,6 +30,5 @@ export function scaleAndCutImageToBoundingBoxAspectRatio(
     );
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0, globalBoundingBox.width, globalBoundingBox.height);
-    $("#test-results-visual").attr("src", canvas.toDataURL());
     return canvas;
 }

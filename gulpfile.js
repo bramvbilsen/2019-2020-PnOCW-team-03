@@ -1,4 +1,4 @@
-const WAITING_TIME_MS = 50000;
+const WAITING_TIME_MS = 12000;
 
 const gulp = require("gulp");
 const browserify = require("browserify");
@@ -21,7 +21,7 @@ Object.keys(_args).forEach(arg => {
 
 // ------ SERVER ------ //
 
-const tsPaths_server = ["./**/*.ts", "!./public/**/*.ts"];
+const tsPaths_server = ["./**/*.ts", "!./public/**/*.ts", "!./node_modules"];
 const nonTsPaths_server = [
     "./**/*.*",
     "!gulpfile*",
@@ -72,7 +72,7 @@ gulp.task("Set production env", function(done) {
 
 // ------ CLIENT ------ //
 
-const tsPaths_client = ["./public/**/*.ts"];
+const tsPaths_client = ["./public/**/*.ts", "!./public/node_modules"];
 const nonTsPaths_client = [
     "./public/**/*.*",
     "!./public/build/**/*.*",

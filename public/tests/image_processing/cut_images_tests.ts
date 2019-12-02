@@ -190,61 +190,113 @@ const tests: Tests<number> = {
 
     //     return { expected: 0, result: 0 };
     // },
-    "Two screens rotated": async () => {
-        // const x0 = 1266;
-        // const y0 = 1012;
-        // const width = 1500;
-        // const height = 1000;
-        const x0 = 0;
+    // "Two screens rotated": async () => {
+    //     const x0 = 50;
+    //     const y0 = 0;
+    //     const width0 = 500;
+    //     const height0 = 400;
+    //     const rotation0 = 0;
+    //     const corners0 = [
+    //         new Point(x0, y0),
+    //         new Point(x0 + width0, y0),
+    //         new Point(x0 + width0, y0 + height0),
+    //         new Point(x0, y0 + height0),
+    //     ];
+    //     const x1 = 200;
+    //     const y1 = 150;
+    //     const width1 = 1280;
+    //     const height1 = 720;
+    //     const rotation1 = 20;
+    //     const corners1 = [
+    //         new Point(x1, y1),
+    //         new Point(x1 + width1, y1),
+    //         new Point(x1 + width1, y1 + height1),
+    //         new Point(x1, y1 + height1),
+    //     ];
+
+    //     const slaveScreen0 = new SlaveScreen(
+    //         corners0.map(corner => {
+    //             return rotatePointAroundAnchor(
+    //                 corner,
+    //                 getCentroidOf(corners0),
+    //                 rotation0
+    //             )
+    //         }
+    //         ),
+    //         "0"
+    //     );
+    //     console.log("Rotation 0: " + rotation0);
+
+    //     const slaveScreen1 = new SlaveScreen(
+    //         corners1.map(corner => {
+    //             return rotatePointAroundAnchor(
+    //                 corner,
+    //                 getCentroidOf(corners1),
+    //                 rotation1
+    //             )
+    //         }
+    //         ),
+    //         "1"
+    //     );
+    //     console.log("Rotation 1: " + rotation1);
+
+    //     const globalBoundingBox = new BoundingBox([
+    //         ...slaveScreen0.corners,
+    //         ...slaveScreen1.corners,
+    //     ]);
+    //     const img = await loadImage(
+    //         "http://localhost:3000/images/unicorn.jpeg"
+    //     );
+    //     const imgCanvas = createCanvas(img.width, img.height);
+    //     const imgCtx = imgCanvas.getContext("2d");
+    //     imgCtx.drawImage(img, 0, 0);
+
+
+    //     const resultCanvas0 = createImageCanvasForSlave(
+    //         globalBoundingBox,
+    //         slaveScreen0,
+    //         imgCanvas
+    //     );
+    //     const resultCanvas1 = createImageCanvasForSlave(
+    //         globalBoundingBox,
+    //         slaveScreen1,
+    //         imgCanvas
+    //     );
+
+    //     const testResultCanvas = createCanvasWithResults([[slaveScreen0, resultCanvas0], [slaveScreen1, resultCanvas1]], globalBoundingBox.width, globalBoundingBox.height)
+
+    //     $("#test-results-visual").attr("src", testResultCanvas.toDataURL());
+
+    //     return { expected: 0, result: 0 };
+    // },
+    "Perspective rotated": async () => {
+        const x0 = 50;
         const y0 = 0;
         const width0 = 500;
-        const height0 = 500;
+        const height0 = 400;
         const rotation0 = 0;
         const corners0 = [
-            new Point(x0, y0),
+            new Point(x0, y0 + 50),
             new Point(x0 + width0, y0),
             new Point(x0 + width0, y0 + height0),
             new Point(x0, y0 + height0),
         ];
-        const x1 = 500;
-        const y1 = 20;
-        const width1 = 1280;
-        const height1 = 720;
-        const rotation1 = 0;
-        const corners1 = [
-            new Point(x1, y1),
-            new Point(x1 + width1, y1),
-            new Point(x1 + width1, y1 + height1),
-            new Point(x1, y1 + height1),
-        ];
 
         const slaveScreen0 = new SlaveScreen(
-            corners0.map(corner =>
-                rotatePointAroundAnchor(
+            corners0.map(corner => {
+                return rotatePointAroundAnchor(
                     corner,
                     getCentroidOf(corners0),
                     rotation0
                 )
+            }
             ),
             "0"
         );
-        slaveScreen0.orientation = rotation0;
-
-        const slaveScreen1 = new SlaveScreen(
-            corners1.map(corner =>
-                rotatePointAroundAnchor(
-                    corner,
-                    getCentroidOf(corners1),
-                    rotation1
-                )
-            ),
-            "1"
-        );
-        slaveScreen1.orientation = rotation1;
+        console.log("Rotation 0: " + rotation0);
 
         const globalBoundingBox = new BoundingBox([
             ...slaveScreen0.corners,
-            ...slaveScreen1.corners,
         ]);
         const img = await loadImage(
             "http://localhost:3000/images/unicorn.jpeg"
@@ -253,63 +305,49 @@ const tests: Tests<number> = {
         const imgCtx = imgCanvas.getContext("2d");
         imgCtx.drawImage(img, 0, 0);
 
-        const testResultCanvas = createCanvas(
-            globalBoundingBox.width,
-            globalBoundingBox.height
-        );
-        const testResultCtx = testResultCanvas.getContext("2d");
-        testResultCtx.fillStyle = "rgb(0,0,0)";
-        testResultCtx.fillRect(
-            0,
-            0,
-            testResultCanvas.width,
-            testResultCanvas.height
-        );
+
         const resultCanvas0 = createImageCanvasForSlave(
             globalBoundingBox,
             slaveScreen0,
             imgCanvas
         );
-        const resultCanvas1 = createImageCanvasForSlave(
-            globalBoundingBox,
-            slaveScreen1,
-            imgCanvas
-        );
 
-        testResultCtx.drawImage(
-            resultCanvas0,
-            slaveScreen0.boundingBox.topLeft.x,
-            slaveScreen0.boundingBox.topLeft.y
-        );
-        testResultCtx.drawImage(
-            resultCanvas1,
-            slaveScreen1.boundingBox.topLeft.x,
-            slaveScreen1.boundingBox.topLeft.y
-        );
+        const testResultCanvas = createCanvasWithResults([[slaveScreen0, resultCanvas0]], globalBoundingBox.width, globalBoundingBox.height)
+
         $("#test-results-visual").attr("src", testResultCanvas.toDataURL());
 
         return { expected: 0, result: 0 };
     },
 };
 
-function createSlaveScreens(
-    screensCorners: Array<Point[]>,
-    rotations: number[]
-): SlaveScreen[] {
-    const screens: SlaveScreen[] = [];
-    screensCorners.forEach((screenCorners, index) => {
-        const screen = new SlaveScreen(
-            screenCorners.map(corner =>
-                rotatePointAroundAnchor(
-                    corner,
-                    getCentroidOf(screenCorners),
-                    rotations[index]
-                )
-            ),
-            ((Math.random() * 10000) % 1000).toString()
+function createCanvasWithResults(results: Array<[SlaveScreen, HTMLCanvasElement]>, width: number, height: number) {
+    const canvas = createCanvas(
+        width,
+        height
+    );
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    results.forEach((result) => {
+        const screen = result[0];
+        const resCanvas = result[1];
+        const screenCenter = screen.centroid;
+        ctx.translate(screenCenter.x, screenCenter.y);
+        ctx.rotate(-screen.angle);
+        ctx.translate(-(screenCenter.x), -(screenCenter.y));
+        ctx.drawImage(
+            resCanvas,
+            screen.sortedCorners.LeftUp.x,
+            screen.sortedCorners.LeftUp.y
         );
-        screen.orientation = rotations[index];
-        screens.push(screen);
+        ctx.resetTransform();
     });
-    return screens;
+
+    return canvas;
 }
