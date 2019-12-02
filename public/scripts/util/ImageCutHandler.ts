@@ -23,10 +23,6 @@ export function createImageCanvasForSlave(
         imgCanvas,
         globalBoundingBox
     );
-    const outputIm = $(`<img style="max-width: 100%; max-height: 100%;" />`);
-    outputIm.attr("src", imgCanvas.toDataURL());
-    $("#result-img-container").append($("<h1>NEW SCREEN</h1>"));
-    $("#result-img-container").append(outputIm);
     return rotateAndDrawImageForSlave(globalBoundingBox, screen, imgCanvas);
 }
 
@@ -52,7 +48,10 @@ function rotateAndDrawImageForSlave(
 
     // const css3DMatrix = create3DMatrix(src, dst);
 
-
+    let outputIm: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    outputIm.attr("src", imgCanvas.toDataURL());
+    $("#result-img-container").append($("<h1>NEW SCREEN</h1>"));
+    $("#result-img-container").append(outputIm);
 
 
     const screenCenter = screen.centroid.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y);
@@ -76,7 +75,7 @@ function rotateAndDrawImageForSlave(
         rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
     }
     rotatedImgCtx.drawImage(imgCanvas, 0, 0);
-    let outputIm: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
+    outputIm = $(`<img style="max-width: 100%; max-height: 100%;" />`);
     outputIm.attr("src", rotatedImg.toDataURL());
     $("#result-img-container").append($("<h3>ROTATED IMG</h3>"));
     $("#result-img-container").append(outputIm);
