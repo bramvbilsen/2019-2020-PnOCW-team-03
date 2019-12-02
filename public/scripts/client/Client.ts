@@ -850,18 +850,19 @@ class Client {
                 } else {
                     startPoint = animationLine[0];
                 }
+                console.log(nextPoint);
                 console.log(startPoint);
                 let start =
                     startTime +
                     Math.sqrt(
-                        Math.pow(startPoint.x - animationLine[0].x, 2) +
-                            Math.pow(startPoint.y - animationLine[0].y, 2)
+                        Math.pow(startPoint.x - nextPoint.x, 2) +
+                            Math.pow(startPoint.y - nextPoint.y, 2)
                     ) /
                         speed;
                 console.log(
                     Math.sqrt(
-                        Math.pow(startPoint.x - animationLine[0].x, 2) +
-                            Math.pow(startPoint.y - animationLine[0].y, 2)
+                        Math.pow(startPoint.x - nextPoint.x, 2) +
+                            Math.pow(startPoint.y - nextPoint.y, 2)
                     ) / speed
                 );
                 //duration berekenen
