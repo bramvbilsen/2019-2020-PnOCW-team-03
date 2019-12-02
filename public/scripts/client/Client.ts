@@ -963,7 +963,7 @@ class Client {
                     Math.pow(nextPoint.x - newPoint.x, 2) +
                     Math.pow(nextPoint.y - newPoint.y, 2)
                 ) / 0.05;
-            setTimeout(() => nextLine(newPoint, newStartTime), wait);
+            setTimeout(() => nextLine(newPoint, newStartTime), 15000);
             // nextLine(newPoint, newStartTime);
         }
 
@@ -1306,6 +1306,11 @@ class Client {
                     $("#image-slave").attr("src", canvas.toDataURL());
                 } else {
                     //nu geen cirkel meer tekenenen
+                    ctx.beginPath();
+                    ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    x += directionx;
+                    y += directiony;
                     $("#image-slave").attr("src", canvas.toDataURL());
                     clearinterval();
                 }
