@@ -38,7 +38,7 @@ export default function testu() {
     ];
     slaves.push(new SlaveScreen(corners1, "1"));
     slaves.push(new SlaveScreen(corners2, "2"));
-    slaves.push(new SlaveScreen(corners3, "3"));
+    //slaves.push(new SlaveScreen(corners3, "3"));
     //slaves.push(new SlaveScreen(corners4, "4"));
 
     let triangulation = calculateTriangulation(slaves);
@@ -278,16 +278,19 @@ function showAnimationOnSlaves(slaves: SlaveScreen[]) {
         let reverse = false;
         if (
             !(
-                slavesWithCurrentLine[0].centroid.x == currentPoint.x &&
-                slavesWithCurrentLine[0].centroid.y == currentPoint.y
+                slavesWithCurrentLine[0].centroid.x == nextPoint.x &&
+                slavesWithCurrentLine[0].centroid.y == nextPoint.y
             )
         ) {
             slavesWithCurrentLine.reverse();
             reverse = true;
         }
+        console.log(slavesWithCurrentLine);
         for (let i = 0; i < slavesWithCurrentLine.length; i++) {
             const element = slavesWithCurrentLine[i];
             const slaveID = element.slaveID;
+            console.log("=====");
+            console.log(slaveID);
             //dingen die moeten getekent worden
             let angles = element.triangulation.angles;
             let lines = element.triangulation.lines;
@@ -305,19 +308,23 @@ function showAnimationOnSlaves(slaves: SlaveScreen[]) {
             let animation = slavesIdWithCurrentLine.find(obj => {
                 return obj.slaveId === slaveID;
             });
+            console.log(animation);
             let animationLine = animation.points; //de orientatiestring zit hier niet meer bij
             let animationOrient = animation.orient;
             if (animationLine.length == 1) {
                 animationLine.unshift(null); //null gaat overeenkomen met middelpunt
-                animationOrient.concat("n");
+                animationOrient = "n".concat(animationOrient);
             }
-            if (reverse) {
-                animationLine.reverse; //hier hebben we de juiste volgorde
+
+            if (i != 0 && !animationLine[0]) {
+                animationLine.reverse(); //hier hebben we de juiste volgorde
                 animationOrient = animationOrient
                     .split("")
                     .reverse()
-                    .join();
+                    .join("");
             }
+            console.log(animationLine);
+            console.log(animationOrient);
             //animatielijn omvormen naar ratio
             let ratioAnimationLine: {
                 string: string;
@@ -347,6 +354,7 @@ function showAnimationOnSlaves(slaves: SlaveScreen[]) {
                 ) /
                     speed) *
                     1000;
+            console.log(new Date(start));
             //duration berekenen
             let endPoint: Point;
             if (animationLine[1] == null) {
@@ -575,6 +583,7 @@ function showAnimation(
     setTimeout(function() {
         console.log(slaveLines);
         console.log(slaveAngles);
+        console.log(slaveAnimationLine);
         const enddate = new Date(startTime + duration);
         animation(
             enddate.getTime(),

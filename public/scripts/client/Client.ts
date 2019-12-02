@@ -755,7 +755,7 @@ class Client {
         let points = triangulation.points;
         let currentPoint = points[Math.floor(Math.random() * points.length)];
         const self = this;
-        nextLine(currentPoint, new Date().getTime() + 10); //een beetje tijd voor er gestart wordt
+        nextLine(currentPoint, new Date().getTime() + 5000); //een beetje tijd voor er gestart wordt
 
         function nextLine(nextPoint: Point, startTime: number) {
             let lines = triangulation.middlePoints;
@@ -783,16 +783,19 @@ class Client {
             let reverse = false;
             if (
                 !(
-                    slavesWithCurrentLine[0].centroid.x == currentPoint.x &&
-                    slavesWithCurrentLine[0].centroid.y == currentPoint.y
+                    slavesWithCurrentLine[0].centroid.x == nextPoint.x &&
+                    slavesWithCurrentLine[0].centroid.y == nextPoint.y
                 )
             ) {
                 slavesWithCurrentLine.reverse();
                 reverse = true;
             }
+            console.log(slavesWithCurrentLine);
             for (let i = 0; i < slavesWithCurrentLine.length; i++) {
                 const element = slavesWithCurrentLine[i];
                 const slaveID = element.slaveID;
+                console.log("=====");
+                console.log(slaveID);
                 //dingen die moeten getekent worden
                 let angles = element.triangulation.angles;
                 let lines = element.triangulation.lines;
@@ -814,14 +817,14 @@ class Client {
                 let animationOrient = animation.orient;
                 if (animationLine.length == 1) {
                     animationLine.unshift(null); //null gaat overeenkomen met middelpunt
-                    animationOrient.concat("n");
+                    animationOrient = "n".concat(animationOrient);
                 }
-                if (reverse) {
-                    animationLine.reverse; //hier hebben we de juiste volgorde
+                if (i != 0 && !animationLine[0]) {
+                    animationLine.reverse(); //hier hebben we de juiste volgorde
                     animationOrient = animationOrient
                         .split("")
                         .reverse()
-                        .join();
+                        .join("");
                 }
                 //animatielijn omvormen naar ratio
                 let ratioAnimationLine: {
@@ -836,7 +839,7 @@ class Client {
                     },
                 ])[0];
                 //snelhied
-                let speed = 5;
+                let speed = 1;
                 //starttijd berekenen
                 let startPoint: Point;
                 if (animationLine[0] == null) {
@@ -846,12 +849,11 @@ class Client {
                 }
                 let start =
                     startTime +
-                    (Math.sqrt(
+                    Math.sqrt(
                         Math.pow(startPoint.x - nextPoint.x, 2) +
                             Math.pow(startPoint.y - nextPoint.y, 2)
                     ) /
-                        speed) *
-                        1000;
+                        speed;
                 //duration berekenen
                 let endPoint: Point;
                 if (animationLine[1] == null) {
@@ -860,15 +862,14 @@ class Client {
                     endPoint = animationLine[1];
                 }
                 let duration =
-                    (Math.sqrt(
+                    Math.sqrt(
                         Math.pow(endPoint.x - startPoint.x, 2) +
                             Math.pow(endPoint.y - startPoint.y, 2)
-                    ) /
-                        speed) *
-                    1000;
+                    ) / speed;
                 //emit voor elke slave
                 //duration = 3000;
                 console.log("sendig emit to " + slaveID);
+                console.log(new Date(start));
                 self._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
                     startTime: start,
                     slaveId: slaveID,
