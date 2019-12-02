@@ -277,9 +277,9 @@ const tests: Tests<number> = {
         const height0 = 400;
         const rotation0 = 0;
         const corners0 = [
-            new Point(x0 + 50, y0),
+            new Point(x0, y0 + 150),
             new Point(x0 + width0, y0),
-            new Point(x0 + width0, y0 + height0),
+            new Point(x0 + width0, y0 + height0 - 50),
             new Point(x0, y0 + height0),
         ];
 
