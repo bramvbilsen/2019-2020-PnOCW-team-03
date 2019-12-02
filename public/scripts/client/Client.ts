@@ -957,7 +957,7 @@ class Client {
                     Math.pow(nextPoint.y - newPoint.y, 2)
                 ) /
                 0.05 +
-                startTime;
+                startTime + 15000;
             let wait =
                 Math.sqrt(
                     Math.pow(nextPoint.x - newPoint.x, 2) +
