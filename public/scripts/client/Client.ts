@@ -801,7 +801,7 @@ class Client {
     public showAnimationOnSlaves = () => {
         //ook eerst naar slaves juiste lijnen emitten -> nog doen
         let triangulation: Triangulation = this.calculateTriangulation();
-        let points = triangulation.points.map(point => point.copy());
+        let points = triangulation.points;
         let currentPoint = points[Math.floor(Math.random() * points.length)];
         const self = this;
         nextLine(currentPoint, new Date().getTime() + 5000); //een beetje tijd voor er gestart wordt
@@ -1140,6 +1140,7 @@ class Client {
         lines: Array<{ string: string; point1: number; point2: number }>;
         duration: number;
     }): void => {
+        const self = this;
         //$("#loading").css("display", "inherit");
         //eerst de verhoudingen omzetten naar punten -> null wordt center
         let slaveAnimationLine: Point[] = ratioToPointsLine([
@@ -1304,6 +1305,7 @@ class Client {
                     ctx.beginPath();
                     ctx.arc(x, y, 30, 0, 2 * Math.PI);
                     ctx.stroke();
+                    ctx.drawImage(self.steveImg, x, y, 50, 50);
                     x += directionx;
                     y += directiony;
                     $("#image-slave").attr("src", canvas.toDataURL());
