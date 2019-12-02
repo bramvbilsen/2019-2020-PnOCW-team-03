@@ -305,7 +305,7 @@ export default class SlaveFlowHandler {
         currScreen.corners.forEach(corner => {
             console.log(corner.toString());
         });
-        const orientation = calculateOrientation(currScreen, orientationCanvas);
+        const orientation = calculateOrientation(currScreen, orientationCanvas).orientation;
         console.log("===============");
         console.log("==========================");
         currScreen.corners.forEach(corner => {
