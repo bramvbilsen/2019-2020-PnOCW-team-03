@@ -955,7 +955,12 @@ class Client {
                 ) /
                     0.05 +
                 startTime;
-            setTimeout(() => nextLine(newPoint, newStartTime), 1000);
+            let wait =
+                Math.sqrt(
+                    Math.pow(nextPoint.x - newPoint.x, 2) +
+                        Math.pow(nextPoint.y - newPoint.y, 2)
+                ) / 0.05;
+            setTimeout(() => nextLine(newPoint, newStartTime), wait);
             // nextLine(newPoint, newStartTime);
         }
 
