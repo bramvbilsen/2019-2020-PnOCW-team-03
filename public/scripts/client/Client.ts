@@ -1205,7 +1205,7 @@ class Client {
                 );
                 const ctx = canvas.getContext("2d");
                 const now = new Date().getTime();
-                const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
+                const t = ((endDate - now) % (1000 * 60)) / 1000;
                 ctx.strokeStyle = "rgb(255,0,0)";
                 //lijnen tekenen met middelpunten
                 slaveAngles.forEach(angle => {
