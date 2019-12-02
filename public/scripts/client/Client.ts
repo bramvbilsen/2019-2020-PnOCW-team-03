@@ -886,7 +886,7 @@ class Client {
                     },
                 ])[0];
                 //snelhied
-                let speed = 0.05;
+                let speed = 0.05; //pixels/ms
                 //starttijd berekenen
                 let startPoint: Point;
                 if (animationLine[0] == null) {
@@ -900,7 +900,7 @@ class Client {
                     startTime +
                     Math.sqrt(
                         Math.pow(startPoint.x - nextPoint.x, 2) +
-                            Math.pow(startPoint.y - nextPoint.y, 2)
+                            Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
                     ) /
                         speed;
                 console.log(
@@ -921,6 +921,7 @@ class Client {
                         Math.pow(endPoint.x - startPoint.x, 2) +
                             Math.pow(endPoint.y - startPoint.y, 2)
                     ) / speed;
+                console.log("duration = " + duration);
                 //emit voor elke slave
                 //duration = 3000;
                 console.log("sendig emit to " + slaveID);
@@ -1138,16 +1139,16 @@ class Client {
         console.log(window.innerWidth / 2);
         console.log(window.innerHeight / 2);
         //slavaAnimation omzetten naar een aangrijpingspunt met richting en deltax
-        let directionx = slaveAnimationLine[1].x - slaveAnimationLine[0].x;
+        let directionx = slaveAnimationLine[1].x - slaveAnimationLine[0].x; //pixels
         let directiony = slaveAnimationLine[1].y - slaveAnimationLine[0].y;
         let length_direction = Math.sqrt(
             Math.pow(directionx, 2) + Math.pow(directiony, 2)
         );
-        directionx /= length_direction;
-        directiony /= length_direction;
+        directionx /= msg.duration; // pixels/ms
+        directiony /= msg.duration;
 
-        directionx *= msg.duration / 1000;
-        directiony *= msg.duration / 1000;
+        // directionx *= msg.duration / 1000;
+        // directiony *= msg.duration / 1000;
 
         let startPoint = slaveAnimationLine[0];
         //wachten tot de animatie start
@@ -1295,7 +1296,7 @@ class Client {
                     $("#image-slave").attr("src", canvas.toDataURL());
                     clearinterval();
                 }
-            }, 1);
+            }, directionx / msg.duration);
             function clearinterval() {
                 clearInterval(timer);
             }
