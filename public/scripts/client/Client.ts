@@ -867,7 +867,7 @@ class Client {
                         speed) *
                     1000;
                 //emit voor elke slave
-                duration = 3000;
+                //duration = 3000;
                 console.log("sendig emit to " + slaveID);
                 self._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
                     startTime: start,
@@ -898,7 +898,7 @@ class Client {
                 ) /
                     5 +
                 startTime;
-            setTimeout(() => nextLine(newPoint, newStartTime), 1000);
+            //setTimeout(() => nextLine(newPoint, newStartTime), 1000);
             // nextLine(newPoint, newStartTime);
         }
 
@@ -1222,15 +1222,15 @@ class Client {
                     ctx.beginPath();
                     ctx.arc(x, y, 30, 0, 2 * Math.PI);
                     ctx.stroke();
-                    x += 10;
-                    //y += directiony;
+                    x += directionx;
+                    y += directiony;
                     $("#image-slave").attr("src", canvas.toDataURL());
                 } else {
                     //nu geen cirkel meer tekenenen
                     $("#image-slave").attr("src", canvas.toDataURL());
                     clearinterval();
                 }
-            }, 100);
+            }, 1);
             function clearinterval() {
                 clearInterval(timer);
             }
