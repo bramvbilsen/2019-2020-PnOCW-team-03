@@ -1221,7 +1221,7 @@ class Client {
                     ctx.beginPath();
                     ctx.arc(x, y, 30, 0, 2 * Math.PI);
                     ctx.stroke();
-                    x += 0.5;
+                    x += 10;
                     //y += directiony;
                     $("#image-slave").attr("src", canvas.toDataURL());
                 } else {
@@ -1229,7 +1229,7 @@ class Client {
                     $("#image-slave").attr("src", canvas.toDataURL());
                     clearinterval();
                 }
-            }, 1);
+            }, 100);
             function clearinterval() {
                 clearInterval(timer);
             }
