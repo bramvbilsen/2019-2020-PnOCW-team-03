@@ -867,6 +867,7 @@ class Client {
                         speed) *
                     1000;
                 //emit voor elke slave
+                duration = 3000;
                 self._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
                     startTime: start,
                     slaveId: slaveID,
