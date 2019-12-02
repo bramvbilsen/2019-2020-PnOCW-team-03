@@ -758,6 +758,7 @@ class Client {
         nextLine(currentPoint, new Date().getTime() + 5000); //een beetje tijd voor er gestart wordt
 
         function nextLine(nextPoint: Point, startTime: number) {
+            console.log("beginpunt " + nextPoint);
             let lines = triangulation.middlePoints;
             let slavesLinkedWithLine = triangulation.slaves;
             let potentialLines = lines.find(obj => {
@@ -826,6 +827,8 @@ class Client {
                         .reverse()
                         .join("");
                 }
+                console.log(animationLine);
+                console.log(animationOrient);
                 //animatielijn omvormen naar ratio
                 let ratioAnimationLine: {
                     string: string;
@@ -847,6 +850,7 @@ class Client {
                 } else {
                     startPoint = animationLine[0];
                 }
+                console.log(startPoint);
                 let start =
                     startTime +
                     Math.sqrt(
@@ -854,6 +858,12 @@ class Client {
                             Math.pow(startPoint.y - nextPoint.y, 2)
                     ) /
                         speed;
+                console.log(
+                    Math.sqrt(
+                        Math.pow(startPoint.x - nextPoint.x, 2) +
+                            Math.pow(startPoint.y - nextPoint.y, 2)
+                    ) / speed
+                );
                 //duration berekenen
                 let endPoint: Point;
                 if (animationLine[1] == null) {
