@@ -62,7 +62,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.NONE, result: Orientation.NONE };
     },
 
@@ -123,7 +123,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.COUNTERCLOCKWISE, result };
     },
 
@@ -184,7 +184,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.FLIPPED, result };
     },
 
@@ -245,7 +245,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.NORMAL, result };
     },
 
@@ -306,7 +306,7 @@ const tests: Tests<Orientation> = {
                 "1"
             ),
             blancoCanvas
-        );
+        ).orientation;
         return { expected: Orientation.NORMAL, result };
     },
 };
