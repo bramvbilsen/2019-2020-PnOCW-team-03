@@ -18,7 +18,11 @@ import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
+<<<<<<< HEAD
+import { loadImage } from "../util/images";
+=======
 import testu from "./animation";
+>>>>>>> d2e3e1aa0a48b71dd1f294edfc4daecd0f6707e1
 
 const {
     checkIntersection,
@@ -388,7 +392,11 @@ class Client {
         }, eta_ms);
 
         function countdown(endDate: number) {
+<<<<<<< HEAD
+            var timer = setInterval(async function () {
+=======
             var timer = setInterval(function() {
+>>>>>>> d2e3e1aa0a48b71dd1f294edfc4daecd0f6707e1
                 const now = new Date().getTime();
                 const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
@@ -398,17 +406,49 @@ class Client {
                     );
                 } else {
                     $("#loading").css("display", "none");
+<<<<<<< HEAD
+                    $("#fullScreen").html('<div style="font-size:100px;"><center>BOOOOOM !!!</center></div>');
+                    // Creeper
+                    const img1 = await loadImage(env.baseUrl + "/images/creeper-left.png");
+                    const img2 = await loadImage(env.baseUrl + "/images/creeper-left2.png");
+                    const imgCanvas = createCanvas(img1.width, img1.height);
+                    imgCanvas.getContext("2d").drawImage(img1, 0, 0)
+                    $("#fullScreen").replaceWith('<center><div id="fullScreen"><img width="400" height="550" id="fullScreenImg"></img></div><center>');
+                    $("#fullScreenImg").attr("src", imgCanvas.toDataURL());  // "#image-slave"
+
+                    let creeperSwitch = 2;
+                    for (let _ = 0; _ < 6; _++) {
+                        await setTimeout(function () {
+                            if (creeperSwitch == 1) {
+                                imgCanvas.getContext("2d").drawImage(img2, 0, 0);
+                                $("#fullScreenImg").attr("src", imgCanvas.toDataURL());
+                                creeperSwitch = 2;
+                            } else {
+                                imgCanvas.getContext("2d").drawImage(img1, 0, 0);
+                                $("#fullScreenImg").attr("src", imgCanvas.toDataURL());
+                                creeperSwitch = 1;
+                            }
+                        }, 1000);
+                    }
+
+=======
                     $("#fullScreen").html(
                         '<div style="font-size:500px;"><center>ZO GROOT GENOEG ?!</center></div>'
                     );
+>>>>>>> d2e3e1aa0a48b71dd1f294edfc4daecd0f6707e1
                     clearinterval();
                     // Restore the counter div
                     setTimeout(function() {
                         console.log("Restore");
+<<<<<<< HEAD
+                        $("#fullScreen").replaceWith('<div id="countdown"></div>');
+                    }, 10000);
+=======
                         $("#fullScreen").replaceWith(
                             '<div id="countdown"></div>'
                         );
                     }, 3000);
+>>>>>>> d2e3e1aa0a48b71dd1f294edfc4daecd0f6707e1
                 }
             }, 1);
             function clearinterval() {
@@ -437,6 +477,13 @@ class Client {
             {}
         );
     };
+
+    public notifyMasterThatCreeperCanStart = () => {
+        this._socket.emit(
+            SlaveEventTypes.NotifyMasterThatCreeperCanStart,
+            {}
+        );
+    }
 
     public calculateTriangulation = () => {
         if (this.type === ConnectionType.MASTER) {

@@ -137,8 +137,19 @@ export function resetMaster() {
 
         $("#display-countdown-button")
             .off()
-            .on("click", () => {
+            .on("click", async () => {
                 client.notifySlavesOfStartTimeCounter();
+                /*
+                const img = await loadImage(
+                    env.baseUrl + "/images/creeper-left.png"
+                );
+                const imgCanvas = createCanvas(img.width, img.height);
+                imgCanvas.getContext("2d").drawImage(img, 0, 0);
+
+                slaveFlowHandler.screens.forEach(screen => {
+                    client.showCanvasImgOnSlave(screen.slaveID, imgCanvas);
+                });
+                */
             });
 
         $("#display-unicorn-img-button")
@@ -160,7 +171,7 @@ export function resetMaster() {
                         screen,
                         imgCanvas
                     );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                    // client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 
@@ -178,7 +189,7 @@ export function resetMaster() {
                         screen,
                         slaveFlowHandler.blancoCanvas
                     );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                    // client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 
@@ -197,7 +208,7 @@ export function resetMaster() {
                         screen,
                         triangCanvas
                     );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                    // client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 
