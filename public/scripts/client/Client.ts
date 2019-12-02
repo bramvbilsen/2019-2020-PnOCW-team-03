@@ -842,7 +842,7 @@ class Client {
                     },
                 ])[0];
                 //snelhied
-                let speed = 0.1;
+                let speed = 1;
                 //starttijd berekenen
                 let startPoint: Point;
                 if (animationLine[0] == null) {
@@ -1104,7 +1104,7 @@ class Client {
         startTime += this.serverTimeDiff; //syncen
         const eta_ms = startTime - Date.now();
         setTimeout(function() {
-            const enddate = new Date(startTime + msg.duration + 10000);
+            const enddate = new Date(startTime + msg.duration);
             animation(
                 enddate.getTime(),
                 startPoint,
