@@ -965,10 +965,7 @@ class Client {
                     Math.pow(nextPoint.x - newPoint.x, 2) +
                         Math.pow(nextPoint.y - newPoint.y, 2)
                 ) / 0.05;
-            setTimeout(
-                () => nextLine(newPoint, startTime + wait + 500),
-                wait + 500
-            );
+            setTimeout(() => nextLine(newPoint, startTime + wait + 500), wait);
             // nextLine(newPoint, newStartTime);
         }
 
@@ -1173,7 +1170,7 @@ class Client {
         startTime += this.serverTimeDiff; //syncen
         const eta_ms = startTime - Date.now();
         setTimeout(function() {
-            const enddate = new Date(startTime + msg.duration + 1);
+            const enddate = new Date(startTime + msg.duration);
             animation(
                 enddate.getTime(),
                 startPoint,
