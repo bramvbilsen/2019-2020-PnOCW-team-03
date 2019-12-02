@@ -1192,6 +1192,7 @@ class Client {
                 const ctx = canvas.getContext("2d");
                 const now = new Date().getTime();
                 const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
+                ctx.strokeStyle = "rgb(255,0,0)";
                 //lijnen tekenen met middelpunten
                 slaveAngles.forEach(angle => {
                     ctx.beginPath();
@@ -1217,7 +1218,7 @@ class Client {
                 if (t > 0) {
                     //circel tekenen
                     ctx.beginPath();
-                    ctx.arc(x, y, 1, 0, 2 * Math.PI);
+                    ctx.arc(x, y, 30, 0, 2 * Math.PI);
                     ctx.stroke();
                     x += directionx;
                     y += directiony;
