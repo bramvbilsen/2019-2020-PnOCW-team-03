@@ -22,10 +22,53 @@ export function calculateBoundingBox(
     const maxX = xCoordinates[xCoordinates.length - 1];
     const minY = yCoordinates[0];
     const maxY = yCoordinates[yCoordinates.length - 1];
+    const res = sortCorners([new Point(minX, minY), new Point(maxX, maxY), new Point(maxX, minY), new Point(minX, maxY)]);
     return {
-        topLeft: new Point(minX, minY),
-        bottomRight: new Point(maxX, maxY),
-        topRight: new Point(maxX, minY),
-        bottomLeft: new Point(minX, maxY),
+        topLeft: res.LeftUp,
+        topRight: res.RightUp,
+        bottomLeft: res.LeftUnder,
+        bottomRight: res.RightUnder,
+    }
+}
+
+export function sortCorners(corners: Point[]): {
+    LeftUp: Point;
+    RightUp: Point;
+    RightUnder: Point;
+    LeftUnder: Point;
+} {
+    //sorteer
+    corners = [...corners];
+    corners.sort((a, b) => {
+        const res = a.x - b.x;
+        if (res === 0) {
+            return a.y - b.y;
+        }
+        return res;
+    });
+    let LeftUp: Point;
+    let RightUp: Point;
+    let RightUnder: Point;
+    let LeftUnder: Point;
+    if (corners[0].y < corners[1].y) {
+        LeftUp = corners[0];
+        LeftUnder = corners[1];
+    } else {
+        LeftUp = corners[1];
+        LeftUnder = corners[0];
+    }
+    if (corners[2].y < corners[3].y) {
+        RightUp = corners[2];
+        RightUnder = corners[3];
+    } else {
+        RightUp = corners[3];
+        RightUnder = corners[2];
+    }
+
+    return {
+        LeftUp,
+        LeftUnder,
+        RightUp,
+        RightUnder,
     };
 }

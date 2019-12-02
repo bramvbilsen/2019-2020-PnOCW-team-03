@@ -19,10 +19,12 @@ export default class Point {
 
     copy = () => new Point(this.x, this.y);
 
+    copyTranslated = (dx: number, dy: number) => new Point(this.x + dx, this.y + dy);
+
     equals(point: Point, epsilon: number = -6) {
         if (Math.abs(point.x - this.x) > Math.pow(10, epsilon)) return false;
         if (Math.abs(point.y - this.y) > Math.pow(10, epsilon)) return false;
-        
+
         return true;
     }
 }

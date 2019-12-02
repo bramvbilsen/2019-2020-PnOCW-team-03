@@ -711,7 +711,7 @@ class Client {
                         );
                     }
                 });
-                const rotation = slave.widthEdge.angleBetweenEndpoints; //TODO Implement
+                const rotation = slave.angle;
                 this._socket.emit(MasterEventTypes.SendTriangulationOnSlave, {
                     slaveId: slave.slaveID,
                     angles,

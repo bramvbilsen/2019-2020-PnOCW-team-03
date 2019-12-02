@@ -32,9 +32,9 @@ export default class Line {
         const sorted = this.endPoints.sort((a, b) => a.x - b.x);
         const a = sorted[0];
         const b = sorted[1];
-        let angle = (Math.atan2(b.x - a.x, b.y - a.y) * 180) / Math.PI - 90;
-        if (angle < 0) {
-            angle += 180;
+        const angle = (Math.atan2(b.x - a.x, b.y - a.y) * 180) / Math.PI;
+        if (angle === 180) {
+            return 0;
         }
         return angle;
     }
