@@ -132,6 +132,17 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
 }
 
 
+const leftWidthPoint:Point = null;
+const rightWidthPoint:Point = null;
+
+function setWidthEdgePoints(p1:Point,p2:Point) {
+        let leftWidthPoint = p1;
+        let rightWidthPoint = p2;
+}
+
+export function getWidthEdgePoints() {
+    return [leftWidthPoint, rightWidthPoint];
+}
 /**
  * Label all the corners
  */
@@ -332,21 +343,25 @@ export default function calculateOrientation(
 
     if (list[0] === counterNormal) {
         console.log(Orientation.NORMAL);
+        setWidthEdgePoints(labeledCorners.LeftUp, labeledCorners.RightUp);
         return Orientation.NORMAL;
     }
 
     if (list[0] === counterCounterClockwise) {
         console.log(Orientation.COUNTERCLOCKWISE);
+        setWidthEdgePoints(labeledCorners.LeftUnder, labeledCorners.LeftUp);
         return Orientation.COUNTERCLOCKWISE;
     }
 
     if (list[0] === counterFlipped) {
         console.log(Orientation.FLIPPED);
+        setWidthEdgePoints(labeledCorners.LeftUnder, labeledCorners.RightUnder);
         return Orientation.FLIPPED;
     }
 
     if (list[0] === counterClockwise) {
         console.log(Orientation.CLOCKWISE);
+        setWidthEdgePoints(labeledCorners.RightUp, labeledCorners.RightUnder);
         return Orientation.CLOCKWISE;
     }
 
