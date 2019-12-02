@@ -1091,7 +1091,7 @@ class Client {
         startTime += this.serverTimeDiff; //syncen
         const eta_ms = startTime - Date.now();
         setTimeout(function() {
-            const enddate = new Date(startTime + msg.duration);
+            const enddate = new Date(startTime + msg.duration + 10000);
             animation(
                 enddate.getTime(),
                 startPoint,
