@@ -50,9 +50,26 @@ export default class Connections {
             }
             if (this.master.id === connectionToRemove.id) {
                 this._connections.shift();
-                io.emit(SharedEventTypes.NotifyOfTypeChange, {
-                    type: ConnectionType.MASTER,
+
+                /* for (let i = 0; i < this._connections.length; i++) {
+                    const element = this._connections[i];
+                    
+                    io.to(element.id).emit(
+                        SharedEventTypes.NotifyOfTypeChange,{
+                        type: i === 0 ? ConnectionType.MASTER : ConnectionType.SLAVE
+                    });
+                } */
+                
+                io.to(this._connections[0].id).emit(
+                    SharedEventTypes.NotifyOfTypeChange,{
+                    type: ConnectionType.MASTER
                 });
+
+                /*
+                io.emit(SharedEventTypes.NotifyOfTypeChange, {
+                    type: ConnectionType.SLAVE
+                }); */
+                
             } else {
                 this._connections.splice(index, 1);
             }
