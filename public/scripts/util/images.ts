@@ -33,3 +33,13 @@ export function scaleAndCutImageToBoundingBoxAspectRatio(
     $("#test-results-visual").attr("src", canvas.toDataURL());
     return canvas;
 }
+
+export function scaleAndCutBoundingBoxToImgAspectRatio(
+    img: HTMLHtmlElement,
+    globalBoundingBox: BoundingBox): HTMLHtmlCanvasElement {
+    const canvas = createCanvas(img.clientWidth, img.clientHeight);
+    const ctx = canvas.getContext("2d");
+
+}
+
+
