@@ -16,7 +16,7 @@ console.log("Starting server...");
 
 export const app = express();
 const server = http.createServer(app);
-export const io = socketio.listen(server);
+export const io = socketio.listen(server, { pingTimeout: 60000 * 15 });
 
 const port = process.env.PORT || "3000";
 
