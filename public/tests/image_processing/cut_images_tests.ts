@@ -270,16 +270,16 @@ const tests: Tests<number> = {
 
     //     return { expected: 0, result: 0 };
     // },
-    "Perspective rotated": async () => {
+    "No rotation": async () => {
         const x0 = 50;
         const y0 = 0;
         const width0 = 500;
         const height0 = 400;
         const rotation0 = 0;
         const corners0 = [
-            new Point(x0, y0 + 150),
+            new Point(x0, y0),
             new Point(x0 + width0, y0),
-            new Point(x0 + width0, y0 + height0 - 50),
+            new Point(x0 + width0, y0 + height0),
             new Point(x0, y0 + height0),
         ];
 
@@ -314,7 +314,67 @@ const tests: Tests<number> = {
 
         const testResultCanvas = createCanvasWithResults([[slaveScreen0, resultCanvas0]], globalBoundingBox.width, globalBoundingBox.height)
 
-        $("#test-results-visual").attr("src", testResultCanvas.toDataURL());
+        const resultImg = $(
+            `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+        );
+        resultImg.attr("src", testResultCanvas.toDataURL());
+        $("#test-results").append($("<h3>No rotation test:</h3>"));
+        $("#test-results").attr("src", testResultCanvas.toDataURL());
+        $("#test-results").append(resultImg);
+
+        return { expected: 0, result: 0 };
+    },
+    "Rotation": async () => {
+        const x0 = 50;
+        const y0 = 0;
+        const width0 = 500;
+        const height0 = 400;
+        const rotation0 = 25;
+        const corners0 = [
+            new Point(x0, y0),
+            new Point(x0 + width0, y0),
+            new Point(x0 + width0, y0 + height0),
+            new Point(x0, y0 + height0),
+        ];
+
+        const slaveScreen0 = new SlaveScreen(
+            corners0.map(corner => {
+                return rotatePointAroundAnchor(
+                    corner,
+                    getCentroidOf(corners0),
+                    rotation0
+                )
+            }
+            ),
+            "0"
+        );
+
+        const globalBoundingBox = new BoundingBox([
+            ...slaveScreen0.corners,
+        ]);
+        const img = await loadImage(
+            "http://localhost:3000/images/unicorn.jpeg"
+        );
+        const imgCanvas = createCanvas(img.width, img.height);
+        const imgCtx = imgCanvas.getContext("2d");
+        imgCtx.drawImage(img, 0, 0);
+
+
+        const resultCanvas0 = createImageCanvasForSlave(
+            globalBoundingBox,
+            slaveScreen0,
+            imgCanvas
+        );
+
+        const testResultCanvas = createCanvasWithResults([[slaveScreen0, resultCanvas0]], globalBoundingBox.width, globalBoundingBox.height)
+
+        const resultImg = $(
+            `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
+        );
+        resultImg.attr("src", testResultCanvas.toDataURL());
+        $("#test-results").append($("<h3>Rotation test:</h3>"));
+        $("#test-results").attr("src", testResultCanvas.toDataURL());
+        $("#test-results").append(resultImg);
 
         return { expected: 0, result: 0 };
     },
@@ -337,10 +397,6 @@ function createCanvasWithResults(results: Array<[SlaveScreen, HTMLCanvasElement]
     results.forEach((result) => {
         const screen = result[0];
         const resCanvas = result[1];
-        const screenCenter = screen.centroid;
-        ctx.translate(screenCenter.x, screenCenter.y);
-        ctx.rotate(-screen.angle);
-        ctx.translate(-(screenCenter.x), -(screenCenter.y));
         ctx.drawImage(
             resCanvas,
             screen.sortedCorners.LeftUp.x,

@@ -28,8 +28,8 @@ export default class Line {
     /**
      * Will return an angle between 0 and 179 deg.
      */
-    get angleBetweenEndpoints(): number {
-        const sorted = this.endPoints.sort((a, b) => a.x - b.x);
+    angleBetweenEndpoints(aroundMostRight?: boolean): number {
+        const sorted = this.endPoints.sort((a, b) => aroundMostRight ? b.x - a.x : a.x - b.x);
         const a = sorted[0];
         const b = sorted[1];
         const angle = (Math.atan2(b.x - a.x, b.y - a.y) * 180) / Math.PI;
