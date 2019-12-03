@@ -48,10 +48,8 @@ function rotateAndDrawImageForSlave(
 
     // const css3DMatrix = create3DMatrix(src, dst);
 
-    let outputIm: JQuery<HTMLImageElement> = $(`<img style="max-width: 100%; max-height: 100%;" />`);
-    outputIm.attr("src", imgCanvas.toDataURL());
     $("#result-img-container").append($("<h1>NEW SCREEN</h1>"));
-    $("#result-img-container").append(outputIm);
+    $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", imgCanvas.toDataURL()));
 
 
     const screenCenter = screen.centroid.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y);
@@ -74,13 +72,11 @@ function rotateAndDrawImageForSlave(
         rotatedImgCtx.rotate(degreesToRadians(screen.angle));
         rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
     }
-    rotatedImgCtx.drawImage(imgCanvas, 0, 0);
-    outputIm = $(`<img style="max-width: 100%; max-height: 100%;" />`);
-    outputIm.attr("src", rotatedImg.toDataURL());
-    $("#result-img-container").append($("<h3>ROTATED IMG</h3>"));
-    $("#result-img-container").append(outputIm);
+    rotatedImgCtx.drawImage(imgCanvas, 0, 0)
     $("#test-results").append($("<h3>ROTATED IMG</h3>"));
-    $("#test-results").append(outputIm);
+    $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", rotatedImg.toDataURL()));
+    $("#result-img-container").append($("<h3>ROTATED IMG</h3>"));
+    $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", rotatedImg.toDataURL()));
 
     const slaveScreenMask = createCanvas(imgCanvas.width, imgCanvas.height);
     const slaveScreenMaskCtx = slaveScreenMask.getContext("2d");
@@ -101,29 +97,21 @@ function rotateAndDrawImageForSlave(
         translatedAndRotatedCorners.LeftUnder.x,
         translatedAndRotatedCorners.LeftUnder.y
     );
-    slaveScreenMaskCtx.fill();
-    outputIm = $(
-        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
-    );
-    outputIm.attr("src", slaveScreenMask.toDataURL());
-    $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
-    $("#result-img-container").append(outputIm);
+    slaveScreenMaskCtx.fill()
+    $("#result-img-container").append($("<h3>SCREEN IMG</h3>"));
+    $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenMask.toDataURL()));
     $("#test-results").append($("<h3>SCREEN MASK</h3>"));
-    $("#test-results").append(outputIm);
+    $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenMask.toDataURL()));
 
     const maskedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const maskedImgCtx = maskedImg.getContext("2d");
     maskedImgCtx.drawImage(slaveScreenMask, 0, 0);
     maskedImgCtx.globalCompositeOperation = "source-in";
     maskedImgCtx.drawImage(rotatedImg, 0, 0);
-    outputIm = $(
-        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
-    );
-    outputIm.attr("src", maskedImg.toDataURL());
     $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
-    $("#result-img-container").append(outputIm);
-    $("#test-results").append($("<h3>MASKED IMG</h3>"));
-    $("#test-results").append(outputIm);
+    $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", maskedImg.toDataURL()));
+    $("#test-results").append($("<h3>MASKED MASK</h3>"));
+    $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", maskedImg.toDataURL()));
 
 
     // const cornersWithoutPerspective = new BoundingBox((Object.values(translatedAndRotatedCorners)));
@@ -146,8 +134,8 @@ function rotateAndDrawImageForSlave(
     const slaveImgCtx = slaveImg.getContext("2d");
     slaveImgCtx.drawImage(
         maskedImg,
-        translatedAndRotatedCorners.LeftUp.x,
-        translatedAndRotatedCorners.LeftUp.y,
+        screen.sortedCorners.LeftUp.x - globalBoundingBox.topLeft.x,
+        screen.sortedCorners.LeftUp.y - globalBoundingBox.topLeft.y,
         screenWidth,
         screenHeight,
         0,
@@ -155,15 +143,10 @@ function rotateAndDrawImageForSlave(
         screenWidth,
         screenHeight
     );
-    outputIm = $(
-        `<img id="result-img" style="max-width: 100%; max-height: 100%;" />`
-    );
-    outputIm.attr("src", slaveImg.toDataURL());
-
-    $("#result-img-container").append($("<h3>SLAVE IMAGE</h3>"));
-    $("#result-img-container").append(outputIm);
-    $("#test-results").append($("<h3>SLAVE IMAGE</h3>"));
-    $("#test-results").append(outputIm);
+    $("#result-img-container").append($("<h3>RESULT IMG</h3>"));
+    $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveImg.toDataURL()));
+    $("#test-results").append($("<h3>RESULT MASK</h3>"));
+    $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveImg.toDataURL()));
 
     return slaveImg;
 }

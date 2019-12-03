@@ -171,7 +171,7 @@ export function resetMaster() {
                         screen,
                         imgCanvas
                     );
-                    // client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 
@@ -189,7 +189,7 @@ export function resetMaster() {
                         screen,
                         slaveFlowHandler.blancoCanvas
                     );
-                    // client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 
@@ -208,7 +208,7 @@ export function resetMaster() {
                         screen,
                         triangCanvas
                     );
-                    // client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 

@@ -82,7 +82,7 @@ export default class SlaveScreen {
 
         //         }
         // }
-        const normalAngle = this.heightEdge.angleBetweenEndpoints();
+        const normalAngle = this.widthEdge.angleBetweenEndpoints() - 90;
         // if (this.orientation === Orientation.FLIPPED || this.orientation === Orientation.COUNTERCLOCKWISE) {
         //     return normalAngle + 180;
         // }
