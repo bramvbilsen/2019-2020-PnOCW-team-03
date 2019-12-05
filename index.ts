@@ -205,7 +205,7 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
-    socket.on(SlaveEventTypes.showAnimation, () => {
+    socket.on(MasterEventTypes.nextLine, () => {
         io.to(connections.masterID).emit(SlaveEventTypes.showAnimation, {});
     });
 });
