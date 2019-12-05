@@ -934,6 +934,8 @@ class Client {
             } else {
                 endPoint = animationLine[1];
             }
+            console.log(startPoint);
+            console.log(endPoint);
             let duration =
                 Math.sqrt(
                     Math.pow(endPoint.x - startPoint.x, 2) +
@@ -1029,6 +1031,7 @@ class Client {
         points.forEach(element => {
             const fullString = element.string.split("");
             const points_ = [element.point1, element.point2];
+            console.log("de lijn " + points_);
             let ratioNumber: number[] = [];
             for (let i = 0; i < points_.length; i++) {
                 const point = points_[i];
@@ -1099,6 +1102,7 @@ class Client {
                     ratioNumber.push(null);
                 }
             }
+            console.log("de ratio " + ratioNumber);
             ratio.push({
                 string: element.string,
                 point1: ratioNumber[0],
