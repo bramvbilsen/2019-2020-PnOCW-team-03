@@ -119,6 +119,58 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
 export function getWidthEdgePoints(left: Point, right: Point) {
     return [left, right];
 }
+
+export function labelCorners(p1: Point, p2: Point, p3: Point, p4: Point) {
+    var corners = [p1, p2, p3, p4];
+    var sums = [];
+    var min = Number.POSITIVE_INFINITY;
+    var max = Number.NEGATIVE_INFINITY;
+    var rightUnderIndex, leftUpperIndex;
+    var rightUpperCoordinate: Point,
+        leftUnderCoordinate: Point,
+        leftUpperCoordinate: Point,
+        rightUnderCoordinate: Point;
+
+    sums[0] = p1.x + p1.y;
+    sums[1] = p2.x + p2.y;
+    sums[2] = p3.x + p3.y;
+    sums[3] = p4.x + p4.y;
+
+    /* 1) LEFT-UPPER & RIGHT-UNDER */
+    for (var i = 0; i < sums.length; i++) {
+        if (sums[i] >= max) {
+            max = sums[i];
+            rightUnderIndex = i;
+            rightUnderCoordinate = corners[i];
+        }
+        if (sums[i] <= min) {
+            min = sums[i];
+            leftUpperIndex = i;
+            leftUpperCoordinate = corners[i];
+        }
+    }
+    // Remove those two
+    corners.splice(rightUnderIndex, 1);
+    corners.splice(leftUpperIndex, 1);
+
+    /* 2) REST */
+    if (corners[0].x - corners[1].x >= 0 && corners[0].y - corners[1].y <= 0) {
+        rightUpperCoordinate = corners[0];
+        leftUnderCoordinate = corners[1];
+    } else {
+        rightUpperCoordinate = corners[1];
+        leftUnderCoordinate = corners[0];
+    }
+
+    return {
+        LeftUp: leftUpperCoordinate,
+        RightUp: rightUpperCoordinate,
+        RightUnder: rightUnderCoordinate,
+        LeftUnder: leftUnderCoordinate,
+    };
+}
+
+
 /**
  * Label all the corners
  */
