@@ -1277,7 +1277,7 @@ class Client {
             //anderelijnen tekenen
             slaveLines.forEach(line => {
                 ctx.beginPath();
-                ctx.moveTo(line[0].x, line[1].y);
+                ctx.moveTo(line[0].x, line[0].y);
                 ctx.lineTo(line[1].x, line[1].y);
                 ctx.stroke();
             });
