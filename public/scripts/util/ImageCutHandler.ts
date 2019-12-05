@@ -38,6 +38,8 @@ function rotateAndDrawImageForSlave(
     imgCanvas: HTMLCanvasElement
 ): HTMLCanvasElement {
 
+    const screenAngle = screen.angle;
+
     // const translatedCorners = {
     //     LeftUp: screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
     //     RightUp: screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
@@ -54,10 +56,10 @@ function rotateAndDrawImageForSlave(
 
     const screenCenter = screen.centroid.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y);
     const translatedAndRotatedCorners = {
-        LeftUp: rotatePointAroundAnchor(screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
-        RightUp: rotatePointAroundAnchor(screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
-        RightUnder: rotatePointAroundAnchor(screen.sortedCorners.RightUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
-        LeftUnder: rotatePointAroundAnchor(screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screen.angle),
+        LeftUp: rotatePointAroundAnchor(screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screenAngle),
+        RightUp: rotatePointAroundAnchor(screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screenAngle),
+        RightUnder: rotatePointAroundAnchor(screen.sortedCorners.RightUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screenAngle),
+        LeftUnder: rotatePointAroundAnchor(screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screenAngle),
     }
 
     const screenWidth = screen.width;
@@ -65,11 +67,11 @@ function rotateAndDrawImageForSlave(
 
     const rotatedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const rotatedImgCtx = rotatedImg.getContext("2d");
-    console.log("ANGLE: " + screen.angle);
+    console.log("ANGLE: " + screenAngle);
     console.log("CENTER: " + screen.centroid);
-    if (screen.angle !== 0) {
+    if (screenAngle !== 0) {
         rotatedImgCtx.translate(screenCenter.x, screenCenter.y);
-        rotatedImgCtx.rotate(degreesToRadians(screen.angle));
+        rotatedImgCtx.rotate(degreesToRadians(screenAngle));
         rotatedImgCtx.translate(-screenCenter.x, -screenCenter.y);
     }
     rotatedImgCtx.drawImage(imgCanvas, 0, 0)
