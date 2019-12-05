@@ -59,17 +59,19 @@ export default class Connections {
                         type: i === 0 ? ConnectionType.MASTER : ConnectionType.SLAVE
                     });
                 } */
-                
-                io.to(this._connections[0].id).emit(
-                    SharedEventTypes.NotifyOfTypeChange,{
-                    type: ConnectionType.MASTER
-                });
+
+                if (this._connections.length > 0) {
+                    io.to(this._connections[0].id).emit(
+                        SharedEventTypes.NotifyOfTypeChange, {
+                        type: ConnectionType.MASTER
+                    });
+                }
 
                 /*
                 io.emit(SharedEventTypes.NotifyOfTypeChange, {
                     type: ConnectionType.SLAVE
                 }); */
-                
+
             } else {
                 this._connections.splice(index, 1);
             }
