@@ -826,9 +826,9 @@ class Client {
             .lines;
         let currentLine = //random lijn kiezen om naar toe te gaan
             potentialLines[Math.floor(Math.random() * potentialLines.length)];
-        let slavesIdWithCurrentLine = slavesLinkedWithLine.find(obj => {
-            return obj.line === currentLine;
-        }).slaves; //is nog een object dat de Id bevat
+        let slavesIdWithCurrentLine = slavesLinkedWithLine.find(obj =>
+            obj.line.equals(obj.line)
+        ).slaves; //is nog een object dat de Id bevat
         //lijst met overeenkomstige slaves maken
         let slavesWithCurrentLine: SlaveScreen[] = [];
         let slaves = slaveFlowHandler.screens;
@@ -841,12 +841,7 @@ class Client {
         });
         console.log(slavesWithCurrentLine);
         let reverse = false;
-        if (
-            !(
-                slavesWithCurrentLine[0].centroid.x == nextPoint.x &&
-                slavesWithCurrentLine[0].centroid.y == nextPoint.x
-            )
-        ) {
+        if (!slavesWithCurrentLine[0].centroid.equals(nextPoint)) {
             reverse = true;
             slavesWithCurrentLine.reverse();
         }

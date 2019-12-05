@@ -153,4 +153,10 @@ export default class Line {
 
         return theta;
     }
+
+    equals(line: Line) {
+        if (this.a.equals(line.a) && this.b.equals(line.b)) return true;
+        if (this.a.equals(line.b) && this.b.equals(line.a)) return true;
+        return false;
+    }
 }
