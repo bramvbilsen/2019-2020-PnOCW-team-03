@@ -1,6 +1,9 @@
 import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
 import Point from "../screen_detection/Point";
+import { sortCorners } from "../../util/shapes";
+import { getHSLColorForPixel } from "../screen_detection/screen_detection";
+import Line from "../screen_detection/Line";
 
 /**
  * Initializing constants
@@ -34,38 +37,6 @@ const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180); //pink
 const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25); // green
 const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255); // blue
 const leftUnderColor: IHSLColor = rgbToHsl(255, 216, 0); // yellow
-const colors = [
-    leftUpperColor,
-    rightUpperColor,
-    rightUnderColor,
-    leftUnderColor,
-];
-
-
-function getHSLColorForPixel(
-    x: number,
-    y: number,
-    width: number,
-    pixels: Uint8ClampedArray
-): IHSLColor {
-    const rgba = getRGBAColorForPixel(x, y, width, pixels);
-    return rgbToHsl(rgba.r, rgba.g, rgba.b);
-}
-
-function getRGBAColorForPixel(
-    x: number,
-    y: number,
-    width: number,
-    pixels: Uint8ClampedArray
-): IRGBAColor {
-    const i = y * (width * 4) + x * 4;
-    return {
-        r: pixels[i],
-        g: pixels[i + 1],
-        b: pixels[i + 2],
-        a: pixels[i + 3],
-    };
-}
 
 /**
  *
@@ -170,73 +141,21 @@ export function labelCorners(p1: Point, p2: Point, p3: Point, p4: Point) {
     };
 }
 
-
 /**
- * Label all the corners
+ * 
+ * @param screen 
+ * @param canvas 
+ * @returns `{orientation: Orientation, normalTopEdge: Line}`
+ *     `orientation` holds information regarding the orientation of the screen.
+ *     `normalTopEdge` holds the edge which would be the top edge for normal orientation.
  */
-function cornerLabeling(p1: Point, p2: Point, p3: Point, p4: Point) {
-    var corners = [p1, p2, p3, p4];
-    var sums = [];
-    var min = Number.POSITIVE_INFINITY;
-    var max = Number.NEGATIVE_INFINITY;
-    var rightUnderIndex, leftUpperIndex;
-    var rightUpperCoordinate: Point,
-        leftUnderCoordinate: Point,
-        leftUpperCoordinate: Point,
-        rightUnderCoordinate: Point;
-
-    sums[0] = p1.x + p1.y;
-    sums[1] = p2.x + p2.y;
-    sums[2] = p3.x + p3.y;
-    sums[3] = p4.x + p4.y;
-
-    /* 1) LEFT-UPPER & RIGHT-UNDER */
-    for (var i = 0; i < sums.length; i++) {
-        if (sums[i] >= max) {
-            max = sums[i];
-            rightUnderIndex = i;
-            rightUnderCoordinate = corners[i];
-        }
-        if (sums[i] <= min) {
-            min = sums[i];
-            leftUpperIndex = i;
-            leftUpperCoordinate = corners[i];
-        }
-    }
-    // Remove those two
-    corners.splice(rightUnderIndex, 1);
-    corners.splice(leftUpperIndex, 1);
-
-    /* 2) REST */
-    if (corners[0].x - corners[1].x >= 0 && corners[0].y - corners[1].y <= 0) {
-        rightUpperCoordinate = corners[0];
-        leftUnderCoordinate = corners[1];
-    } else {
-        rightUpperCoordinate = corners[1];
-        leftUnderCoordinate = corners[0];
-    }
-
-    return {
-        LeftUp: leftUpperCoordinate,
-        RightUp: rightUpperCoordinate,
-        RightUnder: rightUnderCoordinate,
-        LeftUnder: leftUnderCoordinate,
-    };
-}
-
-
-
-
 export default function calculateOrientation(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
-): { orientation: Orientation, leftWidthPoint: Point, rightWidthPoint: Point } {
+): Orientation {
 
     if (screen.corners.length !== 4) {
-        let p1: Point = new Point(0, 0);
-        let p2: Point = new Point(0, 0);
-        let orientation = Orientation.NONE;
-        return { orientation, leftWidthPoint: undefined, rightWidthPoint: undefined };
+        return Orientation.NORMAL;
     }
 
     const pixels = canvas
@@ -245,16 +164,13 @@ export default function calculateOrientation(
 
 
     /**New try with all 4 corners their colors*/
-    let corners: Point[] = [];
-    screen.corners.forEach(corner => {
-        corners.push(corner.copy());
-    });
-    let labeledCorners = cornerLabeling(corners[0], corners[1], corners[2], corners[3]);
+    const corners: Point[] = screen.corners.map(corner => corner.copy());
+    const labeledCorners = sortCorners(corners);
 
-    let leftUpCoordinates: Array<Point> = [];
-    let rightUpCoordinates: Array<Point> = [];
-    let leftUnderCoordinates: Array<Point> = [];
-    let rightUnderCoordinates: Array<Point> = [];
+    const leftUpCoordinates: Array<Point> = [];
+    const rightUpCoordinates: Array<Point> = [];
+    const leftUnderCoordinates: Array<Point> = [];
+    const rightUnderCoordinates: Array<Point> = [];
 
     /**Get lists of diagonal points starting from each corner, for color comparison later*/
     for (let i = 0; i <= 10; i++) {
@@ -279,149 +195,104 @@ export default function calculateOrientation(
         rightUnderCoordinates.push(new Point(labeledCorners.RightUnder.x, labeledCorners.RightUnder.y));
     }
 
-
-
     /**Calculate Colors and count the amount of times it corresponds with an expected orientation color*/
-    let counterNormal = 0;
-    let counterClockwise = 0;
-    let counterCounterClockwise = 0;
-    let counterFlipped = 0;
+    let counter_normal = 0;
+    let counter_clockwise = 0;
+    let counter_counterClockwise = 0;
+    let counter_flipped = 0;
 
-    for (let point of leftUpCoordinates) {
-        let leftUpperPixelColor = getHSLColorForPixel(
+    for (const point of leftUpCoordinates) {
+        const leftUpperPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
             pixels);
         if (isSimilarHSLColor(leftUpperPixelColor, leftUpperColor, colorRange)) {
-            counterNormal++;
+            counter_normal++;
         }
         if (isSimilarHSLColor(leftUpperPixelColor, rightUpperColor, colorRange)) {
-            counterCounterClockwise++;
+            counter_counterClockwise++;
         }
         if (isSimilarHSLColor(leftUpperPixelColor, rightUnderColor, colorRange)) {
-            counterFlipped++;
+            counter_flipped++;
         }
         if (isSimilarHSLColor(leftUpperPixelColor, leftUnderColor, colorRange)) {
-            counterClockwise++;
+            counter_clockwise++;
         }
     }
 
-    for (let point of rightUpCoordinates) {
-        let rightUpperPixelColor = getHSLColorForPixel(
+    for (const point of rightUpCoordinates) {
+        const rightUpperPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
             pixels);
         if (isSimilarHSLColor(rightUpperPixelColor, rightUpperColor, colorRange)) {
-            counterNormal++;
+            counter_normal++;
         }
         if (isSimilarHSLColor(rightUpperPixelColor, rightUnderColor, colorRange)) {
-            counterCounterClockwise++;
+            counter_counterClockwise++;
         }
         if (isSimilarHSLColor(rightUpperPixelColor, leftUnderColor, colorRange)) {
-            counterFlipped++;
+            counter_flipped++;
         }
         if (isSimilarHSLColor(rightUpperPixelColor, leftUpperColor, colorRange)) {
-            counterClockwise++;
+            counter_clockwise++;
         }
     }
 
-    for (let point of leftUnderCoordinates) {
-        let leftUnderPixelColor = getHSLColorForPixel(
+    for (const point of leftUnderCoordinates) {
+        const leftUnderPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
             pixels);
         if (isSimilarHSLColor(leftUnderPixelColor, leftUnderColor, colorRange)) {
-            counterNormal++;
+            counter_normal++;
         }
         if (isSimilarHSLColor(leftUnderPixelColor, leftUpperColor, colorRange)) {
-            counterCounterClockwise++;
+            counter_counterClockwise++;
         }
         if (isSimilarHSLColor(leftUnderPixelColor, rightUpperColor, colorRange)) {
-            counterFlipped++;
+            counter_flipped++;
         }
         if (isSimilarHSLColor(leftUnderPixelColor, rightUnderColor, colorRange)) {
-            counterClockwise++;
+            counter_clockwise++;
         }
     }
 
-
-    for (let point of rightUnderCoordinates) {
-        let rightUnderPixelColor = getHSLColorForPixel(
+    for (const point of rightUnderCoordinates) {
+        const rightUnderPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
             pixels);
         if (isSimilarHSLColor(rightUnderPixelColor, rightUnderColor, colorRange)) {
-            counterNormal++;
+            counter_normal++;
         }
         if (isSimilarHSLColor(rightUnderPixelColor, leftUnderColor, colorRange)) {
-            counterCounterClockwise++;
+            counter_counterClockwise++;
         }
         if (isSimilarHSLColor(rightUnderPixelColor, leftUpperColor, colorRange)) {
-            counterFlipped++;
+            counter_flipped++;
         }
         if (isSimilarHSLColor(rightUnderPixelColor, rightUpperColor, colorRange)) {
-            counterClockwise++;
+            counter_clockwise++;
         }
     }
 
-    const leftWidthPoint: Point = null;
-    const rightWidthPoint: Point = null;
+    const maxOrientationCount = Math.max(counter_clockwise, counter_flipped, counter_counterClockwise, counter_normal);
 
-    let list: Array<number> = [counterClockwise, counterFlipped, counterCounterClockwise, counterNormal];
-    list.sort((a, b) => b - a);
-    console.log(list);
-
-
-    if (list[0] === counterNormal) {
-        console.log(Orientation.NORMAL);
-        let leftWidthPoint = labeledCorners.LeftUp;
-        let rightWidthPoint = labeledCorners.RightUp;
-        let orientation = Orientation.NORMAL;
-        return {
-            orientation,
-            leftWidthPoint,
-            rightWidthPoint,
-        }
+    switch (maxOrientationCount) {
+        case counter_normal:
+            return Orientation.NORMAL;
+        case counter_clockwise:
+            return Orientation.CLOCKWISE;
+        case counter_counterClockwise:
+            return Orientation.COUNTERCLOCKWISE;
+        case counter_flipped:
+            return Orientation.FLIPPED;
+        default:
+            return Orientation.NORMAL
     }
-
-    if (list[0] === counterCounterClockwise) {
-        console.log(Orientation.COUNTERCLOCKWISE);
-        let leftWidthPoint = labeledCorners.LeftUnder;
-        let rightWidthPoint = labeledCorners.LeftUp;
-        let orientation = Orientation.COUNTERCLOCKWISE;
-        return {
-            orientation,
-            leftWidthPoint,
-            rightWidthPoint,
-        }
-    }
-
-    if (list[0] === counterFlipped) {
-        console.log(Orientation.FLIPPED);
-        let leftWidthPoint = labeledCorners.LeftUnder;
-        let rightWidthPoint = labeledCorners.RightUnder;
-        let orientation = Orientation.FLIPPED
-        return {
-            orientation,
-            leftWidthPoint,
-            rightWidthPoint,
-        }
-    }
-
-    if (list[0] === counterClockwise) {
-        console.log(Orientation.CLOCKWISE);
-        let leftWidthPoint = labeledCorners.RightUp;
-        let rightWidthPoint = labeledCorners.RightUnder;
-        let orientation = Orientation.CLOCKWISE
-        return {
-            orientation,
-            leftWidthPoint,
-            rightWidthPoint,
-        }
-    }
-
 }
