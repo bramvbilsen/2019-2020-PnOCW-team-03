@@ -817,7 +817,7 @@ class Client {
 
     public nextLine = () => {
         let nextPoint = this.middle;
-        let startTime = new Date().getTime() + 5000;
+        let startTime = new Date().getTime() + 500;
         console.log("beginpunt " + nextPoint);
         let triangulation = this.triangulation;
         let lines = triangulation.copyMiddlePoints();
@@ -1137,8 +1137,8 @@ class Client {
         directionx /= msg.duration; // pixels/40 ms
         directiony /= msg.duration;
 
-        directionx *= 100;
-        directiony *= 100;
+        directionx *= 40;
+        directiony *= 40;
 
         let last = msg.last;
 
@@ -1290,7 +1290,7 @@ class Client {
                 $("#image-slave").attr("src", canvas.toDataURL());
                 clearinterval();
             }
-        }, 100);
+        }, 40);
         const clearinterval = () => {
             console.log("last= " + last);
             console.log("hey");
