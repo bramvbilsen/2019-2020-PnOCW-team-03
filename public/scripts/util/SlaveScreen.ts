@@ -10,17 +10,14 @@ export default class SlaveScreen {
     slaveID: string;
     orientation: Orientation | undefined;
     slavePortionImg: HTMLCanvasElement;
-    topleft: Point;
-    topRight: Point;
-    angleScreen: number;
     triangulation: {
         //de lijnen die zeker moeten getekend worden
         angles: Array<{ string: string; point: Point }>;
         lines: Array<{ string: string; point1: Point; point2: Point }>;
     } = {
-        angles: [],
-        lines: [],
-    };
+            angles: [],
+            lines: [],
+        };
 
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;
@@ -68,16 +65,51 @@ export default class SlaveScreen {
     }
 
     /**
-     * Returns the angle in degrees. From 0-359.9
+     * `orientation` should be defined at this point.
      */
-    get angle(): number {
-        this.angleScreen = this.calcAngle();
-        return this.angleScreen;
+    get normalTopEdge(): Line {
+        if (!this.orientation) {
+            return undefined;
+        }
+        const sortedCorners = this.sortedCorners;
+        if (this.orientation === Orientation.NORMAL) {
+            console.log(Orientation.NORMAL);
+            return new Line(sortedCorners.LeftUp, sortedCorners.RightUp);
+        }
+
+        if (this.orientation === Orientation.COUNTERCLOCKWISE) {
+            console.log(Orientation.COUNTERCLOCKWISE);
+            return new Line(sortedCorners.LeftUnder, sortedCorners.LeftUp);
+        }
+
+        if (this.orientation === Orientation.FLIPPED) {
+            console.log(Orientation.FLIPPED);
+            return new Line(sortedCorners.LeftUnder, sortedCorners.RightUnder);
+        }
+
+        if (this.orientation === Orientation.CLOCKWISE) {
+            console.log(Orientation.CLOCKWISE);
+            return new Line(sortedCorners.RightUp, sortedCorners.RightUnder);
+        }
     }
 
-    public calcAngle():number{
-        let topScreenEdge: Line = new Line(this.topleft, this.topRight);
-        let angle = topScreenEdge.angleBetweenEndpoints();
+    /**
+     * `normalTopEdge` should be defined at this point.
+     * @returns The angle in degrees between 0 and 359.99deg
+     */
+    get angle(): number {
+        return this.calcAngle();
+    }
+
+    /**
+     * `normalTopEdge` should be defined at this point.
+     * @returns The angle in degrees.
+     */
+    private calcAngle(): number {
+        if (!this.normalTopEdge) {
+            return 0;
+        }
+        const angle = this.normalTopEdge.angleBetweenEndpoints();
         switch (this.orientation) {
             case Orientation.NORMAL:
                 if (angle === 90) {
@@ -86,8 +118,8 @@ export default class SlaveScreen {
                 else if (angle > 45 && angle < 90) {
                     return 360 - angle;
                 }
-                else if(angle > 90 && angle <= 135){
-                    return angle-90;
+                else if (angle > 90 && angle <= 135) {
+                    return angle - 90;
                 }
                 else if (angle < 45) {
                     this.orientation = Orientation.COUNTERCLOCKWISE;
@@ -108,12 +140,12 @@ export default class SlaveScreen {
                     return this.calcAngle();
                 }
                 else if (angle <= 45) {
-                    return angle+90;
+                    return angle + 90;
                 }
                 else if (angle >= 135 && angle < 180) {
                     return angle;
                 }
-                else if (angle >= 90 && angle < 135){
+                else if (angle >= 90 && angle < 135) {
                     this.orientation = Orientation.NORMAL;
                     return this.calcAngle();
                 }
@@ -121,10 +153,10 @@ export default class SlaveScreen {
 
             case Orientation.FLIPPED:
                 if (angle === 90) {
-                    return angle+90;
+                    return angle + 90;
                 }
                 else if (angle > 45 && angle < 90) {
-                    return angle+90;
+                    return angle + 90;
                 }
                 else if (angle <= 45) {
                     this.orientation = Orientation.CLOCKWISE;
@@ -134,28 +166,28 @@ export default class SlaveScreen {
                     this.orientation = Orientation.COUNTERCLOCKWISE;
                     return this.calcAngle();
                 }
-                else if (angle >= 90 && angle < 135){
-                    return (angle-90)+180;
+                else if (angle >= 90 && angle < 135) {
+                    return (angle - 90) + 180;
                 }
                 break;
 
             case Orientation.COUNTERCLOCKWISE:
-                if (angle === 0){
+                if (angle === 0) {
                     return 270;
                 }
-                else if (angle <= 45){
-                    return angle+270;
+                else if (angle <= 45) {
+                    return angle + 270;
                 }
-                else if (angle > 45 && angle < 90){
+                else if (angle > 45 && angle < 90) {
                     this.orientation = Orientation.NORMAL;
                     return this.calcAngle();
                 }
-                else if (angle >= 90 && angle < 135){
+                else if (angle >= 90 && angle < 135) {
                     this.orientation = Orientation.FLIPPED;
                     return this.calcAngle();
                 }
-                else if (angle >= 135 && angle < 180){
-                    return 270-(180-angle);
+                else if (angle >= 135 && angle < 180) {
+                    return 270 - (180 - angle);
                 }
                 break;
         }

@@ -5,6 +5,7 @@ import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 import { getCentroidOf } from "../../scripts/util/shapes";
 import { Orientation } from "../../scripts/image_processing/orientation_detection/orientations";
 import { labelCorners } from "../../scripts/image_processing/orientation_detection/orientation_detection_alternative";
+import Line from "../../scripts/image_processing/screen_detection/Line";
 
 export default function run_tests(
     onNewResult: (testResult: TestResult) => void,
@@ -58,8 +59,6 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.topleft = labeled.RightUp;
-        screen.topRight= labeled.RightUnder;
         screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
 
@@ -79,8 +78,6 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.topleft = labeled.RightUp;
-        screen.topRight= labeled.RightUnder;
         screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
 
@@ -100,8 +97,6 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.topleft = labeled.RightUnder;
-        screen.topRight= labeled.RightUp;
         screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
 
@@ -120,8 +115,6 @@ const tests: Tests<number> = {
 
         const screen = new SlaveScreen(corners, "1");
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
-        screen.topleft = labeled.RightUnder;
-        screen.topRight= labeled.LeftUnder;
         screen.orientation = Orientation.FLIPPED;
         const angle = screen.angle;
 
@@ -140,8 +133,6 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        screen.topleft = new Point(500, 400);
-        screen.topRight= new Point(800, 400);
         screen.orientation = Orientation.FLIPPED;
         const angle = screen.angle;
 
