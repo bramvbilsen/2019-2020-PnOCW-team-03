@@ -827,7 +827,7 @@ class Client {
         let currentLine = //random lijn kiezen om naar toe te gaan
             potentialLines[Math.floor(Math.random() * potentialLines.length)];
         let slavesIdWithCurrentLine = slavesLinkedWithLine.find(obj =>
-            obj.line.equals(obj.line)
+            obj.line.equals(currentLine)
         ).slaves; //is nog een object dat de Id bevat
         //lijst met overeenkomstige slaves maken
         let slavesWithCurrentLine: SlaveScreen[] = [];
@@ -874,7 +874,14 @@ class Client {
                 animationLine.unshift(null); //null gaat overeenkomen met middelpunt
                 animationOrient = "n".concat(animationOrient);
             }
-            if (i != 0 && reverse) {
+            if (i == slavesWithCurrentLine.length - 1) {
+                animationLine.reverse(); //hier staat de null juist
+                animationOrient = animationOrient
+                    .split("")
+                    .reverse()
+                    .join("");
+            }
+            if (i != 0 && reverse && i != slavesWithCurrentLine.length - 1) {
                 animationLine.reverse(); //hier staat de null juist
                 animationOrient = animationOrient
                     .split("")
