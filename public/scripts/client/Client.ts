@@ -851,6 +851,7 @@ class Client {
             reverse = true;
             slavesWithCurrentLine.reverse();
         }
+        console.log(reverse);
         for (let i = 0; i < slavesWithCurrentLine.length; i++) {
             const element = slavesWithCurrentLine[i];
             const slaveID = element.slaveID;
@@ -1289,7 +1290,7 @@ class Client {
                 clearinterval();
             }
         }, 100);
-        function clearinterval() {
+        const clearinterval = () => {
             console.log("last= " + last);
             console.log("hey");
             clearInterval(timer);
@@ -1297,7 +1298,7 @@ class Client {
             if (last) {
                 this._socket.emit(MasterEventTypes.nextLine, {});
             }
-        }
+        };
     };
 }
 
