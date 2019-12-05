@@ -904,7 +904,7 @@ class Client {
                 },
             ])[0];
             //snelhied
-            let speed = 0.03; //pixels/ms
+            let speed = 0.02; //pixels/ms
             //starttijd berekenen
             let startPoint: Point;
             if (animationLine[0] == null) {
