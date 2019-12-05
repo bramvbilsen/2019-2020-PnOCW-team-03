@@ -102,7 +102,7 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log(
                     "Attempting to display image by master, imgurl: " +
-                    msg.imgUrl
+                        msg.imgUrl
                 );
                 io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
                     imgUrl: msg.imgUrl,
@@ -197,12 +197,17 @@ io.on("connect", (socket: socketio.Socket) => {
             angles: any;
             lines: any;
             duration: any;
+            last: any;
         }) => {
             if (socket.id === connections.master.id) {
                 io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
             }
         }
     );
+
+    socket.on(SlaveEventTypes.showAnimation, () => {
+        io.to(connections.masterID).emit(SlaveEventTypes.showAnimation, {});
+    });
 });
 
 server.listen(port, () => {
