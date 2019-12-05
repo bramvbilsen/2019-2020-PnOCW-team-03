@@ -812,12 +812,12 @@ class Client {
         this.triangulation = this.calculateTriangulation();
         let points = this.triangulation.points;
         this.middle = points[Math.floor(Math.random() * points.length)];
-        this.nextLine(); //een beetje tijd voor er gestart wordt
+        this.nextLine();
     };
 
     public nextLine = () => {
         let nextPoint = this.middle;
-        let startTime = new Date().getTime() + 500;
+        let startTime = new Date().getTime() + 100;
         console.log("beginpunt " + nextPoint);
         let triangulation = this.triangulation;
         let lines = triangulation.copyMiddlePoints();
@@ -1137,8 +1137,8 @@ class Client {
         directionx /= msg.duration; // pixels/40 ms
         directiony /= msg.duration;
 
-        directionx *= 40;
-        directiony *= 40;
+        directionx *= 100;
+        directiony *= 100;
 
         let last = msg.last;
 
@@ -1290,7 +1290,7 @@ class Client {
                 $("#image-slave").attr("src", canvas.toDataURL());
                 clearinterval();
             }
-        }, 40);
+        }, 100);
         const clearinterval = () => {
             console.log("last= " + last);
             console.log("hey");
