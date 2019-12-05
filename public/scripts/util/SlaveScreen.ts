@@ -1,7 +1,7 @@
 import Point from "../image_processing/screen_detection/Point";
 import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
-import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
+import { radiansToDegrees } from "./angles";
 import { Orientation } from "../image_processing/orientation_detection/orientations";
 import { sortCorners } from "./shapes";
 
@@ -10,14 +10,17 @@ export default class SlaveScreen {
     slaveID: string;
     orientation: Orientation | undefined;
     slavePortionImg: HTMLCanvasElement;
+    topleft: Point;
+    topRight: Point;
+    angleScreen: number;
     triangulation: {
         //de lijnen die zeker moeten getekend worden
         angles: Array<{ string: string; point: Point }>;
         lines: Array<{ string: string; point1: Point; point2: Point }>;
     } = {
-            angles: [],
-            lines: [],
-        };
+        angles: [],
+        lines: [],
+    };
 
     constructor(corners: Point[], slaveID: string) {
         this.corners = corners;
@@ -65,28 +68,94 @@ export default class SlaveScreen {
     }
 
     /**
-     * Returns the angle in degrees.
+     * Returns the angle in degrees. From 0-359.9
      */
     get angle(): number {
-        // switch (this.orientation) {
-        //     case Orientation.NORMAL:
-        //         if (this.widthEdge.angleBetweenEndpoints() >= 90) {
-        //             return this.widthEdge.angleBetweenEndpoints() - 90;
-        //         } else {
-        //             return 360 - (90 - this.widthEdge.angleBetweenEndpoints());
-        //         }
-        //     case Orientation.CLOCKWISE:
-        //         if (this.widthEdge.angleBetweenEndpoints() >= 90) {
-        //             return this.widthEdge.angleBetweenEndpoints() - 90;
-        //         } else {
+        this.angleScreen = this.calcAngle();
+        return this.angleScreen;
+    }
 
-        //         }
-        // }
-        const normalAngle = this.widthEdge.angleBetweenEndpoints() - 90;
-        // if (this.orientation === Orientation.FLIPPED || this.orientation === Orientation.COUNTERCLOCKWISE) {
-        //     return normalAngle + 180;
-        // }
-        return normalAngle;
+    public calcAngle():number{
+        let topScreenEdge: Line = new Line(this.topleft, this.topRight);
+        let angle = topScreenEdge.angleBetweenEndpoints();
+        switch (this.orientation) {
+            case Orientation.NORMAL:
+                if (angle === 90) {
+                    return angle - 90;
+                }
+                if (angle >= 45 && angle < 90) {
+                    return 360 - angle;
+                }
+                else if (angle < 45) {
+                    this.orientation = Orientation.COUNTERCLOCKWISE;
+                    return this.calcAngle();
+                }
+                else if (angle > 135) {
+                    this.orientation = Orientation.CLOCKWISE;
+                    return this.calcAngle();
+                }
+                break;
+
+            case Orientation.CLOCKWISE:
+                if (angle === 0) {
+                    return 90;
+                }
+                else if (angle > 45 && angle < 90) {
+                    this.orientation = Orientation.FLIPPED;
+                    return this.calcAngle();
+                }
+                else if (angle <= 45) {
+                    return angle+90;
+                }
+                else if (angle >= 135 && angle < 180) {
+                    return angle;
+                }
+                else if (angle >= 90 && angle < 135){
+                    this.orientation = Orientation.NORMAL;
+                    return this.calcAngle();
+                }
+                break;
+
+            case Orientation.FLIPPED:
+                if (angle === 90) {
+                    return angle+90;
+                }
+                else if (angle > 45 && angle < 90) {
+                    return angle+90;
+                }
+                else if (angle <= 45) {
+                    this.orientation = Orientation.CLOCKWISE;
+                    return this.calcAngle();
+                }
+                else if (angle >= 135 && angle < 180) {
+                    this.orientation = Orientation.COUNTERCLOCKWISE;
+                    return this.calcAngle();
+                }
+                else if (angle >= 90 && angle < 135){
+                    return (angle-90)+180;
+                }
+                break;
+
+            case Orientation.COUNTERCLOCKWISE:
+                if (angle === 0){
+                    return 270;
+                }
+                else if (angle <= 45){
+                    return angle+270;
+                }
+                else if (angle > 45 && angle < 90){
+                    this.orientation = Orientation.NORMAL;
+                    return this.calcAngle();
+                }
+                else if (angle >= 90 && angle < 135){
+                    this.orientation = Orientation.FLIPPED;
+                    return this.calcAngle();
+                }
+                else if (angle >= 135 && angle < 180){
+                    return 270-(180-angle);
+                }
+                break;
+        }
     }
 
     // TODO: This should be fixed because it won't work for portrait oriented devices.

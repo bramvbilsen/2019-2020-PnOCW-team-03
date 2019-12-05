@@ -303,6 +303,9 @@ export default class SlaveFlowHandler {
         const currScreen = this.screens[this.screens.length - 1];
         const { orientation } = calculateOrientation(currScreen, orientationCanvas);
         currScreen.orientation = orientation;
+        let cc = calculateOrientation(currScreen, orientationCanvas);
+        currScreen.topleft = cc.leftWidthPoint;
+        currScreen.topRight = cc.rightWidthPoint;
         if (this.automated) {
             await this.nextStep();
         } else {
