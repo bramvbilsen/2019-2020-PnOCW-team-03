@@ -1289,7 +1289,7 @@ class Client {
             }
             if (last) {
                 //voor last moet je niet kijken naar outofbound
-                false;
+                notOutOfBound = false;
             }
             if (t > 0 || notOutOfBound) {
                 //circel tekenen
