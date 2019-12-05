@@ -841,6 +841,16 @@ class Client {
             );
         });
         console.log(slavesWithCurrentLine);
+        let reverse = false;
+        if (
+            !(
+                slavesWithCurrentLine[0].centroid.x == nextPoint.x &&
+                slavesWithCurrentLine[0].centroid.y == nextPoint.x
+            )
+        ) {
+            reverse = true;
+            slavesWithCurrentLine.reverse();
+        }
         for (let i = 0; i < slavesWithCurrentLine.length; i++) {
             const element = slavesWithCurrentLine[i];
             const slaveID = element.slaveID;
@@ -869,13 +879,14 @@ class Client {
                 animationLine.unshift(null); //null gaat overeenkomen met middelpunt
                 animationOrient = "n".concat(animationOrient);
             }
-            if (i != 0 && !animationLine[0]) {
-                animationLine.reverse(); //hier hebben we de juiste volgorde
+            if (i != 0 && reverse) {
+                animationLine.reverse(); //hier staat de null juist
                 animationOrient = animationOrient
                     .split("")
                     .reverse()
                     .join("");
             }
+            //nu nog reversen
             console.log(animationLine);
             console.log(animationOrient);
             //animatielijn omvormen naar ratio
@@ -936,6 +947,7 @@ class Client {
                 last = true;
                 this.middle = endPoint;
             }
+            console.log(last);
             this._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
                 startTime: start,
                 slaveId: slaveID,
@@ -1126,6 +1138,8 @@ class Client {
         directionx *= 100;
         directiony *= 100;
 
+        let last = msg.last;
+
         // directionx *= msg.duration / 1000;
         // directiony *= msg.duration / 1000;
 
@@ -1143,7 +1157,7 @@ class Client {
                 directiony,
                 slaveAngles,
                 slaveLines,
-                msg.last
+                last
             );
         }, eta_ms);
 
@@ -1276,7 +1290,10 @@ class Client {
             }
         }, 100);
         function clearinterval() {
+            console.log("last= " + last);
+            console.log("hey");
             clearInterval(timer);
+            console.log("emit");
             if (last) {
                 this._socket.emit(MasterEventTypes.nextLine, {});
             }
