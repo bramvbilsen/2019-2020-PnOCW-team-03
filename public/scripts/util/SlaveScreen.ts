@@ -116,7 +116,7 @@ export default class SlaveScreen {
                     return angle - 90;
                 }
                 else if (angle > 45 && angle < 90) {
-                    return 360 - angle;
+                    return 360-(90-angle);
                 }
                 else if (angle > 90 && angle <= 135) {
                     return angle - 90;
