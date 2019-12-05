@@ -1117,6 +1117,9 @@ class Client {
         //slavaAnimation omzetten naar een aangrijpingspunt met richting en deltax
         let directionx = slaveAnimationLine[1].x - slaveAnimationLine[0].x; //pixels
         let directiony = slaveAnimationLine[1].y - slaveAnimationLine[0].y;
+        let length_direction = Math.sqrt(
+            Math.pow(directionx, 2) + Math.pow(directiony, 2)
+        );
         directionx /= msg.duration; // pixels/40 ms
         directiony /= msg.duration;
 

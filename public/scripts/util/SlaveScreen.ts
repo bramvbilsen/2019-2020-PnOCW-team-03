@@ -68,10 +68,24 @@ export default class SlaveScreen {
      * Returns the angle in degrees.
      */
     get angle(): number {
-        const normalAngle = this.heightEdge.angleBetweenEndpoints;
-        if (this.orientation === Orientation.FLIPPED || this.orientation === Orientation.COUNTERCLOCKWISE) {
-            return normalAngle + 180;
-        }
+        // switch (this.orientation) {
+        //     case Orientation.NORMAL:
+        //         if (this.widthEdge.angleBetweenEndpoints() >= 90) {
+        //             return this.widthEdge.angleBetweenEndpoints() - 90;
+        //         } else {
+        //             return 360 - (90 - this.widthEdge.angleBetweenEndpoints());
+        //         }
+        //     case Orientation.CLOCKWISE:
+        //         if (this.widthEdge.angleBetweenEndpoints() >= 90) {
+        //             return this.widthEdge.angleBetweenEndpoints() - 90;
+        //         } else {
+
+        //         }
+        // }
+        const normalAngle = this.widthEdge.angleBetweenEndpoints() - 90;
+        // if (this.orientation === Orientation.FLIPPED || this.orientation === Orientation.COUNTERCLOCKWISE) {
+        //     return normalAngle + 180;
+        // }
         return normalAngle;
     }
 
