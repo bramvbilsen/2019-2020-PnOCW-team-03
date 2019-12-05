@@ -307,6 +307,6 @@ const tests: Tests<Orientation> = {
             ),
             blancoCanvas
         ).orientation;
-        return { expected: Orientation.NORMAL, result };
+        return { expected: Orientation.CLOCKWISE, result };
     },
 };
