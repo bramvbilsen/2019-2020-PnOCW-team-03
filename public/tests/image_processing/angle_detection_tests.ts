@@ -1,12 +1,9 @@
 import SlaveScreen from "../../scripts/util/SlaveScreen";
 import Point from "../../scripts/image_processing/screen_detection/Point";
-import test_runner, {
-    TestResult,
-    Tests,
-    numberCompare
-} from "./helpers";
+import test_runner, { numberCompare, TestResult, Tests } from "./helpers";
 import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 import { getCentroidOf } from "../../scripts/util/shapes";
+import { Orientation } from "../../scripts/image_processing/orientation_detection/orientations";
 
 export default function run_tests(
     onNewResult: (testResult: TestResult) => void,
@@ -39,11 +36,14 @@ const tests: Tests<number> = {
         ]
         const screen = new SlaveScreen(corners, "1");
         console.log(screen.widthEdge);
+        screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
+
 
         return { expected: 0, result: angle };
     },
     "90deg rotation": async function () {
+
         const nonRotatedPoints = [
             new Point(500, 200),
             new Point(800, 200),
@@ -56,7 +56,9 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
+        screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
+
 
         return { expected: 90, result: angle };
     },
@@ -72,6 +74,7 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
+        screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
 
         return { expected: 45, result: angle };
