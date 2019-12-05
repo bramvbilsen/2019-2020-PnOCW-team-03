@@ -35,6 +35,17 @@ export default class Triangulation {
         this.lines.concat(line);
     }
 
+    copyLines() {
+        return this.lines.map(line => line.copy());
+    }
+
+    copyMiddlePoints() {
+        return this.middlePoints.map(middlePoint => ({
+            point: middlePoint.point.copy(),
+            lines: middlePoint.lines.map(line => line.copy()),
+        }));
+    }
+
     linesWithCertainPoints(point: Point) {
         let found: Line[] = [];
         let lines: Line[] = this.lines;

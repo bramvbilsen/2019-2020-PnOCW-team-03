@@ -820,7 +820,7 @@ class Client {
         let startTime = new Date().getTime() + 5000;
         console.log("beginpunt " + nextPoint);
         let triangulation = this.triangulation;
-        let lines = triangulation.middlePoints;
+        let lines = triangulation.copyMiddlePoints();
         let slavesLinkedWithLine = triangulation.slaves;
         let potentialLines = lines.find(obj => {
             return obj.point === nextPoint;
