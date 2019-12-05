@@ -79,8 +79,8 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.topleft = labeled.LeftUp;
-        screen.topRight= labeled.RightUp;
+        screen.topleft = labeled.RightUp;
+        screen.topRight= labeled.RightUnder;
         screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
 
