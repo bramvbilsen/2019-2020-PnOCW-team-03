@@ -1028,10 +1028,10 @@ class Client {
         const corners = slave.sortedCorners;
         points.forEach(element => {
             const fullString = element.string.split("");
-            const points = [element.point1, element.point2];
+            const points_ = [element.point1, element.point2];
             let ratioNumber: number[] = [];
-            for (let i = 0; i < points.length; i++) {
-                const point = points[i];
+            for (let i = 0; i < points_.length; i++) {
+                const point = points_[i];
                 if (point) {
                     const string = fullString[i];
                     let distance: number;
@@ -1278,7 +1278,20 @@ class Client {
                 window.innerWidth / 2 - 10,
                 window.innerHeight / 2 + 25
             );
-            if (t > 0) {
+            let notOutOfBound = true;
+            if (
+                x < 0 ||
+                x > window.innerWidth ||
+                y < 0 ||
+                y > window.innerHeight
+            ) {
+                notOutOfBound = false;
+            }
+            if (last) {
+                //voor last moet je niet kijken naar outofbound
+                false;
+            }
+            if (t > 0 || notOutOfBound) {
                 //circel tekenen
                 ctx.beginPath();
                 ctx.arc(x, y, 30, 0, 2 * Math.PI);
