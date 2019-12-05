@@ -1154,6 +1154,8 @@ class Client {
         let startTime = msg.startTime;
         startTime += this.serverTimeDiff; //syncen
         const eta_ms = startTime - Date.now();
+        console.log("start= " + new Date(startTime));
+        console.log("duration= " + msg.duration);
         setTimeout(() => {
             const enddate = new Date(startTime + msg.duration);
             this.animation(
@@ -1201,11 +1203,14 @@ class Client {
         ) {
             let points: Array<Point[]> = [];
             angles.forEach(angle => {
+                console.log("lijn = " + angle);
                 let fullstring = angle.string;
                 let ratio = [angle.point1, angle.point2];
+                console.log("ration =" + ratio);
                 let line: Point[] = [];
                 for (let i = 0; i < ratio.length; i++) {
                     const element = ratio[i];
+                    console.log("element = " + element);
                     if (element) {
                         const string = fullstring[i];
                         if (string == "u") {
@@ -1235,6 +1240,7 @@ class Client {
                     }
                 }
                 points.push(line);
+                console.log(line);
             });
             return points;
         }
@@ -1249,6 +1255,9 @@ class Client {
         slaveLines: Array<Point[]>,
         last: boolean
     ) => {
+        console.log("eindtijd = " + new Date(endDate));
+        console.log("dx =" + directionx);
+        console.log("dy =" + directiony);
         let x: number = startPoint.x;
         let y: number = startPoint.y;
         var timer = setInterval(function() {
