@@ -60,7 +60,7 @@ export default class Connections {
                     });
                 } */
 
-                if (this._connections.length >= 0) {
+                if (this._connections.length > 0) {
                     io.to(this._connections[0].id).emit(
                         SharedEventTypes.NotifyOfTypeChange, {
                         type: ConnectionType.MASTER
