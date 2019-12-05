@@ -205,8 +205,9 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
-    socket.on(MasterEventTypes.nextLine, () => {
-        io.to(connections.masterID).emit(SlaveEventTypes.showAnimation, {});
+    socket.on(SlaveEventTypes.animationFinished, () => {
+        console.log("dabbende steve, lit, u mama is so fat");
+        io.to(connections.masterID).emit(MasterEventTypes.nextLine, {});
     });
 });
 

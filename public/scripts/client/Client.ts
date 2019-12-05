@@ -1296,7 +1296,7 @@ class Client {
             clearInterval(timer);
             console.log("emit");
             if (last) {
-                this._socket.emit(MasterEventTypes.nextLine, {});
+                this._socket.emit(SlaveEventTypes.animationFinished, {});
             }
         };
     };
