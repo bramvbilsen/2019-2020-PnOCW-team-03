@@ -18,6 +18,7 @@ export enum SlaveEventTypes {
     NotifyMasterThatCreeperCanStart = "notify-master-that-creeper-can-start",
     NotifyMasterThatSlaveScreenIsOn = "notify-master-that-slave-screen-is-on",
     NotifyMasterThatSlaveOrientationIsOn = "notify-master-that-slave-orientation-is-on",
+    animationFinished = "animation-finished",
 }
 
 export enum MasterEventTypes {
@@ -33,4 +34,5 @@ export enum MasterEventTypes {
     GiveUpMaster = "give-up-master",
     ShowAnimationOnSlave = "show-animation-on-slave",
     HandleNextSlaveFlowHanlderStep = "handle-next-slave-flow-handler-step",
+    nextLine = "next-line",
 }
