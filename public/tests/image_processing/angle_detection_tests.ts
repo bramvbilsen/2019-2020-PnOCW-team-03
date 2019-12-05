@@ -4,6 +4,7 @@ import test_runner, { numberCompare, TestResult, Tests } from "./helpers";
 import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 import { getCentroidOf } from "../../scripts/util/shapes";
 import { Orientation } from "../../scripts/image_processing/orientation_detection/orientations";
+import { labelCorners } from "../../scripts/image_processing/orientation_detection/orientation_detection_alternative";
 
 export default function run_tests(
     onNewResult: (testResult: TestResult) => void,
@@ -55,7 +56,10 @@ const tests: Tests<number> = {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 90);
         });
 
+        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
+        screen.topleft = labeled.RightUp;
+        screen.topRight= labeled.RightUnder;
         screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
 
@@ -73,7 +77,10 @@ const tests: Tests<number> = {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 45);
         });
 
+        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
+        screen.topleft = labeled.LeftUp;
+        screen.topRight= labeled.RightUp;
         screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
 
@@ -90,7 +97,12 @@ const tests: Tests<number> = {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 135);
         });
 
+
+        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
+        screen.topleft = labeled.RightUnder;
+        screen.topRight= labeled.RightUp;
+        screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
 
         return { expected: 135, result: angle };
@@ -107,6 +119,10 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
+        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
+        screen.topleft = labeled.RightUnder;
+        screen.topRight= labeled.LeftUnder;
+        screen.orientation = Orientation.FLIPPED;
         const angle = screen.angle;
 
         return { expected: 179, result: angle };
@@ -117,13 +133,16 @@ const tests: Tests<number> = {
             new Point(500, 200),
             new Point(800, 200),
             new Point(800, 400),
-            new Point(500, 400),
+            new Point(500, 400)
         ];
         const corners: Point[] = nonRotatedPoints.map(point => {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), r * 180);
         });
 
         const screen = new SlaveScreen(corners, "1");
+        screen.topleft = new Point(500, 400);
+        screen.topRight= new Point(800, 400);
+        screen.orientation = Orientation.FLIPPED;
         const angle = screen.angle;
 
         return { expected: r * 180, result: angle };
