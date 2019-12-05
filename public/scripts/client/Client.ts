@@ -822,9 +822,8 @@ class Client {
         let triangulation = this.triangulation;
         let lines = triangulation.copyMiddlePoints();
         let slavesLinkedWithLine = triangulation.slaves;
-        let potentialLines = lines.find(obj => {
-            obj.point.equals(nextPoint);
-        }).lines;
+        let potentialLines = lines.find(obj => obj.point.equals(nextPoint))
+            .lines;
         let currentLine = //random lijn kiezen om naar toe te gaan
             potentialLines[Math.floor(Math.random() * potentialLines.length)];
         let slavesIdWithCurrentLine = slavesLinkedWithLine.find(obj => {
