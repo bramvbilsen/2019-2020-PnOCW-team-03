@@ -823,7 +823,7 @@ class Client {
         let lines = triangulation.copyMiddlePoints();
         let slavesLinkedWithLine = triangulation.slaves;
         let potentialLines = lines.find(obj => {
-            return obj.point === nextPoint;
+            obj.point.equals(nextPoint);
         }).lines;
         let currentLine = //random lijn kiezen om naar toe te gaan
             potentialLines[Math.floor(Math.random() * potentialLines.length)];
