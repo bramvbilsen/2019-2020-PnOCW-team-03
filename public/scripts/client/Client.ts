@@ -904,7 +904,7 @@ class Client {
                 },
             ])[0];
             //snelhied
-            let speed = 0.01; //pixels/ms
+            let speed = 0.03; //pixels/ms
             //starttijd berekenen
             let startPoint: Point;
             if (animationLine[0] == null) {
@@ -1252,7 +1252,8 @@ class Client {
             const ctx = canvas.getContext("2d");
             const now = new Date().getTime();
             const t = endDate - now;
-            ctx.strokeStyle = "rgb(255,0,0)";
+            ctx.strokeStyle = "rgb(0,0,255)";
+            ctx.fillStyle = "rgb(0,0,255)";
             //lijnen tekenen met middelpunten
             slaveAngles.forEach(angle => {
                 ctx.beginPath();
@@ -1282,11 +1283,18 @@ class Client {
                 ctx.beginPath();
                 ctx.arc(x, y, 30, 0, 2 * Math.PI);
                 ctx.stroke();
+                ctx.fill();
                 //ctx.drawImage(self.steveImg, x, y, 50, 50);
                 x += directionx;
                 y += directiony;
                 $("#image-slave").attr("src", canvas.toDataURL());
             } else {
+                if (last) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                }
                 $("#image-slave").attr("src", canvas.toDataURL());
                 clearinterval();
             }
