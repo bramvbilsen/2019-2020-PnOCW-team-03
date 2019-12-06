@@ -548,7 +548,7 @@ class Client {
                             let fullstring = "";
                             for (let i = 0; i < points.length; i++) {
                                 const element = points[i];
-                                fullstring.concat(
+                                fullstring = fullstring.concat(
                                     Object.keys(orientatedPoints).find(
                                         key =>
                                             orientatedPoints[key] === points[i]
