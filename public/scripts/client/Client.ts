@@ -584,6 +584,8 @@ class Client {
                 triangulation.addSlaves(line, slaveIDs);
             });
             triangulation.linkMiddlePointsToLines();
+            console.log(triangulation);
+            console.log(slaves);
             return triangulation;
         }
 
