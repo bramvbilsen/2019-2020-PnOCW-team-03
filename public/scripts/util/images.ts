@@ -26,12 +26,21 @@ export function scaleAndCutImageToBoundingBoxAspectRatio(
     extraWidth: number,
     extraHeight: number
 ): HTMLCanvasElement {
+    const imgCanvas = createCanvas(
+        globalBoundingBox.width,
+        globalBoundingBox.height
+    );
+    const imgCtx = imgCanvas.getContext("2d");
+    imgCtx.drawImage(img, 0, 0, globalBoundingBox.width, globalBoundingBox.height);
     const canvas = createCanvas(
         globalBoundingBox.width + extraWidth,
         globalBoundingBox.height + extraHeight
     );
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, extraWidth / 2, extraHeight / 2, globalBoundingBox.width + (extraWidth / 2), globalBoundingBox.height + (extraHeight / 2));
+    ctx.drawImage(
+        imgCanvas,
+        extraWidth / 2, extraHeight / 2
+    );
     return canvas;
 }
 
