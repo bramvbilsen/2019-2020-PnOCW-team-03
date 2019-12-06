@@ -169,6 +169,7 @@ export function resetMaster() {
                     const slaveImg = createImageCanvasForSlave(
                         globalBoundingBox,
                         screen,
+                        slaveFlowHandler.screens,
                         imgCanvas
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
@@ -187,6 +188,7 @@ export function resetMaster() {
                     const slaveImg = createImageCanvasForSlave(
                         globalBoundingBox,
                         screen,
+                        slaveFlowHandler.screens,
                         slaveFlowHandler.blancoCanvas
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
@@ -206,6 +208,7 @@ export function resetMaster() {
                     const slaveImg = createImageCanvasForSlave(
                         globalBoundingBox,
                         screen,
+                        slaveFlowHandler.screens,
                         triangCanvas
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);

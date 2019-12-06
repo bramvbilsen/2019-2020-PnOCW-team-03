@@ -259,8 +259,6 @@ export default function calculateScreenAngle(
     }
     console.log("Pink in bottom right: " + pinkPixelsBottomRight);
 
-    $("body").append(canvas);
-
     const maxPinkPixels = Math.max(pinkPixelsTopLeft, pinkPixelsTopRight, pinkPixelsBottomLeft, pinkPixelsBottomRight);
     if (maxPinkPixels === pinkPixelsTopLeft) {
         leftUp = sortedCorners.LeftUp;

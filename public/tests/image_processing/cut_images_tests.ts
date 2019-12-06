@@ -309,6 +309,7 @@ const tests: Tests<number> = {
         const resultCanvas0 = createImageCanvasForSlave(
             globalBoundingBox,
             slaveScreen0,
+            [slaveScreen0],
             imgCanvas
         );
 
@@ -363,6 +364,7 @@ const tests: Tests<number> = {
         const resultCanvas0 = createImageCanvasForSlave(
             globalBoundingBox,
             slaveScreen0,
+            [slaveScreen0],
             imgCanvas
         );
 
