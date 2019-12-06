@@ -489,7 +489,6 @@ export function amountOfNeighboringPixelsWithColor(
             result++;
         }
     }
-
     return result;
 }
 

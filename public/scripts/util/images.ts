@@ -22,14 +22,25 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
  */
 export function scaleAndCutImageToBoundingBoxAspectRatio(
     img: HTMLCanvasElement,
-    globalBoundingBox: BoundingBox
+    globalBoundingBox: BoundingBox,
+    extraWidth: number,
+    extraHeight: number
 ): HTMLCanvasElement {
-    const canvas = createCanvas(
+    const imgCanvas = createCanvas(
         globalBoundingBox.width,
         globalBoundingBox.height
     );
+    const imgCtx = imgCanvas.getContext("2d");
+    imgCtx.drawImage(img, 0, 0, globalBoundingBox.width, globalBoundingBox.height);
+    const canvas = createCanvas(
+        globalBoundingBox.width + extraWidth,
+        globalBoundingBox.height + extraHeight
+    );
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, globalBoundingBox.width, globalBoundingBox.height);
+    ctx.drawImage(
+        imgCanvas,
+        extraWidth / 2, extraHeight / 2
+    );
     return canvas;
 }
 
