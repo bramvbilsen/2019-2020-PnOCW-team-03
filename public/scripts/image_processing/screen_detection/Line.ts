@@ -60,7 +60,7 @@ export default class Line {
             (this.endPoints[1].x - this.endPoints[0].x);
         if (
             this.endPoints[index].y +
-                rico * (otherPoint.x - this.endPoints[index].x) <
+            rico * (otherPoint.x - this.endPoints[index].x) <
             otherPoint.y
         ) {
             return true;
@@ -107,12 +107,17 @@ export default class Line {
         var middPoint = new Point(solution[0], solution[1]);
         var radius = Math.sqrt(
             Math.pow(this.a.x - middPoint.x, 2) +
-                Math.pow(this.a.y - middPoint.y, 2)
+            Math.pow(this.a.y - middPoint.y, 2)
         );
         var circle = new Circle(middPoint, radius);
         return circle;
     }
 
+    /**
+     * 
+     * @param line2 
+     * @param index 0 is counterclockwise and 1 is clockwise.
+     */
     angle(line2: Line, index: number) {
         let points1 = this.endPoints;
         let points2 = line2.endPoints;

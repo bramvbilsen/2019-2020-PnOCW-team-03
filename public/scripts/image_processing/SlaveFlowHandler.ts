@@ -3,7 +3,7 @@ import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
 import getOrientationAngle from "./orientation_detection/orientation_detection";
-import calculateOrientation from "./orientation_detection/orientation_detection_alternative";
+import calculateScreenAngle from "./orientation_detection/orientation_detection_alternative";
 import {
     PREFERRED_CANVAS_HEIGHT,
     PREFERRED_CANVAS_WIDTH,
@@ -301,8 +301,8 @@ export default class SlaveFlowHandler {
                 cameraHeight * scale
             );
         const currScreen = this.screens[this.screens.length - 1];
-        const orientation = calculateOrientation(currScreen, orientationCanvas);
-        currScreen.orientation = orientation;
+        currScreen.angle = calculateScreenAngle(currScreen, orientationCanvas);
+        console.log(currScreen.angle);
         if (this.automated) {
             await this.nextStep();
         } else {

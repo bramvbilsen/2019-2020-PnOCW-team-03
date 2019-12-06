@@ -149,13 +149,13 @@ export function labelCorners(p1: Point, p2: Point, p3: Point, p4: Point) {
  *     `orientation` holds information regarding the orientation of the screen.
  *     `normalTopEdge` holds the edge which would be the top edge for normal orientation.
  */
-export default function calculateOrientation(
+export default function calculateScreenAngle(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
-): Orientation {
+): number {
 
     if (screen.corners.length !== 4) {
-        return Orientation.NORMAL;
+        return 0;
     }
 
     const pixels = canvas
@@ -165,7 +165,8 @@ export default function calculateOrientation(
 
     /**New try with all 4 corners their colors*/
     const corners: Point[] = screen.corners.map(corner => corner.copy());
-    const labeledCorners = sortCorners(corners);
+    const sortedCorners = sortCorners(corners);
+    console.log("CORNERS AT START OF ANGLE DETECTION: " + JSON.stringify(sortedCorners));
 
     const leftUpCoordinates: Array<Point> = [];
     const rightUpCoordinates: Array<Point> = [];
@@ -175,124 +176,72 @@ export default function calculateOrientation(
     /**Get lists of diagonal points starting from each corner, for color comparison later*/
     for (let i = 0; i <= 10; i++) {
         //LU
-        labeledCorners.LeftUp.x += i;
-        labeledCorners.LeftUp.y += i;
-        leftUpCoordinates.push(new Point(labeledCorners.LeftUp.x, labeledCorners.LeftUp.y));
+        leftUpCoordinates.push(new Point(sortedCorners.LeftUp.x + i, sortedCorners.LeftUp.y + i));
 
         //RU
-        labeledCorners.RightUp.x -= i;
-        labeledCorners.RightUp.y += i;
-        rightUpCoordinates.push(new Point(labeledCorners.RightUp.x, labeledCorners.RightUp.y));
+        rightUpCoordinates.push(new Point(sortedCorners.RightUp.x - i, sortedCorners.RightUp.y + i));
 
         //LD
-        labeledCorners.LeftUnder.x += i;
-        labeledCorners.LeftUnder.y -= i;
-        leftUnderCoordinates.push(new Point(labeledCorners.LeftUnder.x, labeledCorners.LeftUnder.y));
+        leftUnderCoordinates.push(new Point(sortedCorners.LeftUnder.x + i, sortedCorners.LeftUnder.y - i));
 
         //RD
-        labeledCorners.RightUnder.x -= i;
-        labeledCorners.RightUnder.y -= i;
-        rightUnderCoordinates.push(new Point(labeledCorners.RightUnder.x, labeledCorners.RightUnder.y));
+        rightUnderCoordinates.push(new Point(sortedCorners.RightUnder.x - i, sortedCorners.RightUnder.y - i));
     }
 
-    /**Calculate Colors and count the amount of times it corresponds with an expected orientation color*/
-    let counter_normal = 0;
-    let counter_clockwise = 0;
-    let counter_counterClockwise = 0;
-    let counter_flipped = 0;
+    let leftUp: Point;
+    let rightUp: Point;
+
+    let pink = 0;
+    let green = 0;
+    let yellow = 0;
+    let blue = 0;
 
     for (const point of leftUpCoordinates) {
+        //colors
         const leftUpperPixelColor = getHSLColorForPixel(
             point.x,
             point.y,
             canvas.width,
             pixels);
         if (isSimilarHSLColor(leftUpperPixelColor, leftUpperColor, colorRange)) {
-            counter_normal++;
+            pink++;
         }
         if (isSimilarHSLColor(leftUpperPixelColor, rightUpperColor, colorRange)) {
-            counter_counterClockwise++;
+            green++;
         }
         if (isSimilarHSLColor(leftUpperPixelColor, rightUnderColor, colorRange)) {
-            counter_flipped++;
+            blue++;
         }
         if (isSimilarHSLColor(leftUpperPixelColor, leftUnderColor, colorRange)) {
-            counter_clockwise++;
+            yellow++;
         }
     }
 
-    for (const point of rightUpCoordinates) {
-        const rightUpperPixelColor = getHSLColorForPixel(
-            point.x,
-            point.y,
-            canvas.width,
-            pixels);
-        if (isSimilarHSLColor(rightUpperPixelColor, rightUpperColor, colorRange)) {
-            counter_normal++;
-        }
-        if (isSimilarHSLColor(rightUpperPixelColor, rightUnderColor, colorRange)) {
-            counter_counterClockwise++;
-        }
-        if (isSimilarHSLColor(rightUpperPixelColor, leftUnderColor, colorRange)) {
-            counter_flipped++;
-        }
-        if (isSimilarHSLColor(rightUpperPixelColor, leftUpperColor, colorRange)) {
-            counter_clockwise++;
-        }
+    const maxColor = Math.max(pink, green, blue, yellow);
+    if (maxColor === pink) {
+        leftUp = sortedCorners.LeftUp;
+        rightUp = sortedCorners.RightUp;
+    } else if (maxColor === green) {
+        leftUp = sortedCorners.RightUp;
+        rightUp = sortedCorners.RightUnder;
+    } else if (maxColor === blue) {
+        leftUp = sortedCorners.RightUnder;
+        rightUp = sortedCorners.LeftUnder;
+    } else {
+        leftUp = sortedCorners.LeftUnder;
+        rightUp = sortedCorners.LeftUp;
     }
 
-    for (const point of leftUnderCoordinates) {
-        const leftUnderPixelColor = getHSLColorForPixel(
-            point.x,
-            point.y,
-            canvas.width,
-            pixels);
-        if (isSimilarHSLColor(leftUnderPixelColor, leftUnderColor, colorRange)) {
-            counter_normal++;
-        }
-        if (isSimilarHSLColor(leftUnderPixelColor, leftUpperColor, colorRange)) {
-            counter_counterClockwise++;
-        }
-        if (isSimilarHSLColor(leftUnderPixelColor, rightUpperColor, colorRange)) {
-            counter_flipped++;
-        }
-        if (isSimilarHSLColor(leftUnderPixelColor, rightUnderColor, colorRange)) {
-            counter_clockwise++;
-        }
+    let theta =
+        Math.atan2(rightUp.y - leftUp.y, rightUp.x - leftUp.x) *
+        180 /
+        Math.PI;
+
+    if (theta < 0) {
+        theta = 360 + theta;
     }
 
-    for (const point of rightUnderCoordinates) {
-        const rightUnderPixelColor = getHSLColorForPixel(
-            point.x,
-            point.y,
-            canvas.width,
-            pixels);
-        if (isSimilarHSLColor(rightUnderPixelColor, rightUnderColor, colorRange)) {
-            counter_normal++;
-        }
-        if (isSimilarHSLColor(rightUnderPixelColor, leftUnderColor, colorRange)) {
-            counter_counterClockwise++;
-        }
-        if (isSimilarHSLColor(rightUnderPixelColor, leftUpperColor, colorRange)) {
-            counter_flipped++;
-        }
-        if (isSimilarHSLColor(rightUnderPixelColor, rightUpperColor, colorRange)) {
-            counter_clockwise++;
-        }
-    }
+    console.log("Left up according to screen: " + leftUp);
 
-    const maxOrientationCount = Math.max(counter_clockwise, counter_flipped, counter_counterClockwise, counter_normal);
-
-    switch (maxOrientationCount) {
-        case counter_normal:
-            return Orientation.NORMAL;
-        case counter_clockwise:
-            return Orientation.CLOCKWISE;
-        case counter_counterClockwise:
-            return Orientation.COUNTERCLOCKWISE;
-        case counter_flipped:
-            return Orientation.FLIPPED;
-        default:
-            return Orientation.NORMAL
-    }
+    return theta;
 }

@@ -38,7 +38,6 @@ const tests: Tests<number> = {
         ]
         const screen = new SlaveScreen(corners, "1");
         console.log(screen.widthEdge);
-        screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
 
 
@@ -59,7 +58,6 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
 
 
@@ -78,7 +76,6 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.orientation = Orientation.NORMAL;
         const angle = screen.angle;
 
         return { expected: 45, result: angle };
@@ -97,7 +94,6 @@ const tests: Tests<number> = {
 
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
-        screen.orientation = Orientation.CLOCKWISE;
         const angle = screen.angle;
 
         return { expected: 135, result: angle };
@@ -115,7 +111,6 @@ const tests: Tests<number> = {
 
         const screen = new SlaveScreen(corners, "1");
         let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
-        screen.orientation = Orientation.FLIPPED;
         const angle = screen.angle;
 
         return { expected: 179, result: angle };
@@ -133,7 +128,6 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        screen.orientation = Orientation.FLIPPED;
         const angle = screen.angle;
 
         return { expected: r * 180, result: angle };
