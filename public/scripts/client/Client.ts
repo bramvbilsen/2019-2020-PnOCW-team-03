@@ -906,7 +906,7 @@ class Client {
                 },
             ])[0];
             //snelhied
-            let speed = 0.01; //pixels/ms
+            let speed = 0.05; //pixels/ms
             //starttijd berekenen
             let startPoint: Point;
             if (animationLine[0] == null) {
@@ -1143,8 +1143,8 @@ class Client {
         directionx /= msg.duration; // pixels/40 ms
         directiony /= msg.duration;
 
-        directionx *= 40;
-        directiony *= 40;
+        directionx *= 80;
+        directiony *= 80;
 
         let last = msg.last;
 
@@ -1326,7 +1326,7 @@ class Client {
                 $("#image-slave").attr("src", canvas.toDataURL());
                 clearinterval();
             }
-        }, 40);
+        }, 80);
         const clearinterval = () => {
             console.log("last= " + last);
             console.log("hey");
