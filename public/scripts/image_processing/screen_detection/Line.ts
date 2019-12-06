@@ -25,6 +25,11 @@ export default class Line {
         );
     }
 
+    get rico() {
+        return (this.endPoints[1].y - this.endPoints[0].y) /
+            (this.endPoints[1].x - this.endPoints[0].x);
+    }
+
     copy() {
         return new Line(this.a.copy(), this.b.copy());
     }

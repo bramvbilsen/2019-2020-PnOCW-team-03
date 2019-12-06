@@ -2,7 +2,7 @@ import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
 import Point from "../screen_detection/Point";
 import { sortCorners } from "../../util/shapes";
-import { getHSLColorForPixel } from "../screen_detection/screen_detection";
+import { getHSLColorForPixel, amountOfNeighboringPixelsWithColor } from "../screen_detection/screen_detection";
 import Line from "../screen_detection/Line";
 
 /**
@@ -29,11 +29,11 @@ interface IHSLColor {
     l: number;
 }
 const colorRange: IHSLRange = {
-    hRange: 40,
-    sRange: 40,
-    lRange: 50,
+    hRange: 50,
+    sRange: 60,
+    lRange: 60,
 };
-const leftUpperColor: IHSLColor = rgbToHsl(255, 70, 180); //pink
+const leftUpperColor: IHSLColor = { h: 324, s: 100, l: 63.7 }; //pink
 const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25); // green
 const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255); // blue
 const leftUnderColor: IHSLColor = rgbToHsl(255, 216, 0); // yellow
@@ -168,63 +168,107 @@ export default function calculateScreenAngle(
     const sortedCorners = sortCorners(corners);
     console.log("CORNERS AT START OF ANGLE DETECTION: " + JSON.stringify(sortedCorners));
 
-    const leftUpCoordinates: Array<Point> = [];
-    const rightUpCoordinates: Array<Point> = [];
-    const leftUnderCoordinates: Array<Point> = [];
-    const rightUnderCoordinates: Array<Point> = [];
+    const centroid = screen.centroid;
 
-    /**Get lists of diagonal points starting from each corner, for color comparison later*/
-    for (let i = 0; i <= 10; i++) {
-        //LU
-        leftUpCoordinates.push(new Point(sortedCorners.LeftUp.x + i, sortedCorners.LeftUp.y + i));
+    let leftUp: Point = sortedCorners.LeftUp;
+    let rightUp: Point = sortedCorners.RightUp;
 
-        //RU
-        rightUpCoordinates.push(new Point(sortedCorners.RightUp.x - i, sortedCorners.RightUp.y + i));
+    const ctx = canvas.getContext("2d");
 
-        //LD
-        leftUnderCoordinates.push(new Point(sortedCorners.LeftUnder.x + i, sortedCorners.LeftUnder.y - i));
-
-        //RD
-        rightUnderCoordinates.push(new Point(sortedCorners.RightUnder.x - i, sortedCorners.RightUnder.y - i));
+    const topLeftDiag = (new Line(sortedCorners.LeftUp, centroid));
+    let xdir = (centroid.x - sortedCorners.LeftUp.x) / topLeftDiag.length;
+    let ydir = (centroid.y - sortedCorners.LeftUp.y) / topLeftDiag.length;
+    let x = sortedCorners.LeftUp.x;
+    let y = sortedCorners.LeftUp.y;
+    let pinkPixelsTopLeft = 0;
+    for (let i = 0; i < topLeftDiag.length; i++) {
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
+            pinkPixelsTopLeft++;
+        }
+        x += xdir;
+        y += ydir;
     }
+    console.log("Pink in top left: " + pinkPixelsTopLeft);
 
-    let leftUp: Point;
-    let rightUp: Point;
-
-    let pink = 0;
-    let green = 0;
-    let yellow = 0;
-    let blue = 0;
-
-    for (const point of leftUpCoordinates) {
-        //colors
-        const leftUpperPixelColor = getHSLColorForPixel(
-            point.x,
-            point.y,
-            canvas.width,
-            pixels);
-        if (isSimilarHSLColor(leftUpperPixelColor, leftUpperColor, colorRange)) {
-            pink++;
+    const topRightDiag = (new Line(sortedCorners.RightUp, centroid));
+    xdir = (centroid.x - sortedCorners.RightUp.x) / topRightDiag.length;
+    ydir = (centroid.y - sortedCorners.RightUp.y) / topRightDiag.length;
+    x = sortedCorners.RightUp.x;
+    y = sortedCorners.RightUp.y;
+    let pinkPixelsTopRight = 0;
+    for (let i = 0; i < topRightDiag.length; i++) {
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
+            pinkPixelsTopRight++;
         }
-        if (isSimilarHSLColor(leftUpperPixelColor, rightUpperColor, colorRange)) {
-            green++;
-        }
-        if (isSimilarHSLColor(leftUpperPixelColor, rightUnderColor, colorRange)) {
-            blue++;
-        }
-        if (isSimilarHSLColor(leftUpperPixelColor, leftUnderColor, colorRange)) {
-            yellow++;
-        }
+        x += xdir;
+        y += ydir;
     }
+    console.log("Pink in top right: " + pinkPixelsTopRight);
 
-    const maxColor = Math.max(pink, green, blue, yellow);
-    if (maxColor === pink) {
+    const bottomLeftDiag = (new Line(sortedCorners.LeftUnder, centroid));
+    xdir = (centroid.x - sortedCorners.LeftUnder.x) / bottomLeftDiag.length;
+    ydir = (centroid.y - sortedCorners.LeftUnder.y) / bottomLeftDiag.length;
+    x = sortedCorners.LeftUnder.x;
+    y = sortedCorners.LeftUnder.y;
+    let pinkPixelsBottomLeft = 0;
+    for (let i = 0; i < bottomLeftDiag.length; i++) {
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
+            pinkPixelsBottomLeft++;
+        }
+        x += xdir;
+        y += ydir;
+    }
+    console.log("Pink in bottom left: " + pinkPixelsBottomLeft);
+
+    const bottomRightDiag = (new Line(sortedCorners.RightUnder, centroid));
+    xdir = (centroid.x - sortedCorners.RightUnder.x) / bottomRightDiag.length;
+    ydir = (centroid.y - sortedCorners.RightUnder.y) / bottomRightDiag.length;
+    x = sortedCorners.RightUnder.x;
+    y = sortedCorners.RightUnder.y;
+    let pinkPixelsBottomRight = 0;
+    for (let i = 0; i < bottomRightDiag.length; i++) {
+        ctx.fillStyle = "rgb(0, 255, 0)";
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
+            pinkPixelsBottomRight++;
+        }
+        x += xdir;
+        y += ydir;
+    }
+    console.log("Pink in bottom right: " + pinkPixelsBottomRight);
+
+    $("body").append(canvas);
+
+    const maxPinkPixels = Math.max(pinkPixelsTopLeft, pinkPixelsTopRight, pinkPixelsBottomLeft, pinkPixelsBottomRight);
+    if (maxPinkPixels === pinkPixelsTopLeft) {
         leftUp = sortedCorners.LeftUp;
         rightUp = sortedCorners.RightUp;
-    } else if (maxColor === green) {
+    } else if (maxPinkPixels === pinkPixelsTopRight) {
         leftUp = sortedCorners.RightUp;
         rightUp = sortedCorners.RightUnder;
-    } else if (maxColor === blue) {
+    } else if (maxPinkPixels === pinkPixelsBottomRight) {
         leftUp = sortedCorners.RightUnder;
         rightUp = sortedCorners.LeftUnder;
     } else {

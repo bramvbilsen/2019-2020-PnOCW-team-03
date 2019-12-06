@@ -62,6 +62,13 @@ function rotateAndDrawImageForSlave(
         LeftUnder: rotatePointAroundAnchor(screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y), screenCenter, -screenAngle),
     }
 
+    const translatedCornersWithoutRotation = {
+        LeftUp: screen.sortedCorners.LeftUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+        RightUp: screen.sortedCorners.RightUp.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+        RightUnder: screen.sortedCorners.RightUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+        LeftUnder: screen.sortedCorners.LeftUnder.copyTranslated(-globalBoundingBox.topLeft.x, -globalBoundingBox.topLeft.y),
+    }
+
     const screenWidth = screen.width;
     const screenHeight = screen.height;
 
@@ -84,20 +91,20 @@ function rotateAndDrawImageForSlave(
     const slaveScreenMaskCtx = slaveScreenMask.getContext("2d");
     slaveScreenMaskCtx.beginPath();
     slaveScreenMaskCtx.moveTo(
-        translatedAndRotatedCorners.LeftUp.x,
-        translatedAndRotatedCorners.LeftUp.y
+        translatedCornersWithoutRotation.LeftUp.x,
+        translatedCornersWithoutRotation.LeftUp.y
     );
     slaveScreenMaskCtx.lineTo(
-        translatedAndRotatedCorners.RightUp.x,
-        translatedAndRotatedCorners.RightUp.y
+        translatedCornersWithoutRotation.RightUp.x,
+        translatedCornersWithoutRotation.RightUp.y
     );
     slaveScreenMaskCtx.lineTo(
-        translatedAndRotatedCorners.RightUnder.x,
-        translatedAndRotatedCorners.RightUnder.y
+        translatedCornersWithoutRotation.RightUnder.x,
+        translatedCornersWithoutRotation.RightUnder.y
     );
     slaveScreenMaskCtx.lineTo(
-        translatedAndRotatedCorners.LeftUnder.x,
-        translatedAndRotatedCorners.LeftUnder.y
+        translatedCornersWithoutRotation.LeftUnder.x,
+        translatedCornersWithoutRotation.LeftUnder.y
     );
     slaveScreenMaskCtx.fill()
     $("#result-img-container").append($("<h3>SCREEN IMG</h3>"));

@@ -72,8 +72,8 @@
                     title="Capture the image of the slave.">
                     <i class="fa fa-camera-retro"></i>
                 </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="show-orientation-button"
-                    title="Show the background for orientation detection.">
+                <button type="button" class="btn btn-danger btn-circle outlined-button-white"
+                    id="show-orientation-button" title="Show the background for orientation detection.">
                     <i class="fa fa-compass"></i>
                 </button>
                 <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-orientation"
@@ -98,8 +98,8 @@
                         title="Display the image taken from the master's perspective.">
                         Display master image
                     </button>
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-delaunay-triangulation-button"
-                        title="Display the delaunay triangulation.">
+                    <button type="button" class="btn btn-danger outlined-button-white"
+                        id="display-delaunay-triangulation-button" title="Display the delaunay triangulation.">
                         Display triangulation
                     </button>
                 </div>
@@ -107,19 +107,16 @@
                 <!-- Van Liam-->
                 <div id="image-display-buttons">
                     <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                        id="upload-image-to-display"
-                        title="Upload the image to display.">
+                        id="upload-image-to-display" title="Upload the image to display.">
                         <i class="fa fa-caret-square-up"></i>
                     </button>
                     <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                        id="display-uploaded-image"
-                        title="Display the uploaded image.">
+                        id="display-uploaded-image" title="Display the uploaded image.">
                         <i class="fa fa-tv"></i>
                     </button>
 
                     <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                        id="display-standard-image"
-                        title="Display the standard image.">
+                        id="display-standard-image" title="Display the standard image.">
                         <i class="fa fa-database"></i>
                     </button>
                 </div>
@@ -240,7 +237,7 @@
                     a[i][1] = a[j][4] = src[i][1];
                     a[i][2] = a[j][5] = 1;
                     a[i][3] = a[i][4] = a[i][5] =
-                    a[j][0] = a[j][1] = a[j][2] = 0;
+                        a[j][0] = a[j][1] = a[j][2] = 0;
                     a[i][6] = -src[i][0] * dst[i][0];
                     a[i][7] = -src[i][1] * dst[i][0];
                     a[j][6] = -src[i][0] * dst[i][1];
@@ -253,10 +250,10 @@
                 // matrix3d is homogeneous coords in column major!
                 // the z coordinate is unused
                 var m = [
-                    x[0], x[3],   0, x[6],
-                    x[1], x[4],   0, x[7],
-                    0,    0,   1,    0,
-                    x[2], x[5],   0,    1
+                    x[0], x[3], 0, x[6],
+                    x[1], x[4], 0, x[7],
+                    0, 0, 1, 0,
+                    x[2], x[5], 0, 1
                 ];
                 var transform = "matrix3d(";
                 for (var i = 0; i < m.length - 1; ++i) {
@@ -264,19 +261,19 @@
                 }
                 transform += m[15] + ")";
                 return transform;
-                }
+            }
 
-                // Collect the four corners
+            // Collect the four corners
             function applyTransform(dst, src, img) {
                 if (dst.length == 4) {
                     // Once we have all corners, compute the transform.
                     var w = img.width,
                         h = img.height;
                     var transform = computeTransform(
-                    dst,
-                    src
+                        dst,
+                        src
                     );
-                    
+
                     img.style.transformOrigin = '0 0';
                     img.style.transform = transform;
                 }
