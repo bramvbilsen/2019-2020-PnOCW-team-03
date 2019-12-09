@@ -1424,10 +1424,6 @@ class Client {
                     ) {
                         notOutOfBound = false;
                     }
-                    if (last) {
-                        //voor last moet je niet kijken naar outofbound
-                        notOutOfBound = false;
-                    }
                     if (t > 0 || notOutOfBound) {
                         //circel tekenen
                         ctx.beginPath();
