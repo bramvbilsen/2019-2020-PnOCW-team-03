@@ -24,6 +24,12 @@ export enum WorkflowStep {
     END = "end",
 }
 
+export async function wait(dt: number) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve(), dt);
+    });
+}
+
 /**
  * Retains workflow:
  *  Blanco -> Kleur -> zwart foto -> cycle slaves
@@ -101,36 +107,41 @@ export default class SlaveFlowHandler {
      * Only for automated flow
      */
     async nextStep() {
-        const wait = async () => {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => resolve(), 5000);
-            });
-        };
-        await wait();
         if (!this.automated) return;
+        if (this.automated) {
+            await wait(2500);
+        }
         switch (this.step) {
             case WorkflowStep.BLANCO_IMAGE:
+                console.log("AUTOMATED: TAKING BLANCO PICTURE");
                 await this.takeNoColorPicture();
                 break;
             case WorkflowStep.DISPLAY_SCREEN_COLOR:
+                console.log("AUTOMATED: DISPLAYING COLOR");
                 this.showColorOnNextSlave();
                 break;
             case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING");
                 await this.takePictureOfColoredScreen();
                 break;
             case WorkflowStep.REMOVE_SCREEN_COLOR:
+                console.log("AUTOMATED: REMOVING COLOR");
                 this.removeScreenColorOnSlave();
                 break;
             case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
+                console.log("AUTOMATED: DISPLAYING ORIENTATION COLOR");
                 this.showOrientationOnSlave();
                 break;
             case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION");
                 await this.takePictureOfSlaveOrientation();
                 break;
             case WorkflowStep.REMOVE_ORIENTATION_COLOR:
+                console.log("AUTOMATED: REMOVE ORIENTATION COLOR");
                 this.removeOrientationColorOnSlave();
                 break;
             case WorkflowStep.END_CYCLE:
+                console.log("AUTOMATED: ENDING CYLCE");
                 this.endSlaveCycle();
                 break;
             default:
@@ -215,12 +226,6 @@ export default class SlaveFlowHandler {
             client.color,
             client.DEBUG
         );
-
-        console.log("===============");
-        console.log("==========================");
-        corners.forEach(corner => {
-            console.log(corner.toString());
-        });
 
         this.resetDebug();
 

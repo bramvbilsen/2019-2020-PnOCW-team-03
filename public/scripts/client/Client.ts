@@ -21,6 +21,7 @@ import Triangulation from "../image_processing/Triangulation/Triangulation";
 import { loadImage } from "../util/images";
 import testu from "./animation";
 import { lstat } from "fs";
+import { wait } from "../image_processing/SlaveFlowHandler";
 
 const {
     checkIntersection,
@@ -37,6 +38,7 @@ class Client {
     private middle: Point;
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
+    public cutWithRealPoints: boolean = false;
     public steveImg: HTMLImageElement;
     /**
      * Color that the user wants to display on the slave.
@@ -485,9 +487,9 @@ class Client {
     /**
      * Go to the next step in the current `SlaveFlowHandler`
      */
-    public handleNextSlaveFlowHandlerStep = (_: any) => {
+    public handleNextSlaveFlowHandlerStep = async (_: any) => {
         if (slaveFlowHandler) {
-            slaveFlowHandler.nextStep();
+            await slaveFlowHandler.nextStep();
         }
     };
 
