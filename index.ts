@@ -198,6 +198,7 @@ io.on("connect", (socket: socketio.Socket) => {
             lines: any;
             duration: any;
             last: any;
+            next: any;
         }) => {
             if (socket.id === connections.master.id) {
                 io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
