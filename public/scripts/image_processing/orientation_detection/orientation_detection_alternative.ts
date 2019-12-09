@@ -152,11 +152,12 @@ export function labelCorners(p1: Point, p2: Point, p3: Point, p4: Point) {
 export default function calculateScreenAngle(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
-): number {
-
-    if (screen.corners.length !== 4) {
-        return 0;
-    }
+): {
+    angle: number, LeftUp: Point;
+    RightUp: Point;
+    RightUnder: Point;
+    LeftUnder: Point;
+} {
 
     const pixels = canvas
         .getContext("2d")
@@ -168,10 +169,22 @@ export default function calculateScreenAngle(
     const sortedCorners = sortCorners(corners);
     console.log("CORNERS AT START OF ANGLE DETECTION: " + JSON.stringify(sortedCorners));
 
+    if (screen.corners.length !== 4) {
+        return {
+            angle: 0,
+            LeftUnder: sortedCorners.LeftUnder,
+            RightUnder: sortedCorners.RightUnder,
+            RightUp: sortedCorners.RightUp,
+            LeftUp: sortedCorners.LeftUp
+        };
+    }
+
     const centroid = screen.centroid;
 
     let leftUp: Point = sortedCorners.LeftUp;
     let rightUp: Point = sortedCorners.RightUp;
+    let rightUnder: Point = sortedCorners.RightUnder;
+    let leftUnder: Point = sortedCorners.LeftUnder;
 
     const ctx = canvas.getContext("2d");
 
@@ -263,15 +276,23 @@ export default function calculateScreenAngle(
     if (maxPinkPixels === pinkPixelsTopLeft) {
         leftUp = sortedCorners.LeftUp;
         rightUp = sortedCorners.RightUp;
+        rightUnder = sortedCorners.RightUnder;
+        leftUnder = sortedCorners.LeftUnder;
     } else if (maxPinkPixels === pinkPixelsTopRight) {
         leftUp = sortedCorners.RightUp;
         rightUp = sortedCorners.RightUnder;
+        rightUnder = sortedCorners.LeftUnder;
+        leftUnder = sortedCorners.LeftUp;
     } else if (maxPinkPixels === pinkPixelsBottomRight) {
         leftUp = sortedCorners.RightUnder;
         rightUp = sortedCorners.LeftUnder;
+        rightUnder = sortedCorners.LeftUp;
+        leftUnder = sortedCorners.RightUp;
     } else {
         leftUp = sortedCorners.LeftUnder;
         rightUp = sortedCorners.LeftUp;
+        rightUnder = sortedCorners.RightUp;
+        leftUnder = sortedCorners.RightUnder;
     }
 
     let theta =
@@ -285,5 +306,11 @@ export default function calculateScreenAngle(
 
     console.log("Left up according to screen: " + leftUp);
 
-    return theta;
+    return {
+        angle: theta,
+        LeftUp: leftUp,
+        LeftUnder: leftUnder,
+        RightUp: rightUp,
+        RightUnder: rightUnder
+    };
 }

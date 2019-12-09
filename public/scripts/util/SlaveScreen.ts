@@ -4,12 +4,14 @@ import Line from "../image_processing/screen_detection/Line";
 import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
 import { Orientation } from "../image_processing/orientation_detection/orientations";
 import { sortCorners } from "./shapes";
+import { IMasterVsRealPoints } from "../types/Points";
 
 export default class SlaveScreen {
     corners: Point[];
     slaveID: string;
     angle: number | undefined;
     slavePortionImg: HTMLCanvasElement;
+    masterVsRealCorners: IMasterVsRealPoints;
     triangulation: {
         //de lijnen die zeker moeten getekend worden
         angles: Array<{ string: string; point: Point }>;
