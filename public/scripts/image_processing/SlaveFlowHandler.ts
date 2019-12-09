@@ -315,8 +315,8 @@ export default class SlaveFlowHandler {
         let RightUp: IMasterVsRealPoint;
         let LeftUnder: IMasterVsRealPoint;
         let RightUnder: IMasterVsRealPoint;
-        for (const [key, val] of Object.entries(cornerMapping)) {
-            const p = val as Point;
+        for (let p of Object.values(cornerMapping)) {
+            p = p as Point;
             if (p.equals(sortedCornersMaster.LeftUp)) {
                 LeftUp = {
                     master: sortedCornersMaster.LeftUp,
