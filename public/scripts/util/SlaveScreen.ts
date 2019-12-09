@@ -1,7 +1,7 @@
 import Point from "../image_processing/screen_detection/Point";
 import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
-import { radiansToDegrees } from "./angles";
+import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
 import { Orientation } from "../image_processing/orientation_detection/orientations";
 import { sortCorners } from "./shapes";
 
@@ -149,7 +149,19 @@ export default class SlaveScreen {
     }
 
     public copy(): SlaveScreen {
-        const screen = new SlaveScreen(this.corners, this.slaveID);
+        const screen = new SlaveScreen(this.corners.map(corner => corner.copy()), this.slaveID);
+        screen.slavePortionImg = this.slavePortionImg;
+        return screen;
+    }
+
+    public copyRotated(deg: number): SlaveScreen {
+        const screen = new SlaveScreen(this.corners.map(corner => rotatePointAroundAnchor(corner.copy(), this.centroid, deg)), this.slaveID);
+        screen.slavePortionImg = this.slavePortionImg;
+        return screen;
+    }
+
+    public copyTranslated(dx: number, dy: number): SlaveScreen {
+        const screen = new SlaveScreen(this.corners.map(corner => corner.copyTranslated(dx, dy)), this.slaveID);
         screen.slavePortionImg = this.slavePortionImg;
         return screen;
     }

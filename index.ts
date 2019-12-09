@@ -61,7 +61,6 @@ io.on("connect", (socket: socketio.Socket) => {
     });
 
     socket.on(SlaveEventTypes.NotifyMasterThatPictureCanBeTaken, _ => {
-        console.log("AUTOMATED: MASTER CAN TAKE PICTURE!");
         socket
             .to(connections.masterID)
             .emit(MasterEventTypes.HandleNextSlaveFlowHanlderStep, {});
@@ -102,7 +101,7 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log(
                     "Attempting to display image by master, imgurl: " +
-                        msg.imgUrl
+                    msg.imgUrl
                 );
                 io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
                     imgUrl: msg.imgUrl,

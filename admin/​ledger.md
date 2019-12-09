@@ -130,4 +130,64 @@ TC1 & CR1: Triangulatie implementeren zonder het gebruik van img casting van voo
 
 CR2: Simulator maken voor de random generator die zal gebruikt worden bij de final task telkens de cirkel een corner bereikt in onze triangulatie. **Deadline 25/11.
 
+### 25/11:
 
+We hebben met zijn allen gewerkt aan het verbeteren van de code die we voorheen hadden die niet werkte. Oplossingen bedenken voor orientation detection alsook screen detection. Anderen werkten aan de beweging synchronizeren van de game. 
+
+CEO&TC1: Orientation detection ideeen en testen van de code in de test suite.
+
+CR2 & CR1: beweging gefixt van de circel en extra classes toegevoegd. 
+
+TC2: Perspective transformation fixen, proberen de huidige problemen op te lossen
+
+CTO absent
+
+### 28/11:
+
+We hebben deze dag voornamelijk verder gewerkt aan wat we de maandag voorheen waren gestart. De deadline voor orientation detection was gehaald op 25/11, maar deze werkte niet zo flawless als voorspeld ten tijde van het schrijven van de testen. We hebben orientation detection volledig moeten revisen. De code voor het spel werd ook herbekeken en verder uitgebreid. Er werden tooltips toegevoegd aan de knoppen in de UI. Bugs voor punt modificatie in de animatie werden vandaag ook resolved. 
+
+Countdown werd ook herwerkt voor een duidelijker beeld voor de demo.
+
+CEO: testing and debuggen van orientation detection + testen herschrijven
+
+CTO: Herwerkte Countdown om duidelijkheid te brengen alsook te eindigen met een bang.
+
+TC1+CR1: Bug van movement in animatie opgelost + tested on server. 
+
+TC2: Bugs fixen van perspective transformation en testen via testsuite
+
+CR2: Tooltips added + herzien van simulation voor animation
+
+### 2/12:
+
+Vandaag hebben we gewerkt aan het verder uitbreiden van orientation detection alsook animatie zien op te lossen met een andere manier(image casting). De oorspronkelijke manier van het casten van de game bevatte nog bugs die we hebben proberen op te lossen vandaag. 
+
+CEO: eerste stappen tot het herschrijven van angle calculation mbv orientation type detection. 
+
+TC1+CR1+CR2: Gewerkt aan animatie, CR2 heeft een manier proberen vinden om deze animatie problemen op te lossen mbv image casting. Eerste testen online via server ipv testsuite. 
+
+TC2: ? TODO
+
+CTO: Absent
+
+### 5/12:
+
+We hebben ons deze dag vooral gefocust op het maken van een programma dat werkende is en kan uitgewerkt worden in het verslag. We hebben perspectief achterwege gelaten en alle problemen omtrent angle calculations en animatie oplgelost deze dag/nacht. Anderen hebben gewerkt aan het schrijven van het begin van report X.
+
+CEO: Angle calculation resolved+Orientation detection reworked to work in all cases of orientation in 2D.
+
+TC1+CR1: Animation and angle detection solved and gotten to work in all cases. CR1 also made sure a bug in triangulation got resolved by calculating the convex hull. 
+
+CTO + TC2: writing report
+
+CR2: Worked with TC1+CR1 all night on animation, started on report during our session together. 
+
+### 6/12:
+
+We hebben met zijn allen de hele tijd gewerkt aan het finaliseren van Report X zodat deze zo goed mogelijk werd vooraleer we het indienden. 
+
+ALL: werken aan report
+
+### 9/12:
+
+Werken aan presentatie voor DDay alsook automatisatie van het programma door het drukken van 1 knop in programma. 

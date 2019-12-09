@@ -1,6 +1,7 @@
 import SlaveScreen from "./SlaveScreen";
 import Point from "../image_processing/screen_detection/Point";
 import { calculateBoundingBox } from "./shapes";
+import { rotatePointAroundAnchor } from "./angles";
 
 export class BoundingBox {
     private _topLeft: Point;
@@ -27,12 +28,35 @@ export class BoundingBox {
         return this._bottomRight.y - this._topRight.y;
     }
 
+    get points() {
+        return [this.topLeft, this.topRight, this.bottomLeft, this.bottomRight];
+    }
+
+    get centroid(): Point {
+        let sumX = 0;
+        let sumY = 0;
+        this.points.forEach(point => {
+            sumX += point.x;
+            sumY += point.y;
+        });
+        return new Point(
+            Math.round(sumX / this.points.length),
+            Math.round(sumY / this.points.length)
+        );
+    }
+
     constructor(points: Point[]) {
         const box = calculateBoundingBox(points);
         this._topLeft = box.topLeft;
         this._topRight = box.topRight;
         this._bottomLeft = box.bottomLeft;
         this._bottomRight = box.bottomRight;
+    }
+
+    copyRotated(deg: number) {
+        return new BoundingBox(this.points.map(point =>
+            rotatePointAroundAnchor(new Point(point.x, point.y), this.centroid, deg)
+        ));
     }
 }
 
@@ -97,4 +121,5 @@ export class BoudingBoxOfSlaveScreens {
             });
         });
     }
+
 }
