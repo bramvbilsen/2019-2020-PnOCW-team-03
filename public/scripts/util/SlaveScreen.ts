@@ -2,9 +2,8 @@ import Point from "../image_processing/screen_detection/Point";
 import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
 import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
-import { Orientation } from "../image_processing/orientation_detection/orientations";
 import { sortCorners } from "./shapes";
-import { IMasterVsRealPoints } from "../types/Points";
+import { IMasterVsRealPoints, CornerLabels, IMasterVsRealPoint } from "../types/Points";
 
 export default class SlaveScreen {
     corners: Point[];
@@ -148,6 +147,64 @@ export default class SlaveScreen {
                 360;
             return a1 - a2;
         });
+    }
+
+    /**
+     * Should only be called after `this.masterVsRealCorners` is assigned.
+     * @param corner 
+     */
+    public mapMasterToRealCornerLabel(corner: CornerLabels): CornerLabels {
+
+        function stringToLabel(label: string): CornerLabels {
+            if (label === "LeftUp") {
+                return CornerLabels.LeftUp;
+            } else if (label === "RightUp") {
+                return CornerLabels.RightUp;
+            } else if (label === "LeftUnder") {
+                return CornerLabels.LeftUnder;
+            } else {
+                return CornerLabels.RightUnder;
+            }
+        }
+
+        let masterPoint: Point;
+
+        switch (corner) {
+            case CornerLabels.LeftUp:
+                masterPoint = this.masterVsRealCorners.LeftUp.master;
+                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
+                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
+                        return stringToLabel(label);
+                    }
+                }
+                break;
+            case CornerLabels.RightUp:
+                masterPoint = this.masterVsRealCorners.RightUp.master;
+                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
+                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
+                        return stringToLabel(label);
+                    }
+                }
+                break;
+            case CornerLabels.RightUnder:
+                masterPoint = this.masterVsRealCorners.RightUnder.master;
+                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
+                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
+                        return stringToLabel(label);
+                    }
+                }
+                break;
+            case CornerLabels.LeftUnder:
+                masterPoint = this.masterVsRealCorners.LeftUnder.master;
+                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
+                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
+                        return stringToLabel(label);
+                    }
+                }
+                break;
+            default:
+                return;
+        }
     }
 
     public copy(): SlaveScreen {

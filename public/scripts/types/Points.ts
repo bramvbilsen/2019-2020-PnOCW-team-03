@@ -1,5 +1,12 @@
 import Point from "../image_processing/screen_detection/Point";
 
+export enum CornerLabels {
+    LeftUp = "Left up",
+    RightUp = "Right up",
+    LeftUnder = "Left under",
+    RightUnder = "Right under",
+}
+
 export interface IMasterVsRealPoints {
     LeftUp: {
         master: Point,
