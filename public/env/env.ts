@@ -1,5 +1,1 @@
-export default {
-    baseUrl: "https://penocw03.student.cs.kuleuven.be",
-    test: false,
-    testArgs: {}
-};
+export default {"baseUrl":"http://localhost:3000","test":true,"testArgs":{"orientation_detection":[]}}
