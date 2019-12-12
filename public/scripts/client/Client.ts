@@ -1380,6 +1380,7 @@ class Client {
                 this._socket.emit(SlaveEventTypes.animationFinished, {});
                 x = window.innerWidth;
                 y = window.innerHeight;
+                endDate += nextDuration;
                 var timer2 = setInterval(function() {
                     const canvas = createCanvas(
                         window.innerWidth,
