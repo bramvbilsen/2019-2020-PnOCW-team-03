@@ -589,6 +589,11 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
             break;
         }
     }
+
+    if (!secondCornerConnection) {
+        return [];
+    }
+
     return [
         ...firstCornerConnection.endPoints,
         ...(secondCornerConnection.endPoints || []),
