@@ -32,7 +32,7 @@ export default class Animation {
         this.animating = true;
     }
 
-    stop() { }
+    stop() {}
 
     nextLine() {
         let triangulation = this.triangulation;
@@ -50,7 +50,7 @@ export default class Animation {
         let slaves = slaveFlowHandler.screens;
         this.slavesId.forEach(slaveId => {
             this.slaves.push(
-                slaves.find(function (element) {
+                slaves.find(function(element) {
                     return element.slaveID == slaveId.slaveId;
                 })
             );
@@ -143,13 +143,13 @@ export default class Animation {
                 startTime +
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                    Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
+                        Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
                 ) /
-                speed;
+                    speed;
             console.log(
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                    Math.pow(startPoint.y - nextPoint.y, 2)
+                        Math.pow(startPoint.y - nextPoint.y, 2)
                 ) / speed
             );
             //duration berekenen
@@ -164,7 +164,7 @@ export default class Animation {
             let duration =
                 Math.sqrt(
                     Math.pow(endPoint.x - startPoint.x, 2) +
-                    Math.pow(endPoint.y - startPoint.y, 2)
+                        Math.pow(endPoint.y - startPoint.y, 2)
                 ) / speed;
             console.log("duration = " + duration);
             //emit voor elke slave
@@ -212,38 +212,38 @@ export default class Animation {
             if (string == "u") {
                 distance = Math.sqrt(
                     Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                    Math.pow(corners.LeftUp.y - corners.RightUp.y, 2)
+                        Math.pow(corners.LeftUp.y - corners.RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                    Math.pow(element.point.y - corners.LeftUp.y, 2)
+                        Math.pow(element.point.y - corners.LeftUp.y, 2)
                 );
             } else if (string == "l") {
                 distance = Math.sqrt(
                     Math.pow(corners.LeftUp.x - corners.LeftUnder.x, 2) +
-                    Math.pow(corners.LeftUp.y - corners.LeftUnder.y, 2)
+                        Math.pow(corners.LeftUp.y - corners.LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                    Math.pow(element.point.y - corners.LeftUp.y, 2)
+                        Math.pow(element.point.y - corners.LeftUp.y, 2)
                 );
             } else if (string == "r") {
                 distance = Math.sqrt(
                     Math.pow(corners.RightUnder.x - corners.RightUp.x, 2) +
-                    Math.pow(corners.RightUnder.y - corners.RightUp.y, 2)
+                        Math.pow(corners.RightUnder.y - corners.RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - corners.RightUp.x, 2) +
-                    Math.pow(element.point.y - corners.RightUp.y, 2)
+                        Math.pow(element.point.y - corners.RightUp.y, 2)
                 );
             } else {
                 distance = Math.sqrt(
                     Math.pow(corners.RightUnder.x - corners.LeftUnder.x, 2) +
-                    Math.pow(corners.RightUnder.y - corners.LeftUnder.y, 2)
+                        Math.pow(corners.RightUnder.y - corners.LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - corners.LeftUnder.x, 2) +
-                    Math.pow(element.point.y - corners.LeftUnder.y, 2)
+                        Math.pow(element.point.y - corners.LeftUnder.y, 2)
                 );
             }
             let ratioNumber = distancePoint / distance;
@@ -276,14 +276,14 @@ export default class Animation {
                     if (string == "u") {
                         distance = Math.sqrt(
                             Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                            Math.pow(
-                                corners.LeftUp.y - corners.RightUp.y,
-                                2
-                            )
+                                Math.pow(
+                                    corners.LeftUp.y - corners.RightUp.y,
+                                    2
+                                )
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - corners.LeftUp.x, 2) +
-                            Math.pow(point.y - corners.LeftUp.y, 2)
+                                Math.pow(point.y - corners.LeftUp.y, 2)
                         );
                     } else if (string == "l") {
                         distance = Math.sqrt(
@@ -291,14 +291,14 @@ export default class Animation {
                                 corners.LeftUp.x - corners.LeftUnder.x,
                                 2
                             ) +
-                            Math.pow(
-                                corners.LeftUp.y - corners.LeftUnder.y,
-                                2
-                            )
+                                Math.pow(
+                                    corners.LeftUp.y - corners.LeftUnder.y,
+                                    2
+                                )
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - corners.LeftUp.x, 2) +
-                            Math.pow(point.y - corners.LeftUp.y, 2)
+                                Math.pow(point.y - corners.LeftUp.y, 2)
                         );
                     } else if (string == "r") {
                         distance = Math.sqrt(
@@ -306,14 +306,14 @@ export default class Animation {
                                 corners.RightUnder.x - corners.RightUp.x,
                                 2
                             ) +
-                            Math.pow(
-                                corners.RightUnder.y - corners.RightUp.y,
-                                2
-                            )
+                                Math.pow(
+                                    corners.RightUnder.y - corners.RightUp.y,
+                                    2
+                                )
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - corners.RightUp.x, 2) +
-                            Math.pow(point.y - corners.RightUp.y, 2)
+                                Math.pow(point.y - corners.RightUp.y, 2)
                         );
                     } else {
                         distance = Math.sqrt(
@@ -321,14 +321,14 @@ export default class Animation {
                                 corners.RightUnder.x - corners.LeftUnder.x,
                                 2
                             ) +
-                            Math.pow(
-                                corners.RightUnder.y - corners.LeftUnder.y,
-                                2
-                            )
+                                Math.pow(
+                                    corners.RightUnder.y - corners.LeftUnder.y,
+                                    2
+                                )
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - corners.LeftUnder.x, 2) +
-                            Math.pow(point.y - corners.LeftUnder.y, 2)
+                                Math.pow(point.y - corners.LeftUnder.y, 2)
                         );
                     }
                     ratioNumber.push(distancePoint / distance);
@@ -361,11 +361,11 @@ export default class Animation {
             animationLine.unshift(null); //null gaat overeenkomen met middelpunt
             animationOrient = "n".concat(animationOrient);
         }
-        animationLine.reverse(); //hier staat de null juist
-        animationOrient = animationOrient
-            .split("")
-            .reverse()
-            .join("");
+        //animationLine.reverse(); //hier staat de null juist
+        // animationOrient = animationOrient
+        //     .split("")
+        //     .reverse()
+        //     .join("");
         //nu nog reversen
         console.log(animationLine);
         console.log(animationOrient);
@@ -395,7 +395,7 @@ export default class Animation {
         console.log(
             Math.sqrt(
                 Math.pow(startPoint.x - nextPoint.x, 2) +
-                Math.pow(startPoint.y - nextPoint.y, 2)
+                    Math.pow(startPoint.y - nextPoint.y, 2)
             ) / speed
         );
         //duration berekenen
@@ -410,7 +410,7 @@ export default class Animation {
         let duration =
             Math.sqrt(
                 Math.pow(endPoint.x - startPoint.x, 2) +
-                Math.pow(endPoint.y - startPoint.y, 2)
+                    Math.pow(endPoint.y - startPoint.y, 2)
             ) / speed;
         console.log("duration = " + duration);
         //emit voor elke slave
