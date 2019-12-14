@@ -3,14 +3,17 @@ import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
 import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
 import { sortCorners } from "./shapes";
-import { IMasterVsRealPoints, CornerLabels, IMasterVsRealPoint } from "../types/Points";
+import { IActualCorners, CornerLabels, IMasterVsActualPoint } from "../types/Points";
 
 export default class SlaveScreen {
     corners: Point[];
     slaveID: string;
     angle: number | undefined;
     slavePortionImg: HTMLCanvasElement;
-    masterVsRealCorners: IMasterVsRealPoints;
+    /**
+     * Corners with orientation
+     */
+    actualCorners: IActualCorners;
     triangulation: {
         //de lijnen die zeker moeten getekend worden
         angles: Array<{ string: string; point: Point }>;
@@ -133,6 +136,9 @@ export default class SlaveScreen {
         return sortCorners(this.corners);
     }
 
+    /**
+     * Corners without orientation
+     */
     public sortCornersByAngle() {
         const center = this.centroid;
         // Sorting by https://math.stackexchange.com/questions/978642/how-to-sort-vertices-of-a-polygon-in-counter-clockwise-order
@@ -153,57 +159,53 @@ export default class SlaveScreen {
      * Should only be called after `this.masterVsRealCorners` is assigned.
      * @param corner 
      */
-    public mapMasterToRealCornerLabel(corner: CornerLabels): CornerLabels {
+    public mapMasterToActualCornerLabel(corner: CornerLabels): CornerLabels {
 
-        function stringToLabel(label: string): CornerLabels {
-            if (label === "LeftUp") {
-                return CornerLabels.LeftUp;
-            } else if (label === "RightUp") {
-                return CornerLabels.RightUp;
-            } else if (label === "LeftUnder") {
-                return CornerLabels.LeftUnder;
-            } else {
-                return CornerLabels.RightUnder;
-            }
-        }
-
-        let masterPoint: Point;
+        const sortedCorners = this.sortedCorners;
 
         switch (corner) {
             case CornerLabels.LeftUp:
-                masterPoint = this.masterVsRealCorners.LeftUp.master;
-                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
-                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
-                        return stringToLabel(label);
-                    }
+                if (sortedCorners.LeftUp.equals(this.actualCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (sortedCorners.LeftUp.equals(this.actualCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (sortedCorners.LeftUp.equals(this.actualCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
                 }
-                break;
             case CornerLabels.RightUp:
-                masterPoint = this.masterVsRealCorners.RightUp.master;
-                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
-                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
-                        return stringToLabel(label);
-                    }
+                if (sortedCorners.RightUp.equals(this.actualCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (sortedCorners.RightUp.equals(this.actualCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (sortedCorners.RightUp.equals(this.actualCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
                 }
-                break;
             case CornerLabels.RightUnder:
-                masterPoint = this.masterVsRealCorners.RightUnder.master;
-                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
-                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
-                        return stringToLabel(label);
-                    }
+                if (sortedCorners.RightUnder.equals(this.actualCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (sortedCorners.RightUnder.equals(this.actualCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (sortedCorners.RightUnder.equals(this.actualCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
                 }
-                break;
             case CornerLabels.LeftUnder:
-                masterPoint = this.masterVsRealCorners.LeftUnder.master;
-                for (let [label, points] of Object.entries(this.masterVsRealCorners)) {
-                    if (masterPoint.equals((<IMasterVsRealPoint>points).real)) {
-                        return stringToLabel(label);
-                    }
+                if (sortedCorners.LeftUnder.equals(this.actualCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (sortedCorners.LeftUnder.equals(this.actualCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (sortedCorners.LeftUnder.equals(this.actualCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
                 }
-                break;
             default:
-                return;
+                return corner;
         }
     }
 

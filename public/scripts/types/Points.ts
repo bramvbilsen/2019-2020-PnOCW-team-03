@@ -7,26 +7,14 @@ export enum CornerLabels {
     RightUnder = "Right under",
 }
 
-export interface IMasterVsRealPoints {
-    LeftUp: {
-        master: Point,
-        real: Point
-    },
-    RightUp: {
-        master: Point,
-        real: Point
-    },
-    LeftUnder: {
-        master: Point,
-        real: Point
-    },
-    RightUnder: {
-        master: Point,
-        real: Point
-    },
+export interface IActualCorners {
+    LeftUp: Point
+    RightUp: Point
+    LeftUnder: Point
+    RightUnder: Point
 }
 
-export interface IMasterVsRealPoint {
+export interface IMasterVsActualPoint {
     master: Point,
-    real: Point
+    actual: Point
 };
