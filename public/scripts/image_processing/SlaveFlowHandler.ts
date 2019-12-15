@@ -12,7 +12,7 @@ import {
 import { createCameraOverlayWithPoints } from "../util/canvas";
 import Line from "./screen_detection/Line";
 import Point from "./screen_detection/Point";
-import { IMasterVsRealPoint, CornerLabels } from "../types/Points";
+import { IMasterVsActualPoint, CornerLabels } from "../types/Points";
 
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
@@ -310,43 +310,9 @@ export default class SlaveFlowHandler {
         const currScreen = this.screens[this.screens.length - 1];
         const { angle, ...cornerMapping } = calculateScreenAngle(currScreen, orientationCanvas);
         currScreen.angle = angle;
-        const sortedCornersMaster = currScreen.sortedCorners;
-        let LeftUp: IMasterVsRealPoint;
-        let RightUp: IMasterVsRealPoint;
-        let LeftUnder: IMasterVsRealPoint;
-        let RightUnder: IMasterVsRealPoint;
-        for (let p of Object.values(cornerMapping)) {
-            p = p as Point;
-            if (p.equals(sortedCornersMaster.LeftUp)) {
-                LeftUp = {
-                    master: sortedCornersMaster.LeftUp,
-                    real: p
-                }
-            } else if (p.equals(sortedCornersMaster.RightUp)) {
-                RightUp = {
-                    master: sortedCornersMaster.RightUp,
-                    real: p
-                }
-            } else if (p.equals(sortedCornersMaster.RightUnder)) {
-                RightUnder = {
-                    master: sortedCornersMaster.RightUnder,
-                    real: p
-                }
-            } else {
-                LeftUnder = {
-                    master: sortedCornersMaster.LeftUnder,
-                    real: p
-                }
-            }
-        }
-        currScreen.masterVsRealCorners = {
-            LeftUp,
-            RightUp,
-            RightUnder,
-            LeftUnder
-        }
+        currScreen.actualCorners = cornerMapping;
         console.log(currScreen.angle);
-        console.log("Master Left Up maps to: " + currScreen.mapMasterToRealCornerLabel(CornerLabels.LeftUp));
+        console.log("Master Left Up maps to: " + currScreen.mapMasterToActualCornerLabel(CornerLabels.LeftUp));
         if (this.automated) {
             await this.nextStep();
         } else {

@@ -148,21 +148,23 @@ function rotateAndDrawImageForSlave(
     $("#test-results").append($("<h3>SCREEN MASK ROTATED</h3>"));
     $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenMaskRotated.toDataURL()));
 
-    const slaveScreenBoundingBoxMaskRotated = createCanvas(imgCanvas.width, imgCanvas.height);
-    const slaveScreenBoundingBoxMaskRotatedCtx = slaveScreenBoundingBoxMaskRotated.getContext("2d");
+    //---- THIS IS WHAT WE USED BEFORE FOR BOUNDING BOX CUTS
+    // const slaveScreenBoundingBoxMaskRotated = createCanvas(imgCanvas.width, imgCanvas.height);
+    // const slaveScreenBoundingBoxMaskRotatedCtx = slaveScreenBoundingBoxMaskRotated.getContext("2d");
 
-    const rotatedAndTranslatedScreenCopy = screen.copyRotated(-screenAngle).copyTranslated(-globalBoundingBox.topLeft.x + widthOffset, -globalBoundingBox.topLeft.y + heightOffset);
-    slaveScreenBoundingBoxMaskRotatedCtx.fillRect(rotatedAndTranslatedScreenCopy.boundingBox.topLeft.x, rotatedAndTranslatedScreenCopy.boundingBox.topLeft.y, rotatedAndTranslatedScreenCopy.width, rotatedAndTranslatedScreenCopy.height);
+    // const rotatedAndTranslatedScreenCopy = screen.copyRotated(-screenAngle).copyTranslated(-globalBoundingBox.topLeft.x + widthOffset, -globalBoundingBox.topLeft.y + heightOffset);
+    // slaveScreenBoundingBoxMaskRotatedCtx.fillRect(rotatedAndTranslatedScreenCopy.boundingBox.topLeft.x, rotatedAndTranslatedScreenCopy.boundingBox.topLeft.y, rotatedAndTranslatedScreenCopy.width, rotatedAndTranslatedScreenCopy.height);
 
-    $("#result-img-container").append($("<h3>BOUNDING BOX MASK</h3>"));
-    $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenBoundingBoxMaskRotated.toDataURL()));
-    $("#test-results").append($("<h3>BOUNDING BOX MASL</h3>"));
-    $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenBoundingBoxMaskRotated.toDataURL()));
+    // $("#result-img-container").append($("<h3>BOUNDING BOX MASK</h3>"));
+    // $("#result-img-container").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenBoundingBoxMaskRotated.toDataURL()));
+    // $("#test-results").append($("<h3>BOUNDING BOX MASL</h3>"));
+    // $("#test-results").append($(`<img style="max-width: 100%; max-height: 100%;" />`).attr("src", slaveScreenBoundingBoxMaskRotated.toDataURL()));
+    //----
 
     const maskedImg = createCanvas(imgCanvas.width, imgCanvas.height);
     const maskedImgCtx = maskedImg.getContext("2d");
     //@ts-ignore
-    maskedImgCtx.drawImage(client.cutWithRealPoints ? slaveScreenMaskRotated : slaveScreenBoundingBoxMaskRotated, 0, 0);
+    maskedImgCtx.drawImage(slaveScreenMaskRotated, 0, 0);
     maskedImgCtx.globalCompositeOperation = "source-in";
     maskedImgCtx.drawImage(rotatedImg, 0, 0);
     $("#result-img-container").append($("<h3>MASKED IMG</h3>"));
@@ -205,7 +207,7 @@ function rotateAndDrawImageForSlave(
     const slaveImgCtx = slaveImg.getContext("2d");
     // For some reason, the calc for position is always off by a few pixels, therfor the 25px offset
     slaveImgCtx.drawImage(
-        maskedImg,
+        client.cutWithRealPoints ? maskedImg : rotatedImg,
         screenCenter.x - (screen.width / 2),
         screenCenter.y - (screen.height / 2),
         screenWidth,
