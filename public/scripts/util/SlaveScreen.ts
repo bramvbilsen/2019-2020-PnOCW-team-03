@@ -209,6 +209,60 @@ export default class SlaveScreen {
         }
     }
 
+    /**
+     * Should only be called after `this.masterVsRealCorners` is assigned.
+     * @param corner 
+     */
+    public mapActualToMasterCornerLabel(corner: CornerLabels): CornerLabels {
+
+        const sortedCorners = this.sortedCorners;
+
+        switch (corner) {
+            case CornerLabels.LeftUp:
+                if (this.actualCorners.LeftUp.equals(sortedCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (this.actualCorners.LeftUp.equals(sortedCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (this.actualCorners.LeftUp.equals(sortedCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
+                }
+            case CornerLabels.RightUp:
+                if (this.actualCorners.RightUp.equals(sortedCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (this.actualCorners.RightUp.equals(sortedCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (this.actualCorners.RightUp.equals(sortedCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
+                }
+            case CornerLabels.RightUnder:
+                if (this.actualCorners.RightUnder.equals(sortedCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (this.actualCorners.RightUnder.equals(sortedCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (this.actualCorners.RightUnder.equals(sortedCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
+                }
+            case CornerLabels.LeftUnder:
+                if (this.actualCorners.LeftUnder.equals(sortedCorners.LeftUp)) {
+                    return CornerLabels.LeftUp
+                } else if (this.actualCorners.LeftUnder.equals(sortedCorners.RightUp)) {
+                    return CornerLabels.RightUp;
+                } else if (this.actualCorners.LeftUnder.equals(sortedCorners.RightUnder)) {
+                    return CornerLabels.RightUnder;
+                } else {
+                    return CornerLabels.LeftUnder;
+                }
+            default:
+                return corner;
+        }
+    }
+
     public copy(): SlaveScreen {
         const screen = new SlaveScreen(this.corners.map(corner => corner.copy()), this.slaveID);
         screen.slavePortionImg = this.slavePortionImg;

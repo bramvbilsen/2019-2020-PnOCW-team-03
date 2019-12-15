@@ -312,7 +312,10 @@ export default class SlaveFlowHandler {
         currScreen.angle = angle;
         currScreen.actualCorners = cornerMapping;
         console.log(currScreen.angle);
-        console.log("Master Left Up maps to: " + currScreen.mapMasterToActualCornerLabel(CornerLabels.LeftUp));
+        console.log("Actual Left Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUp));
+        console.log("Actual Right Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUp));
+        console.log("Actual Right Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUnder));
+        console.log("Actual Left Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder));
         if (this.automated) {
             await this.nextStep();
         } else {
