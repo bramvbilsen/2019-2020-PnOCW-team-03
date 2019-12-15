@@ -12,7 +12,7 @@ import {
 import { createCameraOverlayWithPoints } from "../util/canvas";
 import Line from "./screen_detection/Line";
 import Point from "./screen_detection/Point";
-import { IMasterVsRealPoint } from "../types/Points";
+import { IMasterVsRealPoint, CornerLabels } from "../types/Points";
 
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
@@ -346,6 +346,7 @@ export default class SlaveFlowHandler {
             LeftUnder
         }
         console.log(currScreen.angle);
+        console.log("Master Left Up maps to: " + currScreen.mapMasterToRealCornerLabel(CornerLabels.LeftUp));
         if (this.automated) {
             await this.nextStep();
         } else {
