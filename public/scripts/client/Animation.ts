@@ -50,12 +50,14 @@ export default class Animation {
             this.lines = this.triangulation.copyMiddlePoints();
         }
         const point = this.point;
+        console.log(point);
         let slavesLinkedWithLine = this.triangulation.slaves;
         let potentialLines = this.lines.find(obj => obj.point.equals(point))
             .lines;
         console.log(potentialLines);
         this.line = //random lijn kiezen om naar toe te gaan
             potentialLines[Math.floor(Math.random() * potentialLines.length)];
+        console.log(this.line);
         this.slavesId = slavesLinkedWithLine.find(obj =>
             obj.line.equals(this.line)
         ).slaves; //is nog een object dat de Id bevat
@@ -65,7 +67,7 @@ export default class Animation {
         let slaves = slaveFlowHandler.screens;
         this.slavesId.forEach(slaveId => {
             this.slaves.push(
-                slaves.find(function(element) {
+                slaves.find(function (element) {
                     return element.slaveID == slaveId.slaveId;
                 })
             );
@@ -158,13 +160,13 @@ export default class Animation {
                 startTime +
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                        Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
+                    Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
                 ) /
-                    speed;
+                speed;
             console.log(
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                        Math.pow(startPoint.y - nextPoint.y, 2)
+                    Math.pow(startPoint.y - nextPoint.y, 2)
                 ) / speed
             );
             //duration berekenen
@@ -179,7 +181,7 @@ export default class Animation {
             let duration =
                 Math.sqrt(
                     Math.pow(endPoint.x - startPoint.x, 2) +
-                        Math.pow(endPoint.y - startPoint.y, 2)
+                    Math.pow(endPoint.y - startPoint.y, 2)
                 ) / speed;
             console.log("duration = " + duration);
             //emit voor elke slave
@@ -245,38 +247,38 @@ export default class Animation {
             if (string == "u") {
                 distance = Math.sqrt(
                     Math.pow(LeftUp.x - RightUp.x, 2) +
-                        Math.pow(LeftUp.y - RightUp.y, 2)
+                    Math.pow(LeftUp.y - RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - LeftUp.x, 2) +
-                        Math.pow(element.point.y - LeftUp.y, 2)
+                    Math.pow(element.point.y - LeftUp.y, 2)
                 );
             } else if (string == "l") {
                 distance = Math.sqrt(
                     Math.pow(LeftUp.x - LeftUnder.x, 2) +
-                        Math.pow(LeftUp.y - LeftUnder.y, 2)
+                    Math.pow(LeftUp.y - LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - LeftUp.x, 2) +
-                        Math.pow(element.point.y - LeftUp.y, 2)
+                    Math.pow(element.point.y - LeftUp.y, 2)
                 );
             } else if (string == "r") {
                 distance = Math.sqrt(
                     Math.pow(RightUnder.x - RightUp.x, 2) +
-                        Math.pow(RightUnder.y - RightUp.y, 2)
+                    Math.pow(RightUnder.y - RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - RightUp.x, 2) +
-                        Math.pow(element.point.y - RightUp.y, 2)
+                    Math.pow(element.point.y - RightUp.y, 2)
                 );
             } else {
                 distance = Math.sqrt(
                     Math.pow(RightUnder.x - LeftUnder.x, 2) +
-                        Math.pow(RightUnder.y - LeftUnder.y, 2)
+                    Math.pow(RightUnder.y - LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
                     Math.pow(element.point.x - LeftUnder.x, 2) +
-                        Math.pow(element.point.y - LeftUnder.y, 2)
+                    Math.pow(element.point.y - LeftUnder.y, 2)
                 );
             }
             let ratioNumber = distancePoint / distance;
@@ -325,38 +327,38 @@ export default class Animation {
                     if (string == "u") {
                         distance = Math.sqrt(
                             Math.pow(leftUp.x - rightUp.x, 2) +
-                                Math.pow(leftUp.y - rightUp.y, 2)
+                            Math.pow(leftUp.y - rightUp.y, 2)
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - leftUp.x, 2) +
-                                Math.pow(point.y - leftUp.y, 2)
+                            Math.pow(point.y - leftUp.y, 2)
                         );
                     } else if (string == "l") {
                         distance = Math.sqrt(
                             Math.pow(leftUp.x - leftUnder.x, 2) +
-                                Math.pow(leftUp.y - leftUnder.y, 2)
+                            Math.pow(leftUp.y - leftUnder.y, 2)
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - leftUp.x, 2) +
-                                Math.pow(point.y - leftUp.y, 2)
+                            Math.pow(point.y - leftUp.y, 2)
                         );
                     } else if (string == "r") {
                         distance = Math.sqrt(
                             Math.pow(rightUnder.x - rightUp.x, 2) +
-                                Math.pow(rightUnder.y - rightUp.y, 2)
+                            Math.pow(rightUnder.y - rightUp.y, 2)
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - rightUp.x, 2) +
-                                Math.pow(point.y - rightUp.y, 2)
+                            Math.pow(point.y - rightUp.y, 2)
                         );
                     } else {
                         distance = Math.sqrt(
                             Math.pow(rightUnder.x - leftUnder.x, 2) +
-                                Math.pow(rightUnder.y - leftUnder.y, 2)
+                            Math.pow(rightUnder.y - leftUnder.y, 2)
                         );
                         distancePoint = Math.sqrt(
                             Math.pow(point.x - leftUnder.x, 2) +
-                                Math.pow(point.y - leftUnder.y, 2)
+                            Math.pow(point.y - leftUnder.y, 2)
                         );
                     }
                     ratioNumber.push(distancePoint / distance);
@@ -441,7 +443,7 @@ export default class Animation {
         console.log(
             Math.sqrt(
                 Math.pow(startPoint.x - nextPoint.x, 2) +
-                    Math.pow(startPoint.y - nextPoint.y, 2)
+                Math.pow(startPoint.y - nextPoint.y, 2)
             ) / speed
         );
         //duration berekenen
@@ -456,7 +458,7 @@ export default class Animation {
         let duration =
             Math.sqrt(
                 Math.pow(endPoint.x - startPoint.x, 2) +
-                    Math.pow(endPoint.y - startPoint.y, 2)
+                Math.pow(endPoint.y - startPoint.y, 2)
             ) / speed;
         console.log("duration = " + duration);
         //emit voor elke slave
