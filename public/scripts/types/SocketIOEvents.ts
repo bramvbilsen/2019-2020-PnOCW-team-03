@@ -19,6 +19,7 @@ export enum SlaveEventTypes {
     NotifyMasterThatSlaveScreenIsOn = "notify-master-that-slave-screen-is-on",
     NotifyMasterThatSlaveOrientationIsOn = "notify-master-that-slave-orientation-is-on",
     animationFinished = "animation-finished",
+    linesShow = "lines-show",
 }
 
 export enum MasterEventTypes {
@@ -35,4 +36,5 @@ export enum MasterEventTypes {
     ShowAnimationOnSlave = "show-animation-on-slave",
     HandleNextSlaveFlowHanlderStep = "handle-next-slave-flow-handler-step",
     nextLine = "next-line",
+    triangulationShow = "triangulation-show",
 }

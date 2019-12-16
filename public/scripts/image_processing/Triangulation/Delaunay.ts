@@ -104,29 +104,31 @@ function findbase(left: Triangulation, right: Triangulation) {
     let j = 0;
     while (!goodBase) {
         goodBase = true;
-        if (ind == 0) {
-            for (let i = 1; i < pointsLeft.length; i++) {
-                j += 1;
-                let line = new Line(pointsLeft[i], pointsRight[0]);
-                if (!base.lineAbove(line, 1)) {
-                    base = new Line(pointsLeft[i], pointsRight[0]);
-                    goodBase = false;
-                    pointsLeft.splice(0, j);
-                    break;
-                }
-            }
-        } else {
-            for (let i = 1; i < pointsRight.length; i++) {
-                j += 1;
-                let line = new Line(pointsLeft[0], pointsRight[i]);
-                if (!base.lineAbove(line, 0)) {
-                    base = new Line(pointsLeft[0], pointsRight[i]);
-                    goodBase = false;
-                    pointsRight.splice(0, j);
-                    break;
-                }
+        j = 0;
+        //if (ind == 0) {
+        for (let i = 1; i < pointsLeft.length; i++) {
+            j += 1;
+            let line = new Line(pointsLeft[i], pointsRight[0]);
+            if (!base.lineAbove(line, 1)) {
+                base = new Line(pointsLeft[i], pointsRight[0]);
+                goodBase = false;
+                pointsLeft.splice(0, j);
+                break;
             }
         }
+        //} else {
+        j = 0;
+        for (let i = 1; i < pointsRight.length; i++) {
+            j += 1;
+            let line = new Line(pointsLeft[0], pointsRight[i]);
+            if (!base.lineAbove(line, 0)) {
+                base = new Line(pointsLeft[0], pointsRight[i]);
+                goodBase = false;
+                pointsRight.splice(0, j);
+                break;
+            }
+        }
+        // }
     }
     return base;
 }
