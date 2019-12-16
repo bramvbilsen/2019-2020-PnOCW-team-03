@@ -189,6 +189,8 @@ export default class Animation {
                 last = true;
                 this.point = endPoint;
                 this.nextLine();
+                console.log(element.slaveID);
+                console.log(this.slavesId);
                 nextAnimationLine = this.createAnimationLine(element, reverse);
             }
             console.log(last);
