@@ -1513,12 +1513,14 @@ class Client {
     };
 
     public startAnimation() {
-        this.circleAnimation = new Animation(
-            this._socket,
-            this.calculateTriangulation()
-        );
         this.triangulationShow();
-        this.circleAnimation.start();
+        wait(1000).then(() => {
+            this.circleAnimation = new Animation(
+                this._socket,
+                this.triangulation
+            );
+            this.circleAnimation.start();
+        });
     }
 
     public stopAnimation() {
