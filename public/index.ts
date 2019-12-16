@@ -198,21 +198,28 @@ export function resetMaster() {
         $("#display-delaunay-triangulation-button")
             .off()
             .on("click", async () => {
-                const triangCanvas = client.calculateTriangulationCanvas();
-                const globalBoundingBox = new BoundingBox(
-                    flattenOneLevel(
-                        slaveFlowHandler.screens.map(screen => screen.corners)
-                    )
-                );
-                slaveFlowHandler.screens.forEach(screen => {
-                    const slaveImg = createImageCanvasForSlave(
-                        globalBoundingBox,
-                        screen,
-                        slaveFlowHandler.screens,
-                        triangCanvas
-                    );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
-                });
+                // const triangCanvas = client.calculateTriangulationCanvas();
+                // const globalBoundingBox = new BoundingBox(
+                //     flattenOneLevel(
+                //         slaveFlowHandler.screens.map(screen => screen.corners)
+                //     )
+                // );
+                // slaveFlowHandler.screens.forEach(screen => {
+                //     const slaveImg = createImageCanvasForSlave(
+                //         globalBoundingBox,
+                //         screen,
+                //         slaveFlowHandler.screens,
+                //         triangCanvas
+                //     );
+                //     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                // });
+                client.startAnimation();
+            });
+
+        $("#stop-delaunay-triangulation-button")
+            .off()
+            .on("click", async () => {
+                client.stopAnimation();
             });
 
         $(".pink")
