@@ -1521,6 +1521,12 @@ class Client {
         this.circleAnimation.start();
     }
 
+    public stopAnimation() {
+        if (this.circleAnimation) {
+            this.circleAnimation.stop();
+        }
+    }
+
     public nextlinesend = () => {
         if (this.circleAnimation.isAnimating()) {
             this.circleAnimation.sendAnimation();
