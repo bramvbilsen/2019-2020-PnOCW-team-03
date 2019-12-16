@@ -368,6 +368,7 @@ class Client {
 
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
+        window.scrollTo(window.scrollX, window.innerHeight);
         $("#main-flow-slave").hide();
         $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
     };
@@ -1332,6 +1333,7 @@ class Client {
         directionxNext: number,
         directionyNext: number
     ) => {
+        window.scrollTo(window.scrollX, window.innerHeight);
         console.log("eindtijd = " + new Date(endDate));
         console.log("dx =" + directionx);
         console.log("dy =" + directiony);
