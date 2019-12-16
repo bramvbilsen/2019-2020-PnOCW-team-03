@@ -45,6 +45,7 @@ export default class SlaveFlowHandler {
     origSlaveIDs: string[];
     step: WorkflowStep;
     blancoCanvas: HTMLCanvasElement;
+    blancoCanvasScale: number;
     screens: SlaveScreen[] = [];
     automated: boolean = false;
 
@@ -167,7 +168,7 @@ export default class SlaveFlowHandler {
             PREFERRED_CANVAS_WIDTH,
             PREFERRED_CANVAS_HEIGHT
         );
-
+        this.blancoCanvasScale = scale;
         this.blancoCanvas = createCanvas(
             PREFERRED_CANVAS_WIDTH,
             PREFERRED_CANVAS_HEIGHT

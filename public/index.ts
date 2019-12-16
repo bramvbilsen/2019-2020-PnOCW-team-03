@@ -184,12 +184,15 @@ export function resetMaster() {
                         slaveFlowHandler.screens.map(screen => screen.corners)
                     )
                 );
+                const canvas = createCanvas(player[0].videoWidth, player[0].videoHeight);
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(slaveFlowHandler.blancoCanvas, 0, 0, player[0].videoWidth * slaveFlowHandler.blancoCanvasScale, player[0].videoHeight);
                 slaveFlowHandler.screens.forEach(screen => {
                     const slaveImg = createImageCanvasForSlave(
                         globalBoundingBox,
                         screen,
                         slaveFlowHandler.screens,
-                        slaveFlowHandler.blancoCanvas
+                        canvas
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
