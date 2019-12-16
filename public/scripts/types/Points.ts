@@ -1,25 +1,20 @@
 import Point from "../image_processing/screen_detection/Point";
 
-export interface IMasterVsRealPoints {
-    LeftUp: {
-        master: Point,
-        real: Point
-    },
-    RightUp: {
-        master: Point,
-        real: Point
-    },
-    LeftUnder: {
-        master: Point,
-        real: Point
-    },
-    RightUnder: {
-        master: Point,
-        real: Point
-    },
+export enum CornerLabels {
+    LeftUp = "Left up",
+    RightUp = "Right up",
+    LeftUnder = "Left under",
+    RightUnder = "Right under",
 }
 
-export interface IMasterVsRealPoint {
+export interface IActualCorners {
+    LeftUp: Point
+    RightUp: Point
+    LeftUnder: Point
+    RightUnder: Point
+}
+
+export interface IMasterVsActualPoint {
     master: Point,
-    real: Point
+    actual: Point
 };

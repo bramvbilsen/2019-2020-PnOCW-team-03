@@ -22,6 +22,7 @@ import { loadImage } from "../util/images";
 import { lstat } from "fs";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
+import { CornerLabels } from "../types/Points";
 
 const {
     checkIntersection,
@@ -40,7 +41,7 @@ class Client {
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
     public cutWithRealPoints: boolean = false;
-    public steveImg: HTMLImageElement;
+    public bouncingBallImg: HTMLImageElement;
     /**
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
@@ -61,8 +62,8 @@ class Client {
 
         this._sync = new Sync(this._socket);
 
-        loadImage(`${env.baseUrl}/images/steve.png`).then(
-            img => (this.steveImg = img)
+        loadImage(`${env.baseUrl}/images/ball.gif`).then(
+            img => (this.bouncingBallImg = img)
         );
 
         this._socket.on(
@@ -123,7 +124,7 @@ class Client {
                     socketIOEmittersForNewType.push(
                         this._socket.on(
                             MasterEventTypes.nextLine,
-                            this.nextlinesend,
+                            this.nextlinesend
                         )
                     );
                 }
@@ -367,6 +368,7 @@ class Client {
 
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
+        window.scrollTo(window.scrollX, window.innerHeight);
         $("#main-flow-slave").hide();
         $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
     };
@@ -601,10 +603,22 @@ class Client {
         function findIntersections(line: Line, slave: SlaveScreen) {
             const endPoints = line.endPoints;
             const corners = slave.sortedCorners;
-            const leftUp = corners.LeftUp;
-            const rightUp = corners.RightUp;
-            const leftUnder = corners.LeftUnder;
-            const rightUnder = corners.RightUnder;
+            const leftUp = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
+                slave
+            );
+            const rightUp = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
+                slave
+            );
+            const leftUnder = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
+                slave
+            );
+            const rightUnder = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
+                slave
+            );
             let cuttingPoints: {
                 [key: string]: Point;
             } = {};
@@ -662,6 +676,24 @@ class Client {
                 cuttingPoints["d"] = new Point(Under.point.x, Under.point.y);
             }
             return cuttingPoints;
+        }
+
+        function stringToPoint(corner: CornerLabels, slave: SlaveScreen) {
+            if (corner == CornerLabels.LeftUp) {
+                return slave.sortedCorners.LeftUp;
+            }
+
+            if (corner == CornerLabels.LeftUnder) {
+                return slave.sortedCorners.LeftUnder;
+            }
+
+            if (corner == CornerLabels.RightUp) {
+                return slave.sortedCorners.RightUp;
+            }
+
+            if (corner == CornerLabels.RightUnder) {
+                return slave.sortedCorners.RightUnder;
+            }
         }
 
         function addAngle(
@@ -1301,6 +1333,7 @@ class Client {
         directionxNext: number,
         directionyNext: number
     ) => {
+        window.scrollTo(window.scrollX, window.innerHeight);
         console.log("eindtijd = " + new Date(endDate));
         console.log("dx =" + directionx);
         console.log("dy =" + directiony);
@@ -1378,7 +1411,10 @@ class Client {
             console.log("emit");
             if (last) {
                 this._socket.emit(SlaveEventTypes.animationFinished, {});
-                var timer2 = setInterval(function() {
+                x = window.innerWidth / 2;
+                y = window.innerHeight / 2;
+                endDate += nextDuration;
+                var timer2 = setInterval(function () {
                     const canvas = createCanvas(
                         window.innerWidth,
                         window.innerHeight
@@ -1435,12 +1471,6 @@ class Client {
                         y += directionyNext;
                         $("#image-slave").attr("src", canvas.toDataURL());
                     } else {
-                        if (last) {
-                            ctx.beginPath();
-                            ctx.arc(x, y, 30, 0, 2 * Math.PI);
-                            ctx.stroke();
-                            ctx.fill();
-                        }
                         $("#image-slave").attr("src", canvas.toDataURL());
                         clearInterval(timer2);
                     }
@@ -1459,7 +1489,7 @@ class Client {
 
     public nextlinesend = () => {
         this.circleAnimation.sendAnimation();
-    }
+    };
 }
 
 export default Client;
