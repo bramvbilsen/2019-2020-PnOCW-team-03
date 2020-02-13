@@ -31,6 +31,10 @@ app.use(express.static(staticFolder));
 app.use("/images", express.static(imgFolder));
 app.use("/slave_images", express.static(slaveImgUploadFolder));
 
+app.post("/sync_test_result", (req, res) => {
+    console.log(res);
+});
+
 app.get("/", (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });

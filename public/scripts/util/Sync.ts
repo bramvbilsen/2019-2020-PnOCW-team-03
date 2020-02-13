@@ -1,4 +1,5 @@
 import { SharedEventTypes } from "../types/SocketIOEvents";
+import env from "../../env/env";
 
 // Based on https://github.com/calvinfo/socket-ntp/blob/master/client/ntp.js
 // But rewitten to make it work with classes and typescript.
@@ -33,7 +34,15 @@ export default class Sync {
         if (this.avgTestResults.length <= 300) {
             this.avgTestResults.push(this.timeDiff);
         } else {
-
+            $.ajax({
+                url: env.baseUrl + "/sync_test_result",
+                type: "POST",
+                contentType: false,
+                dataType: "json",
+                cache: false,
+                processData: false,
+                data: this.avgTestResults,
+            });
         }
     };
 }
