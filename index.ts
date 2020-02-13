@@ -2,6 +2,7 @@ import express from "express";
 import * as http from "http";
 import socketio from "socket.io";
 import * as path from "path";
+import * as fs from 'fs';
 import multer from "multer";
 import Connections from "./server/Connections";
 import handleImageUpload from "./server/handleImageUpload";
@@ -35,15 +36,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.post("/sync_test_result", (req, res) => {
-    const testResults = req.body; 
+    const testResults = req.body;
     let i = 0;
-    let rows = []
+    let rows: Array<any> = [["Iteration", "Offset"]]
     while (i < testResults.length) {
-        rows.push([i+1,testResults[i]])
+        rows.push([i + 1, testResults[i]])
         i++;
     }
-    const csvString = {rows}.rows.join("\n");
+    const csvString = { rows }.rows.join("\n");
     console.log(csvString);
+    fs.writeFile('test.csv', csvString, err => {
+        if (err) return console.log(err);
+        console.log('FILE SUCCESSFULLY WRITTEN!\n');
+    });
 });
 
 app.get("/", (req, res) => {
