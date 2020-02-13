@@ -35,7 +35,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.post("/sync_test_result", (req, res) => {
-    const testResults = req.body;
+    const testResults = req.body; 
+    let i = 0;
+    let rows = []
+    while (i < testResults.length) {
+        rows.push([i+1,testResults[i]])
+        i++;
+    }
+    const csvString = {rows}.rows.join("\n");
+    console.log(csvString);
 });
 
 app.get("/", (req, res) => {
