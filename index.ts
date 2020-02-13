@@ -31,8 +31,11 @@ app.use(express.static(staticFolder));
 app.use("/images", express.static(imgFolder));
 app.use("/slave_images", express.static(slaveImgUploadFolder));
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 app.post("/sync_test_result", (req, res) => {
-    console.log(res);
+    const testResults = req.body;
 });
 
 app.get("/", (req, res) => {
@@ -105,7 +108,7 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log(
                     "Attempting to display image by master, imgurl: " +
-                        msg.imgUrl
+                    msg.imgUrl
                 );
                 io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
                     imgUrl: msg.imgUrl,

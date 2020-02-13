@@ -7,6 +7,7 @@ export default class Sync {
     private _offsets: number[] = [];
     private _socket: SocketIOClient.Socket;
     public avgTestResults: number[] = [];
+    private _finishedTest: boolean = false;
 
     constructor(socket: SocketIOClient.Socket) {
         this._socket = socket;
@@ -31,17 +32,24 @@ export default class Sync {
 
         if (this._offsets.length > 10) this._offsets.pop();
 
-        if (this.avgTestResults.length <= 300) {
+        if (this.avgTestResults.length <= 3) {
+            console.log(this.avgTestResults.length);
             this.avgTestResults.push(this.timeDiff);
-        } else {
+        } else if (!this._finishedTest) {
+            this._finishedTest = true;
+            const stringifiedResults = JSON.stringify(this.avgTestResults)
+            console.log(stringifiedResults);
             $.ajax({
                 url: env.baseUrl + "/sync_test_result",
-                type: "POST",
-                contentType: false,
                 dataType: "json",
-                cache: false,
-                processData: false,
-                data: this.avgTestResults,
+                contentType: "application/json;charset=utf-8",
+                type: "POST",
+                data: stringifiedResults,
+                success: function (msg) {
+                    if (msg != null) {
+                        return msg.URL;
+                    }
+                }
             });
         }
     };
