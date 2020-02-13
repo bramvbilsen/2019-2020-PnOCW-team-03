@@ -12,7 +12,7 @@ import {
 import { createCameraOverlayWithPoints } from "../util/canvas";
 import Line from "./screen_detection/Line";
 import Point from "./screen_detection/Point";
-import { IMasterVsActualPoint } from "../types/Points";
+import { IMasterVsActualPoint, CornerLabels } from "../types/Points";
 
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
@@ -45,6 +45,7 @@ export default class SlaveFlowHandler {
     origSlaveIDs: string[];
     step: WorkflowStep;
     blancoCanvas: HTMLCanvasElement;
+    blancoCanvasScale: number;
     screens: SlaveScreen[] = [];
     automated: boolean = false;
 
@@ -167,7 +168,7 @@ export default class SlaveFlowHandler {
             PREFERRED_CANVAS_WIDTH,
             PREFERRED_CANVAS_HEIGHT
         );
-
+        this.blancoCanvasScale = scale;
         this.blancoCanvas = createCanvas(
             PREFERRED_CANVAS_WIDTH,
             PREFERRED_CANVAS_HEIGHT
@@ -312,6 +313,10 @@ export default class SlaveFlowHandler {
         currScreen.angle = angle;
         currScreen.actualCorners = cornerMapping;
         console.log(currScreen.angle);
+        console.log("Actual Left Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUp));
+        console.log("Actual Right Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUp));
+        console.log("Actual Right Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUnder));
+        console.log("Actual Left Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder));
         if (this.automated) {
             await this.nextStep();
         } else {

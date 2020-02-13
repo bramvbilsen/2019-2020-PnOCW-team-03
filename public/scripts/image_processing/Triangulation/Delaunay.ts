@@ -79,14 +79,14 @@ function delauneyMerging(left: Triangulation, right: Triangulation) {
 function findbase(left: Triangulation, right: Triangulation) {
     let pointsLeft = left.points;
     let pointsRight = right.points;
-    pointsLeft.sort(function(a, b) {
+    pointsLeft.sort(function (a, b) {
         if (a.y - b.y == 0) {
             return a.x - b.x;
         } else {
             return a.y - b.y;
         }
     });
-    pointsRight.sort(function(a, b) {
+    pointsRight.sort(function (a, b) {
         if (a.y - b.y == 0) {
             return b.x - a.x;
         } else {
@@ -104,39 +104,41 @@ function findbase(left: Triangulation, right: Triangulation) {
     let j = 0;
     while (!goodBase) {
         goodBase = true;
-        if (ind == 0) {
-            for (let i = 1; i < pointsLeft.length; i++) {
-                j += 1;
-                let line = new Line(pointsLeft[i], pointsRight[0]);
-                if (!base.lineAbove(line, 1)) {
-                    base = new Line(pointsLeft[i], pointsRight[0]);
-                    goodBase = false;
-                    pointsLeft.splice(0, j);
-                    break;
-                }
-            }
-        } else {
-            for (let i = 1; i < pointsRight.length; i++) {
-                j += 1;
-                let line = new Line(pointsLeft[0], pointsRight[i]);
-                if (!base.lineAbove(line, 0)) {
-                    base = new Line(pointsLeft[0], pointsRight[i]);
-                    goodBase = false;
-                    pointsRight.splice(0, j);
-                    break;
-                }
+        j = 0;
+        // if (ind == 0) {
+        for (let i = 1; i < pointsLeft.length; i++) {
+            j += 1;
+            let line = new Line(pointsLeft[i], pointsRight[0]);
+            if (!base.lineAbove(line, 1)) {
+                base = new Line(pointsLeft[i], pointsRight[0]);
+                goodBase = false;
+                pointsLeft.splice(0, j);
+                break;
             }
         }
+        // } else {
+        j = 0;
+        for (let i = 1; i < pointsRight.length; i++) {
+            j += 1;
+            let line = new Line(pointsLeft[0], pointsRight[i]);
+            if (!base.lineAbove(line, 0)) {
+                base = new Line(pointsLeft[0], pointsRight[i]);
+                goodBase = false;
+                pointsRight.splice(0, j);
+                break;
+            }
+        }
+        // }
     }
     return base;
 }
 
 function potential(triang: Triangulation, base: Line, index: number) {
     let lines = triang.linesWithCertainPoints(base.endPoints[index]);
-    lines = lines.filter(function(value) {
+    lines = lines.filter(function (value) {
         return base.lineAbove(value, index);
     });
-    lines.sort(function(a, b) {
+    lines.sort(function (a, b) {
         return base.angle(a, index) - base.angle(b, index);
     });
     for (let i = 0; i < lines.length; i++) {

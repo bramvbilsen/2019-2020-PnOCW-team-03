@@ -4,11 +4,16 @@ import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
 import { slaveFlowHandler } from "../../index";
 import { MasterEventTypes } from "../types/SocketIOEvents";
+import { CornerLabels } from "../types/Points";
 
 export default class Animation {
     private line: Line;
     private point: Point;
     private slaves: SlaveScreen[];
+    private lines: {
+        point: Point;
+        lines: Line[];
+    }[];
     private slavesId: {
         slaveId: string;
         points: Point[];
@@ -23,6 +28,10 @@ export default class Animation {
         this.triangulation = triangulation;
     }
 
+    isAnimating() {
+        return this.animating;
+    }
+
     start() {
         this.triangulation = this.triangulation;
         let points = this.triangulation.points;
@@ -32,25 +41,33 @@ export default class Animation {
         this.animating = true;
     }
 
-    stop() {}
+    stop() {
+        this.animating = false;
+    }
 
     nextLine() {
-        let triangulation = this.triangulation;
-        let lines = triangulation.copyMiddlePoints();
+        if (!this.line) {
+            this.lines = this.triangulation.copyMiddlePoints();
+        }
         const point = this.point;
-        let slavesLinkedWithLine = triangulation.slaves;
-        let potentialLines = lines.find(obj => obj.point.equals(point)).lines;
+        console.log(point);
+        let slavesLinkedWithLine = this.triangulation.slaves;
+        let potentialLines = this.lines.find(obj => obj.point.equals(point))
+            .lines;
+        console.log(potentialLines);
         this.line = //random lijn kiezen om naar toe te gaan
             potentialLines[Math.floor(Math.random() * potentialLines.length)];
+        console.log(this.line);
         this.slavesId = slavesLinkedWithLine.find(obj =>
             obj.line.equals(this.line)
         ).slaves; //is nog een object dat de Id bevat
+        console.log(this.slavesId);
         //lijst met overeenkomstige slaves maken
         this.slaves = [];
         let slaves = slaveFlowHandler.screens;
         this.slavesId.forEach(slaveId => {
             this.slaves.push(
-                slaves.find(function(element) {
+                slaves.find(function (element) {
                     return element.slaveID == slaveId.slaveId;
                 })
             );
@@ -143,13 +160,13 @@ export default class Animation {
                 startTime +
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                        Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
+                    Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
                 ) /
-                    speed;
+                speed;
             console.log(
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                        Math.pow(startPoint.y - nextPoint.y, 2)
+                    Math.pow(startPoint.y - nextPoint.y, 2)
                 ) / speed
             );
             //duration berekenen
@@ -164,7 +181,7 @@ export default class Animation {
             let duration =
                 Math.sqrt(
                     Math.pow(endPoint.x - startPoint.x, 2) +
-                        Math.pow(endPoint.y - startPoint.y, 2)
+                    Math.pow(endPoint.y - startPoint.y, 2)
                 ) / speed;
             console.log("duration = " + duration);
             //emit voor elke slave
@@ -182,6 +199,8 @@ export default class Animation {
                 last = true;
                 this.point = endPoint;
                 this.nextLine();
+                console.log(element.slaveID);
+                console.log(this.slavesId);
                 nextAnimationLine = this.createAnimationLine(element, reverse);
             }
             console.log(last);
@@ -204,46 +223,62 @@ export default class Animation {
         points: Array<{ string: string; point: Point }>
     ) => {
         let ratio: Array<{ string: string; point: number }> = [];
-        const corners = slave.sortedCorners;
+        //const corners = slave.sortedCorners;
+        const LeftUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
+            slave
+        );
+        const RightUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
+            slave
+        );
+        const LeftUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
+            slave
+        );
+        const RightUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
+            slave
+        );
         points.forEach(element => {
             const string = element.string;
             let distance: number;
             let distancePoint: number; //links -> rechts, boven -> onder
             if (string == "u") {
                 distance = Math.sqrt(
-                    Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                        Math.pow(corners.LeftUp.y - corners.RightUp.y, 2)
+                    Math.pow(LeftUp.x - RightUp.x, 2) +
+                    Math.pow(LeftUp.y - RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                        Math.pow(element.point.y - corners.LeftUp.y, 2)
+                    Math.pow(element.point.x - LeftUp.x, 2) +
+                    Math.pow(element.point.y - LeftUp.y, 2)
                 );
             } else if (string == "l") {
                 distance = Math.sqrt(
-                    Math.pow(corners.LeftUp.x - corners.LeftUnder.x, 2) +
-                        Math.pow(corners.LeftUp.y - corners.LeftUnder.y, 2)
+                    Math.pow(LeftUp.x - LeftUnder.x, 2) +
+                    Math.pow(LeftUp.y - LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                        Math.pow(element.point.y - corners.LeftUp.y, 2)
+                    Math.pow(element.point.x - LeftUp.x, 2) +
+                    Math.pow(element.point.y - LeftUp.y, 2)
                 );
             } else if (string == "r") {
                 distance = Math.sqrt(
-                    Math.pow(corners.RightUnder.x - corners.RightUp.x, 2) +
-                        Math.pow(corners.RightUnder.y - corners.RightUp.y, 2)
+                    Math.pow(RightUnder.x - RightUp.x, 2) +
+                    Math.pow(RightUnder.y - RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.RightUp.x, 2) +
-                        Math.pow(element.point.y - corners.RightUp.y, 2)
+                    Math.pow(element.point.x - RightUp.x, 2) +
+                    Math.pow(element.point.y - RightUp.y, 2)
                 );
             } else {
                 distance = Math.sqrt(
-                    Math.pow(corners.RightUnder.x - corners.LeftUnder.x, 2) +
-                        Math.pow(corners.RightUnder.y - corners.LeftUnder.y, 2)
+                    Math.pow(RightUnder.x - LeftUnder.x, 2) +
+                    Math.pow(RightUnder.y - LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.LeftUnder.x, 2) +
-                        Math.pow(element.point.y - corners.LeftUnder.y, 2)
+                    Math.pow(element.point.x - LeftUnder.x, 2) +
+                    Math.pow(element.point.y - LeftUnder.y, 2)
                 );
             }
             let ratioNumber = distancePoint / distance;
@@ -261,7 +296,23 @@ export default class Animation {
             point1: number;
             point2: number;
         }> = [];
-        const corners = slave.sortedCorners;
+        //const corners = slave.sortedCorners;
+        const leftUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
+            slave
+        );
+        const rightUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
+            slave
+        );
+        const leftUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
+            slave
+        );
+        const rightUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
+            slave
+        );
         points.forEach(element => {
             const fullString = element.string.split("");
             const points_ = [element.point1, element.point2];
@@ -275,60 +326,39 @@ export default class Animation {
                     let distancePoint: number; //links -> rechts, boven -> onder
                     if (string == "u") {
                         distance = Math.sqrt(
-                            Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                                Math.pow(
-                                    corners.LeftUp.y - corners.RightUp.y,
-                                    2
-                                )
+                            Math.pow(leftUp.x - rightUp.x, 2) +
+                            Math.pow(leftUp.y - rightUp.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.LeftUp.x, 2) +
-                                Math.pow(point.y - corners.LeftUp.y, 2)
+                            Math.pow(point.x - leftUp.x, 2) +
+                            Math.pow(point.y - leftUp.y, 2)
                         );
                     } else if (string == "l") {
                         distance = Math.sqrt(
-                            Math.pow(
-                                corners.LeftUp.x - corners.LeftUnder.x,
-                                2
-                            ) +
-                                Math.pow(
-                                    corners.LeftUp.y - corners.LeftUnder.y,
-                                    2
-                                )
+                            Math.pow(leftUp.x - leftUnder.x, 2) +
+                            Math.pow(leftUp.y - leftUnder.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.LeftUp.x, 2) +
-                                Math.pow(point.y - corners.LeftUp.y, 2)
+                            Math.pow(point.x - leftUp.x, 2) +
+                            Math.pow(point.y - leftUp.y, 2)
                         );
                     } else if (string == "r") {
                         distance = Math.sqrt(
-                            Math.pow(
-                                corners.RightUnder.x - corners.RightUp.x,
-                                2
-                            ) +
-                                Math.pow(
-                                    corners.RightUnder.y - corners.RightUp.y,
-                                    2
-                                )
+                            Math.pow(rightUnder.x - rightUp.x, 2) +
+                            Math.pow(rightUnder.y - rightUp.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.RightUp.x, 2) +
-                                Math.pow(point.y - corners.RightUp.y, 2)
+                            Math.pow(point.x - rightUp.x, 2) +
+                            Math.pow(point.y - rightUp.y, 2)
                         );
                     } else {
                         distance = Math.sqrt(
-                            Math.pow(
-                                corners.RightUnder.x - corners.LeftUnder.x,
-                                2
-                            ) +
-                                Math.pow(
-                                    corners.RightUnder.y - corners.LeftUnder.y,
-                                    2
-                                )
+                            Math.pow(rightUnder.x - leftUnder.x, 2) +
+                            Math.pow(rightUnder.y - leftUnder.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.LeftUnder.x, 2) +
-                                Math.pow(point.y - corners.LeftUnder.y, 2)
+                            Math.pow(point.x - leftUnder.x, 2) +
+                            Math.pow(point.y - leftUnder.y, 2)
                         );
                     }
                     ratioNumber.push(distancePoint / distance);
@@ -344,6 +374,24 @@ export default class Animation {
             });
         });
         return ratio;
+    };
+
+    public stringToPoint = (corner: CornerLabels, slave: SlaveScreen) => {
+        if (corner == CornerLabels.LeftUp) {
+            return slave.sortedCorners.LeftUp;
+        }
+
+        if (corner == CornerLabels.LeftUnder) {
+            return slave.sortedCorners.LeftUnder;
+        }
+
+        if (corner == CornerLabels.RightUp) {
+            return slave.sortedCorners.RightUp;
+        }
+
+        if (corner == CornerLabels.RightUnder) {
+            return slave.sortedCorners.RightUnder;
+        }
     };
 
     createAnimationLine(slave: SlaveScreen, reverse: boolean) {
@@ -395,7 +443,7 @@ export default class Animation {
         console.log(
             Math.sqrt(
                 Math.pow(startPoint.x - nextPoint.x, 2) +
-                    Math.pow(startPoint.y - nextPoint.y, 2)
+                Math.pow(startPoint.y - nextPoint.y, 2)
             ) / speed
         );
         //duration berekenen
@@ -410,7 +458,7 @@ export default class Animation {
         let duration =
             Math.sqrt(
                 Math.pow(endPoint.x - startPoint.x, 2) +
-                    Math.pow(endPoint.y - startPoint.y, 2)
+                Math.pow(endPoint.y - startPoint.y, 2)
             ) / speed;
         console.log("duration = " + duration);
         //emit voor elke slave

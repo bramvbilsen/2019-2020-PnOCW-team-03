@@ -184,12 +184,15 @@ export function resetMaster() {
                         slaveFlowHandler.screens.map(screen => screen.corners)
                     )
                 );
+                const canvas = createCanvas(player[0].videoWidth, player[0].videoHeight);
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(slaveFlowHandler.blancoCanvas, 0, 0, player[0].videoWidth * slaveFlowHandler.blancoCanvasScale, player[0].videoHeight);
                 slaveFlowHandler.screens.forEach(screen => {
                     const slaveImg = createImageCanvasForSlave(
                         globalBoundingBox,
                         screen,
                         slaveFlowHandler.screens,
-                        slaveFlowHandler.blancoCanvas
+                        canvas
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
@@ -198,21 +201,28 @@ export function resetMaster() {
         $("#display-delaunay-triangulation-button")
             .off()
             .on("click", async () => {
-                const triangCanvas = client.calculateTriangulationCanvas();
-                const globalBoundingBox = new BoundingBox(
-                    flattenOneLevel(
-                        slaveFlowHandler.screens.map(screen => screen.corners)
-                    )
-                );
-                slaveFlowHandler.screens.forEach(screen => {
-                    const slaveImg = createImageCanvasForSlave(
-                        globalBoundingBox,
-                        screen,
-                        slaveFlowHandler.screens,
-                        triangCanvas
-                    );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
-                });
+                // const triangCanvas = client.calculateTriangulationCanvas();
+                // const globalBoundingBox = new BoundingBox(
+                //     flattenOneLevel(
+                //         slaveFlowHandler.screens.map(screen => screen.corners)
+                //     )
+                // );
+                // slaveFlowHandler.screens.forEach(screen => {
+                //     const slaveImg = createImageCanvasForSlave(
+                //         globalBoundingBox,
+                //         screen,
+                //         slaveFlowHandler.screens,
+                //         triangCanvas
+                //     );
+                //     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                // });
+                client.startAnimation();
+            });
+
+        $("#stop-delaunay-triangulation-button")
+            .off()
+            .on("click", async () => {
+                client.stopAnimation();
             });
 
         $(".pink")

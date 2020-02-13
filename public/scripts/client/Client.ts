@@ -22,6 +22,7 @@ import { loadImage } from "../util/images";
 import { lstat } from "fs";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
+import { CornerLabels } from "../types/Points";
 
 const {
     checkIntersection,
@@ -105,6 +106,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.showAnimation,
                             this.showAnimation
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.linesShow,
+                            this.linesShow
                         )
                     );
                 } else {
@@ -367,6 +372,7 @@ class Client {
 
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
+        window.scrollTo(0, window.innerHeight);
         $("#main-flow-slave").hide();
         $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
     };
@@ -399,14 +405,14 @@ class Client {
         let { startTime } = msg;
         startTime += this.serverTimeDiff;
         const eta_ms = startTime - Date.now();
-        setTimeout(function () {
+        setTimeout(function() {
             const elevenseconds = 11000;
             const enddate = new Date(startTime + elevenseconds);
             countdown(enddate.getTime());
         }, eta_ms);
 
         function countdown(endDate: number) {
-            var timer = setInterval(async function () {
+            var timer = setInterval(async function() {
                 const now = new Date().getTime();
                 const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
@@ -435,7 +441,7 @@ class Client {
 
                     let creeperSwitch = 2;
                     for (let _ = 0; _ < 9; _++) {
-                        await setTimeout(function () {
+                        await setTimeout(function() {
                             if (creeperSwitch == 1) {
                                 imgCanvas
                                     .getContext("2d")
@@ -466,7 +472,7 @@ class Client {
 
                     clearinterval();
                     // Restore the counter div
-                    setTimeout(function () {
+                    setTimeout(function() {
                         console.log("Restore");
                         $("#fullScreen").replaceWith(
                             '<div id="countdown"></div>'
@@ -513,7 +519,7 @@ class Client {
                 let centroid = slave.centroid;
                 middlePoints.push(centroid);
             });
-            middlePoints.sort(function (a, b) {
+            middlePoints.sort(function(a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -546,7 +552,7 @@ class Client {
                                 orientatedPoints
                             ).find(key => orientatedPoints[key] === points[0]);
                         } else {
-                            points.sort(function (a, b) {
+                            points.sort(function(a, b) {
                                 //points van links naar reecht(als gelijk van boven naar onder)
                                 if (a.x - b.x == 0) {
                                     return a.y - b.y;
@@ -571,11 +577,36 @@ class Client {
                 }
                 let points: Array<Point[]> = Object.values(slaveWithLine);
                 //sorteren van links naar rechts
-                points.sort(function (a, b) {
-                    if (a[0].x - b[0].x == 0) {
-                        return a[0].y - b[0].y;
+                points.sort(function(a, b) {
+                    let aa: Point;
+                    let bb: Point;
+                    if ((a.length = 1)) {
+                        aa = slaves.find(
+                            element =>
+                                element.slaveID ===
+                                Object.keys(slaveWithLine).find(
+                                    key => slaveWithLine[key] === a
+                                )
+                        ).centroid;
                     } else {
-                        return a[0].x - b[0].x;
+                        aa = a[0];
+                    }
+                    if ((b.length = 1)) {
+                        bb = slaves.find(
+                            element =>
+                                element.slaveID ===
+                                Object.keys(slaveWithLine).find(
+                                    key => slaveWithLine[key] === b
+                                )
+                        ).centroid;
+                    } else {
+                        bb = b[0];
+                    }
+
+                    if (aa.x - bb.x == 0) {
+                        return aa.y - bb.y;
+                    } else {
+                        return aa.x - bb.x;
                     }
                 });
                 let slaveIDs: Array<{
@@ -601,10 +632,22 @@ class Client {
         function findIntersections(line: Line, slave: SlaveScreen) {
             const endPoints = line.endPoints;
             const corners = slave.sortedCorners;
-            const leftUp = corners.LeftUp;
-            const rightUp = corners.RightUp;
-            const leftUnder = corners.LeftUnder;
-            const rightUnder = corners.RightUnder;
+            const leftUp = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
+                slave
+            );
+            const rightUp = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
+                slave
+            );
+            const leftUnder = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
+                slave
+            );
+            const rightUnder = stringToPoint(
+                slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
+                slave
+            );
             let cuttingPoints: {
                 [key: string]: Point;
             } = {};
@@ -664,6 +707,24 @@ class Client {
             return cuttingPoints;
         }
 
+        function stringToPoint(corner: CornerLabels, slave: SlaveScreen) {
+            if (corner == CornerLabels.LeftUp) {
+                return slave.sortedCorners.LeftUp;
+            }
+
+            if (corner == CornerLabels.LeftUnder) {
+                return slave.sortedCorners.LeftUnder;
+            }
+
+            if (corner == CornerLabels.RightUp) {
+                return slave.sortedCorners.RightUp;
+            }
+
+            if (corner == CornerLabels.RightUnder) {
+                return slave.sortedCorners.RightUnder;
+            }
+        }
+
         function addAngle(
             slave: SlaveScreen,
             points: Point[],
@@ -712,7 +773,7 @@ class Client {
                 centroid.y -= leftCorner.y;
                 middlePoints.push(centroid);
             });
-            middlePoints.sort(function (a, b) {
+            middlePoints.sort(function(a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -750,7 +811,7 @@ class Client {
                 let centroid = slave.centroid;
                 middlePoints.push(centroid);
             });
-            middlePoints.sort(function (a, b) {
+            middlePoints.sort(function(a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -799,7 +860,7 @@ class Client {
         msg.angles.forEach(angle => {
             let radius = Math.sqrt(
                 Math.pow(window.innerWidth / 2, 2) +
-                Math.pow(window.innerHeight / 2, 2)
+                    Math.pow(window.innerHeight / 2, 2)
             );
             ctx.beginPath();
             ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
@@ -845,7 +906,7 @@ class Client {
         let slaves = slaveFlowHandler.screens;
         slavesIdWithCurrentLine.forEach(slaveId => {
             slavesWithCurrentLine.push(
-                slaves.find(function (element) {
+                slaves.find(function(element) {
                     return element.slaveID == slaveId.slaveId;
                 })
             );
@@ -929,13 +990,13 @@ class Client {
                 startTime +
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                    Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
+                        Math.pow(startPoint.y - nextPoint.y, 2) //pixels/(pixels/ms)
                 ) /
-                speed;
+                    speed;
             console.log(
                 Math.sqrt(
                     Math.pow(startPoint.x - nextPoint.x, 2) +
-                    Math.pow(startPoint.y - nextPoint.y, 2)
+                        Math.pow(startPoint.y - nextPoint.y, 2)
                 ) / speed
             );
             //duration berekenen
@@ -950,7 +1011,7 @@ class Client {
             let duration =
                 Math.sqrt(
                     Math.pow(endPoint.x - startPoint.x, 2) +
-                    Math.pow(endPoint.y - startPoint.y, 2)
+                        Math.pow(endPoint.y - startPoint.y, 2)
                 ) / speed;
             console.log("duration = " + duration);
             //emit voor elke slave
@@ -981,46 +1042,62 @@ class Client {
         points: Array<{ string: string; point: Point }>
     ) => {
         let ratio: Array<{ string: string; point: number }> = [];
-        const corners = slave.sortedCorners;
+        //const corners = slave.sortedCorners;
+        const LeftUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
+            slave
+        );
+        const RightUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
+            slave
+        );
+        const LeftUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
+            slave
+        );
+        const RightUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
+            slave
+        );
         points.forEach(element => {
             const string = element.string;
             let distance: number;
             let distancePoint: number; //links -> rechts, boven -> onder
             if (string == "u") {
                 distance = Math.sqrt(
-                    Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                    Math.pow(corners.LeftUp.y - corners.RightUp.y, 2)
+                    Math.pow(LeftUp.x - RightUp.x, 2) +
+                        Math.pow(LeftUp.y - RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                    Math.pow(element.point.y - corners.LeftUp.y, 2)
+                    Math.pow(element.point.x - LeftUp.x, 2) +
+                        Math.pow(element.point.y - LeftUp.y, 2)
                 );
             } else if (string == "l") {
                 distance = Math.sqrt(
-                    Math.pow(corners.LeftUp.x - corners.LeftUnder.x, 2) +
-                    Math.pow(corners.LeftUp.y - corners.LeftUnder.y, 2)
+                    Math.pow(LeftUp.x - LeftUnder.x, 2) +
+                        Math.pow(LeftUp.y - LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.LeftUp.x, 2) +
-                    Math.pow(element.point.y - corners.LeftUp.y, 2)
+                    Math.pow(element.point.x - LeftUp.x, 2) +
+                        Math.pow(element.point.y - LeftUp.y, 2)
                 );
             } else if (string == "r") {
                 distance = Math.sqrt(
-                    Math.pow(corners.RightUnder.x - corners.RightUp.x, 2) +
-                    Math.pow(corners.RightUnder.y - corners.RightUp.y, 2)
+                    Math.pow(RightUnder.x - RightUp.x, 2) +
+                        Math.pow(RightUnder.y - RightUp.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.RightUp.x, 2) +
-                    Math.pow(element.point.y - corners.RightUp.y, 2)
+                    Math.pow(element.point.x - RightUp.x, 2) +
+                        Math.pow(element.point.y - RightUp.y, 2)
                 );
             } else {
                 distance = Math.sqrt(
-                    Math.pow(corners.RightUnder.x - corners.LeftUnder.x, 2) +
-                    Math.pow(corners.RightUnder.y - corners.LeftUnder.y, 2)
+                    Math.pow(RightUnder.x - LeftUnder.x, 2) +
+                        Math.pow(RightUnder.y - LeftUnder.y, 2)
                 );
                 distancePoint = Math.sqrt(
-                    Math.pow(element.point.x - corners.LeftUnder.x, 2) +
-                    Math.pow(element.point.y - corners.LeftUnder.y, 2)
+                    Math.pow(element.point.x - LeftUnder.x, 2) +
+                        Math.pow(element.point.y - LeftUnder.y, 2)
                 );
             }
             let ratioNumber = distancePoint / distance;
@@ -1038,7 +1115,23 @@ class Client {
             point1: number;
             point2: number;
         }> = [];
-        const corners = slave.sortedCorners;
+        //const corners = slave.sortedCorners;
+        const leftUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
+            slave
+        );
+        const rightUp = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
+            slave
+        );
+        const leftUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
+            slave
+        );
+        const rightUnder = this.stringToPoint(
+            slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
+            slave
+        );
         points.forEach(element => {
             const fullString = element.string.split("");
             const points_ = [element.point1, element.point2];
@@ -1052,60 +1145,39 @@ class Client {
                     let distancePoint: number; //links -> rechts, boven -> onder
                     if (string == "u") {
                         distance = Math.sqrt(
-                            Math.pow(corners.LeftUp.x - corners.RightUp.x, 2) +
-                            Math.pow(
-                                corners.LeftUp.y - corners.RightUp.y,
-                                2
-                            )
+                            Math.pow(leftUp.x - rightUp.x, 2) +
+                                Math.pow(leftUp.y - rightUp.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.LeftUp.x, 2) +
-                            Math.pow(point.y - corners.LeftUp.y, 2)
+                            Math.pow(point.x - leftUp.x, 2) +
+                                Math.pow(point.y - leftUp.y, 2)
                         );
                     } else if (string == "l") {
                         distance = Math.sqrt(
-                            Math.pow(
-                                corners.LeftUp.x - corners.LeftUnder.x,
-                                2
-                            ) +
-                            Math.pow(
-                                corners.LeftUp.y - corners.LeftUnder.y,
-                                2
-                            )
+                            Math.pow(leftUp.x - leftUnder.x, 2) +
+                                Math.pow(leftUp.y - leftUnder.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.LeftUp.x, 2) +
-                            Math.pow(point.y - corners.LeftUp.y, 2)
+                            Math.pow(point.x - leftUp.x, 2) +
+                                Math.pow(point.y - leftUp.y, 2)
                         );
                     } else if (string == "r") {
                         distance = Math.sqrt(
-                            Math.pow(
-                                corners.RightUnder.x - corners.RightUp.x,
-                                2
-                            ) +
-                            Math.pow(
-                                corners.RightUnder.y - corners.RightUp.y,
-                                2
-                            )
+                            Math.pow(rightUnder.x - rightUp.x, 2) +
+                                Math.pow(rightUnder.y - rightUp.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.RightUp.x, 2) +
-                            Math.pow(point.y - corners.RightUp.y, 2)
+                            Math.pow(point.x - rightUp.x, 2) +
+                                Math.pow(point.y - rightUp.y, 2)
                         );
                     } else {
                         distance = Math.sqrt(
-                            Math.pow(
-                                corners.RightUnder.x - corners.LeftUnder.x,
-                                2
-                            ) +
-                            Math.pow(
-                                corners.RightUnder.y - corners.LeftUnder.y,
-                                2
-                            )
+                            Math.pow(rightUnder.x - leftUnder.x, 2) +
+                                Math.pow(rightUnder.y - leftUnder.y, 2)
                         );
                         distancePoint = Math.sqrt(
-                            Math.pow(point.x - corners.LeftUnder.x, 2) +
-                            Math.pow(point.y - corners.LeftUnder.y, 2)
+                            Math.pow(point.x - leftUnder.x, 2) +
+                                Math.pow(point.y - leftUnder.y, 2)
                         );
                     }
                     ratioNumber.push(distancePoint / distance);
@@ -1121,6 +1193,24 @@ class Client {
             });
         });
         return ratio;
+    };
+
+    public stringToPoint = (corner: CornerLabels, slave: SlaveScreen) => {
+        if (corner == CornerLabels.LeftUp) {
+            return slave.sortedCorners.LeftUp;
+        }
+
+        if (corner == CornerLabels.LeftUnder) {
+            return slave.sortedCorners.LeftUnder;
+        }
+
+        if (corner == CornerLabels.RightUp) {
+            return slave.sortedCorners.RightUp;
+        }
+
+        if (corner == CornerLabels.RightUnder) {
+            return slave.sortedCorners.RightUnder;
+        }
     };
 
     public showAnimation = (msg: {
@@ -1301,12 +1391,13 @@ class Client {
         directionxNext: number,
         directionyNext: number
     ) => {
+        window.scrollTo(0, window.innerHeight);
         console.log("eindtijd = " + new Date(endDate));
         console.log("dx =" + directionx);
         console.log("dy =" + directiony);
         let x: number = startPoint.x;
         let y: number = startPoint.y;
-        var timer = setInterval(function () {
+        var timer = setInterval(function() {
             const canvas = createCanvas(window.innerWidth, window.innerHeight);
             const ctx = canvas.getContext("2d");
             const now = new Date().getTime();
@@ -1381,7 +1472,7 @@ class Client {
                 x = window.innerWidth / 2;
                 y = window.innerHeight / 2;
                 endDate += nextDuration;
-                var timer2 = setInterval(function () {
+                var timer2 = setInterval(function() {
                     const canvas = createCanvas(
                         window.innerWidth,
                         window.innerHeight
@@ -1447,15 +1538,166 @@ class Client {
     };
 
     public startAnimation() {
-        this.circleAnimation = new Animation(
-            this._socket,
-            this.calculateTriangulation()
-        );
-        this.circleAnimation.start();
+        this.triangulation = this.calculateTriangulation();
+        this.triangulationShow();
+        wait(1000).then(() => {
+            this.circleAnimation = new Animation(
+                this._socket,
+                this.triangulation
+            );
+            this.circleAnimation.start();
+        });
+    }
+
+    public stopAnimation() {
+        if (this.circleAnimation) {
+            this.circleAnimation.stop();
+        }
     }
 
     public nextlinesend = () => {
-        this.circleAnimation.sendAnimation();
+        if (this.circleAnimation.isAnimating()) {
+            this.circleAnimation.sendAnimation();
+        }
+    };
+
+    public triangulationShow = () => {
+        let slaves = slaveFlowHandler.screens;
+        this.triangulation = this.calculateTriangulation();
+
+        slaves.forEach(element => {
+            let angles = element.triangulation.angles;
+            let lines = element.triangulation.lines;
+            //omvormen naar ratio
+            let ratioAngles: Array<{
+                string: string;
+                point: number;
+            }> = this.ratioAngle(element, angles);
+            let ratioLines: Array<{
+                string: string;
+                point1: number;
+                point2: number;
+            }> = this.ratioLine(element, lines);
+            let slaveId = element.slaveID;
+            this._socket.emit(MasterEventTypes.triangulationShow, {
+                slaveId: slaveId,
+                angles: ratioAngles,
+                lines: ratioLines,
+            });
+        });
+    };
+
+    public linesShow = (msg: {
+        slaveId: string;
+        angles: Array<{ string: string; point: number }>;
+        lines: Array<{ string: string; point1: number; point2: number }>;
+    }) => {
+        let slaveAngles: Array<Point> = ratioToPointsAngle(msg.angles);
+        let slaveLines: Array<Point[]> = ratioToPointsLine(msg.lines);
+
+        function ratioToPointsAngle(
+            angles: Array<{ string: string; point: number }>
+        ) {
+            let points: Point[] = [];
+            angles.forEach(angle => {
+                let string = angle.string;
+                let ratio = angle.point;
+                if (string == "u") {
+                    let x = ratio * window.innerWidth;
+                    let y = 0;
+                    points.push(new Point(x, y));
+                } else if (string == "l") {
+                    let x = 0;
+                    let y = ratio * window.innerHeight;
+                    points.push(new Point(x, y));
+                } else if (string == "r") {
+                    let x = window.innerWidth;
+                    let y = ratio * window.innerHeight;
+                    points.push(new Point(x, y));
+                } else {
+                    let x = ratio * window.innerWidth;
+                    let y = window.innerHeight;
+                    points.push(new Point(x, y));
+                }
+            });
+            return points;
+        }
+
+        function ratioToPointsLine(
+            angles: Array<{ string: string; point1: number; point2: number }>
+        ) {
+            let points: Array<Point[]> = [];
+            angles.forEach(angle => {
+                console.log("lijn = " + angle);
+                let fullstring = angle.string;
+                let ratio = [angle.point1, angle.point2];
+                console.log("ration =" + ratio);
+                let line: Point[] = [];
+                for (let i = 0; i < ratio.length; i++) {
+                    const element = ratio[i];
+                    console.log("element = " + element);
+                    if (element) {
+                        const string = fullstring[i];
+                        if (string == "u") {
+                            let x = element * window.innerWidth;
+                            let y = 0;
+                            line.push(new Point(x, y));
+                        } else if (string == "l") {
+                            let x = 0;
+                            let y = element * window.innerHeight;
+                            line.push(new Point(x, y));
+                        } else if (string == "r") {
+                            let x = window.innerWidth;
+                            let y = element * window.innerHeight;
+                            line.push(new Point(x, y));
+                        } else {
+                            let x = element * window.innerWidth;
+                            let y = window.innerHeight;
+                            line.push(new Point(x, y));
+                        }
+                    } else {
+                        line.push(
+                            new Point(
+                                window.innerWidth / 2,
+                                window.innerHeight / 2
+                            )
+                        );
+                    }
+                }
+                points.push(line);
+                console.log(line);
+            });
+            return points;
+        }
+
+        const canvas = createCanvas(window.innerWidth, window.innerHeight);
+        const ctx = canvas.getContext("2d");
+        ctx.strokeStyle = "rgb(0,0,255)";
+        ctx.fillStyle = "rgb(0,0,255)";
+        //lijnen tekenen met middelpunten
+        slaveAngles.forEach(angle => {
+            ctx.beginPath();
+            ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
+            ctx.lineTo(angle.x, angle.y);
+            ctx.stroke();
+        });
+        //anderelijnen tekenen
+        slaveLines.forEach(line => {
+            ctx.beginPath();
+            ctx.moveTo(line[0].x, line[0].y);
+            ctx.lineTo(line[1].x, line[1].y);
+            ctx.stroke();
+        });
+
+        //ster in het midden tekenen
+        ctx.font = "50px Arial";
+        ctx.fillText(
+            "*",
+            window.innerWidth / 2 - 10,
+            window.innerHeight / 2 + 25
+        );
+
+        $("#image-slave").attr("src", canvas.toDataURL());
     };
 }
 
