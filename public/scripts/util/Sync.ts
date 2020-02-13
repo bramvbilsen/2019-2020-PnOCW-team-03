@@ -5,6 +5,7 @@ import { SharedEventTypes } from "../types/SocketIOEvents";
 export default class Sync {
     private _offsets: number[] = [];
     private _socket: SocketIOClient.Socket;
+    public avgTestResults: number[] = [];
 
     constructor(socket: SocketIOClient.Socket) {
         this._socket = socket;
@@ -28,5 +29,11 @@ export default class Sync {
         this._offsets.unshift(diff);
 
         if (this._offsets.length > 10) this._offsets.pop();
+
+        if (this.avgTestResults.length <= 300) {
+            this.avgTestResults.push(this.timeDiff);
+        } else {
+
+        }
     };
 }
