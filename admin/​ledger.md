@@ -199,4 +199,16 @@ ALL: werken aan report
 
 Werken aan presentatie voor DDay alsook automatisatie van het programma door het drukken van 1 knop in programma.
 
+### Tweede semester
+
 ### 11/02:
+
+Iedereen zijn nieuwe rol geven. Taken verdelen voor de eerste assignement en voor de TODO van code eerste semester. De eerste assignement werd ook opgestart.
+
+### 13/02
+
+CR1, TC3: Werkten aan de task van Browser synchronization, hebben een script gemaakt om de tests te runnen. Dinsdag zal deze worden gebruikt voor de resultaten te verkrijgen.
+
+CEO, CR2, TC4: Werkten aan de task van color recognition, hebben een plan uitgedacht en een algoritme om te loopen over de individuele pixels van een afbeelding is reeds gemaakt. Tegen volgende zitting wordt het script vervolledigt zodat het rgb differences,... kan berekenen en automatisch opslaagt.
+
+CEO: Plan of attack afgemaakt.
