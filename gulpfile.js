@@ -31,6 +31,7 @@ const nonTsPaths_server = [
     "!tsconfig*",
     "!./**/*.ts",
     "!package-lock.json",
+    "!./scientific_test_results/**/*",
 ];
 
 gulp.task("Compile server", function(done) {
