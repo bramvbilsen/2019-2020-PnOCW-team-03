@@ -26,18 +26,27 @@ export default class Sync {
     }
 
     onSync = (data: { t1: number; t0: number }) => {
+        // 1) Get the offset
         const diff = Date.now() - data.t1 + (Date.now() - data.t0) / 2;
 
+        // 2) Push offset to offsets
         this._offsets.unshift(diff);
 
+        // 3) Remove first in
         if (this._offsets.length > 10) this._offsets.pop();
 
-        if (this.avgTestResults.length <= 3) {
+        // 4) Post test results
+        this.postTestResults(300);
+    };
+
+    private postTestResults(nbIterations: number) {
+        if (this.avgTestResults.length <= nbIterations) {
             console.log(this.avgTestResults.length);
             this.avgTestResults.push(this.timeDiff);
-        } else if (!this._finishedTest) {
+        }
+        else if (!this._finishedTest) {
             this._finishedTest = true;
-            const stringifiedResults = JSON.stringify(this.avgTestResults)
+            const stringifiedResults = JSON.stringify(this.avgTestResults);
             console.log(stringifiedResults);
             $.ajax({
                 url: env.baseUrl + "/sync_test_result",
@@ -52,5 +61,6 @@ export default class Sync {
                 }
             });
         }
-    };
+    }
 }
+

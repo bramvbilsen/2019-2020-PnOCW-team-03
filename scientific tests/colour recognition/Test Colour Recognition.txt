@@ -1,0 +1,14 @@
+1) Blue, Green, Red, Black, White and Pink
+2) Verschillende schermen
+3) Verschillende kamers (licht in kamer en kleur omgeving)
+4) Lichten omgeving aan/uit
+5) Helderheid aanpassen
+6) Nightscreen
+
+- Eén kleur per scherm
+- Twee kleuren per scherm gecombineerd
+
+Vragen:
+- Measure the outcome and try to (dynamically?) threshold the color.
+- Try to come to a conclusion of what is a realistic way of detecting such a colored area.
+- Will you use RGB or HSL or HSV or something else?

@@ -35,4 +35,11 @@ for (var i = 0; i < pixels.length; i += 4) {
     var blue = pixels[i + 2];
     var alpha = pixels[i + 3];
 }
+<<<<<<< HEAD
 */
+=======
+
+
+*/
+
+>>>>>>> d6e014c32497e9d0a28b642e206636fbbbeeae36
