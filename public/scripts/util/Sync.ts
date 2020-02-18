@@ -41,26 +41,24 @@ export default class Sync {
 
     private postTestResults(nbIterations: number) {
         if (this.avgTestResults.length <= nbIterations) {
-            console.log(this.avgTestResults.length);
+            //console.log(this.avgTestResults.length);
             this.avgTestResults.push(this.timeDiff);
-        }
-        else if (!this._finishedTest) {
+        } else if (!this._finishedTest) {
             this._finishedTest = true;
             const stringifiedResults = JSON.stringify(this.avgTestResults);
-            console.log(stringifiedResults);
+            //console.log(stringifiedResults);
             $.ajax({
                 url: env.baseUrl + "/sync_test_result",
                 dataType: "json",
                 contentType: "application/json;charset=utf-8",
                 type: "POST",
                 data: stringifiedResults,
-                success: function (msg) {
+                success: function(msg) {
                     if (msg != null) {
                         return msg.URL;
                     }
-                }
+                },
             });
         }
     }
 }
-

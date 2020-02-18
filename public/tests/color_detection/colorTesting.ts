@@ -7,44 +7,36 @@ import { loadImage } from "../../scripts/util/images";
 import env from "../../env/env";
 import { IHSLColor, IRGBAColor } from "../../scripts/types/Color";
 
-async function defaultImage() {
-    return await loadImage(env.baseUrl + "/images/normal.png");
-}
-
-async function colortest() {
-    const img = await defaultImage();
+export async function colortest(r: number, g: number, b: number) {
+    const img = await loadImage(env.baseUrl + "/images/b.jpeg");
     const canvas = createCanvas(img.width, img.height);
-    const ctx = canvas.getContext("2d");
+    const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
 
-    const nonColoredScreenCtx = <CanvasRenderingContext2D>(
-        canvas.getContext("2d")
-    );
-    const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
+    const nonColoredScreenPixelData = ctx.getImageData(
             0,
             0,
             img.width,
             img.height
         ),
         Pixels = nonColoredScreenPixelData.data; //hier hebben we de pixels
-    let HSLvalues: IHSLColor[] = Array(img.width * img.height).fill({});
-    let RGBvalues: IRGBAColor[] = Array(img.width * img.height).fill({});
+    let HSLoffsets = 0;
+    let Roffsets = 0;
+    let Goffsets = 0;
+    let Boffsets = 0;
     for (let i = 0; i < img.height; i++) {
         for (let j = 0; j < img.width; j++) {
-            HSLvalues[i * img.width + j] = getHSLColorForPixel(
-                0,
-                0,
-                img.width,
-                Pixels
-            );
-            RGBvalues[i * img.width + j] = getRGBAColorForPixel(
-                0,
-                0,
-                img.width,
-                Pixels
-            );
+            let RGB = getRGBAColorForPixel(0, 0, img.width, Pixels);
+            Roffsets += Math.abs(RGB.r - r);
+            Goffsets += Math.abs(RGB.g - g);
+            Boffsets += Math.abs(RGB.b - b);
         }
     }
-    console.log(HSLvalues);
-    console.log(RGBvalues);
+    let len = img.height * img.width;
+    Roffsets /= len;
+    Goffsets /= len;
+    Boffsets /= len;
+    console.log("r offset is " + Roffsets);
+    console.log("g offset is " + Goffsets);
+    console.log("b offset is " + Boffsets);
 }
