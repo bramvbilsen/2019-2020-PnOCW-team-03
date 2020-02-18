@@ -5,10 +5,15 @@
 5) Helderheid aanpassen
 6) Nightscreen
 
-- Eén kleur per scherm
+- Een kleur per scherm
 - Twee kleuren per scherm gecombineerd
 
-Vragen:
+Vragen, deel 1:
 - Measure the outcome and try to (dynamically?) threshold the color.
 - Try to come to a conclusion of what is a realistic way of detecting such a colored area.
-- Will you use RGB or HSL or HSV or something else?
+- Will you use RGB or HSL or HSV or something else?
+
+Vragen, deel 2:
+- Determine if a certain area in the picture is part of the color by sampling some pixels in this area and 
+  combine their outcome in a single value (between 0 and 1).
+- Subdivide the picture into little squares and denote the value for each square by a transparent mask
