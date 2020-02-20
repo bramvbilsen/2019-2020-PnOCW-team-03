@@ -1701,7 +1701,7 @@ class Client {
         $("#image-slave").attr("src", canvas.toDataURL());
     };
 
-    public colortest = () => colortest(0, 0, 255);
+    public colortest = () => colortest(0, 0, 255, 240, 100, 50);
 }
 
 export default Client;
