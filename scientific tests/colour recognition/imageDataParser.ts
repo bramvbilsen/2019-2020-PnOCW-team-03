@@ -14,7 +14,6 @@ import {IData, reflectionType, lightType} from "./imgData"
  */
 function readInFileNames(folder: string) {
     let list: any[] = [];
-    const testFolder = './tests/';
     const fs = require('fs');
     fs.readdirSync("./" + folder).forEach((file: any) => {
         list.push(file)
@@ -72,11 +71,15 @@ function removeExtension(fileName: string) {
     return imgData;
  }
 
-let stringlist = readInFileNames("folder");
-let dataList = [];
-for (let i = 0; i < stringlist.length; i++) {
-    let fileName = removeExtension(stringlist[i]);
-    dataList.push(dataParse(fileName))
+function getImageDataFromFolder(folderName: string) {
+    let stringlist = readInFileNames(folderName);
+    let dataList = [];
+    for (let i = 0; i < stringlist.length; i++) {
+        let fileName = removeExtension(stringlist[i]);
+        dataList.push(dataParse(fileName))
+    }
+    console.log(dataList);
 }
-console.log(dataList);
+
+
 
