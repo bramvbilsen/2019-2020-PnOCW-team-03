@@ -1,4 +1,5 @@
 // Implementation of algorithm as described here: https://gis.stackexchange.com/questions/22895/finding-minimum-area-rectangle-for-given-points
+// Other source with some papers: https://geidav.wordpress.com/2014/01/23/computing-oriented-minimum-bounding-boxes-in-2d/
 
 // TODO: Something is wrong with rotating polygons. This causes the smallest surrounding rectangle to shift incorrectly.
 // TODO: Implementation was done in another environment thus functions previously written might reduce code here.
