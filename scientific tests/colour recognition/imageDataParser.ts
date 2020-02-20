@@ -12,11 +12,24 @@ import {IData, reflectionType, lightType} from "./imgData"
  er is lichtreflectie op het scherm, de foto is van scherm 3 van dit team en de identifier van deze
  foto is 2333. 
  */
+function readInFileNames(folder: string) {
+    let list: any[] = [];
+    const testFolder = './tests/';
+    const fs = require('fs');
+    fs.readdirSync("./" + folder).forEach((file: any) => {
+        list.push(file)
+        console.log(file);
+    });
+    return list;
+}
+
+function removeExtension(fileName: string) {
+    let nameWithoutExtension = fileName.split(".")[0];
+    return nameWithoutExtension;
+}
 
  function dataParse(data: string) {
     let splitted = data.split("_");
-    console.log("startd");
-    console.log(splitted);
     const imgData = <IData> {};
     imgData.brightness = parseInt(splitted[0]);
     imgData.phone_id = parseInt(splitted[1]);
@@ -44,7 +57,7 @@ import {IData, reflectionType, lightType} from "./imgData"
          imgData.light_type = lightType.NATURAL_LIGHT; ;  
          break; 
        }  
-    imgData.light_type = parseInt(splitted[newIndex++]);
+    //imgData.light_type = parseInt(splitted[newIndex++]);
     switch (parseInt(splitted[newIndex++])) {  
         case 0:  
          imgData.reflection_type = reflectionType.NO_REFLECTION;  
@@ -56,20 +69,14 @@ import {IData, reflectionType, lightType} from "./imgData"
     imgData.screen_type = parseInt(splitted[newIndex++]);
     imgData.identifier = parseInt(splitted[newIndex]);
 
-    console.log("brightness: " + imgData.brightness);
-    console.log("phone_id: " + imgData.phone_id);
-    console.log("percentage_screen: " + imgData.percentage_screen);
-    console.log("color_amount: " + imgData.color_amount);
-    console.log("colors: " + imgData.colors);
-    console.log("reflection_type: " + imgData.reflection_type);
-    console.log("screen_id: " + imgData.screen_type);
-    console.log("identifier: " + imgData.identifier);
-
-    for (let i = 0; i < splitted.length; i++) {
-        //console.log("chillzzz");
-        
-    }
+    return imgData;
  }
 
- dataParse("25_2_80_3_255_255_255_255_255_244_1_1_1_0_0_1_3_11");
+let stringlist = readInFileNames("folder");
+let dataList = [];
+for (let i = 0; i < stringlist.length; i++) {
+    let fileName = removeExtension(stringlist[i]);
+    dataList.push(dataParse(fileName))
+}
+console.log(dataList);
 
