@@ -1,4 +1,24 @@
 # Timelog
+###### TWEEDE SEMESTER
+
+### Taakverdeling:
+
+-   CEO: Maarten Pyck
+-   CTO: Pieter-Jan Van den Broecke
+-   TC3: Adam El M'Rabet
+-   TC4: Liam Volckerick
+-   Code reviewer 1: Bram Vanbilsen
+-   Code reviewer 2: Sebastiaan Wouters
+
+### **Log**:
+```diff
+- Nog geen updates!!!
+```
+
+
+
+
+###### EERSTE SEMESTER
 
 ### Taakverdeling:
 
@@ -392,13 +412,4 @@ CR2: 4h
 
 ###### -CR2: Verslag schrijven **_4H_**
 
-###### TWEEDE SEMESTER
 
-### Taakverdeling:
-
--   CEO: Maarten Pyck
--   CTO: Pieter-Jan Van den Broecke
--   TC3: Adam El M'Rabet
--   TC4: Liam Volckerick
--   Code reviewer 1: Bram Vanbilsen
--   Code reviewer 2: Sebastiaan Wouters
