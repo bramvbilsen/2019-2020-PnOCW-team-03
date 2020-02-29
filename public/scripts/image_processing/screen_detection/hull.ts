@@ -2,14 +2,17 @@ import Point from "./Point";
 
 /**
  * 
- * @param Points 
+ * @param points 
  * @returns Convex hull for `Points` sorted counter-clockwise.
  */
-export default function convexHull(Points: Point[]) {
+export default function convexHull(points: Point[]) {
+
+    points = points.map(point => point.copy());
+
     //find point with smallets y-coordinate
-    const minIndex = findSmallestY(Points);
+    const minIndex = findSmallestY(points);
     //Swap
-    const swappedPoints = swap(Points, 0, minIndex);
+    const swappedPoints = swap(points, 0, minIndex);
     //remove the first element, which is used as reference in the algorithm
     const p0 = swappedPoints.shift();
     //sort the Points based on their Polar angle with p0
