@@ -1,5 +1,10 @@
 import Point from "./Point";
 
+/**
+ * 
+ * @param Points 
+ * @returns Convex hull for `Points` sorted counter-clockwise.
+ */
 export default function convexHull(Points: Point[]) {
     //find point with smallets y-coordinate
     const minIndex = findSmallestY(Points);
