@@ -1,3 +1,7 @@
+#Plan of Attack
+
+##Eerste versie
+
 ### Wat moet er gebeuren
 
 #### triangulation
@@ -42,7 +46,7 @@ Cleaning the code: Iedereen
 
 Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herbekeken en meer in detail uitgewerkt voor de laatste 3 weken tot de demo(zie hieronder).
 
-### Herbekeken Plan of attack(wordt op dag van de eerste deadline bekeken)
+## Herbekeken Plan of attack(wordt op dag van de eerste deadline bekeken)
 
 ### Wat is er al gebeurd
 
