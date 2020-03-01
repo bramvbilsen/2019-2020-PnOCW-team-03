@@ -1,6 +1,6 @@
-#Plan of Attack
+# Plan of Attack
 
-##Eerste versie
+## Eerste versie
 
 ### Wat moet er gebeuren
 
