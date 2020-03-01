@@ -26,9 +26,13 @@ All: 3u30
 ###### -CEO, CTO, CR2: Formuleren experiment: Colour recognition / Chroma keying
 
 CEO: 4u
+
 CTO: 3u30
+
 CR1: 4u
+
 CR2: 2u30
+
 TC3: 4U
 
 ##### 16/02:
@@ -40,7 +44,9 @@ TC3: 4U
 ###### -CR1: Verslag TCP vs UDP
 
 CTO: 4u
+
 CR1: 1u
+
 TC3: 1u
 
 ##### 18/02:
@@ -76,10 +82,15 @@ CR1: 3u
 ###### -TC4: Gewerkt aan report alsook de data omvormen naar plots en informatie omtrent win32Time server opzoeken en windows computer correcter syncen
 
 CEO: 5u30
+
 CTO: 2u30
+
 CR1: 7u
+
 CR2: 2u30
+
 TC3: 1u
+
 TC4: 5u
 
 ##### 21/02:
@@ -89,6 +100,7 @@ TC4: 5u
 ###### -CR1: Gewerkt aan verslag, werking van Windows Time Service & Timesyncd
 
 CTO: 4u30
+
 CR1: 2u
 
 ##### 22/02:
@@ -98,6 +110,7 @@ CR1: 2u
 ###### -CR1: Verslag + iPhone & iPad tests
 
 CR1: 2u
+
 TC3: 2u
 
 ##### 24/02:
@@ -123,9 +136,13 @@ All: 5u
 ###### -CR1, TC3: Testen basic animaties en frame rates met setIntervalg
 
 CEO: 4u
+
 CTO: 4u
+
 CR1: 4u
+
 CR2: 2
+
 TC3: 4u
 
 ##### 29/02:
