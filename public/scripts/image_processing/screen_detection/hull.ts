@@ -1,12 +1,11 @@
 import Point from "./Point";
 
 /**
- * 
- * @param points 
- * @returns Convex hull for `Points` sorted counter-clockwise.
+ *
+ * @param points
+ * @returns Convex hull for `Points` sorted clockwise.
  */
 export default function convexHull(points: Point[]) {
-
     points = points.map(point => point.copy());
 
     //find point with smallets y-coordinate
