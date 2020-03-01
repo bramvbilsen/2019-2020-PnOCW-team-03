@@ -1,6 +1,5 @@
 # Ledger
 
-
 ### Tweede semester
 
 ### 11/02:
@@ -11,10 +10,33 @@ Iedereen zijn nieuwe rol geven. Taken verdelen voor de eerste assignement en voo
 
 CR1, TC3: Werkten aan de task van Browser synchronization, hebben een script gemaakt om de tests te runnen. Dinsdag zal deze worden gebruikt voor de resultaten te verkrijgen.
 
-CEO, CR2, TC4: Werkten aan de task van color recognition, hebben een plan uitgedacht en een algoritme om te loopen over de individuele pixels van een afbeelding is reeds gemaakt. Tegen volgende zitting wordt het script vervolledigt zodat het rgb differences,... kan berekenen en automatisch opslaagt.
+CEO, CR2, CTO: Werkten aan de task van color recognition, hebben een plan uitgedacht en een algoritme om te loopen over de individuele pixels van een afbeelding is reeds gemaakt. Tegen volgende zitting wordt het script vervolledigt zodat het rgb differences,... kan berekenen en automatisch opslaagt.
 
 CEO: Plan of attack afgemaakt.
 
+### 18/02
+
+CR1, TC3, TC4: Zochten informatie op over NTP, hebben de NTP tests uitgevoerd op verschillende computers en zijn beginnen schrijven aan het verslag voor de eerste taak van synchronisatie.
+
+CEO, CR2, CTO: Werkten verder aan het script voor automatische data analyse op een folder met foto's van schermen en zijn beginnen schrijven aan het verslag.
+
+### 20/02
+
+CR1, TC3, TC4: Werkten verder aan het verslag en CR1 maakte een app om de NTP tests te kunnen runnen op de smartphone.
+
+CEO, CR2, CTO: Hebben verder aan het verslag geschreven + eerste bugvrije testen op een kleine dataset.
+
+### 25/02
+
+CR1, TC3, TC4: Maakten de data analyse en het verslag van taak 1 voor synchronisatie af.
+
+CEO, CR2, CTO: Implementeerden HSV support voor de automatische data analyse na een onderzoek voor het verschil tussen HSV en HSL te begrijpen.
+
+### 27/02
+
+CR1, TC3: Zijn begonnen aan tweede taak van synchronisatie. Hebben een animatie script gemaakt m.b.v. setInterval en hebben de frame rates bestudeerd.
+
+CEO, CR2, CTO: Hebben de dataset vergroot met foto's uit de gedeelde git repository van alle teams. Er is ook een opdeling van categoriën gebeurd om later plots te kunnen maken.
 
 **<u>Dates:</u>**
 
@@ -214,4 +236,3 @@ ALL: werken aan report
 ### 9/12:
 
 Werken aan presentatie voor DDay alsook automatisatie van het programma door het drukken van 1 knop in programma.
-
