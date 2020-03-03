@@ -46,7 +46,7 @@ Cleaning the code: Iedereen
 
 Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herbekeken en meer in detail uitgewerkt voor de laatste 3 weken tot de demo(zie hieronder).
 
-## Herbekeken Plan of attack(wordt op dag van de eerste deadline bekeken)
+## Herbekeken Plan of attack(versie 3 maart)
 
 ### Wat is er al gebeurd
 
@@ -110,7 +110,7 @@ Na 17 maart wordt opnieuw bekeken hoever we staan en wat er nog moet gebeuren
 
 Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herbekeken en meer in detail uitgewerkt voor de laatste week tot de demo(zie hieronder).
 
-## Herbekeken Plan of attack(wordt op dag van de eerste deadline bekeken)
+## Herbekeken Plan of attack(versie 17 maart)
 
 ### Wat is er al gebeurd
 
