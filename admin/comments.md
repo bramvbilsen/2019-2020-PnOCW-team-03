@@ -18,3 +18,14 @@
 - `It’d`:  blijf formeel in een tekst als deze: `it would
 - Chart 3 → Figure 3
 - Mooie en duidelijk verwoorde conclusie
+
+# ST2.1 (Sebastiaan Wouters, Maarten Pyck, Pieter-Jan Van den Broecke)
+- Geen referenties!
+- slaves’ screens → slave screens
+- Zin in zin: gebruik --- ipv - in LaTeX
+- In what follows we will be discussing →  discuss
+- Was het niet duidelijker geweest om ook voor- zij- en bovenaanzicht te geven in plaats van enkel de boxen zelf?
+- Bepaalt de kleur van een punt de inputkleur?
+- Beschrijf uw database. Welke kleuren,  camera's, schremen, hoeveel samples per situatie, ...
+- Geen conclusie bij §3.4
+- Kun je geen conclusie maken over welk kleur het best gebruikt wordt?
