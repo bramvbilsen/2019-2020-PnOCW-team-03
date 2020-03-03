@@ -72,7 +72,7 @@ Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herb
 
 -UI: problemen met de scroll bar oplossen, testen of er niks crasht of dat de animatie niet stopt(niet echt problemen van UI, maar zijn wel daar zichtbaar) en een make over mag ook.
 
--screen and orientation detection: Wegens veel deadlines wordt is dit geen prioriteit, enkel de orientatie detection kan iets robuuster gemaakt worden.
+-screen and orientation detection: Wegens veel deadlines wordt is dit geen prioriteit, enkel de orientatie detection kan iets robuuster gemaakt wordenVoor screen detection kan de opties van (extra) filters worden bekeken.
 
 -cleaning the code: Heel het project moet is worden doorlopen
 
@@ -88,6 +88,8 @@ Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herb
 
 -Orientation detection: Sebastiaan
 
+Screen detection: Maarten, Sebastiaan, Pieter-Jan
+
 -Cleaning the code: Pieter-Jan (+ de rest)
 
 ### Gedetailleerde uurverdeling/deadlines
@@ -96,11 +98,13 @@ Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herb
 
 -Triangulatie: Debuggen tegen 10 maart en tegen 17 maart oplossing gevonden.
 
--Animatie: Onderzeoekn wat het snelste en beste is tegen 10 maart(loopt samen met T1.2) en tegen 17 maart eerste demo
+-Animatie: Onderzeoekn wat het snelste en beste is tegen 10 maart(loopt samen met T1.2) en tegen 17 maart eerste demo met de nieuwe code.
 
 -UI: Kleine probleemtjes(zoals met de scrollbar) tegen 17 maart vinden en fixen en daarna alles testen met de nieuwe code.
 
 -Orientation detection: Tegen 17 maart proberen het robuuster te maken.
+
+Screen detection: Filters bestuderen tegen 10 maart(valt samen met T2.2), als dit nuttig is tegen 17 maart implementeren.
 
 -CLeaning the code: 24 maart
 
