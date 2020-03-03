@@ -23,6 +23,7 @@ import { lstat } from "fs";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels } from "../types/Points";
+import { colortest } from "../../tests/color_detection/colorTesting";
 
 const {
     checkIntersection,
@@ -1699,6 +1700,8 @@ class Client {
 
         $("#image-slave").attr("src", canvas.toDataURL());
     };
+
+    public colortest = () => colortest(0, 0, 255, 240, 100, 50);
 }
 
 export default Client;

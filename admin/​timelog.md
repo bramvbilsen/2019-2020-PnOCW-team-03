@@ -1,5 +1,158 @@
 # Timelog
 
+###### TWEEDE SEMESTER
+
+### Taakverdeling:
+
+-   CEO: Maarten Pyck
+-   CTO: Pieter-Jan Van den Broecke
+-   TC3: Adam El M'Rabet
+-   TC4: Liam Volckerick
+-   Code reviewer 1: Bram Vanbilsen
+-   Code reviewer 2: Sebastiaan Wouters
+
+### **Log**:
+
+##### 11/02:
+
+###### -All: inleiding nieuw semester, rolverdeling + opstart van de taken
+
+All: 3u30
+
+##### 13/02:
+
+###### -CR1, TC3: Opzoekwerk over NTP + schrijven scripts
+
+###### -CEO, CTO, CR2: Formuleren experiment: Colour recognition / Chroma keying
+
+CEO: 4u
+
+CTO: 3u30
+
+CR1: 4u
+
+CR2: 2u30
+
+TC3: 4U
+
+##### 16/02:
+
+###### -CTO: Foto's nemen voor experiment + Voorbereiden evaluatie
+
+###### -TC3: First local tests for time offset between client and server
+
+###### -CR1: Verslag TCP vs UDP
+
+CTO: 4u
+
+CR1: 1u
+
+TC3: 1u
+
+##### 18/02:
+
+###### -CR1: Testen gemaakt & uitgevoerd browser sync
+
+###### -TC3: Ntp and tests for clock differences between operating systems
+
+###### -TC4: Werken aan verslag, testen, tc meetings, bespreken met color groep testers en creëeren github voor de verzameling van data voor alle groepen
+
+###### -CEO, CTO, CR2: Verslag begonnen voor experiment + script voor testen geschreven
+
+All: 5u
+
+##### 19/02:
+
+###### -CR1: Eerste implementatie van "smallest bounding rectangle" gemaakt
+
+CR1: 3u
+
+##### 20/02:
+
+###### -CEO: Errors uit script voor color recognition tests halen + volledig automatiseren
+
+###### -CTO: Verdergewerkt aan verslag Colour recognition
+
+###### -CR1: Gewerkt aan analyse data + mobiele app voor ntp tests gemaakt + verslag
+
+###### -CR2: GEwerkt aan imageparser
+
+###### -TC3: Writing of report for clock offset analysis
+
+###### -TC4: Gewerkt aan report alsook de data omvormen naar plots en informatie omtrent win32Time server opzoeken en windows computer correcter syncen
+
+CEO: 5u30
+
+CTO: 2u30
+
+CR1: 7u
+
+CR2: 2u30
+
+TC3: 1u
+
+TC4: 5u
+
+##### 21/02:
+
+###### -CTO: Image collectie genereren + uploaden naar gedeelde database
+
+###### -CR1: Gewerkt aan verslag, werking van Windows Time Service & Timesyncd
+
+CTO: 4u30
+
+CR1: 2u
+
+##### 22/02:
+
+###### -TC3: Writing of report for clock offset analysis (alternative method)
+
+###### -CR1: Verslag + iPhone & iPad tests
+
+CR1: 2u
+
+TC3: 2u
+
+##### 24/02:
+
+###### -CEO: Bug gefixt waar dat testen niet de juiste getallen terug gaven.
+
+CEO: 1u30
+
+##### 25/02:
+
+###### -CTO, CEO: HSV support implementeren [Color.ts, Data.ts] + theoretische background HSV
+
+###### -CR1, TC3, TC4: editing report and finalizing
+
+###### -CR2: ImageParser updaten + HSV toevoegen aan colortest
+
+All: 5u
+
+##### 27/02:
+
+###### -CTO, CEO, CR2: Database search for images + opdeling criteria
+
+###### -CR1, TC3: Testen basic animaties en frame rates met setIntervalg
+
+CEO: 4u
+
+CTO: 4u
+
+CR1: 4u
+
+CR2: 2
+
+TC3: 4u
+
+##### 29/02:
+
+###### -CR1: Gezocht naar oplossing sbr bug en herimplementatie...
+
+CR1: 2u
+
+###### EERSTE SEMESTER
+
 ### Taakverdeling:
 
 -   CEO: Liam Volckerick
@@ -391,14 +544,3 @@ CR2: 4h
 ###### -CR1: Meewerken aan rotatie detection + cutting iemages + final report **_14H_**
 
 ###### -CR2: Verslag schrijven **_4H_**
-
-###### TWEEDE SEMESTER
-
-### Taakverdeling:
-
--   CEO: Maarten Pyck
--   CTO: Pieter-Jan Van den Broecke
--   TC3: Adam El M'Rabet
--   TC4: Liam Volckerick
--   Code reviewer 1: Bram Vanbilsen
--   Code reviewer 2: Sebastiaan Wouters

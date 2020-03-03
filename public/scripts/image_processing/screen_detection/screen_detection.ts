@@ -66,8 +66,10 @@ export default async function findScreen(
 
     const IMMEDIATE_NEIGHBOR_RANGE = 2;
 
-    const LOST_PIXEL_THRESHOLD_SHORT = calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE) * 0.1;
-    const MAX_CORNER_NEIGHBORS = calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE) * 0.55;
+    const LOST_PIXEL_THRESHOLD_SHORT =
+        calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE) * 0.1;
+    const MAX_CORNER_NEIGHBORS =
+        calcNeighborPixelsInRange(IMMEDIATE_NEIGHBOR_RANGE) * 0.55;
 
     const width = nonColoredScreenCanvas.width;
     const height = nonColoredScreenCanvas.height;
@@ -80,11 +82,11 @@ export default async function findScreen(
         nonColoredScreenCanvas.getContext("2d")
     );
     const nonColoredScreenPixelData = nonColoredScreenCtx.getImageData(
-        0,
-        0,
-        width,
-        height
-    ),
+            0,
+            0,
+            width,
+            height
+        ),
         nonColoredScreenPixels = nonColoredScreenPixelData.data;
 
     if (DEBUG) {
@@ -100,11 +102,11 @@ export default async function findScreen(
         coloredScreenCanvas.getContext("2d")
     );
     const coloredScreenPixelData = coloredScreenCtx.getImageData(
-        0,
-        0,
-        width,
-        height
-    ),
+            0,
+            0,
+            width,
+            height
+        ),
         coloredScreenPixels = coloredScreenPixelData.data;
 
     if (DEBUG) {
@@ -151,7 +153,8 @@ export default async function findScreen(
                     screenColorHSL
                 );
                 if (
-                    coloredNeighbors >= LOST_PIXEL_THRESHOLD_SHORT && coloredNeighbors <= MAX_CORNER_NEIGHBORS
+                    coloredNeighbors >= LOST_PIXEL_THRESHOLD_SHORT &&
+                    coloredNeighbors <= MAX_CORNER_NEIGHBORS
                 ) {
                     possibleCorners.push(new Point(x, y));
                 }
@@ -327,7 +330,7 @@ export function rgbToHsl(r: number, g: number, b: number): IHSLColor {
  * @param width - Width of the image.
  * @param pixels - Pixels of the image.
  */
-function getRGBAColorForPixel(
+export function getRGBAColorForPixel(
     x: number,
     y: number,
     width: number,
@@ -577,13 +580,13 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
         const connection = sortedPossibleCornersConnections[i];
         if (
             connection.a.distanceTo(firstCornerConnection.a) >
-            minDistanceBetweenCorners &&
+                minDistanceBetweenCorners &&
             connection.a.distanceTo(firstCornerConnection.b) >
-            minDistanceBetweenCorners &&
+                minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.a) >
-            minDistanceBetweenCorners &&
+                minDistanceBetweenCorners &&
             connection.b.distanceTo(firstCornerConnection.b) >
-            minDistanceBetweenCorners
+                minDistanceBetweenCorners
         ) {
             secondCornerConnection = connection;
             break;

@@ -1,10 +1,17 @@
 import Point from "./Point";
 
-export default function convexHull(Points: Point[]) {
+/**
+ *
+ * @param points
+ * @returns Convex hull for `Points` sorted clockwise.
+ */
+export default function convexHull(points: Point[]) {
+    points = points.map(point => point.copy());
+
     //find point with smallets y-coordinate
-    const minIndex = findSmallestY(Points);
+    const minIndex = findSmallestY(points);
     //Swap
-    const swappedPoints = swap(Points, 0, minIndex);
+    const swappedPoints = swap(points, 0, minIndex);
     //remove the first element, which is used as reference in the algorithm
     const p0 = swappedPoints.shift();
     //sort the Points based on their Polar angle with p0
@@ -33,6 +40,53 @@ export default function convexHull(Points: Point[]) {
         stack.push(filtered[i]);
     }
     return stack;
+}
+
+// http://paulbourke.net/geometry/polygonmesh/centroid.pdf
+/**
+ * Calculates convex hull of points and returns its centroid.
+ * @param points
+ */
+export function convexHullCentroid(points: Point[]) {
+    points = convexHull(points);
+
+    let x = 0;
+    let y = 0;
+
+    for (let i = 0; i < points.length; i++) {
+        const xi = points[i].x;
+        const yi = points[i].y;
+        const xii = i + 1 >= points.length ? points[0].x : points[i + 1].x;
+        const yii = i + 1 >= points.length ? points[0].y : points[i + 1].y;
+
+        x += (xi + xii) * (xi * yii - xii * yi);
+        y += (yi + yii) * (xi * yii - xii * yi);
+    }
+
+    let area = convexHullArea(points);
+    x = x / (6 * area);
+    y = y / (6 * area);
+
+    return new Point(x, y);
+}
+
+// http://paulbourke.net/geometry/polygonmesh/centroid.pdf
+/**
+ * Calculates convex hull of points and returns its area.
+ * @param points
+ */
+export function convexHullArea(points: Point[]) {
+    points = convexHull(points);
+    let area = 0;
+    for (let i = 0; i < points.length; i++) {
+        const xi = points[i].x;
+        const yi = points[i].y;
+        const xii = i + 1 >= points.length ? points[0].x : points[i + 1].x;
+        const yii = i + 1 >= points.length ? points[0].y : points[i + 1].y;
+        area += xi * yii - xii * yi;
+    }
+    area = area / 2;
+    return area;
 }
 
 function findSmallestY(Points: Point[]) {
