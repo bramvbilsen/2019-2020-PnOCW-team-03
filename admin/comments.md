@@ -29,3 +29,29 @@
 - Beschrijf uw database. Welke kleuren,  camera's, schremen, hoeveel samples per situatie, ...
 - Geen conclusie bij §3.4
 - Kun je geen conclusie maken over welk kleur het best gebruikt wordt?
+- `This allowed us to start our animation at the same time across multiple devices.` Durf je nog een dergelijk eenvoudig statement maken na alle nuances die je in het vorig verslag zelf aanhaalde?
+
+
+# ST1.2 (Bram Vanbilsen, Adam El M'Rabet, Liam Volckerick)
+- Waarom referenties in aparte zinnen? . [1]. ⇒ [1].;  . [8]. ⇒ [8].
+- We therefor decided ⇒ We therefore decided https://www.grammarly.com/blog/therefore-vs-therefor/
+- Waarom leggen jullie het verschil tussen Layout, Paint en Composite uit als je daarna niet uitlegt welke van die drie technieken de animaties die jullie testen gebruikt?
+- like it is shown ⇒ as is shown https://www.grammarly.com/blog/like-vs-as/
+- Every strategy has its pros and cons: waar, maar vermijd het vermelden van dergelijke waarheden in een paper.
+- Mooie en goed onderbouwde conclusie, beide door literatuur en testen.
+
+# ST2.2  (Sebastiaan Wouters, Maarten Pyck, Pieter-Jan Van den Broecke)
+- Slordig verslag.
+- Check eens de punten die ik gaf voor ST1.1, dan hoef ik die opmerkingen niet te herhalen. Het kan ook nuttig zijn het andere deel van je team commentaar te geven voor ik dat doe.
+- Median filter: eerst uitleggen wat het doet (met de referentie) en dan pas uitleggen waarom het nuttig is.
+- Waarom verwijs je bij `For a given pixel we can already conclude whether or not it is adequately close to the colour we search` naar [3]. Dit mag duidelijker zijn.
+- Wat als een blok minder dan 1000 pixels bevat?
+- Zoals eerder besproken: ...manually surveyed..., zelfs als je in woorden uitlegt waar je op let heb ik bijvoorbeeld geen idee hoe pixels die in de mask ingebrepen zijn, maar niet in het scherm liggen bestraft worden
+- Voeg de link naar de dataset toe.
+- `blue images` en `close-up`: wat bedoel je hiermee? Moet uitgebreider anders heeft een buitenstander geen idee waarover je spreekt en kan je het evengoed weglaten.
+- Blue and green are better [...]: wees specifiek, niet vaag. Waarin zijn die kleuren beter? (als kleuren al ergens goed in zijn)
+- Referenties naar alle figuren kloppen niet, figuren zijn afwezig...  Mail werd gestuurd met link naar https://github.com/MaartenTaylor/dataset_colordetection, ik vind niet terug welke foto's in het verslag gebruikt werden.
+- Zwakke conclusie:
+  - `While some errant blocks are recognized, we can attempt to filter out these false positives.` Dit is veel gemakkelijker gezegd dan gedaan volgens mij.
+  - `We also note that we have reliably found the corners of the screens.` je legt niet uit hoe
+  - `In conjunction with a convex hull algorithm, run on the blocks, we could find the corner points of the screens with even more precision, eliminating missing areas within the screen, which can be caused by darkness or reflection.` Je hebt geen referentie noch testen die deze bewering staaft.
