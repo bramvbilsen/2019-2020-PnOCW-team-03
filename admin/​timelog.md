@@ -151,6 +151,59 @@ TC3: 4u
 
 CR1: 2u
 
+### 01/03
+
+###### -CR1: Sbr bug gevonden, gezocht naar oplossing
+
+CR1: 3u
+
+### 02/03
+
+###### -CR1: Sbr in project geimlementeerd, bezig met perspectief erbij te krijgen
+
+###### -CEO, CR2, CTO: Data analyse met R studios en verslag 2 afmaken.
+
+###### -TC3: TC presentation (browser animation performance analysis)
+
+CR1: 2u30
+
+CEO, CR2, CTO: 10u
+
+TC3: 1u
+
+### 03/03
+
+All: 4u30
+
+### 05/03
+
+###### -CR1, TC3, TC4: IO socket and busy loop on server tests.
+
+###### -CTO, CR2: Afronden median-blur [filters.ts] + png opslaan [ImageHandler.ts]
+
+###### -CEO: Code van taak 1 aanpassen voor taak 2.
+
+CTO: 3u
+CR1, TC3, TC4, CEO, CR2: 2u
+
+### 08/03
+
+###### -CTO: Make images downloadable
+
+CTO: 1u30
+
+### 10/03
+
+CR1, TC3, TC4: 10u
+
+CEO, CR2, CTO: 6u30
+
+### 16/03
+
+### -CEO: Videochat klaar maken voor 17 maart en taken nog eens checken.
+
+CEO: 1u
+
 ###### EERSTE SEMESTER
 
 ### Taakverdeling:
