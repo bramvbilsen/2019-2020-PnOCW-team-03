@@ -24,6 +24,7 @@ import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
+import p5 from "p5";
 
 const {
     checkIntersection,
@@ -43,6 +44,8 @@ class Client {
     public DEBUG: boolean = false;
     public cutWithRealPoints: boolean = false;
     public bouncingBallImg: HTMLImageElement;
+    static currentNb = 10;
+    static startAnimationTime: Number;
     /**
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
@@ -397,94 +400,143 @@ class Client {
         }
     };
 
-    private startCounterEvent = (msg: { startTime: number }): void => {
-        // Destroy the counter div
-        console.log("Destroy");
-        $("#countdown").replaceWith('<div id="fullScreen"></div>');
+    public sketch = (p: p5) => {
+        function initCountdown() {
+            alert("Click on OK to start countdown");
+            console.log(this);
+            this.currentNb = 10;
+            this.startAnimationTime = performance.now();
+            $("#countdown").replaceWith(
+                '<div id="fullScreen"><canvas id="countdownCanvas" width="500" height="800"></canvas></div>'
+            );
+        }
 
-        $("#loading").css("display", "inherit");
-        let { startTime } = msg;
-        startTime += this.serverTimeDiff;
-        const eta_ms = startTime - Date.now();
-        setTimeout(function() {
-            const elevenseconds = 11000;
-            const enddate = new Date(startTime + elevenseconds);
-            countdown(enddate.getTime());
+        p.setup = function() {
+            const fps = 30; // TODO: pas aan
+            p.frameRate(fps);
+            const canvas = p.createCanvas(500, 800);
+            canvas.id("countdownCanvas");
+
+            initCountdown();
+        };
+
+        p.draw = function() {
+            p.clear();
+            let elapsedTime = performance.now() - this.startAnimationTime;
+            this.currentNb = parseInt((10 - elapsedTime).toString(), 10);
+            drawNb();
+        };
+
+        function drawNb() {
+            console.log("CountDown: " + this.currentNb);
+            // p.stroke(0, 0, 0, 0);  // TODO
+            p.fill(50);
+            p.textSize(50);
+            p.text(Client.currentNb.toString(), 10, 10, 70, 80);
+        }
+    };
+
+    private startCounterEvent = (msg: { startTime: number }): void => {
+        const oldCanvas = document.getElementById("countdownCanvas");
+        if (oldCanvas) {
+            oldCanvas.remove();
+        }
+        const eta_ms = msg.startTime - Date.now();
+        setTimeout(() => {
+            new p5(this.sketch);
         }, eta_ms);
 
-        function countdown(endDate: number) {
-            var timer = setInterval(async function() {
-                const now = new Date().getTime();
-                const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
+        // // Destroy the counter div
+        // console.log("Destroy");
+        // $("#countdown").replaceWith(
+        //     '<div id="fullScreen"><canvas id="countdownCanvas" width="500" height="800"></canvas></div>'
+        // );
 
-                if (t > 0) {
-                    $("#fullScreen").html(
-                        `<div style="font-size:500px;"><center>${t}</center></div>`
-                    );
-                } else {
-                    $("#loading").css("display", "none");
-                    $("#fullScreen").html(
-                        '<div style="font-size:100px;"><center>BOOOOOM !!!</center></div>'
-                    );
-                    // // Creeper
-                    // const img1 = await loadImage(
-                    //     env.baseUrl + "/images/creeper-left.png"
-                    // );
-                    // const img2 = await loadImage(
-                    //     env.baseUrl + "/images/creeper-left2.png"
-                    // );
-                    // const imgCanvas = createCanvas(img1.width, img1.height);
-                    // imgCanvas.getContext("2d").drawImage(img1, 0, 0);
-                    // $("#fullScreen").replaceWith(
-                    //     '<center><div id="fullScreen"><img width="400" height="550" id="fullScreenImg"></img></div><center>'
-                    // );
-                    // $("#fullScreenImg").attr("src", imgCanvas.toDataURL()); // "#image-slave"
+        // $("#loading").css("display", "inherit");
+        // let { startTime } = msg;
+        // startTime += this.serverTimeDiff;
+        // const eta_ms = startTime - Date.now();
+        // setTimeout(function() {
+        //     const elevenseconds = 11000;
+        //     const enddate = new Date(startTime + elevenseconds);
+        //     countdown(enddate.getTime());
+        // }, eta_ms);
 
-                    // let creeperSwitch = 2;
-                    // for (let _ = 0; _ < 9; _++) {
-                    //     await setTimeout(function() {
-                    //         if (creeperSwitch == 1) {
-                    //             imgCanvas
-                    //                 .getContext("2d")
-                    //                 .clearRect(0, 0, img1.width, img1.height);
-                    //             imgCanvas
-                    //                 .getContext("2d")
-                    //                 .drawImage(img2, 0, 0);
-                    //             $("#fullScreenImg").attr(
-                    //                 "src",
-                    //                 imgCanvas.toDataURL()
-                    //             );
-                    //             creeperSwitch = 2;
-                    //         } else {
-                    //             imgCanvas
-                    //                 .getContext("2d")
-                    //                 .clearRect(0, 0, img2.width, img2.height);
-                    //             imgCanvas
-                    //                 .getContext("2d")
-                    //                 .drawImage(img1, 0, 0);
-                    //             $("#fullScreenImg").attr(
-                    //                 "src",
-                    //                 imgCanvas.toDataURL()
-                    //             );
-                    //             creeperSwitch = 1;
-                    //         }
-                    //     }, 1000);
-                    // }
+        // function countdown(endDate: number) {
+        //     var timer = setInterval(async function() {
+        //         const now = new Date().getTime();
+        //         const t = Math.floor(((endDate - now) % (1000 * 60)) / 1000);
 
-                    // clearinterval();
-                    // // Restore the counter div
-                    // setTimeout(function() {
-                    //     console.log("Restore");
-                    //     $("#fullScreen").replaceWith(
-                    //         '<div id="countdown"></div>'
-                    //     );
-                    // }, 10000);
-                }
-            }, 1);
-            function clearinterval() {
-                clearInterval(timer);
-            }
-        }
+        //         if (t > 0) {
+        //             $("#fullScreen").html(
+        //                 `<div style="font-size:500px;"><center>${t}</center></div>`
+        //             );
+        //         } else {
+        //             $("#loading").css("display", "none");
+        //             // $("#fullScreen").html(
+        //             //     '<div style="font-size:100px;"><center>BOOOOOM !!!</center></div>'
+        //             // );
+        //             // // Creeper
+        //             // const img1 = await loadImage(
+        //             //     env.baseUrl + "/images/creeper-left.png"
+        //             // );
+        //             // const img2 = await loadImage(
+        //             //     env.baseUrl + "/images/creeper-left2.png"
+        //             // );
+        //             // const imgCanvas = createCanvas(img1.width, img1.height);
+        //             // imgCanvas.getContext("2d").drawImage(img1, 0, 0);
+        //             // $("#fullScreen").replaceWith(
+        //             //     '<center><div id="fullScreen"><img width="400" height="550" id="fullScreenImg"></img></div><center>'
+        //             // );
+        //             // $("#fullScreenImg").attr("src", imgCanvas.toDataURL()); // "#image-slave"
+
+        //             // let creeperSwitch = 2;
+        //             // for (let _ = 0; _ < 9; _++) {
+        //             //     await setTimeout(function() {
+        //             //         if (creeperSwitch == 1) {
+        //             //             imgCanvas
+        //             //                 .getContext("2d")
+        //             //                 .clearRect(0, 0, img1.width, img1.height);
+        //             //             imgCanvas
+        //             //                 .getContext("2d")
+        //             //                 .drawImage(img2, 0, 0);
+        //             //             $("#fullScreenImg").attr(
+        //             //                 "src",
+        //             //                 imgCanvas.toDataURL()
+        //             //             );
+        //             //             creeperSwitch = 2;
+        //             //         } else {
+        //             //             imgCanvas
+        //             //                 .getContext("2d")
+        //             //                 .clearRect(0, 0, img2.width, img2.height);
+        //             //             imgCanvas
+        //             //                 .getContext("2d")
+        //             //                 .drawImage(img1, 0, 0);
+        //             //             $("#fullScreenImg").attr(
+        //             //                 "src",
+        //             //                 imgCanvas.toDataURL()
+        //             //             );
+        //             //             creeperSwitch = 1;
+        //             //         }
+        //             //     }, 1000);
+        //             // }
+
+        //             window.cancelAnimationFrame();
+
+        //             clearinterval();
+        //             // Restore the counter div
+        //             setTimeout(function() {
+        //                 console.log("Restore");
+        //                 $("#fullScreen").replaceWith(
+        //                     '<div id="countdown"></div>'
+        //                 );
+        //             }, 1000);
+        //         }
+        //     }, 1);
+        //     function clearinterval() {
+        //         clearInterval(timer);
+        //     }
+        // }
     };
 
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
