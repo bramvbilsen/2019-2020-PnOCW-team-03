@@ -60,6 +60,14 @@ CR1, TC3, TC4: Hebben animatie met busy loops tests gedaan op verschillende lapt
 
 CEO, CR2, CTO: Voorden experimenten uit voor de tweeden taak en maakten het verslag af.
 
+### 12/03
+
+Niet samengezeten wegens deadline software ontwerp
+
+### 17/03
+
+Eerst hebben we via discord teamoverleg gehad. We hebben toen besloten om verder te werken aan de UI, perspectief en animatie(zie plan of attack). Voor elke taak werd er 2 man aangewezen: Bassie en Pieter-Jan voor UI, Bram en Maarten voor perspectief en Liam en Adam voor animatie. Na de gezamelijke teammeeting zijn de groepjes in een apparte call gegaan.
+
 **<u>Dates:</u>**
 
 ### 30/9:

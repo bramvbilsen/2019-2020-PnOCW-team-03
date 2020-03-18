@@ -98,7 +98,7 @@ Screen detection: Maarten, Sebastiaan, Pieter-Jan
 
 -Triangulatie: Debuggen tegen 10 maart en tegen 17 maart oplossing gevonden.
 
--Animatie: Onderzeoekn wat het snelste en beste is tegen 10 maart(loopt samen met T1.2) en tegen 17 maart eerste demo met de nieuwe code.
+-Animatie: Onderzoekn wat het snelste en beste is tegen 10 maart(loopt samen met T1.2) en tegen 17 maart eerste demo met de nieuwe code.
 
 -UI: Kleine probleemtjes(zoals met de scrollbar) tegen 17 maart vinden en fixen en daarna alles testen met de nieuwe code.
 
@@ -118,49 +118,50 @@ Er wordt dan bekeken hoe ver iedereen met zijn taak staat en het plan wordt herb
 
 ### Wat is er al gebeurd
 
--Perspectief:
+-Perspectief: Code heeft nog bugs maar er zijn wel al eerste resultaten op een localhost zichtbaar.
 
--Triangulatie:
+-Triangulatie: Bugs zijn nog niet gevonden, moet meer tijd worden ingestoken.
 
--Animatie:
+-Animatie: Na taak 1.2 is er besloten om p5.js met requestanimationframe te gebruiken voor de animatie, de implementatie ontbreekt nog wel.
 
--UI:
+-UI: /
 
--screen and orientation detection:
+-screen and orientation detection: Na taak 2.2 is er besloten om screen detection(en ook orientation) met de kleur blauw te doen aangezien die in het algemeen beter kan worden gevonden dan roos.
 
 ### Wat moet er nog gebeuren
 
--Perspectief:
+-Perspectief: Bugs moeten er uit en implementeren in ons project.
 
--Triangulatie:
+-Triangulatie: Bugs nog vinden.
 
--Animatie:
+-Animatie: Implementatie van p5.js
 
--UI:
+-UI: Alles
 
--screen and orientation detection:
+-screen and orientation detection: Kleur blauw implementeren en oude code herbekijken.
 
 ### Taakverdeling
 
--Perspectief:
+-Perspectief: Bram en Maarten
 
--triangulatie:
+-triangulatie: Maarten
 
--Animatie:
+-Animatie: Liam en Adam , (Maarten: kent code van vorig semester het beste)
 
--UI:
+-UI: Sebastiaan en Pieter-Jan
 
--Orientation detection:
+-Orientation + screen detection: Maarten, Pieter-Jan en Sebastiaan, (Bram: kent code van vorig semester het beste)
 
--Cleaning the code:
+-Cleaning the code: Pieter-Jan
 
 ### Gedetailleerde uurverdeling/deadlines
 
--Perspectief:
+-Perspectief: 19 maart, implementatie in project
 
--Triangulatie:
+-Triangulatie: 20 maart: debuggen
 
--Animatie:
--UI:
+-Animatie: 19 maart, p5.js implementatie klaarhebben voor countdown. 23 maart, p5.js implementatie klaarhebben voor animatie.
 
--Orientation detection:
+-UI: 24 maart demo klaarheben
+
+-Orientation detection: 19-20-21 maart implementatie met kleur blauw.

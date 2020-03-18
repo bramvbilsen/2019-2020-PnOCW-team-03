@@ -151,13 +151,13 @@ TC3: 4u
 
 CR1: 2u
 
-### 01/03
+##### 01/03
 
 ###### -CR1: Sbr bug gevonden, gezocht naar oplossing
 
 CR1: 3u
 
-### 02/03
+##### 02/03
 
 ###### -CR1: Sbr in project geimlementeerd, bezig met perspectief erbij te krijgen
 
@@ -171,11 +171,11 @@ CEO, CR2, CTO: 10u
 
 TC3: 1u
 
-### 03/03
+##### 03/03
 
 All: 4u30
 
-### 05/03
+##### 05/03
 
 ###### -CR1, TC3, TC4: IO socket and busy loop on server tests.
 
@@ -186,23 +186,39 @@ All: 4u30
 CTO: 3u
 CR1, TC3, TC4, CEO, CR2: 2u
 
-### 08/03
+##### 08/03
 
 ###### -CTO: Make images downloadable
 
 CTO: 1u30
 
-### 10/03
+##### 10/03
 
 CR1, TC3, TC4: 10u
 
 CEO, CR2, CTO: 6u30
 
-### 16/03
+##### 16/03
 
-### -CEO: Videochat klaar maken voor 17 maart en taken nog eens checken.
+###### -CEO: Videochat klaar maken voor 17 maart en taken nog eens checken.
 
 CEO: 1u
+
+##### 17/03
+
+###### -CEO,CR1: Werkten verder aan de code die er al was voor perspectief werkende te krijgen bij image casting.
+
+###### -CTO,CR2: Werkten aan de UI.
+
+###### -TC3,TC4: p5 gebruiken voor de countdown animation
+
+CEO: 8u
+
+TC3,TC4: 4u
+
+CR1: 5u
+
+CR2,CTO: 3u
 
 ###### EERSTE SEMESTER
 
