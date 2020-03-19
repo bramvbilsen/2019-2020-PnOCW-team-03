@@ -44,8 +44,8 @@ class Client {
     public DEBUG: boolean = false;
     public cutWithRealPoints: boolean = false;
     public bouncingBallImg: HTMLImageElement;
-    static currentNb = 10;
-    static startAnimationTime: Number;
+    private currentNb = 10;
+    private startAnimationTime: number;
     /**
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
@@ -405,7 +405,7 @@ class Client {
     };
 
     public sketch = (p: p5) => {
-        function initCountdown() {
+        const initCountdown = () => {
             alert("Click on OK to start countdown");
             console.log(this);
             this.currentNb = 10;
@@ -413,7 +413,7 @@ class Client {
             $("#countdown").replaceWith(
                 '<div id="fullScreen"><canvas id="countdownCanvas" width="500" height="800"></canvas></div>'
             );
-        }
+        };
 
         p.setup = function() {
             const fps = 30; // TODO: pas aan
@@ -424,20 +424,20 @@ class Client {
             initCountdown();
         };
 
-        p.draw = function() {
+        p.draw = () => {
             p.clear();
             let elapsedTime = performance.now() - this.startAnimationTime;
             this.currentNb = parseInt((10 - elapsedTime).toString(), 10);
             drawNb();
         };
 
-        function drawNb() {
+        const drawNb = () => {
             console.log("CountDown: " + this.currentNb);
             // p.stroke(0, 0, 0, 0);  // TODO
             p.fill(50);
             p.textSize(50);
-            p.text(Client.currentNb.toString(), 10, 10, 70, 80);
-        }
+            p.text(this.currentNb.toString(), 10, 10, 70, 80);
+        };
     };
 
     private startCounterEvent = (msg: { startTime: number }): void => {
