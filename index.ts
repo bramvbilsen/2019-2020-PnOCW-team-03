@@ -41,9 +41,11 @@ app.post("/sync_test_result", (req, res) => {
         fileName: "Sync_test",
         columnNames: ["Iteration", "Offset"],
         columnDatas: [
-            Array(testResults.length).fill(0).map((_, i) => i),
-            testResults
-        ]
+            Array(testResults.length)
+                .fill(0)
+                .map((_, i) => i),
+            testResults,
+        ],
     });
 });
 
@@ -117,7 +119,7 @@ io.on("connect", (socket: socketio.Socket) => {
             if (socket.id === connections.master.id) {
                 console.log(
                     "Attempting to display image by master, imgurl: " +
-                    msg.imgUrl
+                        msg.imgUrl
                 );
                 io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
                     imgUrl: msg.imgUrl,
@@ -230,6 +232,18 @@ io.on("connect", (socket: socketio.Socket) => {
         MasterEventTypes.triangulationShow,
         (msg: { slaveId: string; angles: any; lines: any }) => {
             io.to(msg.slaveId).emit(SlaveEventTypes.linesShow, msg);
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.sendCutData,
+        (msg: {
+            slaveID: string;
+            srcPoints: number;
+            boundingBoxWidth: number;
+            boundingBoxHeight: number;
+        }) => {
+            io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
         }
     );
 });

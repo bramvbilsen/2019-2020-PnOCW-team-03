@@ -174,6 +174,38 @@ export function resetMaster() {
                     );
                     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
+
+                // const globalBoundingBox = new BoundingBox(
+                //     flattenOneLevel(
+                //         slaveFlowHandler.screens.map(screen => screen.corners)
+                //     )
+                // );
+                slaveFlowHandler.screens.forEach(screen => {
+                    const corners = screen.actualCorners;
+                    client.sendCutData(
+                        {
+                            LeftUp: {
+                                x: corners.LeftUp.x,
+                                y: corners.LeftUp.y,
+                            },
+                            RightUp: {
+                                x: corners.RightUp.x,
+                                y: corners.RightUp.y,
+                            },
+                            LeftUnder: {
+                                x: corners.LeftUnder.x,
+                                y: corners.LeftUnder.y,
+                            },
+                            RightUnder: {
+                                x: corners.RightUnder.x,
+                                y: corners.RightUnder.y,
+                            },
+                        },
+                        globalBoundingBox.width,
+                        globalBoundingBox.height,
+                        screen.slaveID
+                    );
+                });
             });
 
         $("#display-master-img-button")

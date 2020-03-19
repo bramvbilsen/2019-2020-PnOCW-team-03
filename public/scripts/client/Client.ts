@@ -22,7 +22,7 @@ import { loadImage } from "../util/images";
 import { lstat } from "fs";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
-import { CornerLabels } from "../types/Points";
+import { CornerLabels, IActualCorners } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 
 const {
@@ -111,6 +111,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.linesShow,
                             this.linesShow
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.receiveCutData,
+                            this.receiveCutData
                         )
                     );
                 } else {
@@ -1702,6 +1706,33 @@ class Client {
     };
 
     public colortest = () => colortest(0, 0, 255, 240, 100, 50);
+
+    public sendCutData = (
+        srcPoints: {
+            LeftUp: { x: number; y: number };
+            RightUp: { x: number; y: number };
+            LeftUnder: { x: number; y: number };
+            RightUnder: { x: number; y: number };
+        },
+        boundingBoxWidth: number,
+        boundingBoxHeight: number,
+        slaveID: string
+    ) => {
+        this._socket.emit(MasterEventTypes.sendCutData, {
+            srcPoints,
+            boundingBoxWidth,
+            boundingBoxHeight,
+        });
+    };
+
+    public receiveCutData = (msg: {
+        srcPoints: number;
+        boundingBoxWidth: number;
+        boundingBoxHeight: number;
+    }) => {
+        // TODO: HANDLE THIS.
+        console.log("HANDLE THIS");
+    };
 }
 
 export default Client;

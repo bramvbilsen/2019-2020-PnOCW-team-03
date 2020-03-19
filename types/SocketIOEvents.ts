@@ -20,6 +20,7 @@ export enum SlaveEventTypes {
     NotifyMasterThatSlaveOrientationIsOn = "notify-master-that-slave-orientation-is-on",
     animationFinished = "animation-finished",
     linesShow = "lines-show",
+    receiveCutData = "receive-cut-data",
 }
 
 export enum MasterEventTypes {
@@ -37,4 +38,5 @@ export enum MasterEventTypes {
     HandleNextSlaveFlowHanlderStep = "handle-next-slave-flow-handler-step",
     nextLine = "next-line",
     triangulationShow = "triangulation-show",
+    sendCutData = "send-cut-data",
 }
