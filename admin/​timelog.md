@@ -13,13 +13,13 @@
 
 ### **Log**:
 
-##### 11/02:
+### 11/02:
 
 ###### -All: inleiding nieuw semester, rolverdeling + opstart van de taken
 
 All: 3u30
 
-##### 13/02:
+### 13/02:
 
 ###### -CR1, TC3: Opzoekwerk over NTP + schrijven scripts
 
@@ -35,7 +35,7 @@ CR2: 2u30
 
 TC3: 4U
 
-##### 16/02:
+### 16/02:
 
 ###### -CTO: Foto's nemen voor experiment + Voorbereiden evaluatie
 
@@ -49,7 +49,7 @@ CR1: 1u
 
 TC3: 1u
 
-##### 18/02:
+### 18/02:
 
 ###### -CR1: Testen gemaakt & uitgevoerd browser sync
 
@@ -61,13 +61,13 @@ TC3: 1u
 
 All: 5u
 
-##### 19/02:
+### 19/02:
 
 ###### -CR1: Eerste implementatie van "smallest bounding rectangle" gemaakt
 
 CR1: 3u
 
-##### 20/02:
+### 20/02:
 
 ###### -CEO: Errors uit script voor color recognition tests halen + volledig automatiseren
 
@@ -93,7 +93,7 @@ TC3: 1u
 
 TC4: 5u
 
-##### 21/02:
+### 21/02:
 
 ###### -CTO: Image collectie genereren + uploaden naar gedeelde database
 
@@ -103,7 +103,7 @@ CTO: 4u30
 
 CR1: 2u
 
-##### 22/02:
+### 22/02:
 
 ###### -TC3: Writing of report for clock offset analysis (alternative method)
 
@@ -113,13 +113,13 @@ CR1: 2u
 
 TC3: 2u
 
-##### 24/02:
+### 24/02:
 
 ###### -CEO: Bug gefixt waar dat testen niet de juiste getallen terug gaven.
 
 CEO: 1u30
 
-##### 25/02:
+### 25/02:
 
 ###### -CTO, CEO: HSV support implementeren [Color.ts, Data.ts] + theoretische background HSV
 
@@ -129,7 +129,7 @@ CEO: 1u30
 
 All: 5u
 
-##### 27/02:
+### 27/02:
 
 ###### -CTO, CEO, CR2: Database search for images + opdeling criteria
 
@@ -145,11 +145,80 @@ CR2: 2
 
 TC3: 4u
 
-##### 29/02:
+### 29/02:
 
 ###### -CR1: Gezocht naar oplossing sbr bug en herimplementatie...
 
 CR1: 2u
+
+### 01/03
+
+###### -CR1: Sbr bug gevonden, gezocht naar oplossing
+
+CR1: 3u
+
+### 02/03
+
+###### -CR1: Sbr in project geimlementeerd, bezig met perspectief erbij te krijgen
+
+###### -CEO, CR2, CTO: Data analyse met R studios en verslag 2 afmaken.
+
+###### -TC3: TC presentation (browser animation performance analysis)
+
+CR1: 2u30
+
+CEO, CR2, CTO: 10u
+
+TC3: 1u
+
+### 03/03
+
+All: 4u30
+
+### 05/03
+
+###### -CR1, TC3, TC4: IO socket and busy loop on server tests.
+
+###### -CTO, CR2: Afronden median-blur [filters.ts] + png opslaan [ImageHandler.ts]
+
+###### -CEO: Code van taak 1 aanpassen voor taak 2.
+
+CTO: 3u
+CR1, TC3, TC4, CEO, CR2: 2u
+
+### 08/03
+
+###### -CTO: Make images downloadable
+
+CTO: 1u30
+
+### 10/03
+
+CR1, TC3, TC4: 10u
+
+CEO, CR2, CTO: 6u30
+
+### 16/03
+
+###### -CEO: Videochat klaar maken voor 17 maart en taken nog eens checken.
+
+CEO: 1u
+
+### 17/03
+
+###### -CEO,CR1: Werkten verder aan de code die er al was voor perspectief werkende te krijgen bij image casting.
+
+###### -CTO,CR2: Werkten aan de UI.
+
+###### -TC3,TC4: p5 gebruiken voor de countdown animation
+
+CEO: 8u
+
+TC3,TC4: 4u
+
+CR1: 5u
+
+CR2,CTO: 3u
 
 ###### EERSTE SEMESTER
 

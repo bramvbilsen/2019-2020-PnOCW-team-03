@@ -38,6 +38,36 @@ CR1, TC3: Zijn begonnen aan tweede taak van synchronisatie. Hebben een animatie 
 
 CEO, CR2, CTO: Hebben de dataset vergroot met foto's uit de gedeelde git repository van alle teams. Er is ook een opdeling van categoriën gebeurd om later plots te kunnen maken.
 
+### 03/03
+
+All: Bespreken van hoever iedereen staat met plan of attack en geupdate versie maken.
+
+CR1, TC3, TC4: Gewerkt aan de animatie taak 2. Testen op verschillende browers gedaan met busy loops.
+
+CEO, CR2, CTO: Opstart taak 2 van colordetection.
+
+### 05/03
+
+CR1, TC3, TC4: IO socket and busy loop on server tests.
+
+CTO, CR2: Werkten median blur filter verder aan.
+
+CEO: Code van taak 1 aanpassen voor taak 2.
+
+### 10/03
+
+CR1, TC3, TC4: Hebben animatie met busy loops tests gedaan op verschillende laptops en browsers. De data werkt verwerkt en in het verslag geïmplementeerd.
+
+CEO, CR2, CTO: Voorden experimenten uit voor de tweeden taak en maakten het verslag af.
+
+### 12/03
+
+Niet samengezeten wegens deadline software ontwerp
+
+### 17/03
+
+Eerst hebben we via discord teamoverleg gehad. We hebben toen besloten om verder te werken aan de UI, perspectief en animatie(zie plan of attack). Voor elke taak werd er 2 man aangewezen: Bassie en Pieter-Jan voor UI, Bram en Maarten voor perspectief en Liam en Adam voor animatie. Na de gezamelijke teammeeting zijn de groepjes in een apparte call gegaan.
+
 **<u>Dates:</u>**
 
 ### 30/9:
