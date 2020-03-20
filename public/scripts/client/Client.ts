@@ -25,6 +25,7 @@ import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels, IActualCorners } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
+import ClientStorage from "./ClientStorage";
 
 const {
     checkIntersection,
@@ -46,6 +47,7 @@ class Client {
     public bouncingBallImg: HTMLImageElement;
     private currentNb = 11;
     private startAnimationTime: number;
+    private clientSorage: ClientStorage;
     /**
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
@@ -60,6 +62,7 @@ class Client {
     constructor(args: {
         onConnectionTypeChange: (connectionType: ConnectionType) => void;
     }) {
+        this.clientSorage = new ClientStorage();
         this.onConnectionTypeChange = args.onConnectionTypeChange;
         this._socket = io.connect(env.baseUrl);
         this._socket.on("connected", () => console.log("Connected!"));
@@ -1687,7 +1690,12 @@ class Client {
     };
 
     public receiveCutData = (msg: {
-        srcPoints: number;
+        srcPoints: {
+            LeftUp: { x: number; y: number };
+            RightUp: { x: number; y: number };
+            LeftUnder: { x: number; y: number };
+            RightUnder: { x: number; y: number };
+        };
         boundingBoxWidth: number;
         boundingBoxHeight: number;
     }) => {
