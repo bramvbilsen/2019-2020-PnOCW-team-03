@@ -1699,8 +1699,11 @@ class Client {
         boundingBoxWidth: number;
         boundingBoxHeight: number;
     }) => {
-        // TODO: HANDLE THIS.
-        console.log("HANDLE THIS");
+        this.clientSorage.newData(
+            msg.boundingBoxWidth,
+            msg.boundingBoxHeight,
+            msg.srcPoints
+        );
     };
 }
 

@@ -16,6 +16,16 @@ export default class ClientStorage {
 
     constructor() {}
 
+    newData(
+        boundingBoxWidth: number,
+        boundingBoxHeight: number,
+        begin: SrcPoints
+    ) {
+        this.boundingBoxHeight = boundingBoxHeight;
+        this.boundingBoxWidth = boundingBoxWidth;
+        this.matrix3d = this.perspectiveMatrix(begin);
+    }
+
     perspectiveMatrix(begin: SrcPoints) {
         let x0 = begin.LeftUp.x;
         let y0 = begin.LeftUp.y;
@@ -85,6 +95,6 @@ export default class ClientStorage {
 
         console.log(matrix3d);
 
-        this.matrix3d = matrix3d;
+        return matrix3d;
     }
 }
