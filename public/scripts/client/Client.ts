@@ -471,6 +471,11 @@ class Client {
      */
 
     /**
+     * The code below is duplicated in Animation.ts
+     * Fixme Client.ts should incorporate the methods from Animation.ts
+     */
+
+    /**
      * Calculates the triangulation of the screens.
      */
     public calculateTriangulation = () => {
