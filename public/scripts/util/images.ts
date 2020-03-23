@@ -20,33 +20,31 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
  *
  * @param globalBoundingBox Bounding box around all screens.
  */
-export function scaleAndCutImageToBoundingBoxAspectRatio(
-    img: HTMLCanvasElement,
-    globalBoundingBoxWidth: number,
-    globalBoundingBoxHeight: number,
-    extraWidth: number,
-    extraHeight: number
-): HTMLCanvasElement {
-    const imgCanvas = createCanvas(
-        globalBoundingBoxWidth,
-        globalBoundingBoxHeight
-    );
-    const imgCtx = imgCanvas.getContext("2d");
-    imgCtx.drawImage(
-        img,
-        0,
-        0,
-        globalBoundingBoxWidth,
-        globalBoundingBoxHeight
-    );
-    const canvas = createCanvas(
-        globalBoundingBoxWidth + extraWidth,
-        globalBoundingBoxHeight + extraHeight
-    );
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(imgCanvas, extraWidth / 2, extraHeight / 2);
-    return canvas;
-}
+// export function scaleAndCutImageToBoundingBoxAspectRatio(
+//     img: HTMLCanvasElement,
+//     globalBoundingBoxWidth: number,
+//     globalBoundingBoxHeight: number
+// ): HTMLCanvasElement {
+//     const imgCanvas = createCanvas(
+//         globalBoundingBoxWidth,
+//         globalBoundingBoxHeight
+//     );
+//     const imgCtx = imgCanvas.getContext("2d");
+//     imgCtx.drawImage(
+//         img,
+//         0,
+//         0,
+//         globalBoundingBoxWidth,
+//         globalBoundingBoxHeight
+//     );
+//     const canvas = createCanvas(
+//         globalBoundingBoxWidth + extraWidth,
+//         globalBoundingBoxHeight + extraHeight
+//     );
+//     const ctx = canvas.getContext("2d");
+//     ctx.drawImage(imgCanvas, extraWidth / 2, extraHeight / 2);
+//     return canvas;
+// }
 
 export function scaleAndCutBoundingBoxToImgAspectRatio(
     img: HTMLHtmlElement,

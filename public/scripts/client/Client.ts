@@ -17,10 +17,7 @@ import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
-import {
-    loadImage,
-    scaleAndCutImageToBoundingBoxAspectRatio,
-} from "../util/images";
+import { loadImage } from "../util/images";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels } from "../types/Points";
@@ -351,17 +348,20 @@ class Client {
                 this.clientStorage.boundingBoxHeight
             );
             const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-            const cutCanvas = scaleAndCutImageToBoundingBoxAspectRatio(
-                canvas,
-                this.clientStorage.boundingBoxWidth,
-                this.clientStorage.boundingBoxHeight,
+            ctx.drawImage(
+                img,
                 0,
-                0
+                0,
+                img.width,
+                img.height,
+                0,
+                0,
+                this.clientStorage.boundingBoxWidth,
+                this.clientStorage.boundingBoxHeight
             );
             // $("#image-slave").css("transform", this.clientStorage.matrix3d);
             // $("#image-slave").css("transform", "0 0");
-            $("#image-slave").attr("src", cutCanvas.toDataURL());
+            $("#image-slave").attr("src", canvas.toDataURL());
         });
     };
 
