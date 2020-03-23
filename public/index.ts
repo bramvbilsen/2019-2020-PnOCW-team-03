@@ -7,7 +7,6 @@ import run_tests from "./tests/run";
 import downloadTests from "./tests/download";
 import { createCanvas } from "./scripts/image_processing/screen_detection/screen_detection";
 import env from "./env/env";
-import SlaveCatCastImgHandler from "./scripts/image_processing/imageDisplayHandler";
 import { loadImage } from "./scripts/util/images";
 import { BoundingBox } from "./scripts/util/BoundingBox";
 import { flattenOneLevel } from "./scripts/util/arrays";
@@ -19,7 +18,6 @@ export const client = new Client({
 });
 
 export let slaveFlowHandler: SlaveFlowHandler;
-export let imageDisplayHandler: SlaveCatCastImgHandler;
 
 //@ts-ignore
 window.client = client;
@@ -120,21 +118,6 @@ export function resetMaster() {
             slaveFlowHandler.reset();
         });
 
-        uploadImage.off().on("click", () => {
-            /**CHANGE THIS*/
-            imageDisplayHandler.defaultImage();
-        });
-
-        displayImage.off().on("click", async () => {
-            imageDisplayHandler = new SlaveCatCastImgHandler(
-                slaveFlowHandler.screens
-            );
-            await imageDisplayHandler.defaultImage();
-            imageDisplayHandler.linearScale();
-            let data = imageDisplayHandler.cutBoxOutImg();
-            $("#result-img").attr("src", data);
-        });
-
         $("#display-countdown-button")
             .off()
             .on("click", async () => {
@@ -155,55 +138,10 @@ export function resetMaster() {
         $("#display-unicorn-img-button")
             .off()
             .on("click", async () => {
-                const img = await loadImage(
-                    env.baseUrl + "/images/unicorn.jpeg"
-                );
-                const imgCanvas = createCanvas(img.width, img.height);
-                imgCanvas.getContext("2d").drawImage(img, 0, 0);
-                const globalBoundingBox = new BoundingBox(
-                    flattenOneLevel(
-                        slaveFlowHandler.screens.map(screen => screen.corners)
-                    )
-                );
                 slaveFlowHandler.screens.forEach(screen => {
-                    const slaveImg = createImageCanvasForSlave(
-                        globalBoundingBox,
-                        screen,
-                        slaveFlowHandler.screens,
-                        imgCanvas
-                    );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
-                });
-
-                // const globalBoundingBox = new BoundingBox(
-                //     flattenOneLevel(
-                //         slaveFlowHandler.screens.map(screen => screen.corners)
-                //     )
-                // );
-                slaveFlowHandler.screens.forEach(screen => {
-                    const corners = screen.actualCorners;
-                    client.sendCutData(
-                        {
-                            LeftUp: {
-                                x: corners.LeftUp.x,
-                                y: corners.LeftUp.y,
-                            },
-                            RightUp: {
-                                x: corners.RightUp.x,
-                                y: corners.RightUp.y,
-                            },
-                            LeftUnder: {
-                                x: corners.LeftUnder.x,
-                                y: corners.LeftUnder.y,
-                            },
-                            RightUnder: {
-                                x: corners.RightUnder.x,
-                                y: corners.RightUnder.y,
-                            },
-                        },
-                        globalBoundingBox.width,
-                        globalBoundingBox.height,
-                        screen.slaveID
+                    client.showImgOnSlave(
+                        screen.slaveID,
+                        `${env.baseUrl}/images/unicorn.jpeg`
                     );
                 });
             });
@@ -211,31 +149,11 @@ export function resetMaster() {
         $("#display-master-img-button")
             .off()
             .on("click", async () => {
-                const globalBoundingBox = new BoundingBox(
-                    flattenOneLevel(
-                        slaveFlowHandler.screens.map(screen => screen.corners)
-                    )
-                );
-                const canvas = createCanvas(
-                    player[0].videoWidth,
-                    player[0].videoHeight
-                );
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(
-                    slaveFlowHandler.blancoCanvas,
-                    0,
-                    0,
-                    player[0].videoWidth * slaveFlowHandler.blancoCanvasScale,
-                    player[0].videoHeight
-                );
                 slaveFlowHandler.screens.forEach(screen => {
-                    const slaveImg = createImageCanvasForSlave(
-                        globalBoundingBox,
-                        screen,
-                        slaveFlowHandler.screens,
-                        canvas
+                    client.showImgOnSlave(
+                        screen.slaveID,
+                        `${env.baseUrl}/images/unicorn.jpeg`
                     );
-                    client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
                 });
             });
 

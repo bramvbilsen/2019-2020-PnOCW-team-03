@@ -13,6 +13,8 @@ import { createCameraOverlayWithPoints } from "../util/canvas";
 import Line from "./screen_detection/Line";
 import Point from "./screen_detection/Point";
 import { IMasterVsActualPoint, CornerLabels } from "../types/Points";
+import { BoundingBox } from "../util/BoundingBox";
+import { flattenOneLevel } from "../util/arrays";
 
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
@@ -72,7 +74,7 @@ export default class SlaveFlowHandler {
         resetMaster();
         client.slaves.forEach(slave => {
             client.showColorOnSlave(slave, { r: 76, g: 175, b: 80, a: 255 });
-        })
+        });
         this.resetDebug();
     }
 
@@ -95,6 +97,34 @@ export default class SlaveFlowHandler {
             $("#slave-flow-buttons").hide();
             $("#camera").hide();
             $("#display-slave-img-buttons").show();
+            const globalBoundingBox = new BoundingBox(
+                flattenOneLevel(this.screens.map(screen => screen.corners))
+            );
+            this.screens.forEach(screen => {
+                client.sendCutData(
+                    {
+                        LeftUp: screen.actualCorners.LeftUp.copyTranslated(
+                            -globalBoundingBox.topLeft.x,
+                            -globalBoundingBox.topLeft.y
+                        ).toInterface(),
+                        RightUp: screen.actualCorners.RightUp.copyTranslated(
+                            -globalBoundingBox.topLeft.x,
+                            -globalBoundingBox.topLeft.y
+                        ).toInterface(),
+                        RightUnder: screen.actualCorners.RightUnder.copyTranslated(
+                            -globalBoundingBox.topLeft.x,
+                            -globalBoundingBox.topLeft.y
+                        ).toInterface(),
+                        LeftUnder: screen.actualCorners.LeftUnder.copyTranslated(
+                            -globalBoundingBox.topLeft.x,
+                            -globalBoundingBox.topLeft.y
+                        ).toInterface(),
+                    },
+                    globalBoundingBox.width,
+                    globalBoundingBox.height,
+                    screen.slaveID
+                );
+            });
         }
     }
 
@@ -136,7 +166,9 @@ export default class SlaveFlowHandler {
                 this.showOrientationOnSlave();
                 break;
             case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
-                console.log("AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION");
+                console.log(
+                    "AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION"
+                );
                 await this.takePictureOfSlaveOrientation();
                 break;
             case WorkflowStep.REMOVE_ORIENTATION_COLOR:
@@ -309,14 +341,29 @@ export default class SlaveFlowHandler {
                 cameraHeight * scale
             );
         const currScreen = this.screens[this.screens.length - 1];
-        const { angle, ...cornerMapping } = calculateScreenAngle(currScreen, orientationCanvas);
+        const { angle, ...cornerMapping } = calculateScreenAngle(
+            currScreen,
+            orientationCanvas
+        );
         currScreen.angle = angle;
         currScreen.actualCorners = cornerMapping;
         console.log(currScreen.angle);
-        console.log("Actual Left Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUp));
-        console.log("Actual Right Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUp));
-        console.log("Actual Right Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUnder));
-        console.log("Actual Left Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder));
+        console.log(
+            "Actual Left Up maps to: " +
+                currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUp)
+        );
+        console.log(
+            "Actual Right Up maps to: " +
+                currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUp)
+        );
+        console.log(
+            "Actual Right Under maps to: " +
+                currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUnder)
+        );
+        console.log(
+            "Actual Left Under maps to: " +
+                currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder)
+        );
         if (this.automated) {
             await this.nextStep();
         } else {

@@ -17,13 +17,17 @@ import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
-import { loadImage } from "../util/images";
+import {
+    loadImage,
+    scaleAndCutImageToBoundingBoxAspectRatio,
+} from "../util/images";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
+import { createImageCanvasForSlave } from "../util/ImageCutHandler";
 
 const {
     checkIntersection,
@@ -214,34 +218,18 @@ class Client {
         }
         // TODO:  colors are not necessary any more.
         this._socket.emit(MasterEventTypes.ToggleSlaveOrientationColors, {
-            slaveId
+            slaveId,
         });
     };
 
     /**
-     * Uploads an image (canvas) to the server and sends a Socket io event to the client
-     * to display the uploaded image.
+     * Sends request to slave to display image.
      */
-    //Fixme This is no longer supported.
-    public showCanvasImgOnSlave = (
-        slaveId: string,
-        canvas: HTMLCanvasElement
-    ) => {
+    public showImgOnSlave = (slaveId: string, imgUrl: string) => {
         // Create test canvas for test purposes
-        if (!canvas) {
-            canvas = createCanvas(1280, 720);
-            const ctx = canvas.getContext("2d");
-            ctx.fillStyle = "rgb(0, 0, 0)";
-            ctx.fillRect(0, 0, 1280, 720);
-            ctx.fillStyle = "rgb(255, 0, 0)";
-            ctx.fillRect(50, 50, 300, 300);
-        }
-        uploadSlaveImgCanvas(slaveId, canvas).then(({ imgPath }) => {
-            console.log(imgPath);
-            this._socket.emit(MasterEventTypes.DisplayImageOnSlave, {
-                imgUrl: `${env.baseUrl}${imgPath}`,
-                slaveId,
-            });
+        this._socket.emit(MasterEventTypes.DisplayImageOnSlave, {
+            slaveId,
+            imgUrl,
         });
     };
 
@@ -314,12 +302,27 @@ class Client {
     /**
      * Displays the given image on the slave.
      */
-    //Fixme Is dit nog in gebruik?
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
         window.scrollTo(0, window.innerHeight);
         $("#main-flow-slave").hide();
-        $("#image-slave").attr("src", data.imgUrl + "?" + Math.random());
+        loadImage(data.imgUrl + "?" + Math.random()).then(img => {
+            const canvas = createCanvas(
+                this.clientStorage.boundingBoxWidth,
+                this.clientStorage.boundingBoxHeight
+            );
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            const cutCanvas = scaleAndCutImageToBoundingBoxAspectRatio(
+                canvas,
+                this.clientStorage.boundingBoxWidth,
+                this.clientStorage.boundingBoxHeight,
+                0,
+                0
+            );
+            $("#image-slave").css("transform", this.clientStorage.matrix3d);
+            $("#image-slave").attr("src", cutCanvas.toDataURL());
+        });
     };
 
     /**
@@ -1663,6 +1666,7 @@ class Client {
         slaveID: string
     ) => {
         this._socket.emit(MasterEventTypes.sendCutData, {
+            slaveID,
             srcPoints,
             boundingBoxWidth,
             boundingBoxHeight,
