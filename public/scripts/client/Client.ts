@@ -359,49 +359,25 @@ class Client {
                 this.clientStorage.boundingBoxWidth,
                 this.clientStorage.boundingBoxHeight
             );
-            ctx.fillStyle = "red";
-            ctx.arc(
-                this.clientStorage.srcPoints.LeftUp.x,
-                this.clientStorage.srcPoints.LeftUp.y,
-                7.5,
-                0,
-                Math.PI
-            );
-            ctx.fill();
-            ctx.arc(
-                this.clientStorage.srcPoints.RightUp.x,
-                this.clientStorage.srcPoints.RightUp.y,
-                7.5,
-                0,
-                Math.PI
-            );
-            ctx.fill();
-            ctx.arc(
-                this.clientStorage.srcPoints.RightUnder.x,
-                this.clientStorage.srcPoints.RightUnder.y,
-                7.5,
-                0,
-                Math.PI
-            );
-            ctx.fill();
-            ctx.arc(
-                this.clientStorage.srcPoints.LeftUnder.x,
-                this.clientStorage.srcPoints.LeftUnder.y,
-                7.5,
-                0,
-                Math.PI
-            );
-            ctx.fill();
-            console.log(
-                "Bounding box dimensions for image - width: " +
-                    this.clientStorage.boundingBoxWidth +
-                    "; height: " +
-                    this.clientStorage.boundingBoxHeight
-            );
-            console.log(
-                "Source points for image: " +
-                    JSON.stringify(this.clientStorage.srcPoints)
-            );
+            const srcPoints = this.clientStorage.srcPoints;
+            canvas.style.clipPath =
+                "polygon(" +
+                srcPoints.LeftUp.x +
+                "px " +
+                srcPoints.LeftUp.y +
+                "px, " +
+                srcPoints.RightUp.x +
+                "px " +
+                srcPoints.RightUp.y +
+                "px, " +
+                srcPoints.RightUnder.x +
+                "px " +
+                srcPoints.RightUnder.y +
+                "px, " +
+                srcPoints.LeftUnder.x +
+                "px " +
+                srcPoints.LeftUnder.y +
+                "px, ";
             canvas.style.transform = this.clientStorage.matrix3d;
             canvas.style.transformOrigin = "0 0";
             document.getElementsByTagName("body")[0].appendChild(canvas);
