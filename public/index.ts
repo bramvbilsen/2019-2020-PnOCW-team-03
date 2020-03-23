@@ -84,7 +84,7 @@ export function resetMaster() {
         $("#player-overlay").height(player.height());
 
         startButton.show();
-        startAutomatedButton.show();
+        startAutomatedButton.hide();
 
         startAutomatedButton.off().on("click", () => {
             slaveFlowHandler.automated = true;
