@@ -343,25 +343,54 @@ class Client {
         window.scrollTo(0, window.innerHeight);
         $("#main-flow-slave").hide();
         loadImage(data.imgUrl + "?" + Math.random()).then(img => {
-            const canvas = createCanvas(
-                this.clientStorage.boundingBoxWidth,
-                this.clientStorage.boundingBoxHeight
-            );
+            const canvas = createCanvas(img.width, img.height);
             const ctx = canvas.getContext("2d");
-            ctx.drawImage(
-                img,
+            ctx.drawImage(img, 0, 0);
+            ctx.fillStyle = "red";
+            ctx.arc(
+                this.clientStorage.srcPoints.LeftUp.x,
+                this.clientStorage.srcPoints.LeftUp.y,
+                100,
                 0,
-                0,
-                img.width,
-                img.height,
-                0,
-                0,
-                this.clientStorage.boundingBoxWidth,
-                this.clientStorage.boundingBoxHeight
+                Math.PI
             );
-            $("#image-slave").css("transform", this.clientStorage.matrix3d);
-            $("#image-slave").css("transform-origin", "0 0");
+            ctx.arc(
+                this.clientStorage.srcPoints.RightUp.x,
+                this.clientStorage.srcPoints.RightUp.y,
+                100,
+                0,
+                Math.PI
+            );
+            ctx.arc(
+                this.clientStorage.srcPoints.RightUnder.x,
+                this.clientStorage.srcPoints.RightUnder.y,
+                100,
+                0,
+                Math.PI
+            );
+            ctx.arc(
+                this.clientStorage.srcPoints.LeftUnder.x,
+                this.clientStorage.srcPoints.LeftUnder.y,
+                100,
+                0,
+                Math.PI
+            );
             $("#image-slave").attr("src", canvas.toDataURL());
+
+            // ctx.drawImage(
+            //     img,
+            //     0,
+            //     0,
+            //     img.width,
+            //     img.height,
+            //     0,
+            //     0,
+            //     this.clientStorage.boundingBoxWidth,
+            //     this.clientStorage.boundingBoxHeight
+            // );
+            // $("#image-slave").css("transform", this.clientStorage.matrix3d);
+            // $("#image-slave").css("transform-origin", "0 0");
+            // $("#image-slave").attr("src", canvas.toDataURL());
         });
     };
 

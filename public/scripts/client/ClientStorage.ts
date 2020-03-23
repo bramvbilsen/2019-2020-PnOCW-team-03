@@ -14,6 +14,7 @@ export default class ClientStorage {
     boundingBoxWidth: number;
     boundingBoxHeight: number;
     matrix3d: string;
+    srcPoints: SrcPoints;
 
     constructor() {}
 
@@ -31,6 +32,7 @@ export default class ClientStorage {
         this.boundingBoxHeight = boundingBoxHeight;
         this.boundingBoxWidth = boundingBoxWidth;
         this.matrix3d = this.perspectiveMatrix(begin);
+        this.srcPoints = begin;
     }
 
     /**
