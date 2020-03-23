@@ -281,22 +281,47 @@ class Client {
             "background-color",
             `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
         );
-        this.notifyMasterThatPictureCanBeTaken();
+        console.log(Number(document.getElementById("pink-color").style.zIndex));
+
+        if (Number(document.getElementById("pink-color").style.zIndex) == 1) {
+            this.hideAllSlaveLayers();
+            console.log(document.getElementById("pink-color").style.zIndex);
+            this.moveToForeground("default-slave-state");
+            console.log(document.getElementById("pink-color").style.zIndex);
+        } else {
+            this.hideAllSlaveLayers();
+            console.log(document.getElementById("pink-color").style.zIndex);
+            this.moveToForeground("pink-color");
+            console.log(document.getElementById("pink-color").style.zIndex);
+            this.notifyMasterThatPictureCanBeTaken();
+        }
     };
 
     /**
      * Makes the orientation colours (in)visible.
      */
     private toggleOrientationColors = (): void => {
-        console.log("Toggling");
-        const orientationElem: JQuery<HTMLDivElement> = $(
-            "#orientation-colors"
-        );
-        if (orientationElem.attr("display") !== "none") {
-            this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
-        }
-        orientationElem.toggle();
-        this.notifyMasterThatPictureCanBeTaken();
+        //const orientationElem: JQuery<HTMLDivElement> = $(
+        //    "#orientation-colors"
+        //);
+        //if (orientationElem.attr("display") !== "none") {
+        //    this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
+        //}
+        //orientationElem.toggle();
+        console.log(Number(document.getElementById("orientation-colors").style.zIndex));
+
+        if (Number(document.getElementById("orientation-colors").style.zIndex) == 1) {
+            this.hideAllSlaveLayers();
+            console.log(document.getElementById("orientation-colors").style.zIndex);
+            this.moveToForeground("default-slave-state");
+            console.log(document.getElementById("orientation-colors").style.zIndex);
+        } else {
+            this.hideAllSlaveLayers();
+            console.log(document.getElementById("orientation-colors").style.zIndex);
+            this.moveToForeground("orientation-colors");
+            console.log(document.getElementById("orientation-colors").style.zIndex);
+            this.notifyMasterThatPictureCanBeTaken();
+        } 
     };
 
     /**
@@ -324,6 +349,16 @@ class Client {
             $("#image-slave").attr("src", cutCanvas.toDataURL());
         });
     };
+
+    public hideAllSlaveLayers() {
+        $("#default-slave-state").css("z-index", -2);
+        $("#pink-color").css("z-index", -2);
+        $("#orientation-colors").css("z-index", -2);
+        $("#image-container-slave").css("z-index", -2);
+    }
+    public moveToForeground(elemName: string) {
+        $("#" + elemName).css("z-index", 1);
+    }
 
     /**
      * Emit to each slave the starttime of the counter (10 seconds ahead from now).
@@ -436,6 +471,11 @@ class Client {
      *   /                                              \
      *  | Beginning of triangulation and animation code. |
      *   \ ____________________________________________ /
+     */
+
+    /**
+     * The code below is duplicated in Animation.ts
+     * Fixme Client.ts should incorporate the methods from Animation.ts
      */
 
     /**

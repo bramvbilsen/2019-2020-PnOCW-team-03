@@ -1,6 +1,9 @@
 #master {
     width: 100vw;
     height: 100vh;
+    height: 100vh;
+	position: absolute;
+	z-index: 2;
 }
 
 #welcome-master-content {
@@ -48,6 +51,11 @@
     align-items: center;
     font-weight: 200;
     font-size: 35px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+	background-color: rgb(76, 175, 80);
 }
 
 #slave-flow-buttons {
@@ -78,22 +86,39 @@ img {
 
 #image-container-slave {
     width: 100vw;
-    height: 100vh;
+	height: 100vh;
+	left: 0px;
+	top: 0px;
+	position: absolute;
+	z-index: -2;
 }
 
 #image-slave {
-	height: 110vh;
-	width: 110vw;
+	height: 100vh;
+	width: 100vw;
 }
 
 #orientation-colors {
-    display: none;
     width: 100vw;
     height: 100vh;
     background-color: transparent;
     position: absolute;
     left: 0px;
     top: 0px;
+    z-index: -2;
+}
+
+#pink-color {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(255, 70, 180);
+    position: absolute;
+    left: 0px;
+	top: 0px;
+	z-index: -2;
+	align-items: center;
+    font-weight: 200;
+	font-size: 35px;
 }
 
 .outlined-button-white {
