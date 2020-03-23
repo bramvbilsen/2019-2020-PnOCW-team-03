@@ -388,6 +388,16 @@ class Client {
                 0,
                 Math.PI
             );
+            console.log(
+                "Bounding box dimensions for image - width: " +
+                    this.clientStorage.boundingBoxWidth +
+                    "; height: " +
+                    this.clientStorage.boundingBoxHeight
+            );
+            console.log(
+                "Source points for image: " +
+                    JSON.stringify(this.clientStorage.srcPoints)
+            );
             // $("#image-slave").css("transform", this.clientStorage.matrix3d);
             // $("#image-slave").css("transform-origin", "0 0");
             $("#image-slave").attr("src", canvas.toDataURL());
