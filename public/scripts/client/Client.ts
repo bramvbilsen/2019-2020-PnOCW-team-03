@@ -345,7 +345,17 @@ class Client {
         loadImage(data.imgUrl + "?" + Math.random()).then(img => {
             const canvas = createCanvas(img.width, img.height);
             const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                img.width,
+                img.height,
+                0,
+                0,
+                this.clientStorage.boundingBoxWidth,
+                this.clientStorage.boundingBoxHeight
+            );
             ctx.fillStyle = "red";
             ctx.arc(
                 this.clientStorage.srcPoints.LeftUp.x,
@@ -375,19 +385,6 @@ class Client {
                 0,
                 Math.PI
             );
-            $("#image-slave").attr("src", canvas.toDataURL());
-
-            // ctx.drawImage(
-            //     img,
-            //     0,
-            //     0,
-            //     img.width,
-            //     img.height,
-            //     0,
-            //     0,
-            //     this.clientStorage.boundingBoxWidth,
-            //     this.clientStorage.boundingBoxHeight
-            // );
             // $("#image-slave").css("transform", this.clientStorage.matrix3d);
             // $("#image-slave").css("transform-origin", "0 0");
             // $("#image-slave").attr("src", canvas.toDataURL());
