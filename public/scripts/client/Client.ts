@@ -363,28 +363,28 @@ class Client {
             ctx.arc(
                 this.clientStorage.srcPoints.LeftUp.x,
                 this.clientStorage.srcPoints.LeftUp.y,
-                100,
+                7.5,
                 0,
                 Math.PI
             );
             ctx.arc(
                 this.clientStorage.srcPoints.RightUp.x,
                 this.clientStorage.srcPoints.RightUp.y,
-                100,
+                7.5,
                 0,
                 Math.PI
             );
             ctx.arc(
                 this.clientStorage.srcPoints.RightUnder.x,
                 this.clientStorage.srcPoints.RightUnder.y,
-                100,
+                7.5,
                 0,
                 Math.PI
             );
             ctx.arc(
                 this.clientStorage.srcPoints.LeftUnder.x,
                 this.clientStorage.srcPoints.LeftUnder.y,
-                100,
+                7.5,
                 0,
                 Math.PI
             );
