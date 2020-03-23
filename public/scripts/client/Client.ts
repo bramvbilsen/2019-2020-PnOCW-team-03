@@ -360,7 +360,7 @@ class Client {
                 this.clientStorage.boundingBoxHeight
             );
             $("#image-slave").css("transform", this.clientStorage.matrix3d);
-            $("#image-slave").css("transform", "0 0");
+            $("#image-slave").css("transform-origin", "0 0");
             $("#image-slave").attr("src", canvas.toDataURL());
         });
     };
