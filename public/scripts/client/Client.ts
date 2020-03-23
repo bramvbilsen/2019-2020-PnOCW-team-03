@@ -308,20 +308,34 @@ class Client {
         //    this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
         //}
         //orientationElem.toggle();
-        console.log(Number(document.getElementById("orientation-colors").style.zIndex));
+        console.log(
+            Number(document.getElementById("orientation-colors").style.zIndex)
+        );
 
-        if (Number(document.getElementById("orientation-colors").style.zIndex) == 1) {
+        if (
+            Number(
+                document.getElementById("orientation-colors").style.zIndex
+            ) == 1
+        ) {
             this.hideAllSlaveLayers();
-            console.log(document.getElementById("orientation-colors").style.zIndex);
+            console.log(
+                document.getElementById("orientation-colors").style.zIndex
+            );
             this.moveToForeground("default-slave-state");
-            console.log(document.getElementById("orientation-colors").style.zIndex);
+            console.log(
+                document.getElementById("orientation-colors").style.zIndex
+            );
         } else {
             this.hideAllSlaveLayers();
-            console.log(document.getElementById("orientation-colors").style.zIndex);
+            console.log(
+                document.getElementById("orientation-colors").style.zIndex
+            );
             this.moveToForeground("orientation-colors");
-            console.log(document.getElementById("orientation-colors").style.zIndex);
+            console.log(
+                document.getElementById("orientation-colors").style.zIndex
+            );
             this.notifyMasterThatPictureCanBeTaken();
-        } 
+        }
     };
 
     /**
@@ -345,7 +359,8 @@ class Client {
                 0,
                 0
             );
-            $("#image-slave").css("transform", this.clientStorage.matrix3d);
+            // $("#image-slave").css("transform", this.clientStorage.matrix3d);
+            // $("#image-slave").css("transform", "0 0");
             $("#image-slave").attr("src", cutCanvas.toDataURL());
         });
     };
