@@ -3,7 +3,6 @@ const {performance} = require('perf_hooks');
 var results= [];
 runAllTests();
 
-
 function runAllTests() {
 	labelingTest1(cornerLabeling, [0,0], [2,2], [2,0], [0,2]);
 	labelingTest2(cornerLabeling, [80,120], [120,80], [120, 120], [80,80]);
@@ -24,8 +23,9 @@ function runAllTests() {
 	angleSpeedTest(getAngle, [1,1.12], [19.3,19], [1.09,20], [18,2.02]);
 }
 
-
-
+/**
+ * Start of tests:
+ */
 
 function labelingTest1(fct, p1, p2, p3, p4){
 		var expectedResult = [p1, p3, p2, p4];
@@ -71,9 +71,6 @@ function angleSpeedTest(fct, p1,  p2, p3, p4) {
         var result = time;
 		console.log("The algorithm to calculate the Angle took ", result, "milliseconds")
 }
-
-
-
 
 function cornerLabeling(p1, p2, p3, p4) {
 	var corners = [p1, p2, p3, p4]

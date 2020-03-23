@@ -11,7 +11,6 @@ function cornerLabeling(p1, p2, p3, p4) {
 	var rightUnderIndex, leftUpperIndex;
 	var rightUpperCoordinate, leftUnderCoordinate, leftUpperCoordinate, rightUnderCoordinate;
 	
-	
 	sums[0] = p1[0] + p1[1];
 	sums[1] = p2[0] + p2[1];
 	sums[2] = p3[0] + p3[1];
