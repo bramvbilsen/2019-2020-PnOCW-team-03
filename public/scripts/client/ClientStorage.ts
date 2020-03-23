@@ -1,7 +1,8 @@
-import Point from "../image_processing/screen_detection/Point";
-
 const linSystem = require("linear-equation-system");
 
+/**
+ * Handles the organization of the coordinates of the four corner points.
+ */
 interface SrcPoints {
     LeftUp: { x: number; y: number };
     RightUp: { x: number; y: number };
@@ -16,6 +17,12 @@ export default class ClientStorage {
 
     constructor() {}
 
+    /**
+     * Updates this ClientStorage instance with the new, given data.
+     * @param boundingBoxWidth The width of the bounding box.
+     * @param boundingBoxHeight The height of the bounding box.
+     * @param begin A SrcPoints instantiation holding the four corner points.
+     */
     newData(
         boundingBoxWidth: number,
         boundingBoxHeight: number,
@@ -26,6 +33,10 @@ export default class ClientStorage {
         this.matrix3d = this.perspectiveMatrix(begin);
     }
 
+    /**
+     * Calculates and returns the perspective matrix for the given data.
+     * @param begin A SrcPoints instantiation holding the four corner points.
+     */
     perspectiveMatrix(begin: SrcPoints) {
         let x0 = begin.LeftUp.x;
         let y0 = begin.LeftUp.y;
