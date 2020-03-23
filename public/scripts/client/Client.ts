@@ -388,6 +388,7 @@ class Client {
                 0,
                 Math.PI
             );
+            ctx.fill();
             console.log(
                 "Bounding box dimensions for image - width: " +
                     this.clientStorage.boundingBoxWidth +
