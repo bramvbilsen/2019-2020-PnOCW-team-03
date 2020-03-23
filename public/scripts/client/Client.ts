@@ -367,6 +367,7 @@ class Client {
                 0,
                 Math.PI
             );
+            ctx.fill();
             ctx.arc(
                 this.clientStorage.srcPoints.RightUp.x,
                 this.clientStorage.srcPoints.RightUp.y,
@@ -374,6 +375,7 @@ class Client {
                 0,
                 Math.PI
             );
+            ctx.fill();
             ctx.arc(
                 this.clientStorage.srcPoints.RightUnder.x,
                 this.clientStorage.srcPoints.RightUnder.y,
@@ -381,6 +383,7 @@ class Client {
                 0,
                 Math.PI
             );
+            ctx.fill();
             ctx.arc(
                 this.clientStorage.srcPoints.LeftUnder.x,
                 this.clientStorage.srcPoints.LeftUnder.y,
@@ -399,9 +402,12 @@ class Client {
                 "Source points for image: " +
                     JSON.stringify(this.clientStorage.srcPoints)
             );
+            canvas.style.transform = this.clientStorage.matrix3d;
+            canvas.style.transformOrigin = "0 0";
+            document.getElementsByTagName("body")[0].appendChild(canvas);
             // $("#image-slave").css("transform", this.clientStorage.matrix3d);
             // $("#image-slave").css("transform-origin", "0 0");
-            $("#image-slave").attr("src", canvas.toDataURL());
+            // $("#image-slave").attr("src", canvas.toDataURL());
         });
     };
 
