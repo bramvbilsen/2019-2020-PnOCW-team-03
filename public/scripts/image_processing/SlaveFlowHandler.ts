@@ -2,7 +2,6 @@ import { client, resetMaster } from "../../index";
 import findScreen, { createCanvas } from "./screen_detection/screen_detection";
 import SlaveScreen from "../util/SlaveScreen";
 import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
-import getOrientationAngle from "./orientation_detection/orientation_detection";
 import calculateScreenAngle from "./orientation_detection/orientation_detection_alternative";
 import {
     PREFERRED_CANVAS_HEIGHT,
@@ -10,10 +9,11 @@ import {
     DEFAULT_NON_COLORED_SLAVE_COLOR,
 } from "../CONSTANTS";
 import { createCameraOverlayWithPoints } from "../util/canvas";
-import Line from "./screen_detection/Line";
-import Point from "./screen_detection/Point";
-import { IMasterVsActualPoint, CornerLabels } from "../types/Points";
+import { CornerLabels } from "../types/Points";
 
+/**
+ * An enumeration of all the different steps of the automatic screen detection.
+ */
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
     DISPLAY_SCREEN_COLOR = "display screen color",
@@ -26,6 +26,10 @@ export enum WorkflowStep {
     END = "end",
 }
 
+/**
+ * Wait for the given amount of time.
+ * @param dt This is the deltaTime between the start and end of the wait.
+ */
 export async function wait(dt: number) {
     return new Promise((resolve, reject) => {
         setTimeout(() => resolve(), dt);
@@ -56,6 +60,9 @@ export default class SlaveFlowHandler {
         this.step = WorkflowStep.BLANCO_IMAGE;
     }
 
+    /**
+     * Resets the colours on all slaves and resets the master.
+     */
     public reset() {
         const color = { ...client.color };
         client.color = { r: 76, g: 175, b: 80, a: 255 };
@@ -81,6 +88,10 @@ export default class SlaveFlowHandler {
         window.currentStep = 0;
     }
 
+    /**
+     * Ends the automatic detection for this slave.
+     * Either goes on to the next slave in the queue or finishes altogether.
+     */
     private endSlaveCycle() {
         this.prevSlaveID = this.currSlaveID;
         if (this.slaveIDs.length !== 0) {
@@ -98,6 +109,9 @@ export default class SlaveFlowHandler {
         }
     }
 
+    /**
+     * Initialises automatic slave screen detection.
+     */
     private initialize() {
         const startButton: JQuery<HTMLButtonElement> = $("#start");
         startButton.css("display", "none");
@@ -107,7 +121,9 @@ export default class SlaveFlowHandler {
     }
 
     /**
-     * Only for automated flow
+     * Execute the next step of the automated screen detection.
+     * See enumeration of steps.
+     * (Only for automated flow!)
      */
     async nextStep() {
         if (!this.automated) return;
@@ -154,6 +170,9 @@ export default class SlaveFlowHandler {
         }
     }
 
+    /**
+     * Takes the general picture of all screens in their default state.
+     */
     async takeNoColorPicture() {
         this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
         this.initialize();
@@ -188,7 +207,7 @@ export default class SlaveFlowHandler {
     }
 
     /**
-     * First we show the color on the slave.
+     * Show the colour on the next slave.
      */
     showColorOnNextSlave() {
         this.step = WorkflowStep.TAKE_AND_PROCESS_SCREEN;
@@ -197,7 +216,9 @@ export default class SlaveFlowHandler {
     }
 
     /**
-     * Should be called after `showColorOnNextSlave`.
+     * Take a picture of the slave screens.
+     * Assumes that one screen will be coloured.
+     * --> Should be called after `showColorOnNextSlave`.
      */
     async takePictureOfColoredScreen() {
         this.step = WorkflowStep.REMOVE_SCREEN_COLOR;
@@ -276,6 +297,10 @@ export default class SlaveFlowHandler {
         client.toggleOrientationColorsOnSlave(this.currSlaveID);
     }
 
+    /**
+     * Takes a picture of the screens.
+     * Assumes that one screen displays the correct orientation colours.
+     */
     async takePictureOfSlaveOrientation() {
         this.step = WorkflowStep.REMOVE_ORIENTATION_COLOR;
         if (!this.currSlaveScreenFound) {
