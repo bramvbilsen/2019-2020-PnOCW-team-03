@@ -280,6 +280,8 @@ export default class SlaveFlowHandler {
         $("#loading-master-indicator").toggle();
         if (this.automated) {
             await this.nextStep();
+        } else {
+            this.removeScreenColorOnSlave();
         }
     }
 
