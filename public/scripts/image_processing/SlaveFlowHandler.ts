@@ -113,23 +113,29 @@ export default class SlaveFlowHandler {
             );
             this.screens.forEach(screen => {
                 client.sendCutData(
+                    // {
+                    //     LeftUp: screen.actualCorners.LeftUp.copyTranslated(
+                    //         -globalBoundingBox.topLeft.x,
+                    //         -globalBoundingBox.topLeft.y
+                    //     ).toInterface(),
+                    //     RightUp: screen.actualCorners.RightUp.copyTranslated(
+                    //         -globalBoundingBox.topLeft.x,
+                    //         -globalBoundingBox.topLeft.y
+                    //     ).toInterface(),
+                    //     RightUnder: screen.actualCorners.RightUnder.copyTranslated(
+                    //         -globalBoundingBox.topLeft.x,
+                    //         -globalBoundingBox.topLeft.y
+                    //     ).toInterface(),
+                    //     LeftUnder: screen.actualCorners.LeftUnder.copyTranslated(
+                    //         -globalBoundingBox.topLeft.x,
+                    //         -globalBoundingBox.topLeft.y
+                    //     ).toInterface(),
+                    // },
                     {
-                        LeftUp: screen.actualCorners.LeftUp.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                        RightUp: screen.actualCorners.RightUp.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                        RightUnder: screen.actualCorners.RightUnder.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                        LeftUnder: screen.actualCorners.LeftUnder.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
+                        LeftUp: screen.actualCorners.LeftUp.toInterface(),
+                        RightUp: screen.actualCorners.RightUp.toInterface(),
+                        RightUnder: screen.actualCorners.RightUnder.toInterface(),
+                        LeftUnder: screen.actualCorners.LeftUnder.toInterface(),
                     },
                     globalBoundingBox.width,
                     globalBoundingBox.height,
