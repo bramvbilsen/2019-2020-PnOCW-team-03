@@ -343,7 +343,10 @@ class Client {
         window.scrollTo(0, window.innerHeight);
         $("#main-flow-slave").hide();
         loadImage(data.imgUrl + "?" + Math.random()).then(img => {
-            const canvas = createCanvas(img.width, img.height);
+            const canvas = createCanvas(
+                this.clientStorage.boundingBoxWidth,
+                this.clientStorage.boundingBoxWidth
+            );
             const ctx = canvas.getContext("2d");
             ctx.drawImage(
                 img,
