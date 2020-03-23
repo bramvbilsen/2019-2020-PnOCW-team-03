@@ -4,7 +4,6 @@ import {
     SlaveEventTypes,
     MasterEventTypes,
 } from "../types/SocketIOEvents";
-import { generateRandomColor } from "../util/colors";
 import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
@@ -19,10 +18,9 @@ import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
 import { loadImage } from "../util/images";
-import { lstat } from "fs";
 import Animation from "./Animation";
 import { wait } from "../image_processing/SlaveFlowHandler";
-import { CornerLabels, IActualCorners } from "../types/Points";
+import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
@@ -47,7 +45,8 @@ class Client {
     public bouncingBallImg: HTMLImageElement;
     private currentNb = 11;
     private startAnimationTime: number;
-    private clientSorage: ClientStorage;
+    private clientStorage: ClientStorage;
+
     /**
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
@@ -62,7 +61,7 @@ class Client {
     constructor(args: {
         onConnectionTypeChange: (connectionType: ConnectionType) => void;
     }) {
-        this.clientSorage = new ClientStorage();
+        this.clientStorage = new ClientStorage();
         this.onConnectionTypeChange = args.onConnectionTypeChange;
         this._socket = io.connect(env.baseUrl);
         this._socket.on("connected", () => console.log("Connected!"));
@@ -85,14 +84,6 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.ChangeBackground,
                             this.changeBackground
-                        ),
-                        this._socket.on(
-                            SlaveEventTypes.DisplayArrowUp,
-                            this.displayArrowUp
-                        ),
-                        this._socket.on(
-                            SlaveEventTypes.DisplayArrowRight,
-                            this.displayArrowRight
                         ),
                         this._socket.on(
                             SlaveEventTypes.SetCounterEvent,
@@ -188,29 +179,6 @@ class Client {
     }
 
     /**
-     * Sends a request to the server to change the background colors of the slaves.
-     * This is only permitted if the current `this.type === ConnectionType.MASTER`
-     * 	and will thus not send the server request if this is not the case.
-     */
-    public showColorsOnSlaves = () => {
-        if (this.type === ConnectionType.SLAVE) {
-            console.warn(
-                "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
-            );
-            return;
-        }
-        let slaveColorCoding: { [slaveID: string]: string } = {};
-        this.slaves.forEach(slaveID => {
-            slaveColorCoding[slaveID] = generateRandomColor();
-        });
-        this._socket.emit(
-            MasterEventTypes.ChangeSlaveBackgrounds,
-            slaveColorCoding
-        );
-        return slaveColorCoding;
-    };
-
-    /**
      * Sends a request to the server to change the background color of the slave.
      * This is only permitted if the current `this.type === ConnectionType.MASTER`
      * 	and will thus not send the server request if this is not the case.
@@ -246,48 +214,15 @@ class Client {
         }
         // TODO:  colors are not necessary any more.
         this._socket.emit(MasterEventTypes.ToggleSlaveOrientationColors, {
-            slaveId,
-            leftTop: { r: 0, g: 0, b: 0 },
-            rightTop: { r: 0, g: 0, b: 0 },
-            leftBottom: { r: 0, g: 0, b: 0 },
-            rightBottom: { r: 0, g: 0, b: 0 },
+            slaveId
         });
-    };
-
-    /**
-     * Sends a request commanding all slaves to display an arrow pointing upwards.
-     * This is only permitted if the current `this.type === ConnectionType.MASTER`
-     * 	and will thus not send the server request if this is not the case.
-     */
-    public showArrowsUpOnSlaves = () => {
-        if (this.type === ConnectionType.SLAVE) {
-            console.warn(
-                "MASTER PERMISSION NEEDED TO DISPLAY ARROWS.\nNot executing command!"
-            );
-            return;
-        }
-        this._socket.emit(MasterEventTypes.SendArrowsUp);
-    };
-
-    /**
-     * Sends a request commanding all slaves to display an arrow pointing to the right.
-     * This is only permitted if the current `this.type === ConnectionType.MASTER`
-     * 	and will thus not send the server request if this is not the case.
-     */
-    public showArrowsRightOnSlaves = () => {
-        if (this.type === ConnectionType.SLAVE) {
-            console.warn(
-                "MASTER PERMISSION NEEDED TO DISPLAY ARROWS.\nNot executing command!"
-            );
-            return;
-        }
-        this._socket.emit(MasterEventTypes.SendArrowsRight);
     };
 
     /**
      * Uploads an image (canvas) to the server and sends a Socket io event to the client
      * to display the uploaded image.
      */
+    //Fixme This is no longer supported.
     public showCanvasImgOnSlave = (
         slaveId: string,
         canvas: HTMLCanvasElement
@@ -318,12 +253,19 @@ class Client {
         this._socket.emit(MasterEventTypes.GiveUpMaster, { slaveId });
     }
 
+    /**
+     * Sets the list of given SocketIOClient.Emitter as the new emitters.
+     */
     private setNewSocketIOEmitters = (
         newEmitters: Array<SocketIOClient.Emitter>
     ) => {
         this._socketIOEmitters = newEmitters;
     };
 
+    /**
+     * Removes the current list of emitters.
+     * The list gets reset to an empty array.
+     */
     private removeNewSocketIOEmitters = () => {
         Object.keys(MasterEventTypes).forEach(
             (key: keyof typeof MasterEventTypes) => {
@@ -340,6 +282,9 @@ class Client {
         this._socketIOEmitters = [];
     };
 
+    /**
+     * Changes the actual background to the given color.
+     */
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
@@ -351,12 +296,10 @@ class Client {
         this.notifyMasterThatPictureCanBeTaken();
     };
 
-    private toggleOrientationColors = (data: {
-        leftTop: { r: string; g: string; b: string };
-        rightTop: { r: string; g: string; b: string };
-        leftBottom: { r: string; g: string; b: string };
-        rightBottom: { r: string; g: string; b: string };
-    }): void => {
+    /**
+     * Makes the orientation colours (in)visible.
+     */
+    private toggleOrientationColors = (): void => {
         console.log("Toggling");
         const orientationElem: JQuery<HTMLDivElement> = $(
             "#orientation-colors"
@@ -368,19 +311,10 @@ class Client {
         this.notifyMasterThatPictureCanBeTaken();
     };
 
-    private displayArrowUp = (): void => {
-        //$('#arrowImg').remove('<img id="arrowRight" src="../img/arrowRight.png" />');
-        $("#arrowImg").replaceWith(
-            '<img id="arrowUp" src="../img/arrowUp.png" />'
-        );
-    };
-
-    private displayArrowRight = (): void => {
-        $("#arrowImg").replaceWith(
-            '<img id="arrowRight" src="../img/arrowRight.png" />'
-        );
-    };
-
+    /**
+     * Displays the given image on the slave.
+     */
+    //Fixme Is dit nog in gebruik?
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
         window.scrollTo(0, window.innerHeight);
@@ -407,6 +341,9 @@ class Client {
         }
     };
 
+    /**
+     * Creates a countdown visual?
+     */
     public sketch = (p: p5) => {
         const initCountdown = () => {
             alert("Click on OK to start countdown");
@@ -444,6 +381,9 @@ class Client {
         };
     };
 
+    /**
+     * Starts a countdown event.
+     */
     private startCounterEvent = (msg: { startTime: number }): void => {
         const oldCanvas = document.getElementById("countdownCanvas");
         if (oldCanvas) {
@@ -455,6 +395,9 @@ class Client {
         }, eta_ms);
     };
 
+    /**
+     * Updates the displayed number of slaves on the master.
+     */
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
         $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
@@ -469,6 +412,9 @@ class Client {
         }
     };
 
+    /**
+     * Notifies the master that the slave is ready for a picture.
+     */
     public notifyMasterThatPictureCanBeTaken = () => {
         this._socket.emit(
             SlaveEventTypes.NotifyMasterThatPictureCanBeTaken,
@@ -476,10 +422,22 @@ class Client {
         );
     };
 
+    /**
+     * Notifies the master that a creeper can now be displayed.
+     */
     public notifyMasterThatCreeperCanStart = () => {
         this._socket.emit(SlaveEventTypes.NotifyMasterThatCreeperCanStart, {});
     };
 
+    /**    ____________________________________________
+     *   /                                              \
+     *  | Beginning of triangulation and animation code. |
+     *   \ ____________________________________________ /
+     */
+
+    /**
+     * Calculates the triangulation of the screens.
+     */
     public calculateTriangulation = () => {
         if (this.type === ConnectionType.MASTER) {
             let slaves = slaveFlowHandler.screens;
@@ -1348,6 +1306,10 @@ class Client {
         }
     };
 
+    /**
+     * Animation code
+     * Direct all questions to Maarten Pyck.
+     */
     public animation = (
         endDate: number,
         startPoint: Point,
@@ -1488,7 +1450,7 @@ class Client {
                         notOutOfBound = false;
                     }
                     if (t > 0 || notOutOfBound) {
-                        //circel tekenen
+                        //cirkel tekenen
                         ctx.beginPath();
                         ctx.arc(x, y, 30, 0, 2 * Math.PI);
                         ctx.stroke();
@@ -1506,6 +1468,9 @@ class Client {
         };
     };
 
+    /**
+     * Start animation code
+     */
     public startAnimation() {
         this.triangulation = this.calculateTriangulation();
         this.triangulationShow();
@@ -1518,18 +1483,27 @@ class Client {
         });
     }
 
+    /**
+     * Stop animation code
+     */
     public stopAnimation() {
         if (this.circleAnimation) {
             this.circleAnimation.stop();
         }
     }
 
+    /**
+     * Send nex animation code
+     */
     public nextlinesend = () => {
         if (this.circleAnimation.isAnimating()) {
             this.circleAnimation.sendAnimation();
         }
     };
 
+    /**
+     * Show triangulation code
+     */
     public triangulationShow = () => {
         let slaves = slaveFlowHandler.screens;
         this.triangulation = this.calculateTriangulation();
@@ -1556,6 +1530,9 @@ class Client {
         });
     };
 
+    /**
+     * Show next line code
+     */
     public linesShow = (msg: {
         slaveId: string;
         angles: Array<{ string: string; point: number }>;
@@ -1650,7 +1627,7 @@ class Client {
             ctx.lineTo(angle.x, angle.y);
             ctx.stroke();
         });
-        //anderelijnen tekenen
+        //andere lijnen tekenen
         slaveLines.forEach(line => {
             ctx.beginPath();
             ctx.moveTo(line[0].x, line[0].y);
@@ -1671,6 +1648,9 @@ class Client {
 
     public colortest = () => colortest(0, 0, 255, 240, 100, 50);
 
+    /**
+     * Sends the information about the screen/image distribution to the server.
+     */
     public sendCutData = (
         srcPoints: {
             LeftUp: { x: number; y: number };
@@ -1689,6 +1669,9 @@ class Client {
         });
     };
 
+    /**
+     * Sets the received information about the screen/image distribution in the ClientStorage
+     */
     public receiveCutData = (msg: {
         srcPoints: {
             LeftUp: { x: number; y: number };
@@ -1699,7 +1682,7 @@ class Client {
         boundingBoxWidth: number;
         boundingBoxHeight: number;
     }) => {
-        this.clientSorage.newData(
+        this.clientStorage.newData(
             msg.boundingBoxWidth,
             msg.boundingBoxHeight,
             msg.srcPoints
