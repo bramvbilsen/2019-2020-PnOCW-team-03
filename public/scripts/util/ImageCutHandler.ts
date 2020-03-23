@@ -1,5 +1,4 @@
 import { BoundingBox } from "./BoundingBox";
-import { scaleAndCutImageToBoundingBoxAspectRatio } from "./images";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import SlaveScreen from "./SlaveScreen";
 import { degreesToRadians, rotatePointAroundAnchor } from "./angles";
