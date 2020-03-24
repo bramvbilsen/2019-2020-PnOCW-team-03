@@ -52,10 +52,18 @@ class Client {
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
      */
+    // Pink
+    // public color: IRGBAColor = {
+    //     r: 255,
+    //     g: 70,
+    //     b: 181,
+    //     a: 100,
+    // };
+    // Blue
     public color: IRGBAColor = {
-        r: 255,
-        g: 70,
-        b: 181,
+        r: 0,
+        g: 0,
+        b: 255,
         a: 100,
     };
 

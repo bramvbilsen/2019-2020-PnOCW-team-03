@@ -1,8 +1,6 @@
 import Point from "../../scripts/image_processing/screen_detection/Point";
 import { IRGBAColor } from "../../scripts/types/Color";
-import findScreen, {
-    createCanvas,
-} from "../../scripts/image_processing/screen_detection/screen_detection";
+import { createCanvas } from "../../scripts/image_processing/screen_detection/screen_detection";
 import {
     PREFERRED_CANVAS_WIDTH,
     PREFERRED_CANVAS_HEIGHT,
@@ -36,7 +34,11 @@ export default async function test_runner<T>(
     const startTime = new Date();
     const testCompletion: Array<Promise<void>> = [];
     Object.entries(tests).forEach(([testName, test]) => {
-        if (!testNames || testNames.length === 0 || testNames.includes(testName)) {
+        if (
+            !testNames ||
+            testNames.length === 0 ||
+            testNames.includes(testName)
+        ) {
             testCompletion.push(
                 new Promise((resolve, reject) => {
                     const t0 = new Date();
@@ -110,10 +112,10 @@ export class TestResult {
             this.success
                 ? ""
                 : "<br/>Expected: " +
-                JSON.stringify(this.expected) +
-                "<br/>But got: " +
-                JSON.stringify(this.result)
-            }<br/>  ⏳ Executed in: ${this.dt}ms<br/><br/>`;
+                  JSON.stringify(this.expected) +
+                  "<br/>But got: " +
+                  JSON.stringify(this.result)
+        }<br/>  ⏳ Executed in: ${this.dt}ms<br/><br/>`;
     }
 
     get msg() {
@@ -121,17 +123,17 @@ export class TestResult {
             this.success
                 ? ""
                 : "\nExpected: " +
-                JSON.stringify(this.expected) +
-                "\nBut got: " +
-                JSON.stringify(this.result)
-            }\n  ⏳ Executed in: ${this.dt}ms\n\n`;
+                  JSON.stringify(this.expected) +
+                  "\nBut got: " +
+                  JSON.stringify(this.result)
+        }\n  ⏳ Executed in: ${this.dt}ms\n\n`;
     }
 
     toJsonObject = (): ITestResult => ({
         name: this.name,
         dt: this.dt,
-        success: this.success
-    })
+        success: this.success,
+    });
 
     toString() {
         return JSON.stringify(this.toJsonObject());
@@ -149,7 +151,7 @@ export function createResultMsg<T>(
     } else {
         return `Error ❌: <br/>    Expected: ${expected}<br/>    But got: ${result}${
             extra ? "<br/>" + extra : ""
-            }`;
+        }`;
     }
 }
 

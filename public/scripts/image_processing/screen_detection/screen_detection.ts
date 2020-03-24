@@ -6,13 +6,7 @@ import convexHull from "./hull";
 
 import { IHSLColor, IRGBAColor, IHSLRange } from "../../types/Color";
 
-const similarPinkRange: IHSLRange = {
-    hRange: 50,
-    sRange: 40,
-    lRange: 40,
-};
-
-const randomColorRange: IHSLRange = {
+const colorRange: IHSLRange = {
     hRange: 50,
     sRange: 40,
     lRange: 40,
@@ -136,12 +130,8 @@ export default async function findScreen(
                 coloredScreenPixels
             );
             if (
-                !isSimilarHSLColor(
-                    noScreenColor,
-                    screenColor,
-                    randomColorRange
-                ) &&
-                isSimilarHSLColor(screenColorHSL, screenColor, similarPinkRange)
+                !isSimilarHSLColor(noScreenColor, screenColor, colorRange) &&
+                isSimilarHSLColor(screenColorHSL, screenColor, colorRange)
             ) {
                 const coloredNeighbors = amountOfNeighboringPixelsWithColor(
                     coloredScreenPixels,
@@ -412,7 +402,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x - range, y, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -422,7 +412,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x, y - range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -432,7 +422,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x + range, y, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -442,7 +432,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x, y + range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -453,7 +443,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x - range, y - range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -464,7 +454,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x + range, y - range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -475,7 +465,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x - range, y + range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -486,7 +476,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x + range, y + range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
