@@ -52,12 +52,20 @@ class Client {
      * Color that the user wants to display on the slave.
      * Only applicable for masters.
      */
+    // Pink
     public color: IRGBAColor = {
         r: 255,
         g: 70,
         b: 181,
         a: 100,
     };
+    // Blue
+    // public color: IRGBAColor = {
+    //     r: 0,
+    //     g: 0,
+    //     b: 255,
+    //     a: 100,
+    // };
 
     constructor(args: {
         onConnectionTypeChange: (connectionType: ConnectionType) => void;
@@ -291,6 +299,7 @@ class Client {
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
+
         if (Number(document.getElementById("pink-color").style.zIndex) == 1) {
             this.hideAllSlaveLayers();
             this.moveToForeground("default-slave-state");
@@ -411,21 +420,20 @@ class Client {
      * Creates a countdown visual?
      */
     public sketch = (p: p5) => {
+        let windowWidth = 500;
+        let windowHeight = 800;
+
         const initCountdown = () => {
-            alert("Click on OK to start countdown");
             console.log(this);
             this.currentNb = 11;
             this.startAnimationTime = performance.now();
-            $("#countdown").replaceWith(
-                '<div id="fullScreen"><canvas id="countdownCanvas" width="500" height="800"></canvas></div>'
-            );
         };
 
         p.setup = function() {
             const fps = 30; // TODO: pas aan
             p.frameRate(fps);
-            const canvas = p.createCanvas(500, 800);
-            canvas.id("countdownCanvas");
+            const canvas = p.createCanvas(windowWidth, windowHeight);
+            canvas.id("fullScreen");
 
             initCountdown();
         };
@@ -434,16 +442,25 @@ class Client {
             p.clear();
             let elapsedTime = performance.now() - this.startAnimationTime;
             this.currentNb = Math.floor(10 - elapsedTime / 1000);
-            if (this.currentNb <= 0) p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+            if (this.currentNb <= 0) {
+                p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+                $("#fullScreen").remove();
+            }
             drawNb();
         };
 
         const drawNb = () => {
             console.log("CountDown: " + this.currentNb);
-            // p.stroke(0, 0, 0, 0);  // TODO
+            // p.stroke(0, 0, 0, 0); // TODO
             p.fill(50);
             p.textSize(50);
-            p.text(this.currentNb.toString(), 10, 10, 70, 80);
+            p.text(
+                this.currentNb.toString(),
+                Math.floor(windowWidth / 2),
+                Math.floor(windowHeight / 2),
+                70,
+                80
+            );
         };
     };
 
@@ -451,10 +468,12 @@ class Client {
      * Starts a countdown event.
      */
     private startCounterEvent = (msg: { startTime: number }): void => {
-        const oldCanvas = document.getElementById("countdownCanvas");
-        if (oldCanvas) {
-            oldCanvas.remove();
-        }
+        // Destroy the counter div
+        // console.log("Destroy");
+        // const oldCanvas = document.getElementById("countdownCanvas");
+        // if (oldCanvas) {
+        //     oldCanvas.remove();
+        // }
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
             new p5(this.sketch);
@@ -1287,7 +1306,9 @@ class Client {
         console.log("start= " + new Date(startTime));
         console.log("duration= " + msg.duration);
         setTimeout(() => {
+
             const enddate = new Date(startTime + msg.duration);
+            //new p5(this.p5Animation);
             this.animation(
                 enddate.getTime(),
                 startPoint,
@@ -1298,9 +1319,10 @@ class Client {
                 last,
                 nextDuration,
                 directionxNext,
-                directionyNext
+                directionyNext,
             );
         }, eta_ms);
+
 
         //verhoudingen naar juiste punten omzetten
         function ratioToPointsAngle(
@@ -1379,6 +1401,166 @@ class Client {
         }
     };
 
+    public p5Animation = (
+        endDate: number,
+        startPoint: Point,
+        directionx: number, //per milliseconde
+        directiony: number,
+        slaveAngles: Array<Point>,
+        slaveLines: Array<Point[]>,
+        last: boolean,
+        nextDuration: number,
+        directionxNext: number,
+        directionyNext: number
+    ) => {
+        window.scrollTo(0, window.innerHeight);
+        console.log("eindtijd = " + new Date(endDate));
+        console.log("dx =" + directionx);
+        console.log("dy =" + directiony);
+        let x: number = startPoint.x;
+        let y: number = startPoint.y;
+        var timer = setInterval(function() {
+            const canvas = createCanvas(window.innerWidth, window.innerHeight);
+            const ctx = canvas.getContext("2d");
+            const now = new Date().getTime();
+            const t = endDate - now;
+            ctx.strokeStyle = "rgb(0,0,255)";
+            ctx.fillStyle = "rgb(0,0,255)";
+            //lijnen tekenen met middelpunten
+            slaveAngles.forEach(angle => {
+                ctx.beginPath();
+                ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
+                ctx.lineTo(angle.x, angle.y);
+                ctx.stroke();
+            });
+            //anderelijnen tekenen
+            slaveLines.forEach(line => {
+                ctx.beginPath();
+                ctx.moveTo(line[0].x, line[0].y);
+                ctx.lineTo(line[1].x, line[1].y);
+                ctx.stroke();
+            });
+
+            ctx.fillText(t.toString(), 20, 20);
+
+            //ster in het midden tekenen
+            ctx.font = "50px Arial";
+            ctx.fillText(
+                "*",
+                window.innerWidth / 2 - 10,
+                window.innerHeight / 2 + 25
+            );
+            let notOutOfBound = true;
+            if (
+                x < 0 ||
+                x > window.innerWidth ||
+                y < 0 ||
+                y > window.innerHeight
+            ) {
+                notOutOfBound = false;
+            }
+            if (last) {
+                //voor last moet je niet kijken naar outofbound
+                notOutOfBound = false;
+            }
+            if (t > 0 || notOutOfBound) {
+                //circel tekenen
+                ctx.beginPath();
+                ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
+                //ctx.drawImage(self.steveImg, x, y, 50, 50);
+                x += directionx;
+                y += directiony;
+                $("#image-slave").attr("src", canvas.toDataURL());
+            } else {
+                if (last) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                }
+                $("#image-slave").attr("src", canvas.toDataURL());
+                clearinterval();
+            }
+        }, 80);
+        const clearinterval = () => {
+            console.log("last= " + last);
+            console.log("hey");
+            clearInterval(timer);
+            console.log("emit");
+            if (last) {
+                this._socket.emit(SlaveEventTypes.animationFinished, {});
+                x = window.innerWidth / 2;
+                y = window.innerHeight / 2;
+                endDate += nextDuration;
+                var timer2 = setInterval(function() {
+                    const canvas = createCanvas(
+                        window.innerWidth,
+                        window.innerHeight
+                    );
+                    const ctx = canvas.getContext("2d");
+                    const now = new Date().getTime();
+                    const t = endDate - now;
+                    ctx.strokeStyle = "rgb(0,0,255)";
+                    ctx.fillStyle = "rgb(0,0,255)";
+                    //lijnen tekenen met middelpunten
+                    slaveAngles.forEach(angle => {
+                        ctx.beginPath();
+                        ctx.moveTo(
+                            window.innerWidth / 2,
+                            window.innerHeight / 2
+                        );
+                        ctx.lineTo(angle.x, angle.y);
+                        ctx.stroke();
+                    });
+                    //anderelijnen tekenen
+                    slaveLines.forEach(line => {
+                        ctx.beginPath();
+                        ctx.moveTo(line[0].x, line[0].y);
+                        ctx.lineTo(line[1].x, line[1].y);
+                        ctx.stroke();
+                    });
+
+                    ctx.fillText(t.toString(), 20, 20);
+
+                    //ster in het midden tekenen
+                    ctx.font = "50px Arial";
+                    ctx.fillText(
+                        "*",
+                        window.innerWidth / 2 - 10,
+                        window.innerHeight / 2 + 25
+                    );
+                    let notOutOfBound = true;
+                    if (
+                        x < 0 ||
+                        x > window.innerWidth ||
+                        y < 0 ||
+                        y > window.innerHeight
+                    ) {
+                        notOutOfBound = false;
+                    }
+                    if (t > 0 || notOutOfBound) {
+                        //cirkel tekenen
+                        ctx.beginPath();
+                        ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                        ctx.stroke();
+                        ctx.fill();
+                        //ctx.drawImage(self.steveImg, x, y, 50, 50);
+                        x += directionxNext;
+                        y += directionyNext;
+                        $("#image-slave").attr("src", canvas.toDataURL());
+                    } else {
+                        $("#image-slave").attr("src", canvas.toDataURL());
+                        clearInterval(timer2);
+                    }
+                }, 80);
+            }
+        };
+    };
+
+
+
     /**
      * Animation code
      * Direct all questions to Maarten Pyck.
@@ -1403,6 +1585,14 @@ class Client {
         let y: number = startPoint.y;
         var timer = setInterval(function() {
             const canvas = createCanvas(window.innerWidth, window.innerHeight);
+
+            const sketch = (p: p5) => {
+                //Hier in het drawen. Check hier Adam
+            }
+
+            new p5(sketch);
+
+
             const ctx = canvas.getContext("2d");
             const now = new Date().getTime();
             const t = endDate - now;
