@@ -3,9 +3,6 @@ import Point from "../../scripts/image_processing/screen_detection/Point";
 import test_runner, { numberCompare, TestResult, Tests } from "./helpers";
 import { rotatePointAroundAnchor } from "../../scripts/util/angles";
 import { getCentroidOf } from "../../scripts/util/shapes";
-import { Orientation } from "../../scripts/image_processing/orientation_detection/orientations";
-import { labelCorners } from "../../scripts/image_processing/orientation_detection/orientation_detection_alternative";
-import Line from "../../scripts/image_processing/screen_detection/Line";
 
 export default function run_tests(
     onNewResult: (testResult: TestResult) => void,
@@ -44,7 +41,6 @@ const tests: Tests<number> = {
         return { expected: 0, result: angle };
     },
     "90deg rotation": async function () {
-
         const nonRotatedPoints = [
             new Point(500, 200),
             new Point(800, 200),
@@ -56,7 +52,6 @@ const tests: Tests<number> = {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 90);
         });
 
-        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
         const angle = screen.angle;
 
@@ -74,7 +69,6 @@ const tests: Tests<number> = {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 45);
         });
 
-        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
         const angle = screen.angle;
 
@@ -91,8 +85,6 @@ const tests: Tests<number> = {
             return rotatePointAroundAnchor(point, getCentroidOf(nonRotatedPoints), 135);
         });
 
-
-        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const screen = new SlaveScreen(corners, "1");
         const angle = screen.angle;
 
@@ -110,7 +102,6 @@ const tests: Tests<number> = {
         });
 
         const screen = new SlaveScreen(corners, "1");
-        let labeled = labelCorners(corners[0], corners[1], corners[2], corners[3]);
         const angle = screen.angle;
 
         return { expected: 179, result: angle };

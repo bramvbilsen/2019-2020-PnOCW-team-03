@@ -8,13 +8,18 @@ export enum CornerLabels {
 }
 
 export interface IActualCorners {
-    LeftUp: Point
-    RightUp: Point
-    LeftUnder: Point
-    RightUnder: Point
+    LeftUp: Point;
+    RightUp: Point;
+    LeftUnder: Point;
+    RightUnder: Point;
 }
 
 export interface IMasterVsActualPoint {
-    master: Point,
-    actual: Point
-};
+    master: Point;
+    actual: Point;
+}
+
+export interface IPoint {
+    x: number;
+    y: number;
+}

@@ -6,6 +6,11 @@ import { slaveFlowHandler } from "../../index";
 import { MasterEventTypes } from "../types/SocketIOEvents";
 import { CornerLabels } from "../types/Points";
 
+/**
+ * The code in this file is largely the same as the code in Client.ts
+ * Fixme Remove duplicate code.
+ */
+
 export default class Animation {
     private line: Line;
     private point: Point;
