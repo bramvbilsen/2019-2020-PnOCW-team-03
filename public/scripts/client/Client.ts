@@ -405,21 +405,20 @@ class Client {
     };
 
     public sketch = (p: p5) => {
+        let windowWidth = 500;
+        let windowHeight = 800;
+
         const initCountdown = () => {
-            alert("Click on OK to start countdown");
             console.log(this);
             this.currentNb = 11;
             this.startAnimationTime = performance.now();
-            $("#countdown").replaceWith(
-                '<div id="fullScreen"><canvas id="countdownCanvas" width="500" height="800"></canvas></div>'
-            );
         };
 
         p.setup = function() {
             const fps = 30; // TODO: pas aan
             p.frameRate(fps);
-            const canvas = p.createCanvas(500, 800);
-            canvas.id("countdownCanvas");
+            const canvas = p.createCanvas(windowWidth, windowHeight);
+            canvas.id("fullScreen");
 
             initCountdown();
         };
@@ -428,24 +427,35 @@ class Client {
             p.clear();
             let elapsedTime = performance.now() - this.startAnimationTime;
             this.currentNb = Math.floor(10 - elapsedTime / 1000);
-            if (this.currentNb <= 0) p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+            if (this.currentNb <= 0) {
+                p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+                $("#fullScreen").remove();
+            }
             drawNb();
         };
 
         const drawNb = () => {
             console.log("CountDown: " + this.currentNb);
-            // p.stroke(0, 0, 0, 0);  // TODO
+            // p.stroke(0, 0, 0, 0); // TODO
             p.fill(50);
             p.textSize(50);
-            p.text(this.currentNb.toString(), 10, 10, 70, 80);
+            p.text(
+                this.currentNb.toString(),
+                Math.floor(windowWidth / 2),
+                Math.floor(windowHeight / 2),
+                70,
+                80
+            );
         };
     };
 
     private startCounterEvent = (msg: { startTime: number }): void => {
-        const oldCanvas = document.getElementById("countdownCanvas");
-        if (oldCanvas) {
-            oldCanvas.remove();
-        }
+        // Destroy the counter div
+        // console.log("Destroy");
+        // const oldCanvas = document.getElementById("countdownCanvas");
+        // if (oldCanvas) {
+        //     oldCanvas.remove();
+        // }
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
             new p5(this.sketch);
