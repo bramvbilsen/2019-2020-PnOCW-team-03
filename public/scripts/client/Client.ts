@@ -1315,7 +1315,9 @@ class Client {
         console.log("start= " + new Date(startTime));
         console.log("duration= " + msg.duration);
         setTimeout(() => {
+
             const enddate = new Date(startTime + msg.duration);
+            //new p5(this.p5Animation);
             this.animation(
                 enddate.getTime(),
                 startPoint,
@@ -1326,9 +1328,10 @@ class Client {
                 last,
                 nextDuration,
                 directionxNext,
-                directionyNext
+                directionyNext,
             );
         }, eta_ms);
+
 
         //verhoudingen naar juiste punten omzetten
         function ratioToPointsAngle(
@@ -1407,6 +1410,166 @@ class Client {
         }
     };
 
+    public p5Animation = (
+        endDate: number,
+        startPoint: Point,
+        directionx: number, //per milliseconde
+        directiony: number,
+        slaveAngles: Array<Point>,
+        slaveLines: Array<Point[]>,
+        last: boolean,
+        nextDuration: number,
+        directionxNext: number,
+        directionyNext: number
+    ) => {
+        window.scrollTo(0, window.innerHeight);
+        console.log("eindtijd = " + new Date(endDate));
+        console.log("dx =" + directionx);
+        console.log("dy =" + directiony);
+        let x: number = startPoint.x;
+        let y: number = startPoint.y;
+        var timer = setInterval(function() {
+            const canvas = createCanvas(window.innerWidth, window.innerHeight);
+            const ctx = canvas.getContext("2d");
+            const now = new Date().getTime();
+            const t = endDate - now;
+            ctx.strokeStyle = "rgb(0,0,255)";
+            ctx.fillStyle = "rgb(0,0,255)";
+            //lijnen tekenen met middelpunten
+            slaveAngles.forEach(angle => {
+                ctx.beginPath();
+                ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
+                ctx.lineTo(angle.x, angle.y);
+                ctx.stroke();
+            });
+            //anderelijnen tekenen
+            slaveLines.forEach(line => {
+                ctx.beginPath();
+                ctx.moveTo(line[0].x, line[0].y);
+                ctx.lineTo(line[1].x, line[1].y);
+                ctx.stroke();
+            });
+
+            ctx.fillText(t.toString(), 20, 20);
+
+            //ster in het midden tekenen
+            ctx.font = "50px Arial";
+            ctx.fillText(
+                "*",
+                window.innerWidth / 2 - 10,
+                window.innerHeight / 2 + 25
+            );
+            let notOutOfBound = true;
+            if (
+                x < 0 ||
+                x > window.innerWidth ||
+                y < 0 ||
+                y > window.innerHeight
+            ) {
+                notOutOfBound = false;
+            }
+            if (last) {
+                //voor last moet je niet kijken naar outofbound
+                notOutOfBound = false;
+            }
+            if (t > 0 || notOutOfBound) {
+                //circel tekenen
+                ctx.beginPath();
+                ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
+                //ctx.drawImage(self.steveImg, x, y, 50, 50);
+                x += directionx;
+                y += directiony;
+                $("#image-slave").attr("src", canvas.toDataURL());
+            } else {
+                if (last) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                }
+                $("#image-slave").attr("src", canvas.toDataURL());
+                clearinterval();
+            }
+        }, 80);
+        const clearinterval = () => {
+            console.log("last= " + last);
+            console.log("hey");
+            clearInterval(timer);
+            console.log("emit");
+            if (last) {
+                this._socket.emit(SlaveEventTypes.animationFinished, {});
+                x = window.innerWidth / 2;
+                y = window.innerHeight / 2;
+                endDate += nextDuration;
+                var timer2 = setInterval(function() {
+                    const canvas = createCanvas(
+                        window.innerWidth,
+                        window.innerHeight
+                    );
+                    const ctx = canvas.getContext("2d");
+                    const now = new Date().getTime();
+                    const t = endDate - now;
+                    ctx.strokeStyle = "rgb(0,0,255)";
+                    ctx.fillStyle = "rgb(0,0,255)";
+                    //lijnen tekenen met middelpunten
+                    slaveAngles.forEach(angle => {
+                        ctx.beginPath();
+                        ctx.moveTo(
+                            window.innerWidth / 2,
+                            window.innerHeight / 2
+                        );
+                        ctx.lineTo(angle.x, angle.y);
+                        ctx.stroke();
+                    });
+                    //anderelijnen tekenen
+                    slaveLines.forEach(line => {
+                        ctx.beginPath();
+                        ctx.moveTo(line[0].x, line[0].y);
+                        ctx.lineTo(line[1].x, line[1].y);
+                        ctx.stroke();
+                    });
+
+                    ctx.fillText(t.toString(), 20, 20);
+
+                    //ster in het midden tekenen
+                    ctx.font = "50px Arial";
+                    ctx.fillText(
+                        "*",
+                        window.innerWidth / 2 - 10,
+                        window.innerHeight / 2 + 25
+                    );
+                    let notOutOfBound = true;
+                    if (
+                        x < 0 ||
+                        x > window.innerWidth ||
+                        y < 0 ||
+                        y > window.innerHeight
+                    ) {
+                        notOutOfBound = false;
+                    }
+                    if (t > 0 || notOutOfBound) {
+                        //cirkel tekenen
+                        ctx.beginPath();
+                        ctx.arc(x, y, 30, 0, 2 * Math.PI);
+                        ctx.stroke();
+                        ctx.fill();
+                        //ctx.drawImage(self.steveImg, x, y, 50, 50);
+                        x += directionxNext;
+                        y += directionyNext;
+                        $("#image-slave").attr("src", canvas.toDataURL());
+                    } else {
+                        $("#image-slave").attr("src", canvas.toDataURL());
+                        clearInterval(timer2);
+                    }
+                }, 80);
+            }
+        };
+    };
+
+
+
     /**
      * Animation code
      * Direct all questions to Maarten Pyck.
@@ -1431,6 +1594,14 @@ class Client {
         let y: number = startPoint.y;
         var timer = setInterval(function() {
             const canvas = createCanvas(window.innerWidth, window.innerHeight);
+
+            const sketch = (p: p5) => {
+                //Hier in het drawen. Check hier Adam
+            }
+
+            new p5(sketch);
+
+
             const ctx = canvas.getContext("2d");
             const now = new Date().getTime();
             const t = endDate - now;
