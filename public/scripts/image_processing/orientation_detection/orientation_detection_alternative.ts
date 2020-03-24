@@ -1,15 +1,12 @@
-import { Orientation } from "./orientations";
 import SlaveScreen from "../../util/SlaveScreen";
 import Point from "../screen_detection/Point";
 import { sortCorners } from "../../util/shapes";
-import { getHSLColorForPixel, amountOfNeighboringPixelsWithColor } from "../screen_detection/screen_detection";
+import { getHSLColorForPixel } from "../screen_detection/screen_detection";
 import Line from "../screen_detection/Line";
 
 /**
- * Initializing constants
- *
+ * Contains an RGB colour: red, green, blue and transparancy.
  */
-
 interface IRGBAColor {
     r: number;
     g: number;
@@ -17,32 +14,47 @@ interface IRGBAColor {
     a: number;
 }
 
+/**
+ * Contains a HSL range: hue, saturation and lightness.
+ */
 interface IHSLRange {
     hRange: number;
     sRange: number;
     lRange: number;
 }
 
+/**
+ * Contains a HSL colour: hue, saturation and lightness.
+ */
 interface IHSLColor {
     h: number;
     s: number;
     l: number;
 }
+
+/**
+ * The range for which we accept a colour.
+ */
 const colorRange: IHSLRange = {
     hRange: 50,
     sRange: 60,
     lRange: 60,
 };
+
+/**
+ * Initializing constants.
+ * (The colours that we expect to find on the corners for orientation detection.)
+ */
 const leftUpperColor: IHSLColor = { h: 324, s: 100, l: 63.7 }; //pink
 const rightUpperColor: IHSLColor = rgbToHsl(0, 255, 25); // green
 const rightUnderColor: IHSLColor = rgbToHsl(12, 0, 255); // blue
 const leftUnderColor: IHSLColor = rgbToHsl(255, 216, 0); // yellow
 
 /**
- *
+ * Returns true if the two given colours are found to be within the given boundaries.
  * @param colorA - Color to compare to `colorB`
  * @param colorB - Color to compare to `colorA`
- * @param params - Range to controll how similar both colors have to be.
+ * @param params - Range to control how similar both colors have to be.
  */
 function isSimilarHSLColor(
     colorA: IHSLColor,
@@ -59,6 +71,12 @@ function isSimilarHSLColor(
     return false;
 }
 
+/**
+ * Returns an IHSLColor with the equivalent HSL colour.
+ * @param r The red value.
+ * @param g The green value.
+ * @param b The blue value.
+ */
 function rgbToHsl(r: number, g: number, b: number): IHSLColor {
     (r /= 255), (g /= 255), (b /= 255);
     let max = Math.max(r, g, b),
@@ -87,73 +105,18 @@ function rgbToHsl(r: number, g: number, b: number): IHSLColor {
     return { h: h * 360, s: s * 100, l: l * 100 };
 }
 
-export function getWidthEdgePoints(left: Point, right: Point) {
-    return [left, right];
-}
-
-export function labelCorners(p1: Point, p2: Point, p3: Point, p4: Point) {
-    var corners = [p1, p2, p3, p4];
-    var sums = [];
-    var min = Number.POSITIVE_INFINITY;
-    var max = Number.NEGATIVE_INFINITY;
-    var rightUnderIndex, leftUpperIndex;
-    var rightUpperCoordinate: Point,
-        leftUnderCoordinate: Point,
-        leftUpperCoordinate: Point,
-        rightUnderCoordinate: Point;
-
-    sums[0] = p1.x + p1.y;
-    sums[1] = p2.x + p2.y;
-    sums[2] = p3.x + p3.y;
-    sums[3] = p4.x + p4.y;
-
-    /* 1) LEFT-UPPER & RIGHT-UNDER */
-    for (var i = 0; i < sums.length; i++) {
-        if (sums[i] >= max) {
-            max = sums[i];
-            rightUnderIndex = i;
-            rightUnderCoordinate = corners[i];
-        }
-        if (sums[i] <= min) {
-            min = sums[i];
-            leftUpperIndex = i;
-            leftUpperCoordinate = corners[i];
-        }
-    }
-    // Remove those two
-    corners.splice(rightUnderIndex, 1);
-    corners.splice(leftUpperIndex, 1);
-
-    /* 2) REST */
-    if (corners[0].x - corners[1].x >= 0 && corners[0].y - corners[1].y <= 0) {
-        rightUpperCoordinate = corners[0];
-        leftUnderCoordinate = corners[1];
-    } else {
-        rightUpperCoordinate = corners[1];
-        leftUnderCoordinate = corners[0];
-    }
-
-    return {
-        LeftUp: leftUpperCoordinate,
-        RightUp: rightUpperCoordinate,
-        RightUnder: rightUnderCoordinate,
-        LeftUnder: leftUnderCoordinate,
-    };
-}
-
 /**
- * 
- * @param screen 
- * @param canvas 
- * @returns `{orientation: Orientation, normalTopEdge: Line}`
- *     `orientation` holds information regarding the orientation of the screen.
- *     `normalTopEdge` holds the edge which would be the top edge for normal orientation.
+ * Returns the angle of the screen along with the ordered corners.
+ * --> angle, LeftUp, RightUp, RightUnder and LeftUnder
+ * @param screen The SlaveScreen to process.
+ * @param canvas The canvas containing the slave with its orientation colours visible.
  */
 export default function calculateScreenAngle(
     screen: SlaveScreen,
     canvas: HTMLCanvasElement
 ): {
-    angle: number, LeftUp: Point;
+    angle: number;
+    LeftUp: Point;
     RightUp: Point;
     RightUnder: Point;
     LeftUnder: Point;
@@ -162,7 +125,6 @@ export default function calculateScreenAngle(
     const pixels = canvas
         .getContext("2d")
         .getImageData(0, 0, canvas.width, canvas.height).data;
-
 
     /**New try with all 4 corners their colors*/
     const corners: Point[] = screen.corners.map(corner => corner.copy());
@@ -187,6 +149,8 @@ export default function calculateScreenAngle(
     let leftUnder: Point = sortedCorners.LeftUnder;
 
     const ctx = canvas.getContext("2d");
+
+    //Fixme Make a function to deal with this.
 
     const topLeftDiag = (new Line(sortedCorners.LeftUp, centroid));
     let xdir = (centroid.x - sortedCorners.LeftUp.x) / topLeftDiag.length;
