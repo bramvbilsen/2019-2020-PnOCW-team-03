@@ -53,19 +53,19 @@ class Client {
      * Only applicable for masters.
      */
     // Pink
-    // public color: IRGBAColor = {
-    //     r: 255,
-    //     g: 70,
-    //     b: 181,
-    //     a: 100,
-    // };
-    // Blue
     public color: IRGBAColor = {
-        r: 0,
-        g: 0,
-        b: 255,
+        r: 255,
+        g: 70,
+        b: 181,
         a: 100,
     };
+    // Blue
+    // public color: IRGBAColor = {
+    //     r: 0,
+    //     g: 0,
+    //     b: 255,
+    //     a: 100,
+    // };
 
     constructor(args: {
         onConnectionTypeChange: (connectionType: ConnectionType) => void;
