@@ -377,7 +377,7 @@ class Client {
                 srcPoints.LeftUnder.x +
                 "px " +
                 srcPoints.LeftUnder.y +
-                "px, ";
+                "px)";
             canvas.style.transform = this.clientStorage.matrix3d;
             canvas.style.transformOrigin = "0 0";
             document.getElementsByTagName("body")[0].appendChild(canvas);
