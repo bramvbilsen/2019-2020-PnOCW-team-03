@@ -7,9 +7,9 @@ import convexHull from "./hull";
 import { IHSLColor, IRGBAColor, IHSLRange } from "../../types/Color";
 
 const colorRange: IHSLRange = {
-    hRange: 50,
-    sRange: 40,
-    lRange: 40,
+    hRange: 40,
+    sRange: 30,
+    lRange: 30,
 };
 
 //@ts-ignore
