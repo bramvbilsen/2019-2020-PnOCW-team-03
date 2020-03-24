@@ -2,12 +2,11 @@ import { createCanvas } from "../../scripts/image_processing/screen_detection/sc
 import calculateScreenAngle from "../../scripts/image_processing/orientation_detection/orientation_detection_alternative";
 import SlaveScreen from "../../scripts/util/SlaveScreen";
 import Point from "../../scripts/image_processing/screen_detection/Point";
-import { Orientation } from "../../scripts/image_processing/orientation_detection/orientations";
 import test_runner, {
     TestResult,
     Tests
 } from "./helpers";
-import { IMasterVsActualPoint, CornerLabels } from "../../scripts/types/Points";
+import { CornerLabels } from "../../scripts/types/Points";
 
 const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;
