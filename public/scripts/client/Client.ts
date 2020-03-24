@@ -281,12 +281,15 @@ class Client {
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
-        const page: JQuery<HTMLBodyElement> = $("#page");
-        page.css(
-            "background-color",
-            `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
-        );
-        console.log(Number(document.getElementById("pink-color").style.zIndex));
+        // const page: JQuery<HTMLBodyElement> = $("#page");
+        // page.css(
+        //     "background-color",
+        //     `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
+        // );
+
+        document.getElementById(
+            "pink-color"
+        ).style.backgroundColor = `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`;
 
         if (Number(document.getElementById("pink-color").style.zIndex) == 1) {
             this.hideAllSlaveLayers();
