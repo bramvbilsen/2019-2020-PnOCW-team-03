@@ -430,7 +430,7 @@ class Client {
     /**
      * Creates a countdown visual?
      */
-    public sketch = (p: p5) => {
+    public countdownSketch = (p: p5) => {
         let windowWidth = 500;
         let windowHeight = 800;
 
@@ -487,7 +487,7 @@ class Client {
         // }
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
-            new p5(this.sketch);
+            new p5(this.countdownSketch);
         }, eta_ms);
     };
 
