@@ -5,10 +5,10 @@ export enum ScaledToFit {
 
 /**
  * Returns the scale factor for the camera snapshot to fit as large as possible in the canvas.
- * @param cameraWidth
- * @param cameraHeight
- * @param canvasWidth
- * @param canvasHeight
+ * @param cameraWidth The width of the camera snapshot.
+ * @param cameraHeight The height of the camera snapshot.
+ * @param canvasWidth The width of the canvas.
+ * @param canvasHeight The height of the canvas.
  */
 export function calculateCameraCanvasScaleFactor(
     cameraWidth: number,

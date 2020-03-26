@@ -78,6 +78,9 @@ export default class SlaveFlowHandler {
         this.resetDebug();
     }
 
+    /**
+     * Resets the debug.
+     */
     private resetDebug() {
         //@ts-ignore
         window.currentStep = 0;

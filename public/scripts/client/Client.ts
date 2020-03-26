@@ -12,7 +12,6 @@ import { slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
-import { uploadSlaveImgCanvas } from "../util/image_uploader";
 import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
@@ -24,7 +23,6 @@ import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
-import { createImageCanvasForSlave } from "../util/ImageCutHandler";
 
 const {
     checkIntersection,
@@ -419,7 +417,7 @@ class Client {
     /**
      * Creates a countdown visual?
      */
-    public sketch = (p: p5) => {
+    public countdownSketch = (p: p5) => {
         let windowWidth = 500;
         let windowHeight = 800;
 
@@ -476,7 +474,7 @@ class Client {
         // }
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
-            new p5(this.sketch);
+            new p5(this.countdownSketch);
         }, eta_ms);
     };
 
