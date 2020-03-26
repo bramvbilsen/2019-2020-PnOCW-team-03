@@ -3,8 +3,6 @@ export default function masterCamera() {
     const constraints = {
         video: {
             facingMode: "environment",
-            // width: 1280,
-            // height: 720
         },
     };
 

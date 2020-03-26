@@ -1,6 +1,10 @@
 import { BoundingBox } from "./BoundingBox";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 
+/**
+ * A function to load an image on the given path.
+ * @param src The path to the image to load.
+ */
 export async function loadImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -14,38 +18,7 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
     });
 }
 
-/**
- * Returns a canvas with `img` scaled to the dimensions of `boundingBox`. Scaled to fill!
- * @param img
- *
- * @param globalBoundingBox Bounding box around all screens.
- */
-// export function scaleAndCutImageToBoundingBoxAspectRatio(
-//     img: HTMLCanvasElement,
-//     globalBoundingBoxWidth: number,
-//     globalBoundingBoxHeight: number
-// ): HTMLCanvasElement {
-//     const imgCanvas = createCanvas(
-//         globalBoundingBoxWidth,
-//         globalBoundingBoxHeight
-//     );
-//     const imgCtx = imgCanvas.getContext("2d");
-//     imgCtx.drawImage(
-//         img,
-//         0,
-//         0,
-//         globalBoundingBoxWidth,
-//         globalBoundingBoxHeight
-//     );
-//     const canvas = createCanvas(
-//         globalBoundingBoxWidth + extraWidth,
-//         globalBoundingBoxHeight + extraHeight
-//     );
-//     const ctx = canvas.getContext("2d");
-//     ctx.drawImage(imgCanvas, extraWidth / 2, extraHeight / 2);
-//     return canvas;
-// }
-
+//Fixme What does this function do?
 export function scaleAndCutBoundingBoxToImgAspectRatio(
     img: HTMLHtmlElement,
     globalBoundingBox: BoundingBox
