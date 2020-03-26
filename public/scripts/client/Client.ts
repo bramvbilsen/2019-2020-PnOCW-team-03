@@ -33,7 +33,7 @@ const {
 
 class Client {
     private _type: ConnectionType;
-    private _slaves: Array<string> = [];
+    public _slaves: Array<string> = [];
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
@@ -221,7 +221,7 @@ class Client {
             );
             return;
         }
-        console.log("changing to default state: from master");
+        console.log("changing slaves to default state: from master");
         this._socket.emit(MasterEventTypes.ResetSlave, {
             slaveId,
         });
@@ -331,7 +331,7 @@ class Client {
     private reset = (): void => {
         this.hideAllSlaveLayers();
         this.moveToForeground("default-slave-state");
-        console.log("changing to default state: from slave");
+        console.log("changing to default state: from client.ts in slave");
     }
 
     /**
@@ -1655,8 +1655,6 @@ class Client {
                 $("#image-slave").attr("src", canvas.toDataURL());
                 clearinterval();
             }
-            this.hideAllSlaveLayers();
-            this.moveToForeground("image-container-slave");
         }, 80);
         const clearinterval = () => {
             console.log("last= " + last);
@@ -1738,6 +1736,8 @@ class Client {
      */
     public startAnimation() {
         this.triangulation = this.calculateTriangulation();
+        this.hideAllSlaveLayers();
+        this.moveToForeground("image-container-slave");
         this.triangulationShow();
         wait(1000).then(() => {
             this.circleAnimation = new Animation(
@@ -1754,6 +1754,9 @@ class Client {
     public stopAnimation() {
         if (this.circleAnimation) {
             this.circleAnimation.stop();
+            this.hideAllSlaveLayers();
+            console.log("stopping animation");
+            this.moveToForeground("default-slave-state");
         }
     }
 

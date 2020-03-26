@@ -119,6 +119,7 @@ io.on("connect", (socket: socketio.Socket) => {
             slaveId: string;
         }) => {
             if (socket.id === connections.master.id) {
+                console.log("index.ts emitting slave reset")
                 io.to(msg.slaveId).emit(SlaveEventTypes.Reset);
             }
         }
