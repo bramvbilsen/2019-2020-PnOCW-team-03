@@ -1,7 +1,7 @@
 import * as path from "path";
 import { Request, Dictionary, Response } from "express-serve-static-core";
 
-import binaryToImageFile from "../imageProcessing/binaryToImageFile";
+import binaryToImageFile from "./binaryToImageFile";
 
 export default (req: Request<Dictionary<string>>, res: Response) => {
     console.log("POSTED IMAGE");

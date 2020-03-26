@@ -1,7 +1,7 @@
 import Point from "../screen_detection/Point";
 import Line from "../screen_detection/Line";
 import Triangulation from "./Triangulation";
-import Circle from "./Circle";
+
 var gauss = require("gaussian-elimination");
 
 //TODO laatste bug er uit halen
