@@ -80,8 +80,8 @@ export function resetMaster() {
         welcomeMaster.css("display", "none");
         mainFlowMaster.css("display", "inherit");
         const player: JQuery<HTMLVideoElement> = $("#player");
-        $("#player-overlay").css("width", player.width());
-        $("#player-overlay").css("height", player.height());
+        $("#player-overlay").css("width", "640px");
+        $("#player-overlay").css("height", "480px");
 
         startButton.show();
         startAutomatedButton.hide();
