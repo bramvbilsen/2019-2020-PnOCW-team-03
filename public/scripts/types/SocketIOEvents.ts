@@ -21,9 +21,9 @@ export enum SlaveEventTypes {
     animationFinished = "animation-finished",
     linesShow = "lines-show",
     receiveCutData = "receive-cut-data",
-    Reset = "Reset"
-}   Reset = "reset",
+    Reset = "reset"
 }
+
 
 export enum MasterEventTypes {
     ChangeSlaveBackgrounds = "change-slave-backgrounds",
