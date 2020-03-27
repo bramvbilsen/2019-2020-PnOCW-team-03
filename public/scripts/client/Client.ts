@@ -1462,12 +1462,12 @@ class Client {
                     drawBall();
                     x += directionx;
                     y += directiony;
-                    $("#image-slave").attr("src", p5Canvas.toDataURL());
+                    //$("#image-slave").attr("src", p5Canvas.toDataURL());
                 } else {
                     if (last) {
                         drawBall();
                     }
-                    $("#image-slave").attr("src", p5Canvas.toDataURL());
+                    //$("#image-slave").attr("src", p5Canvas.toDataURL());
                     clearinterval();
                 }
             };
