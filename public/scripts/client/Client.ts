@@ -1418,13 +1418,14 @@ class Client {
         const animationSketch = (p: p5) => {
             //Hier in het drawen. Check hier Adam
 
+            const p5Canvas = p.createCanvas(
+                window.innerWidth,
+                window.innerHeight
+            );
+
             p.setup = function() {
                 const fps = 30; // TODO: pas aan
                 p.frameRate(fps);
-                const p5Canvas = p.createCanvas(
-                    window.innerWidth,
-                    window.innerHeight
-                );
                 p5Canvas.id("animation");
                 const ctx = 0; //drawingContext;
                 const now = new Date().getTime();
@@ -1461,12 +1462,12 @@ class Client {
                     drawBall();
                     x += directionx;
                     y += directiony;
-                    $("#image-slave").attr("src", canvas.toDataURL());
+                    $("#image-slave").attr("src", p5Canvas.toDataURL());
                 } else {
                     if (last) {
                         drawBall();
                     }
-                    $("#image-slave").attr("src", canvas.toDataURL());
+                    $("#image-slave").attr("src", p5Canvas.toDataURL());
                     clearinterval();
                 }
             };
