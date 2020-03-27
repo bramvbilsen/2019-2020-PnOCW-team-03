@@ -92,10 +92,7 @@ class Client {
                             SlaveEventTypes.ChangeBackground,
                             this.changeBackground
                         ),
-                        this._socket.on(
-                            SlaveEventTypes.Reset,
-                            this.reset
-                        ),
+                        this._socket.on(SlaveEventTypes.Reset, this.reset),
                         this._socket.on(
                             SlaveEventTypes.SetCounterEvent,
                             this.startCounterEvent
@@ -211,8 +208,7 @@ class Client {
         });
     };
 
-    public resetSlave = (slaveId: string
-    ) => {
+    public resetSlave = (slaveId: string) => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
@@ -297,7 +293,6 @@ class Client {
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
-
         if (Number(document.getElementById("pink-color").style.zIndex) == 1) {
             this.hideAllSlaveLayers();
             this.moveToForeground("default-slave-state");
@@ -325,12 +320,12 @@ class Client {
             this.notifyMasterThatPictureCanBeTaken();
         }
     };
-    
+
     private reset = (): void => {
         this.hideAllSlaveLayers();
         this.moveToForeground("default-slave-state");
         console.log("changing to default state: from client.ts in slave");
-    }
+    };
 
     /**
      * Displays the given image on the slave.
@@ -1304,7 +1299,6 @@ class Client {
         console.log("start= " + new Date(startTime));
         console.log("duration= " + msg.duration);
         setTimeout(() => {
-
             const enddate = new Date(startTime + msg.duration);
             //new p5(this.p5Animation);
             this.animation(
@@ -1317,10 +1311,9 @@ class Client {
                 last,
                 nextDuration,
                 directionxNext,
-                directionyNext,
+                directionyNext
             );
         }, eta_ms);
-
 
         //verhoudingen naar juiste punten omzetten
         function ratioToPointsAngle(
@@ -1399,7 +1392,6 @@ class Client {
         }
     };
 
-
     /**
      * Animation code
      * Direct all questions to Maarten Pyck.
@@ -1422,101 +1414,116 @@ class Client {
         console.log("dy =" + directiony);
         let x: number = startPoint.x;
         let y: number = startPoint.y;
+
+        const animationSketch = (p: p5) => {
+            //Hier in het drawen. Check hier Adam
+
+            p.setup = function() {
+                const fps = 30; // TODO: pas aan
+                p.frameRate(fps);
+                const p5Canvas = p.createCanvas(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+                p5Canvas.id("animation");
+                const ctx = 0; //drawingContext;
+                const now = new Date().getTime();
+                const t = endDate - now;
+            };
+
+            p.draw = () => {
+                p.clear();
+                const now = new Date().getTime();
+                const t = endDate - now;
+                slaveAngles.forEach(angle => {
+                    drawLineA(angle);
+                });
+                slaveLines.forEach(line => {
+                    drawLineL(line);
+                });
+                drawCentres();
+
+                let notOutOfBound = true;
+                if (
+                    x < 0 ||
+                    x > window.innerWidth ||
+                    y < 0 ||
+                    y > window.innerHeight
+                ) {
+                    notOutOfBound = false;
+                }
+                if (last) {
+                    //voor last moet je niet kijken naar outofbound
+                    notOutOfBound = false;
+                }
+                if (t > 0 || notOutOfBound) {
+                    //circel tekenen
+                    drawBall();
+                    x += directionx;
+                    y += directiony;
+                    $("#image-slave").attr("src", canvas.toDataURL());
+                } else {
+                    if (last) {
+                        drawBall();
+                    }
+                    $("#image-slave").attr("src", canvas.toDataURL());
+                    clearinterval();
+                }
+            };
+
+            /**
+            const drawNb = () => {
+                console.log("CountDown: " + this.currentNb);
+                // p.stroke(0, 0, 0, 0); // TODO
+                p.fill(50);
+                p.textSize(50);
+                p.text(
+                    this.currentNb.toString(),
+                    Math.floor(windowWidth / 2),
+                    Math.floor(windowHeight / 2),
+                    70,
+                    80
+                );
+
+            };*/
+
+            function drawBall() {
+                p.stroke(0, 0, 0, 0);
+                p.fill("red");
+                p.circle(x, y, 30);
+            }
+
+            function drawLineA(angle: Point) {
+                p.fill(0, 0, 255, 0);
+                p.stroke("blue");
+                p.line(
+                    window.innerWidth / 2,
+                    window.innerHeight / 2,
+                    angle.x,
+                    angle.y
+                );
+            }
+            function drawLineL(line: Point[]) {
+                p.fill(0, 0, 255, 0);
+                p.stroke("blue");
+                p.line(line[0].x, line[0].y, line[1].x, line[1].y);
+            }
+            function drawCentres() {
+                p.textSize(50);
+                p.textFont("Arial");
+                p.fill(0); //black
+                p.text(
+                    "*",
+                    window.innerHeight / 2 - 10,
+                    window.innerHeight / 2 + 25
+                );
+            }
+        };
+
         var timer = setInterval(function() {
             const canvas = createCanvas(window.innerWidth, window.innerHeight);
 
-            const sketch = (p: p5) => {
-                //Hier in het drawen. Check hier Adam
-
-                p.setup = function() {
-                    const fps = 30; // TODO: pas aan
-                    p.frameRate(fps);
-                    const p5Canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-                    p5Canvas.id("fullScreen");
-                    const ctx = 0;//drawingContext;
-                    const now = new Date().getTime();
-                    const t = endDate - now;
-
-
-                };
-
-                p.draw = () => {
-                    p.clear();
-                    const now = new Date().getTime();
-                    const t = endDate - now;
-                    slaveAngles.forEach(angle => {
-                        drawLineA(angle)
-                    });
-                    slaveLines.forEach(line => {
-                        drawLineL(line)
-                    });
-                    drawCentres()
-
-                    let notOutOfBound = true;
-                    if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
-                        notOutOfBound = false;
-                    }
-                    if (last) {
-                        //voor last moet je niet kijken naar outofbound
-                        notOutOfBound = false;
-                    }
-                    if (t > 0 || notOutOfBound) {
-                        //circel tekenen
-                        drawBall()
-                        x += directionx;
-                        y += directiony;
-                        $("#image-slave").attr("src", canvas.toDataURL());
-                    } else {
-                        if (last) {
-                            drawBall()
-                        }
-                        $("#image-slave").attr("src", canvas.toDataURL());
-                        clearinterval();
-                    }
-                };
-
-                /**
-                const drawNb = () => {
-                    console.log("CountDown: " + this.currentNb);
-                    // p.stroke(0, 0, 0, 0); // TODO
-                    p.fill(50);
-                    p.textSize(50);
-                    p.text(
-                        this.currentNb.toString(),
-                        Math.floor(windowWidth / 2),
-                        Math.floor(windowHeight / 2),
-                        70,
-                        80
-                    );
-
-                };*/
-
-                function drawBall() {
-                    p.stroke(0, 0, 0, 0);
-                    p.fill("red");
-                    p.circle(x, y, 30);
-                }
-
-                function drawLineA(angle:Point) {
-                    p.fill(0, 0, 255, 0);
-                    p.stroke("blue");
-                    p.line(window.innerWidth/2, window.innerHeight/2, angle.x, angle.y);
-                }
-                function drawLineL(line:Point[]) {
-                    p.fill(0, 0, 255, 0);
-                    p.stroke("blue");
-                    p.line(line[0].x,  line[0].y, line[1].x, line[1].y);
-                }
-                function drawCentres(){
-                    p.textSize(50)
-                    p.textFont("Arial")
-                    p.fill(0) //black
-                    p.text('*',window.innerHeight/2-10, window.innerHeight/2+25)
-                }
-
-            };
-
-            new p5(sketch);
+            new p5(animationSketch);
 
             const ctx = canvas.getContext("2d");
             const now = new Date().getTime();
