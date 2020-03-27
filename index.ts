@@ -114,6 +114,18 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     socket.on(
+        MasterEventTypes.ResetSlave,
+        (msg: {
+            slaveId: string;
+        }) => {
+            if (socket.id === connections.master.id) {
+                console.log("index.ts emitting slave reset")
+                io.to(msg.slaveId).emit(SlaveEventTypes.Reset);
+            }
+        }
+    );
+
+    socket.on(
         MasterEventTypes.DisplayImageOnSlave,
         (msg: { slaveId: string; imgUrl: string }) => {
             if (socket.id === connections.master.id) {

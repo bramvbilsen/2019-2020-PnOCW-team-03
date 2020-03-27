@@ -12,7 +12,6 @@ import { slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
-import { uploadSlaveImgCanvas } from "../util/image_uploader";
 import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
@@ -24,7 +23,6 @@ import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
-import { createImageCanvasForSlave } from "../util/ImageCutHandler";
 
 const {
     checkIntersection,
@@ -33,7 +31,7 @@ const {
 
 class Client {
     private _type: ConnectionType;
-    private _slaves: Array<string> = [];
+    public _slaves: Array<string> = [];
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
@@ -93,6 +91,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.ChangeBackground,
                             this.changeBackground
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.Reset,
+                            this.reset
                         ),
                         this._socket.on(
                             SlaveEventTypes.SetCounterEvent,
@@ -209,6 +211,20 @@ class Client {
         });
     };
 
+    public resetSlave = (slaveId: string
+    ) => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
+            );
+            return;
+        }
+        console.log("changing slaves to default state: from master");
+        this._socket.emit(MasterEventTypes.ResetSlave, {
+            slaveId,
+        });
+    };
+
     /**
      * Sends a request to the server to change the orientation colors of the slave.
      * This is only permitted if the current `this.type === ConnectionType.MASTER`
@@ -281,26 +297,13 @@ class Client {
     private changeBackground = (data: {
         color: { r: number; g: number; b: number };
     }): void => {
-        // const page: JQuery<HTMLBodyElement> = $("#page");
-        // page.css(
-        //     "background-color",
-        //     `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`
-        // );
-
-        document.getElementById(
-            "pink-color"
-        ).style.backgroundColor = `rgb(${data.color.r}, ${data.color.g}, ${data.color.b})`;
 
         if (Number(document.getElementById("pink-color").style.zIndex) == 1) {
             this.hideAllSlaveLayers();
-            console.log(document.getElementById("pink-color").style.zIndex);
             this.moveToForeground("default-slave-state");
-            console.log(document.getElementById("pink-color").style.zIndex);
         } else {
             this.hideAllSlaveLayers();
-            console.log(document.getElementById("pink-color").style.zIndex);
             this.moveToForeground("pink-color");
-            console.log(document.getElementById("pink-color").style.zIndex);
             this.notifyMasterThatPictureCanBeTaken();
         }
     };
@@ -309,50 +312,31 @@ class Client {
      * Makes the orientation colours (in)visible.
      */
     private toggleOrientationColors = (): void => {
-        //const orientationElem: JQuery<HTMLDivElement> = $(
-        //    "#orientation-colors"
-        //);
-        //if (orientationElem.attr("display") !== "none") {
-        //    this.changeBackground({ color: { r: 76, g: 175, b: 80 } });
-        //}
-        //orientationElem.toggle();
-        console.log(
-            Number(document.getElementById("orientation-colors").style.zIndex)
-        );
-
         if (
             Number(
                 document.getElementById("orientation-colors").style.zIndex
             ) == 1
         ) {
             this.hideAllSlaveLayers();
-            console.log(
-                document.getElementById("orientation-colors").style.zIndex
-            );
             this.moveToForeground("default-slave-state");
-            console.log(
-                document.getElementById("orientation-colors").style.zIndex
-            );
         } else {
             this.hideAllSlaveLayers();
-            console.log(
-                document.getElementById("orientation-colors").style.zIndex
-            );
             this.moveToForeground("orientation-colors");
-            console.log(
-                document.getElementById("orientation-colors").style.zIndex
-            );
             this.notifyMasterThatPictureCanBeTaken();
         }
     };
+    
+    private reset = (): void => {
+        this.hideAllSlaveLayers();
+        this.moveToForeground("default-slave-state");
+        console.log("changing to default state: from client.ts in slave");
+    }
 
     /**
      * Displays the given image on the slave.
      */
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
-        window.scrollTo(0, window.innerHeight);
-        $("#main-flow-slave").hide();
         loadImage(data.imgUrl + "?" + Math.random()).then(img => {
             const canvas = createCanvas(
                 this.clientStorage.boundingBoxWidth,
@@ -391,7 +375,10 @@ class Client {
                 "px)";
             canvas.style.transform = this.clientStorage.matrix3d;
             canvas.style.transformOrigin = "0 0";
-            document.getElementsByTagName("body")[0].appendChild(canvas);
+            $("#image-slave").attr("src", canvas.toDataURL());
+            this.hideAllSlaveLayers();
+            this.moveToForeground("image-container-slave");
+            //document.getElementsByTagName("body")[0].appendChild(canvas);
             // $("#image-slave").css("transform", this.clientStorage.matrix3d);
             // $("#image-slave").css("transform-origin", "0 0");
             // $("#image-slave").attr("src", canvas.toDataURL());
@@ -430,7 +417,7 @@ class Client {
     /**
      * Creates a countdown visual?
      */
-    public sketch = (p: p5) => {
+    public countdownSketch = (p: p5) => {
         let windowWidth = 500;
         let windowHeight = 800;
 
@@ -487,7 +474,7 @@ class Client {
         // }
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
-            new p5(this.sketch);
+            new p5(this.countdownSketch);
         }, eta_ms);
     };
 
@@ -905,6 +892,8 @@ class Client {
             window.innerHeight / 2 + 25
         );
         $("#image-slave").attr("src", canvas.toDataURL());
+        this.hideAllSlaveLayers();
+        this.moveToForeground("image-container-slave");
     };
 
     public showAnimationOnSlaves = () => {
@@ -1673,6 +1662,8 @@ class Client {
      */
     public startAnimation() {
         this.triangulation = this.calculateTriangulation();
+        this.hideAllSlaveLayers();
+        this.moveToForeground("image-container-slave");
         this.triangulationShow();
         wait(1000).then(() => {
             this.circleAnimation = new Animation(
@@ -1689,6 +1680,9 @@ class Client {
     public stopAnimation() {
         if (this.circleAnimation) {
             this.circleAnimation.stop();
+            this.hideAllSlaveLayers();
+            console.log("stopping animation");
+            this.moveToForeground("default-slave-state");
         }
     }
 

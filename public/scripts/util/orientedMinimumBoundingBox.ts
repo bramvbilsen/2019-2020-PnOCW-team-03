@@ -75,8 +75,8 @@ export default function orientedMinimumBoundingBox(points: Point[]) {
 }
 
 /**
- * @returns The axis aligned bounding box with the points sorted
- *  counter-clockwise.
+ * Calculates the axis aligned bounding box with the points sorted counterclockwise.
+ * @param points A list of points.
  */
 function calculateAxisAlignedBoundingBox(points: Point[]) {
     let minX = Infinity;
@@ -98,6 +98,13 @@ function calculateAxisAlignedBoundingBox(points: Point[]) {
     ];
 }
 
+/**
+ * Rotates a the position of the point when it is rotated around another.
+ * This functionality can also be found directly in Point itself.
+ * @param point The point to rotate.
+ * @param anchor The point to rotate around.
+ * @param angle The amount of rotation.
+ */
 function rotatePointAroundAnchor(point: Point, anchor: Point, angle: number) {
     const xTranslated = point.x - anchor.x;
     const yTranslated = point.y - anchor.y;

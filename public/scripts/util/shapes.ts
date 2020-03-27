@@ -1,5 +1,9 @@
 import Point from "../image_processing/screen_detection/Point";
 
+/**
+ * Returns the centroid of the given points.
+ * @param points A list of points.
+ */
 export function getCentroidOf(points: Point[]): Point {
     var sumX = 0;
     var sumY = 0;
@@ -13,9 +17,12 @@ export function getCentroidOf(points: Point[]): Point {
     );
 }
 
-export function calculateBoundingBox(
-    points: Point[]
-): { topLeft: Point; topRight: Point; bottomLeft: Point; bottomRight: Point } {
+/**
+ * Returns the bounding box of the given points.
+ * @param points A list of points.
+ */
+export function calculateBoundingBox(points: Point[]): { 
+    topLeft: Point; topRight: Point; bottomLeft: Point; bottomRight: Point } {
     const xCoordinates = points.map(point => point.x).sort((a, b) => a - b);
     const yCoordinates = points.map(point => point.y).sort((a, b) => a - b);
     const minX = xCoordinates[0];
@@ -31,6 +38,10 @@ export function calculateBoundingBox(
     }
 }
 
+/**
+ * Sorts the corners.
+ * @param corners A list of points.
+ */
 export function sortCorners(corners: Point[]): {
     LeftUp: Point;
     RightUp: Point;

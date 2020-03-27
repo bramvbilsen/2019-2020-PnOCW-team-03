@@ -3,7 +3,7 @@ import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
 import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
 import { sortCorners } from "./shapes";
-import { IActualCorners, CornerLabels, IMasterVsActualPoint } from "../types/Points";
+import { IActualCorners, CornerLabels } from "../types/Points";
 
 export default class SlaveScreen {
     corners: Point[];
@@ -73,21 +73,6 @@ export default class SlaveScreen {
      * Edge representing the width of the screen
      */
     get widthEdge(): Line {
-        // this.sortCornersByAngle();
-        // const edgeA = new Line(this.corners[0], this.corners[1]);
-        // const edgeB = new Line(this.corners[1], this.corners[2]);
-        // const edgeC = new Line(this.corners[2], this.corners[3]);
-        // const edgeD = new Line(this.corners[3], this.corners[0]);
-        // const longestLength = Math.max(
-        //     edgeA.length,
-        //     edgeB.length,
-        //     edgeC.length,
-        //     edgeD.length
-        // );
-        // if (edgeA.length === longestLength) return edgeA;
-        // if (edgeB.length === longestLength) return edgeB;
-        // if (edgeC.length === longestLength) return edgeC;
-        // if (edgeD.length === longestLength) return edgeD;
         const widthUp = new Line(this.actualCorners.LeftUp, this.actualCorners.RightUp);
         const widthUnder = new Line(this.actualCorners.LeftUnder, this.actualCorners.RightUnder);
         if (Math.max(widthUp.length, widthUnder.length) === widthUp.length) {
@@ -101,26 +86,6 @@ export default class SlaveScreen {
      * Edge representing the height of the screen
      */
     get heightEdge(): Line {
-        // this.sortCornersByAngle();
-        // const edgeA = new Line(this.corners[0], this.corners[1]);
-        // const edgeB = new Line(this.corners[1], this.corners[2]);
-        // const edgeC = new Line(this.corners[2], this.corners[3]);
-        // const edgeD = new Line(this.corners[3], this.corners[0]);
-        // const width = Math.max(
-        //     edgeA.length,
-        //     edgeB.length,
-        //     edgeC.length,
-        //     edgeD.length
-        // );
-        // if (width === edgeA.length || width === edgeC.length) {
-        //     const longestLength = Math.max(edgeB.length, edgeD.length);
-        //     if (longestLength === edgeB.length) return edgeB;
-        //     if (longestLength === edgeD.length) return edgeD;
-        // } else {
-        //     const longestLength = Math.max(edgeA.length, edgeC.length);
-        //     if (longestLength === edgeA.length) return edgeA;
-        //     if (longestLength === edgeC.length) return edgeC;
-        // }
         const heightLeft = new Line(this.actualCorners.LeftUp, this.actualCorners.LeftUnder);
         const heightRight = new Line(this.actualCorners.RightUp, this.actualCorners.RightUnder);
         if (Math.max(heightLeft.length, heightRight.length) === heightLeft.length) {
@@ -169,7 +134,7 @@ export default class SlaveScreen {
 
     /**
      * Should only be called after `this.masterVsRealCorners` is assigned.
-     * @param corner 
+     * @param corner The corner to work with.
      */
     public mapMasterToActualCornerLabel(corner: CornerLabels): CornerLabels {
 
@@ -223,7 +188,7 @@ export default class SlaveScreen {
 
     /**
      * Should only be called after `this.masterVsRealCorners` is assigned.
-     * @param corner 
+     * @param corner The corner to work with.
      */
     public mapActualToMasterCornerLabel(corner: CornerLabels): CornerLabels {
 
@@ -275,18 +240,30 @@ export default class SlaveScreen {
         }
     }
 
+    /**
+     * Returns a copy of this SlaveScreen.
+     */
     public copy(): SlaveScreen {
         const screen = new SlaveScreen(this.corners.map(corner => corner.copy()), this.slaveID);
         screen.slavePortionImg = this.slavePortionImg;
         return screen;
     }
 
+    /**
+     * Returns a rotated copy of this SlaveScreen.
+     * @param deg The amount of rotation.
+     */
     public copyRotated(deg: number): SlaveScreen {
         const screen = new SlaveScreen(this.corners.map(corner => rotatePointAroundAnchor(corner.copy(), this.centroid, deg)), this.slaveID);
         screen.slavePortionImg = this.slavePortionImg;
         return screen;
     }
 
+    /**
+     * Returns a translated copy of this SlaveScreen.
+     * @param dx The amount of x-deviation.
+     * @param dy The amount of y-deviation.
+     */
     public copyTranslated(dx: number, dy: number): SlaveScreen {
         const screen = new SlaveScreen(this.corners.map(corner => corner.copyTranslated(dx, dy)), this.slaveID);
         screen.slavePortionImg = this.slavePortionImg;

@@ -57,6 +57,8 @@ export function resetMaster() {
     loadingMasterIndicator.hide();
     captureOrientationButton.hide();
     resultImgContainer.removeAttr("src");
+    $("#result-img").removeAttr("src");
+    $("#player-overlay").removeAttr("src");
     //@ts-ignore
     $("#welcome-master-no-slave-toast").toast({
         delay: 5000,
@@ -78,8 +80,8 @@ export function resetMaster() {
         welcomeMaster.css("display", "none");
         mainFlowMaster.css("display", "inherit");
         const player: JQuery<HTMLVideoElement> = $("#player");
-        $("#player-overlay").width(player.width());
-        $("#player-overlay").height(player.height());
+        $("#player-overlay").css("width", player.width());
+        $("#player-overlay").css("height", player.height());
 
         startButton.show();
         startAutomatedButton.hide();

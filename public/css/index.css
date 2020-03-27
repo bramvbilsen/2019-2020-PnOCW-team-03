@@ -40,6 +40,9 @@
 #main-flow-master {
     display: none;
 }
+#slave {
+    overflow: hidden;
+}
 
 #default-slave-state {
     width: 100vw;
@@ -116,7 +119,6 @@ img {
     left: 0px;
 	top: 0px;
 	z-index: -2;
-	align-items: center;
     font-weight: 200;
 	font-size: 35px;
 }
@@ -148,7 +150,11 @@ video {
 
 #player-overlay {
     position: absolute;
+    /*width: 100%;*/
+    height: 100%;
+    background-color: transparent;
     z-index: 2;
+    opacity: 0.5;
 }
 
 .rest {

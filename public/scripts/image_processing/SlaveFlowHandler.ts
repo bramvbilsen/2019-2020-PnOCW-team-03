@@ -66,25 +66,21 @@ export default class SlaveFlowHandler {
      * Resets the colours on all slaves and resets the master.
      */
     public reset() {
-        const color = { ...client.color };
-        client.color = { r: 76, g: 175, b: 80, a: 255 };
-        if (this.prevSlaveID) {
-            client.showColorOnSlave(this.prevSlaveID);
-        }
-        if (this.currSlaveID) {
-            client.showColorOnSlave(this.currSlaveID);
-        }
-        client.color = color;
         $("#slave-flow-buttons").show();
         $("#camera").show();
         $("#display-slave-img-buttons").hide();
         resetMaster();
-        client.slaves.forEach(slave => {
-            client.showColorOnSlave(slave, { r: 76, g: 175, b: 80, a: 255 });
+        client.slaves.forEach(screen => {
+            console.log("iterating slaves");
+            client.resetSlave(screen);
+            console.log("resetting:" + screen);
         });
         this.resetDebug();
     }
 
+    /**
+     * Resets the debug.
+     */
     private resetDebug() {
         //@ts-ignore
         window.currentStep = 0;

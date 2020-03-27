@@ -5,9 +5,9 @@ import { degreesToRadians, rotatePointAroundAnchor } from "./angles";
 import { client } from "../../index";
 
 /**
- * Creates/cuts images to display on slaves
+ * Creates/cuts images to display on slaves.
  * @param globalBoundingBox Bouding box around all the screens
- * @param screen Screen of slave
+ * @param screen Screen of a slave.
  * @param img Canvas with the image to display on.
  */
 export function createImageCanvasForSlave(
@@ -38,10 +38,12 @@ export function createImageCanvasForSlave(
     //     extraWidth / 2,
     //     extraHeight / 2
     // );
+
+    //Fixme Does this function have a purpose?
 }
 
 /**
- *
+ * Returns a canvas with the fitting image of the slave on it.
  * @param globalBoundingBox Bouding box around all the screens
  * @param screen Screen of slave
  * @param imgCanvas image of canvas already scaled to fill `globalBoundingBox`
