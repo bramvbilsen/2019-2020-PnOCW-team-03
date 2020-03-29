@@ -113,17 +113,12 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
-    socket.on(
-        MasterEventTypes.ResetSlave,
-        (msg: {
-            slaveId: string;
-        }) => {
-            if (socket.id === connections.master.id) {
-                console.log("index.ts emitting slave reset")
-                io.to(msg.slaveId).emit(SlaveEventTypes.Reset);
-            }
+    socket.on(MasterEventTypes.ResetSlave, (msg: { slaveId: string }) => {
+        if (socket.id === connections.master.id) {
+            console.log("index.ts emitting slave reset");
+            io.to(msg.slaveId).emit(SlaveEventTypes.Reset);
         }
-    );
+    });
 
     socket.on(
         MasterEventTypes.DisplayImageOnSlave,
@@ -217,6 +212,7 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
+    //zijn overbodig
     socket.on(
         MasterEventTypes.ShowAnimationOnSlave,
         (msg: {
@@ -246,6 +242,7 @@ io.on("connect", (socket: socketio.Socket) => {
             io.to(msg.slaveId).emit(SlaveEventTypes.linesShow, msg);
         }
     );
+    //
 
     socket.on(
         MasterEventTypes.sendCutData,
@@ -254,6 +251,19 @@ io.on("connect", (socket: socketio.Socket) => {
             srcPoints: number;
             boundingBoxWidth: number;
             boundingBoxHeight: number;
+        }) => {
+            io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.sendTriangulationData,
+        (msg: {
+            lines: any;
+            points: any;
+            middlepoint: any;
+            linkedMiddlePoints: any;
+            slaveID: string;
         }) => {
             io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
         }

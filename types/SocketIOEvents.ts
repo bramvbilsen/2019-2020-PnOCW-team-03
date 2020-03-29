@@ -21,6 +21,7 @@ export enum SlaveEventTypes {
     animationFinished = "animation-finished",
     linesShow = "lines-show",
     receiveCutData = "receive-cut-data",
+    receiveTriangulationData = "receive-triangulation-data",
     Reset = "reset",
 }
 
@@ -40,5 +41,6 @@ export enum MasterEventTypes {
     nextLine = "next-line",
     triangulationShow = "triangulation-show",
     sendCutData = "send-cut-data",
+    sendTriangulationData = "send-triangulation-data",
     ResetSlave = "reset-slave",
 }

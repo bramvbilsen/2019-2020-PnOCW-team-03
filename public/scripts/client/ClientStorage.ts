@@ -1,3 +1,7 @@
+import Line from "../image_processing/screen_detection/Line";
+import MiddlePoint from "../image_processing/Triangulation/MiddlePoint";
+import Point from "../image_processing/screen_detection/Point";
+
 const linSystem = require("linear-equation-system");
 
 /**
@@ -15,8 +19,16 @@ export default class ClientStorage {
     boundingBoxHeight: number;
     matrix3d: string;
     srcPoints: SrcPoints;
+    triangulation: {
+        lines: Line[]; //lijnen voor triangulatie te tekenen
+        points: Point[]; //de punten voor de triangulatie te tekenen
+        middlePoint: MiddlePoint; //info voor volgende lijn te bepalen
+    };
+    animating: boolean;
 
-    constructor() {}
+    constructor() {
+        this.animating = false;
+    }
 
     /**
      * Updates this ClientStorage instance with the new, given data.
@@ -33,6 +45,40 @@ export default class ClientStorage {
         this.boundingBoxWidth = boundingBoxWidth;
         this.matrix3d = this.perspectiveMatrix(begin);
         this.srcPoints = begin;
+    }
+
+    addTriangulation(
+        lines: { x1: number; y1: number; x2: number; y2: number }[],
+        points: { x: number; y: number }[],
+        middlepoint: { x: number; y: number },
+        linkedMiddlePoints: {
+            slaveIds: string[];
+            linkedMiddlePoint: { x: number; y: number };
+        }[]
+    ) {
+        this.triangulation = {
+            lines: lines.map(function(element) {
+                return new Line(
+                    new Point(element.x1, element.y1),
+                    new Point(element.x2, element.y2)
+                );
+            }),
+            points: points.map(function(element) {
+                return new Point(element.x, element.y);
+            }),
+            middlePoint: new MiddlePoint(
+                new Point(middlepoint.x, middlepoint.y),
+                linkedMiddlePoints.map(function(element) {
+                    return {
+                        slaveIds: element.slaveIds,
+                        linkedMiddlePoint: new Point(
+                            element.linkedMiddlePoint.x,
+                            element.linkedMiddlePoint.y
+                        ),
+                    };
+                })
+            ),
+        };
     }
 
     /**

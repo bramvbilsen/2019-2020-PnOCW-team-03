@@ -12,6 +12,9 @@ import { createCameraOverlayWithPoints } from "../util/canvas";
 import { CornerLabels } from "../types/Points";
 import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
+import Point from "./screen_detection/Point";
+import delauney from "./Triangulation/Delaunay";
+import Line from "./screen_detection/Line";
 
 /**
  * An enumeration of all the different steps of the automatic screen detection.
@@ -130,6 +133,30 @@ export default class SlaveFlowHandler {
                     globalBoundingBox.width,
                     globalBoundingBox.height,
                     screen.slaveID
+                );
+            });
+            //info van de triangulatie sturen
+            let middlePoints: Point[] = [];
+            this.screens.forEach(slave => {
+                let centroid = slave.centroid;
+                middlePoints.push(centroid);
+            });
+            middlePoints.sort(function(a, b) {
+                if (a.x - b.x == 0) {
+                    return a.y - b.y;
+                } else {
+                    return a.x - b.x;
+                }
+            });
+            const triangulation = delauney(middlePoints);
+            this.screens.forEach(screen => {
+                let sendData = triangulation.sendData(screen, this.screens);
+                client.sendTriangulationData(
+                    sendData.lines,
+                    sendData.point,
+                    sendData.middlePoint,
+                    sendData.triang,
+                    sendData.ID
                 );
             });
         }
