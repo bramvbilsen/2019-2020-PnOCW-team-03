@@ -127,6 +127,11 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.animationStateChange,
                             this.changeAniamtionState
+                        ),
+
+                        this._socket.on(
+                            SlaveEventTypes.showAnimation,
+                            this.animate
                         )
                     );
                 } else {
@@ -619,9 +624,8 @@ class Client {
         });
     };
 
-    public changeAniamtionState() {
-        this.clientStorage.animating =
-            this.clientStorage.animating == false ? true : false;
+    public changeAniamtionState(msg: { state: boolean }) {
+        this.clientStorage.animating = msg.state;
     }
 
     public animate = (msg: {
@@ -684,7 +688,11 @@ class Client {
                 endPos,
             });
         } else {
-            //via emit naar volgende slave gaan
+            this._socket.emit(MasterEventTypes.nextLine, {
+                passingSlaves: newPassingslaves,
+                currPos: checkPoint,
+                endPos,
+            });
         }
     };
 }

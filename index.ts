@@ -270,15 +270,36 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
         msg.slaves.forEach(id => {
-            io.to(id).emit(SlaveEventTypes.animationStateChange, {});
+            io.to(id).emit(SlaveEventTypes.animationStateChange, {
+                state: true,
+            });
         });
     });
 
     socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
         msg.slaves.forEach(id => {
-            io.to(id).emit(SlaveEventTypes.animationStateChange, {});
+            io.to(id).emit(SlaveEventTypes.animationStateChange, {
+                state: false,
+            });
         });
     });
+
+    socket.on(
+        MasterEventTypes.nextLine,
+        (msg: {
+            passingSlaves: {
+                point: { x: number; y: number };
+                slaveId: string;
+            }[];
+            currPos: { x: number; y: number };
+            endPos: { x: number; y: number };
+        }) => {
+            io.to(msg.passingSlaves[0].slaveId).emit(
+                SlaveEventTypes.showAnimation,
+                msg
+            );
+        }
+    );
 });
 
 server.listen(port, () => {
