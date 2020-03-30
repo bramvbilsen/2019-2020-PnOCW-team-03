@@ -1,8 +1,13 @@
 import Point from "../screen_detection/Point";
 
 export interface linkedMiddlePoint {
-    slaveIds: string[];
+    linkedLine: linkedLine[];
     linkedMiddlePoint: Point;
+}
+
+export interface linkedLine {
+    point: Point;
+    slaveId: string;
 }
 
 export default class MiddlePoint {
@@ -14,6 +19,10 @@ export default class MiddlePoint {
         this.linkedMiddlePoints = linkedMiddlePoints;
     }
 
+    /**
+     * Chooses a random point that is linked with this.middlePoint following the triangulation
+     * returns that point + the slaves it needs to cross to get there(linkedLine)
+     */
     next() {
         return this.linkedMiddlePoints[
             Math.floor(Math.random() * this.linkedMiddlePoints.length)

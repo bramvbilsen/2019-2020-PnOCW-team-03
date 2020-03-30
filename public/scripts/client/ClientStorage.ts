@@ -52,7 +52,10 @@ export default class ClientStorage {
         points: { x: number; y: number }[],
         middlepoint: { x: number; y: number },
         linkedMiddlePoints: {
-            slaveIds: string[];
+            linkedLine: {
+                point: { x: number; y: number };
+                slaveId: string;
+            }[];
             linkedMiddlePoint: { x: number; y: number };
         }[]
     ) {
@@ -70,7 +73,15 @@ export default class ClientStorage {
                 new Point(middlepoint.x, middlepoint.y),
                 linkedMiddlePoints.map(function(element) {
                     return {
-                        slaveIds: element.slaveIds,
+                        linkedLine: element.linkedLine.map(element => {
+                            return {
+                                point: new Point(
+                                    element.point.x,
+                                    element.point.y
+                                ),
+                                slaveId: element.slaveId,
+                            };
+                        }),
                         linkedMiddlePoint: new Point(
                             element.linkedMiddlePoint.x,
                             element.linkedMiddlePoint.y

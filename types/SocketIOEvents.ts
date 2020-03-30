@@ -23,6 +23,7 @@ export enum SlaveEventTypes {
     receiveCutData = "receive-cut-data",
     receiveTriangulationData = "receive-triangulation-data",
     Reset = "reset",
+    animationStateChange = "animation-state-change",
 }
 
 export enum MasterEventTypes {
@@ -43,4 +44,6 @@ export enum MasterEventTypes {
     sendCutData = "send-cut-data",
     sendTriangulationData = "send-triangulation-data",
     ResetSlave = "reset-slave",
+    startAnimation = "start-animation",
+    stopAnimation = "stop-animation",
 }

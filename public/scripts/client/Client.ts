@@ -122,6 +122,11 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.receiveTriangulationData,
                             this.receiveTriangulationData
+                        ),
+
+                        this._socket.on(
+                            SlaveEventTypes.animationStateChange,
+                            this.changeAniamtionState
                         )
                     );
                 } else {
@@ -559,7 +564,10 @@ class Client {
         points: { x: number; y: number }[],
         middlepoint: { x: number; y: number },
         linkedMiddlePoints: {
-            slaveIds: string[];
+            linkedLine: {
+                point: { x: number; y: number };
+                slaveId: string;
+            }[];
             linkedMiddlePoint: { x: number; y: number };
         }[],
         slaveID: string
@@ -581,7 +589,10 @@ class Client {
         points: { x: number; y: number }[];
         middlepoint: { x: number; y: number };
         linkedMiddlePoints: {
-            slaveIds: string[];
+            linkedLine: {
+                point: { x: number; y: number };
+                slaveId: string;
+            }[];
             linkedMiddlePoint: { x: number; y: number };
         }[];
     }) => {
@@ -593,27 +604,88 @@ class Client {
         );
     };
 
-    public startAnimation = () => {};
+    public startAnimation = () => {
+        let slaves = this.slaves;
+        this._socket.emit(MasterEventTypes.stopAnimation, {
+            slaves,
+        });
+        //TODO: aan eerste slave doorgeven om animatie te starten
+    };
 
-    public stopAnimation = () => {};
+    public stopAnimation = () => {
+        let slaves = this.slaves;
+        this._socket.emit(MasterEventTypes.startAnimation, {
+            slaves,
+        });
+    };
+
+    public changeAniamtionState() {
+        this.clientStorage.animating =
+            this.clientStorage.animating == false ? true : false;
+    }
 
     public animate = (msg: {
-        slaveIds: string[];
+        passingSlaves: {
+            point: { x: number; y: number };
+            slaveId: string;
+        }[];
         currPos: { x: number; y: number };
         endPos: { x: number; y: number };
     }) => {
-        let slaveIds = msg.slaveIds;
+        let passingSlaves = msg.passingSlaves.map(Element => {
+            return {
+                point: new Point(Element.point.x, Element.point.x),
+                slaveId: Element.slaveId,
+            };
+        });
         let currPos = msg.currPos;
         let endPos = msg.endPos;
-        if (endPos == null || slaveIds.length == 0) {
+
+        //voor initialisatie animatie
+        if (endPos == null) {
             let next = this.clientStorage.triangulation.middlePoint.next();
             endPos = next.linkedMiddlePoint;
-            slaveIds = next.slaveIds;
+            passingSlaves = next.linkedLine;
         }
-        slaveIds.shift(); //deepcopy?
-        //hier moet dan animatieframe worden gemaakt, teken informatie staat in ClientStorage
-        //wanneer er uit het beeld is gegaan moet er een emit naar eerste slaveId in SLaveIds worden
-        //gestuurd met diezelfde lijst, currPos(die werd geupdate) en de endPoss(die na lijntje 612 ongewijzigd is gebleven)
+        let x = currPos.x;
+        let y = currPos.y;
+        let checkPoint =
+            passingSlaves.length != 0 ? passingSlaves[0].point : endPos;
+        //animeren over de rico van currpos to endposs
+        //lines en points voor tekenen van triangulation staan in ClientStorage
+        //elke frame checken of checkpoint is bereikt, zo ja breek animationloop en ga naar code hieronder
+
+        //eindpunt is bereikt en dus een nieuwe
+        if (passingSlaves.length == 0) {
+            let next = this.clientStorage.triangulation.middlePoint.next();
+            endPos = next.linkedMiddlePoint;
+            passingSlaves = next.linkedLine;
+        }
+        //naar de volgende slave gaan
+        let nextSlave =
+            passingSlaves.length > 1
+                ? passingSlaves[1].slaveId
+                : passingSlaves[0].slaveId;
+        //de overige slaves die nog moeten worden gepasseerd
+        let newPassingslaves: {
+            //TODO: interface van maken
+            point: { x: number; y: number };
+            slaveId: string;
+        }[] = [];
+        for (let index = 1; index < passingSlaves.length; index++) {
+            newPassingslaves.push(passingSlaves[index]);
+        }
+        //moeten voor volgend deel van de animatie starten can checkpoint
+        //if true, dan is de volgende slave dezelfde en moeten we geen emit sturen
+        if (nextSlave == passingSlaves[0].slaveId) {
+            this.animate({
+                passingSlaves: newPassingslaves,
+                currPos: checkPoint,
+                endPos,
+            });
+        } else {
+            //via emit naar volgende slave gaan
+        }
     };
 }
 

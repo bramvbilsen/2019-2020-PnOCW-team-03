@@ -97,13 +97,16 @@ export default class Triangulation {
                 linkedPoints.push(line.endPoints[0]);
             }
         });
-        let slaveIds: string[][];
+        let linkedLine: {
+            point: { x: number; y: number };
+            slaveId: string;
+        }[][];
         linkedLines.forEach(Element => {
-            slaveIds.push(this.findSlaves(centroid, Element, allSlaves));
+            linkedLine.push(this.findSlaves(centroid, Element, allSlaves));
         });
-        let triang = linkedLines.map(function(element, index) {
+        let triang = linkedLine.map(function(element, index) {
             return {
-                slaveIds: slaveIds[index],
+                linkedLine: element,
                 linkedMiddlePoint: {
                     x: linkedPoints[index].x,
                     y: linkedPoints[index].y,
@@ -120,23 +123,24 @@ export default class Triangulation {
     }
 
     findSlaves(middle: Point, line: Line, slaves: SlaveScreen[]) {
-        let points: Point[] = [];
-        let pointsToSlave: {
-            [key: string]: Point;
-        } = {};
+        let points: {
+            point: Point;
+            slaveId: string;
+        }[] = [];
         slaves.forEach(element => {
             let inter = this.findIntersections(line, element);
-            if (inter != null) {
-                points.push(inter);
-                pointsToSlave[element.slaveID] = inter;
+            for (let index = 0; index < inter.length; index++) {
+                points.push({ point: inter[index], slaveId: element.slaveID });
             }
         });
         points.sort(function(a, b) {
+            let point1 = a.point;
+            let point2 = b.point;
             //points van links naar reecht(als gelijk van boven naar onder)
-            if (a.x - b.x == 0) {
-                return a.y - b.y;
+            if (point1.x - point2.x == 0) {
+                return point1.y - point2.y;
             } else {
-                return a.x - b.x;
+                return point1.x - point2.x;
             }
         });
         let otherPoint: Point;
@@ -152,16 +156,17 @@ export default class Triangulation {
             points.reverse();
         }
         let returnstr = points.map(element => {
-            return Object.keys(pointsToSlave).find(
-                key => pointsToSlave[key] === element
-            );
+            return {
+                point: { x: element.point.x, y: element.point.y },
+                slaveId: element.slaveId,
+            };
         });
         return returnstr;
     }
 
     findIntersections(line: Line, slave: SlaveScreen) {
-        //nog met edges werken
         const endPoints = line.endPoints;
+        //deze volgorde maakt op zich niet zo veel uit
         const leftUp = this.stringToPoint(
             slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
             slave
@@ -178,7 +183,7 @@ export default class Triangulation {
             slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
             slave
         );
-        let cuttingPoints = null;
+        let cuttingPoints: Point[] = [];
 
         let Up = checkIntersection(
             leftUp.x,
@@ -191,7 +196,7 @@ export default class Triangulation {
             endPoints[1].y
         );
         if (Up.type == "intersecting") {
-            cuttingPoints = new Point(Up.point.x, Up.point.y);
+            cuttingPoints.push(new Point(Up.point.x, Up.point.y));
         }
         let Right = checkIntersection(
             rightUnder.x,
@@ -204,7 +209,7 @@ export default class Triangulation {
             endPoints[1].y
         );
         if (Right.type == "intersecting") {
-            cuttingPoints = new Point(Right.point.x, Right.point.y);
+            cuttingPoints.push(new Point(Right.point.x, Right.point.y));
         }
         let Left = checkIntersection(
             leftUp.x,
@@ -217,7 +222,7 @@ export default class Triangulation {
             endPoints[1].y
         );
         if (Left.type == "intersecting") {
-            cuttingPoints = new Point(Left.point.x, Left.point.y);
+            cuttingPoints.push(new Point(Left.point.x, Left.point.y));
         }
         let Under = checkIntersection(
             rightUnder.x,
@@ -230,7 +235,7 @@ export default class Triangulation {
             endPoints[1].y
         );
         if (Under.type == "intersecting") {
-            cuttingPoints = new Point(Under.point.x, Under.point.y);
+            cuttingPoints.push(new Point(Under.point.x, Under.point.y));
         }
         return cuttingPoints;
     }

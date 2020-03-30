@@ -213,36 +213,35 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     //zijn overbodig
-    socket.on(
-        MasterEventTypes.ShowAnimationOnSlave,
-        (msg: {
-            slaveId: string;
-            startTime: any;
-            animationLine: any;
-            angles: any;
-            lines: any;
-            duration: any;
-            last: any;
-            next: any;
-        }) => {
-            if (socket.id === connections.master.id) {
-                io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
-            }
-        }
-    );
+    // socket.on(
+    //     MasterEventTypes.ShowAnimationOnSlave,
+    //     (msg: {
+    //         slaveId: string;
+    //         startTime: any;
+    //         animationLine: any;
+    //         angles: any;
+    //         lines: any;
+    //         duration: any;
+    //         last: any;
+    //         next: any;
+    //     }) => {
+    //         if (socket.id === connections.master.id) {
+    //             io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
+    //         }
+    //     }
+    // );
 
-    socket.on(SlaveEventTypes.animationFinished, () => {
-        console.log("dabbende steve, lit, u mama is so fat");
-        io.to(connections.masterID).emit(MasterEventTypes.nextLine, {});
-    });
+    // socket.on(SlaveEventTypes.animationFinished, () => {
+    //     console.log("dabbende steve, lit, u mama is so fat");
+    //     io.to(connections.masterID).emit(MasterEventTypes.nextLine, {});
+    // });
 
-    socket.on(
-        MasterEventTypes.triangulationShow,
-        (msg: { slaveId: string; angles: any; lines: any }) => {
-            io.to(msg.slaveId).emit(SlaveEventTypes.linesShow, msg);
-        }
-    );
-    //
+    // socket.on(
+    //     MasterEventTypes.triangulationShow,
+    //     (msg: { slaveId: string; angles: any; lines: any }) => {
+    //         io.to(msg.slaveId).emit(SlaveEventTypes.linesShow, msg);
+    //     }
+    // );
 
     socket.on(
         MasterEventTypes.sendCutData,
@@ -268,6 +267,18 @@ io.on("connect", (socket: socketio.Socket) => {
             io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
         }
     );
+
+    socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
+        msg.slaves.forEach(id => {
+            io.to(id).emit(SlaveEventTypes.animationStateChange, {});
+        });
+    });
+
+    socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
+        msg.slaves.forEach(id => {
+            io.to(id).emit(SlaveEventTypes.animationStateChange, {});
+        });
+    });
 });
 
 server.listen(port, () => {
