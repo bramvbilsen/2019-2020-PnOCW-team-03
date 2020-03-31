@@ -186,6 +186,22 @@ export function resetMaster() {
                 client.stopAnimation();
             });
 
+        $("#start-video-button")
+            .off()
+            .on("click", async () => {
+                client.notifySlavesOfStartTimeVideo();
+            });
+        $("#pause-video-button")
+            .off()
+            .on("click", async () => {
+                client.PauseVideo();
+            });
+        $("#stop-video-button")
+            .off()
+            .on("click", async () => {
+                client.StopVideo();;
+            });
+
         $(".pink")
             .off()
             .click(() => {

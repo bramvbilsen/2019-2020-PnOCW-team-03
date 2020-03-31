@@ -109,7 +109,7 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.StopVideo,
                             this.stopVideoEvent
-                        )
+                        ),
                         //DEZE SOCKETS ZIJN GESLOTEN
                         // this._socket.on(
                         //     SlaveEventTypes.DisplayTriangulationOnSlave,
@@ -493,6 +493,55 @@ class Client {
             new p5(this.countdownSketch);
         }, eta_ms);
     };
+
+     /**
+     * Emit to each slave the starttime of the video (10 seconds ahead from now).
+     * Each slave gets the server time plus or minus its own delay.
+     */
+    public notifySlavesOfStartTimeVideo = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
+            );
+        } else {
+            let startTime = new Date().getTime() + 10000;
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
+                startTime,
+                slaveIds,
+            });
+        }
+    };
+
+
+    public PauseVideo = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO pause video.\nNot executing command!"
+            );
+        } else {
+            let startTime = new Date().getTime() + 10000;
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.PauseVideoOnSlaves, {
+                startTime,
+                slaveIds,
+            });
+        }
+    };
+
+    public StopVideo = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO stop video.\nNot executing command!"
+            );
+        } else {
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.StopVideoOnSlaves, {
+                slaveIds,
+            });
+        }
+    };
+
 
 
     /**
