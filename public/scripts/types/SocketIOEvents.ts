@@ -26,7 +26,7 @@ export enum SlaveEventTypes {
     animationStateChange = "animation-state-change",
     StartVideo = "start-video",
     StopVideo = "stop-video",
-    PauseVideo = "pause-video",
+    PauseVideo = "pause-video"
 }
 
 export enum MasterEventTypes {
@@ -49,7 +49,7 @@ export enum MasterEventTypes {
     ResetSlave = "reset-slave",
     startAnimation = "start-animation",
     stopAnimation = "stop-animation",
-    StartVideo = "start-video",
-    StopVideo = "stop-video",
-    PauseVideo = "pause-video",
+    StartVideoOnSlaves = "start-video-on-slaves",
+    StopVideoOnSlaves = "stop-video-on-slaves",
+    PauseVideoOnSlaves = "pause-video-on-slaves"
 }
