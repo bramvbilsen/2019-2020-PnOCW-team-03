@@ -8,7 +8,7 @@ import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
 import delauney from "../image_processing/Triangulation/Delaunay";
-import { slaveFlowHandler } from "../../index";
+import { client, slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
@@ -484,6 +484,41 @@ class Client {
             new p5(this.countdownSketch);
         }, eta_ms);
     };
+
+
+    /**
+     * Draw the video on client
+     * TODO: PJ en Bas
+     */
+    public videoDisplaySketch(p: p5) => {
+
+        const initVideo= function() => {
+            video.loop();
+            video.volume(0);
+        };
+
+        p.setup = function() {
+            const fps = 30;
+            p.frameRate(fps);
+            p.noCanvas();
+            const video = p.createVideo(['Zet hier in path naar video'], initVideo());
+            video.size();
+        };
+
+    }
+
+
+    /**
+     * Starts the video event
+     */
+    private startVideoEvent = (msg: { startTime: number }): void => {
+        const eta_ms = msg.startTime - Date.now();
+        setTimeout(() => {
+            new p5(this.videoDisplaySketch);
+        }, eta_ms);
+    };
+
+
 
     /**
      * Updates the displayed number of slaves on the master.
