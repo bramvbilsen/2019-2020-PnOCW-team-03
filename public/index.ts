@@ -189,17 +189,17 @@ export function resetMaster() {
         $("#start-video-button")
             .off()
             .on("click", async () => {
-                client.notifySlavesOfStartTimeVideo();
+                client.StartVideoOnSlaves();
             });
         $("#pause-video-button")
             .off()
             .on("click", async () => {
-                client.PauseVideo();
+                client.PauseVideoOnSlaves();
             });
         $("#stop-video-button")
             .off()
             .on("click", async () => {
-                client.StopVideo();;
+                client.StopVideoOnSlaves();;
             });
 
         $(".pink")

@@ -107,6 +107,10 @@ class Client {
                             this.startVideoEvent
                         ),
                         this._socket.on(
+                            SlaveEventTypes.PauseVideo,
+                            this.PauseVideoEvent
+                        ),
+                        this._socket.on(
                             SlaveEventTypes.StopVideo,
                             this.stopVideoEvent
                         ),
@@ -498,7 +502,7 @@ class Client {
      * Emit to each slave the starttime of the video (10 seconds ahead from now).
      * Each slave gets the server time plus or minus its own delay.
      */
-    public notifySlavesOfStartTimeVideo = () => {
+    public StartVideoOnSlaves = () => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
@@ -514,7 +518,7 @@ class Client {
     };
 
 
-    public PauseVideo = () => {
+    public PauseVideoOnSlaves = () => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO pause video.\nNot executing command!"
@@ -529,7 +533,7 @@ class Client {
         }
     };
 
-    public StopVideo = () => {
+    public StopVideoOnSlaves = () => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO stop video.\nNot executing command!"
@@ -541,6 +545,8 @@ class Client {
             });
         }
     };
+
+    
 
 
 
@@ -582,6 +588,21 @@ class Client {
             new p5(this.videoDisplaySketch);
         }, eta_ms);
     };
+
+    /**
+     * Stops the video event
+     */
+    private stopVideoEvent = (): void => {
+
+    };
+
+    /**
+     * Pauses the video event
+     */
+    private PauseVideoEvent = (): void => {
+
+    };
+
 
     /**
      * Continuous sync of videos, HOWTO?
