@@ -102,6 +102,14 @@ class Client {
                             SlaveEventTypes.DisplayImage,
                             this.displayImage
                         ),
+                        this._socket.on(
+                            SlaveEventTypes.StartVideo,
+                            this.startVideoEvent
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.StopVideo,
+                            this.stopVideoEvent
+                        )
                         //DEZE SOCKETS ZIJN GESLOTEN
                         // this._socket.on(
                         //     SlaveEventTypes.DisplayTriangulationOnSlave,
@@ -495,6 +503,8 @@ class Client {
         function initVideo(video : p5.MediaElement){
             video.loop();
             video.volume(0);
+
+
         }
         /**
         const initVideo= function() => {
@@ -526,6 +536,12 @@ class Client {
         }, eta_ms);
     };
 
+    /**
+     * Continuous sync of videos, HOWTO?
+     */
+    public syncVideoEvents(video: p5.MediaElement){
+        //video.speed()
+    }
 
 
     /**
