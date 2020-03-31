@@ -1,6 +1,7 @@
 import Line from "../image_processing/screen_detection/Line";
 import MiddlePoint from "../image_processing/Triangulation/MiddlePoint";
 import Point from "../image_processing/screen_detection/Point";
+import p5 from "p5";
 
 const linSystem = require("linear-equation-system");
 
@@ -20,14 +21,16 @@ export default class ClientStorage {
     matrix3d: string;
     srcPoints: SrcPoints;
     triangulation: {
-        lines: Line[]; //lijnen voor triangulatie te tekenen
-        points: Point[]; //de punten voor de triangulatie te tekenen
-        middlePoint: MiddlePoint; //info voor volgende lijn te bepalen
+        lines: Line[];
+        points: Point[];
     };
-    animating: boolean;
+    positionBall: Point;
+    eenheidsVector: Point;
+    animation: p5;
 
     constructor() {
-        this.animating = false;
+        //this.animating = false;
+        //p5 initialiseren
     }
 
     /**
@@ -49,15 +52,7 @@ export default class ClientStorage {
 
     addTriangulation(
         lines: { x1: number; y1: number; x2: number; y2: number }[],
-        points: { x: number; y: number }[],
-        middlepoint: { x: number; y: number },
-        linkedMiddlePoints: {
-            linkedLine: {
-                point: { x: number; y: number };
-                slaveId: string;
-            }[];
-            linkedMiddlePoint: { x: number; y: number };
-        }[]
+        points: { x: number; y: number }[]
     ) {
         this.triangulation = {
             lines: lines.map(function(element) {
@@ -69,26 +64,6 @@ export default class ClientStorage {
             points: points.map(function(element) {
                 return new Point(element.x, element.y);
             }),
-            middlePoint: new MiddlePoint(
-                new Point(middlepoint.x, middlepoint.y),
-                linkedMiddlePoints.map(function(element) {
-                    return {
-                        linkedLine: element.linkedLine.map(element => {
-                            return {
-                                point: new Point(
-                                    element.point.x,
-                                    element.point.y
-                                ),
-                                slaveId: element.slaveId,
-                            };
-                        }),
-                        linkedMiddlePoint: new Point(
-                            element.linkedMiddlePoint.x,
-                            element.linkedMiddlePoint.y
-                        ),
-                    };
-                })
-            ),
         };
     }
 
