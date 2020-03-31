@@ -22,6 +22,7 @@ import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
+import "p5/lib/addons/p5.dom";
 
 const {
     checkIntersection,
@@ -490,19 +491,25 @@ class Client {
      * Draw the video on client
      * TODO: PJ en Bas
      */
-    public videoDisplaySketch(p: p5) => {
-
+    public videoDisplaySketch = (p: p5) => {
+        function initVideo(video : p5.MediaElement){
+            video.loop();
+            video.volume(0);
+        }
+        /**
         const initVideo= function() => {
             video.loop();
             video.volume(0);
         };
+         */
 
         p.setup = function() {
             const fps = 30;
             p.frameRate(fps);
             p.noCanvas();
-            const video = p.createVideo(['Zet hier in path naar video'], initVideo());
-            video.size();
+            let video = p.createVideo(['Zet hier in path naar video'], initVideo);
+            //video 100% displayen, dus geen size oproepen
+            initVideo(video);
         };
 
     }
@@ -512,6 +519,7 @@ class Client {
      * Starts the video event
      */
     private startVideoEvent = (msg: { startTime: number }): void => {
+        //Hier code van synchronisatie elke 5 sec
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
             new p5(this.videoDisplaySketch);
