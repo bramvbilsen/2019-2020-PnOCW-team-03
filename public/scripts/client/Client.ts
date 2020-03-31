@@ -503,8 +503,6 @@ class Client {
         function initVideo(video : p5.MediaElement){
             video.loop();
             video.volume(0);
-
-
         }
         /**
         const initVideo= function() => {
@@ -522,7 +520,7 @@ class Client {
             initVideo(video);
         };
 
-    }
+    };
 
 
     /**
@@ -541,7 +539,7 @@ class Client {
      */
     public syncVideoEvents(video: p5.MediaElement){
         //video.speed()
-    }
+    };
 
 
     /**
