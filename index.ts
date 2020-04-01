@@ -257,17 +257,12 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on(
         MasterEventTypes.sendTriangulationData,
-        (msg: {
-            lines: any;
-            points: any;
-            middlepoint: any;
-            linkedMiddlePoints: any;
-            slaveID: string;
-        }) => {
+        (msg: { lines: any; points: any; slaveID: string }) => {
             io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
         }
     );
 
+    //moet nog aangepast worden
     socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
         msg.slaves.forEach(id => {
             io.to(id).emit(SlaveEventTypes.animationStateChange, {
@@ -283,23 +278,6 @@ io.on("connect", (socket: socketio.Socket) => {
             });
         });
     });
-
-    socket.on(
-        MasterEventTypes.nextLine,
-        (msg: {
-            passingSlaves: {
-                point: { x: number; y: number };
-                slaveId: string;
-            }[];
-            currPos: { x: number; y: number };
-            endPos: { x: number; y: number };
-        }) => {
-            io.to(msg.passingSlaves[0].slaveId).emit(
-                SlaveEventTypes.showAnimation,
-                msg
-            );
-        }
-    );
 });
 
 server.listen(port, () => {

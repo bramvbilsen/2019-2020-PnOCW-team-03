@@ -22,6 +22,7 @@ import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
+import Animation from "./Animation";
 
 const {
     checkIntersection,
@@ -41,6 +42,7 @@ class Client {
     private currentNb = 11;
     private startAnimationTime: number;
     private clientStorage: ClientStorage;
+    public animation: Animation;
 
     /**
      * Color that the user wants to display on the slave.
@@ -80,6 +82,7 @@ class Client {
             (data: { type: ConnectionType }) => {
                 this._type = data.type;
                 this._slaves = [];
+                this.animation = new Animation(this._socket);
                 this.removeNewSocketIOEmitters();
                 const socketIOEmittersForNewType: Array<SocketIOClient.Emitter> = [];
                 if (this.type === ConnectionType.SLAVE) {
@@ -122,16 +125,6 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.receiveTriangulationData,
                             this.receiveTriangulationData
-                        ),
-
-                        this._socket.on(
-                            SlaveEventTypes.animationStateChange,
-                            this.changeAniamtionState
-                        ),
-
-                        this._socket.on(
-                            SlaveEventTypes.showAnimation,
-                            this.animate
                         )
                     );
                 } else {
@@ -347,7 +340,7 @@ class Client {
         loadImage(data.imgUrl + "?" + Math.random()).then(img => {
             const canvas = createCanvas(
                 this.clientStorage.boundingBoxWidth,
-                this.clientStorage.boundingBoxWidth
+                this.clientStorage.boundingBoxHeight
             );
             const ctx = canvas.getContext("2d");
             ctx.drawImage(
@@ -567,21 +560,11 @@ class Client {
     public sendTriangulationData = (
         lines: { x1: number; y1: number; x2: number; y2: number }[],
         points: { x: number; y: number }[],
-        middlepoint: { x: number; y: number },
-        linkedMiddlePoints: {
-            linkedLine: {
-                point: { x: number; y: number };
-                slaveId: string;
-            }[];
-            linkedMiddlePoint: { x: number; y: number };
-        }[],
         slaveID: string
     ) => {
         this._socket.emit(MasterEventTypes.sendTriangulationData, {
             lines,
             points,
-            middlepoint,
-            linkedMiddlePoints,
             slaveID,
         });
     };
@@ -592,108 +575,19 @@ class Client {
     public receiveTriangulationData = (msg: {
         lines: { x1: number; y1: number; x2: number; y2: number }[];
         points: { x: number; y: number }[];
-        middlepoint: { x: number; y: number };
-        linkedMiddlePoints: {
-            linkedLine: {
-                point: { x: number; y: number };
-                slaveId: string;
-            }[];
-            linkedMiddlePoint: { x: number; y: number };
-        }[];
     }) => {
-        this.clientStorage.addTriangulation(
-            msg.lines,
-            msg.points,
-            msg.middlepoint,
-            msg.linkedMiddlePoints
-        );
+        this.clientStorage.addTriangulation(msg.lines, msg.points);
     };
 
     public startAnimation = () => {
-        let slaves = this.slaves;
-        this._socket.emit(MasterEventTypes.stopAnimation, {
-            slaves,
-        });
-        //TODO: aan eerste slave doorgeven om animatie te starten
+        this.animation.animate();
     };
 
     public stopAnimation = () => {
-        let slaves = this.slaves;
-        this._socket.emit(MasterEventTypes.startAnimation, {
-            slaves,
-        });
-    };
-
-    public changeAniamtionState(msg: { state: boolean }) {
-        this.clientStorage.animating = msg.state;
-    }
-
-    public animate = (msg: {
-        passingSlaves: {
-            point: { x: number; y: number };
-            slaveId: string;
-        }[];
-        currPos: { x: number; y: number };
-        endPos: { x: number; y: number };
-    }) => {
-        let passingSlaves = msg.passingSlaves.map(Element => {
-            return {
-                point: new Point(Element.point.x, Element.point.x),
-                slaveId: Element.slaveId,
-            };
-        });
-        let currPos = msg.currPos;
-        let endPos = msg.endPos;
-
-        //voor initialisatie animatie
-        if (endPos == null) {
-            let next = this.clientStorage.triangulation.middlePoint.next();
-            endPos = next.linkedMiddlePoint;
-            passingSlaves = next.linkedLine;
-        }
-        let x = currPos.x;
-        let y = currPos.y;
-        let checkPoint =
-            passingSlaves.length != 0 ? passingSlaves[0].point : endPos;
-        //animeren over de rico van currpos to endposs
-        //lines en points voor tekenen van triangulation staan in ClientStorage
-        //elke frame checken of checkpoint is bereikt, zo ja breek animationloop en ga naar code hieronder
-
-        //eindpunt is bereikt en dus een nieuwe
-        if (passingSlaves.length == 0) {
-            let next = this.clientStorage.triangulation.middlePoint.next();
-            endPos = next.linkedMiddlePoint;
-            passingSlaves = next.linkedLine;
-        }
-        //naar de volgende slave gaan
-        let nextSlave =
-            passingSlaves.length > 1
-                ? passingSlaves[1].slaveId
-                : passingSlaves[0].slaveId;
-        //de overige slaves die nog moeten worden gepasseerd
-        let newPassingslaves: {
-            //TODO: interface van maken
-            point: { x: number; y: number };
-            slaveId: string;
-        }[] = [];
-        for (let index = 1; index < passingSlaves.length; index++) {
-            newPassingslaves.push(passingSlaves[index]);
-        }
-        //moeten voor volgend deel van de animatie starten can checkpoint
-        //if true, dan is de volgende slave dezelfde en moeten we geen emit sturen
-        if (nextSlave == passingSlaves[0].slaveId) {
-            this.animate({
-                passingSlaves: newPassingslaves,
-                currPos: checkPoint,
-                endPos,
-            });
-        } else {
-            this._socket.emit(MasterEventTypes.nextLine, {
-                passingSlaves: newPassingslaves,
-                currPos: checkPoint,
-                endPos,
-            });
-        }
+        // let slaves = this.slaves;
+        // this._socket.emit(MasterEventTypes.startAnimation, {
+        //     slaves,
+        // });
     };
 }
 

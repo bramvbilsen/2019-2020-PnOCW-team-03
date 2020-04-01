@@ -1,12 +1,13 @@
 import Point from "../screen_detection/Point";
 
+//TODO: class herbekijken
 export interface linkedMiddlePoint {
     linkedLine: linkedLine[];
     linkedMiddlePoint: Point;
 }
 
 export interface linkedLine {
-    point: Point;
+    point: Point[];
     slaveId: string;
 }
 

@@ -72,6 +72,7 @@ export default class Triangulation {
         this.lines.splice(this.lines.indexOf(line), 1);
     }
 
+    //TODO: functie opsplitsen
     sendData(slave: SlaveScreen, allSlaves: SlaveScreen[]) {
         const sendLines = this.lines.map(element => {
             return {
@@ -90,7 +91,7 @@ export default class Triangulation {
         this.lines.forEach(line => {
             if (line.endPoints[0].equals(centroid)) {
                 linkedLines.push(line);
-                linkedPoints.push(line.endPoints[0]);
+                linkedPoints.push(line.endPoints[1]);
             }
             if (line.endPoints[1].equals(centroid)) {
                 linkedLines.push(line);
@@ -98,7 +99,7 @@ export default class Triangulation {
             }
         });
         let linkedLine: {
-            point: { x: number; y: number };
+            point: Point[];
             slaveId: string;
         }[][];
         linkedLines.forEach(Element => {
@@ -107,16 +108,13 @@ export default class Triangulation {
         let triang = linkedLine.map(function(element, index) {
             return {
                 linkedLine: element,
-                linkedMiddlePoint: {
-                    x: linkedPoints[index].x,
-                    y: linkedPoints[index].y,
-                },
+                linkedMiddlePoint: linkedPoints[index],
             };
         });
         return {
             lines: sendLines,
             point: points,
-            middlePoint: { x: centroid.x, y: centroid.y },
+            middlePoint: centroid,
             triang,
             ID: slave.slaveID,
         };
@@ -124,44 +122,31 @@ export default class Triangulation {
 
     findSlaves(middle: Point, line: Line, slaves: SlaveScreen[]) {
         let points: {
-            point: Point;
+            point: Point[];
             slaveId: string;
         }[] = [];
         slaves.forEach(element => {
             let inter = this.findIntersections(line, element);
-            for (let index = 0; index < inter.length; index++) {
-                points.push({ point: inter[index], slaveId: element.slaveID });
+            if (inter.length > 0) {
+                if (inter.length == 1) {
+                    inter.push(element.centroid);
+                }
+                points.push({ point: inter, slaveId: element.slaveID });
             }
         });
-        points.sort(function(a, b) {
-            let point1 = a.point;
-            let point2 = b.point;
-            //points van links naar reecht(als gelijk van boven naar onder)
-            if (point1.x - point2.x == 0) {
-                return point1.y - point2.y;
-            } else {
-                return point1.x - point2.x;
-            }
-        });
-        let otherPoint: Point;
-        if (middle.equals(line.endPoints[0])) {
-            otherPoint = line.endPoints[1];
-        } else {
-            otherPoint = line.endPoints[0];
+        const endPoints = line.endPoints;
+        let diff = {
+            x: endPoints[1].x - endPoints[0].x,
+            y: endPoints[1].y - endPoints[0].y,
+        };
+        if (endPoints[1].equals(middle)) {
+            diff.x *= -1;
+            diff.y *= -1;
         }
-        if (
-            middle.x - otherPoint.x > 0 ||
-            (middle.x - otherPoint.x == 0 && middle.y - otherPoint.y > 0)
-        ) {
-            points.reverse();
-        }
-        let returnstr = points.map(element => {
-            return {
-                point: { x: element.point.x, y: element.point.y },
-                slaveId: element.slaveId,
-            };
+        points.forEach(element => {
+            //switchen als volgorde niet overeen komt
         });
-        return returnstr;
+        return points;
     }
 
     findIntersections(line: Line, slave: SlaveScreen) {

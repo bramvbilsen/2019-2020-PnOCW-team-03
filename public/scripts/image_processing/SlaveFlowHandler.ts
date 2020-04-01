@@ -15,6 +15,7 @@ import { flattenOneLevel } from "../util/arrays";
 import Point from "./screen_detection/Point";
 import delauney from "./Triangulation/Delaunay";
 import Line from "./screen_detection/Line";
+import MiddlePoint from "./Triangulation/MiddlePoint";
 
 /**
  * An enumeration of all the different steps of the automatic screen detection.
@@ -148,15 +149,17 @@ export default class SlaveFlowHandler {
                     return a.x - b.x;
                 }
             });
+            //TODO: dit efficienter maken
             const triangulation = delauney(middlePoints);
             this.screens.forEach(screen => {
                 let sendData = triangulation.sendData(screen, this.screens);
                 client.sendTriangulationData(
                     sendData.lines,
                     sendData.point,
-                    sendData.middlePoint,
-                    sendData.triang,
                     sendData.ID
+                );
+                client.animation.middlePoints.push(
+                    new MiddlePoint(sendData.middlePoint, sendData.triang)
                 );
             });
         }
