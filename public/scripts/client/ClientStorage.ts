@@ -24,6 +24,7 @@ export default class ClientStorage {
         lines: Line[];
         points: Point[];
     };
+    //animation stuff
     positionBall: Point;
     eenheidsVector: Point;
     animation: p5;
@@ -40,11 +41,18 @@ export default class ClientStorage {
         );
     }
 
+    animate() {
+        this.animation.noLoop();
+        //nieuwe informatie
+        this.animation.loop();
+    }
+
     public animationSketch = (p: p5) => {
         p.setup = function() {
             const fps = 40;
             p.frameRate(fps);
             this.p5Canvas.id("animation");
+            p.noLoop();
         };
 
         p.draw = () => {
@@ -55,10 +63,8 @@ export default class ClientStorage {
                 this.positionBall.x + dx,
                 this.positionBall.y + dy
             );
-            if (false) {
-                // TODO: buiten screen
+            if (this.outOfBound) {
                 p.noLoop();
-                // TODO: let master activate next line & update animationVector
             }
             drawBall();
         };
@@ -69,6 +75,10 @@ export default class ClientStorage {
             p.ellipse(this.positionBall.x, this.positionBall.y, 100, 100);
         }
     };
+
+    outOfBound() {
+        return true;
+    }
 
     /**
      * Updates this ClientStorage instance with the new, given data.

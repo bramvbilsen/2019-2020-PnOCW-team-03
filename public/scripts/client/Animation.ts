@@ -21,7 +21,7 @@ export default class Animation {
     }
 
     animateLoop() {
-        let delay = 0;
+        let delay = 10000;
         this.timeToNextLine = Date.now() + delay;
         this.timeToNextLine = this.sendLine();
         while (this.animating) {
