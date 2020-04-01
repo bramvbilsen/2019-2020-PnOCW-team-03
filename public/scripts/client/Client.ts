@@ -8,7 +8,7 @@ import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
 import delauney from "../image_processing/Triangulation/Delaunay";
-import { slaveFlowHandler } from "../../index";
+import { client, slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
@@ -23,6 +23,7 @@ import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
 import Animation from "./Animation";
+import "p5/lib/addons/p5.dom";
 
 const {
     checkIntersection,
@@ -103,6 +104,18 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.DisplayImage,
                             this.displayImage
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.StartVideo,
+                            this.startVideoEvent
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.PauseVideo,
+                            this.PauseVideoEvent
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.StopVideo,
+                            this.stopVideoEvent
                         ),
                         //DEZE SOCKETS ZIJN GESLOTEN
                         // this._socket.on(
@@ -477,6 +490,110 @@ class Client {
             new p5(this.countdownSketch);
         }, eta_ms);
     };
+
+    /**
+     * Emit to each slave the starttime of the video (10 seconds ahead from now).
+     * Each slave gets the server time plus or minus its own delay.
+     */
+    public StartVideoOnSlaves = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
+            );
+        } else {
+            let startTime = new Date().getTime() + 10000;
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
+                startTime,
+                slaveIds,
+            });
+        }
+    };
+
+    public PauseVideoOnSlaves = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO pause video.\nNot executing command!"
+            );
+        } else {
+            let startTime = new Date().getTime() + 10000;
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.PauseVideoOnSlaves, {
+                startTime,
+                slaveIds,
+            });
+        }
+    };
+
+    public StopVideoOnSlaves = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO stop video.\nNot executing command!"
+            );
+        } else {
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.StopVideoOnSlaves, {
+                slaveIds,
+            });
+        }
+    };
+
+    /**
+     * Draw the video on client
+     * TODO: PJ en Bas
+     */
+    public videoDisplaySketch = (p: p5) => {
+        function initVideo(video: p5.MediaElement) {
+            video.loop();
+            video.volume(0);
+        }
+        /**
+        const initVideo= function() => {
+            video.loop();
+            video.volume(0);
+        };
+         */
+
+        p.setup = function() {
+            const fps = 30;
+            p.frameRate(fps);
+            p.noCanvas();
+            let video = p.createVideo(
+                ["Zet hier in path naar video"],
+                initVideo
+            );
+            //video 100% displayen, dus geen size oproepen
+            initVideo(video);
+        };
+    };
+
+    /**
+     * Starts the video event
+     */
+    private startVideoEvent = (msg: { startTime: number }): void => {
+        //Hier code van synchronisatie elke 5 sec
+        const eta_ms = msg.startTime - Date.now();
+        setTimeout(() => {
+            new p5(this.videoDisplaySketch);
+        }, eta_ms);
+    };
+
+    /**
+     * Stops the video event
+     */
+    private stopVideoEvent = (): void => {};
+
+    /**
+     * Pauses the video event
+     */
+    private PauseVideoEvent = (): void => {};
+
+    /**
+     * Continuous sync of videos, HOWTO?
+     */
+    public syncVideoEvents(video: p5.MediaElement) {
+        //video.speed()
+    }
 
     /**
      * Updates the displayed number of slaves on the master.

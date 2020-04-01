@@ -27,11 +27,48 @@ export default class ClientStorage {
     positionBall: Point;
     eenheidsVector: Point;
     animation: p5;
+    p5Canvas: any;
+    distancePerFrame = 0.5;
 
     constructor() {
         //this.animating = false;
         //p5 initialiseren
+        this.animation = new p5(this.animationSketch);
+        this.p5Canvas = this.animation.createCanvas(
+            this.boundingBoxWidth,
+            this.boundingBoxHeight
+        );
     }
+
+    public animationSketch = (p: p5) => {
+        p.setup = function() {
+            const fps = 40;
+            p.frameRate(fps);
+            this.p5Canvas.id("animation");
+        };
+
+        p.draw = () => {
+            p.clear();
+            const dx = this.distancePerFrame * this.eenheidsVector.x;
+            const dy = this.distancePerFrame * this.eenheidsVector.y;
+            this.positionBall = new Point(
+                this.positionBall.x + dx,
+                this.positionBall.y + dy
+            );
+            if (false) {
+                // TODO: buiten screen
+                p.noLoop();
+                // TODO: let master activate next line & update animationVector
+            }
+            drawBall();
+        };
+
+        function drawBall() {
+            p.stroke(0, 0, 0, 0);
+            p.fill("blue");
+            p.ellipse(this.positionBall.x, this.positionBall.y, 100, 100);
+        }
+    };
 
     /**
      * Updates this ClientStorage instance with the new, given data.

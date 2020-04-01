@@ -23,6 +23,9 @@ export enum SlaveEventTypes {
     receiveCutData = "receive-cut-data",
     receiveTriangulationData = "receive-triangulation-data",
     Reset = "reset",
+    StartVideo = "start-video",
+    StopVideo = "stop-video",
+    PauseVideo = "pause-video",
 }
 
 export enum MasterEventTypes {
@@ -45,4 +48,7 @@ export enum MasterEventTypes {
     ResetSlave = "reset-slave",
     startAnimation = "start-animation",
     stopAnimation = "stop-animation",
+    StartVideoOnSlaves = "start-video-on-slaves",
+    StopVideoOnSlaves = "stop-video-on-slaves",
+    PauseVideoOnSlaves = "pause-video-on-slaves",
 }

@@ -163,6 +163,49 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     socket.on(
+        MasterEventTypes.StartVideoOnSlaves,
+        (msg: { startTime: Date; slaveIds: Array<string> }) => {
+            if (socket.id === connections.master.id) {
+                console.log("Attempting to start video by master");
+                msg.slaveIds.forEach(id => {
+                    io.to(id).emit(SlaveEventTypes.StartVideo, {
+                        startTime: msg.startTime,
+                    });
+                });
+            }
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.PauseVideoOnSlaves,
+        (msg: { startTime: Date; slaveIds: Array<string> }) => {
+            if (socket.id === connections.master.id) {
+                msg.slaveIds.forEach(id => {
+                    io.to(id).emit(SlaveEventTypes.PauseVideo, {
+                        startTime: msg.startTime,
+                    });
+                });
+            }
+        }
+    );
+    
+    socket.on(
+        MasterEventTypes.StopVideoOnSlaves,
+        (msg: { startTime: Date; slaveIds: Array<string> }) => {
+            if (socket.id === connections.master.id) {
+                msg.slaveIds.forEach(id => {
+                    io.to(id).emit(SlaveEventTypes.StopVideo, {
+                        startTime: msg.startTime,
+                    });
+                });
+            }
+        }
+    );
+
+
+
+
+    socket.on(
         MasterEventTypes.ToggleSlaveOrientationColors,
         (msg: {
             slaveId: string;
