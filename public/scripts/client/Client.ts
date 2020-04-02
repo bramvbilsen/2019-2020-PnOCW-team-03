@@ -485,7 +485,7 @@ class Client {
         // if (oldCanvas) {
         //     oldCanvas.remove();
         // }
-        const eta_ms = msg.startTime - Date.now();
+        const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
             new p5(this.countdownSketch);
         }, eta_ms);
