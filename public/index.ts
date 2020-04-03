@@ -1,40 +1,156 @@
-import handleCameraInput from "./scripts/camera";
 import Client from "./scripts/client/Client";
-import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler from "./scripts/image_processing/SlaveFlowHandler";
 import run_tests from "./tests/run";
-import downloadTests from "./tests/download";
-import { createCanvas } from "./scripts/image_processing/screen_detection/screen_detection";
 import env from "./env/env";
-import { loadImage } from "./scripts/util/images";
-import { BoundingBox } from "./scripts/util/BoundingBox";
-import { flattenOneLevel } from "./scripts/util/arrays";
-import { createImageCanvasForSlave } from "./scripts/util/ImageCutHandler";
-import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
+import { MasterHTMLElem } from "./scripts/jsHtml/master/MasterHtml";
+import {
+    CameraOverlay,
+    CameraEnvironmentChangeOverlay,
+    CameraScreenColorsOverlay,
+} from "./scripts/jsHtml/master/camera/cameraOverlays";
+import {
+    ConfirmScreensButton,
+    CameraSettingsOpenButton,
+} from "./scripts/jsHtml/master/camera/camera_buttons";
+import { CameraSettings } from "./scripts/jsHtml/master/camera/settings/CameraSettings";
+import { CameraSettingsCloseButon } from "./scripts/jsHtml/master/camera/settings/CameraSettingsCloseButton";
+import {
+    SettingSlidersEnv,
+    SettingsSlidersScreen,
+    SettingsSlidersBlobRange,
+} from "./scripts/jsHtml/master/camera/settings/slidersRanges";
+import {
+    CameraSettingsBlobRangeButton,
+    CameraSettingsEnvRangeButton,
+    CameraSettingsScreenRangeButton,
+} from "./scripts/jsHtml/master/camera/settings/cameraSettingsRangeButtons";
+import { CameraRangeSelectionContainer } from "./scripts/jsHtml/master/camera/settings/CameraRangeSelectionContainer";
+import { CameraSlidersContainer } from "./scripts/jsHtml/master/camera/settings/cameraSlidersContainers";
+import { SettingsSlidersBackButton } from "./scripts/jsHtml/master/camera/settings/SettingsSlidersBackButton";
+import { IHSLRange } from "./scripts/types/Color";
+import { Camera } from "./scripts/jsHtml/master/camera/camera";
+// import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
 });
 
 export let slaveFlowHandler: SlaveFlowHandler;
+//@ts-ignore
+window.slaveFlowHandler = slaveFlowHandler;
 
 //@ts-ignore
 window.client = client;
-//@ts-ignore
-window.findScreen = findScreen;
-//@ts-ignore
-//window.imageDisplayHandler = imageDisplayHandler(slaveFlowHandler.screens);
+
+function initMasterAfterWelcomeUI() {
+    const blobPixelDistance = 5;
+    const similarScreenColorRange: IHSLRange = {
+        hRange: 65,
+        sRange: 50,
+        lRange: 40,
+    };
+    const diffEnvRange: IHSLRange = {
+        hRange: 20,
+        sRange: 100,
+        lRange: 100,
+    };
+
+    new MasterHTMLElem().scale(1);
+    window.scrollTo(0, 1);
+
+    const cameraOverlayCanvas = new CameraOverlay();
+    const cameraOverlayCtx = cameraOverlayCanvas.elem.getContext("2d");
+
+    new ConfirmScreensButton().onClick(() => console.log("confirmed"));
+    new CameraSettingsOpenButton().onClick(() => {
+        console.log("settings");
+        new CameraSettings().show();
+    });
+    new CameraSettingsCloseButon().onClick(() => new CameraSettings().hide());
+
+    const settingsSlidersEnv = new SettingSlidersEnv();
+    const settingsSlidersScreen = new SettingsSlidersScreen();
+    const settingsSlidersBlobRange = new SettingsSlidersBlobRange();
+
+    settingsSlidersBlobRange.value = blobPixelDistance;
+    settingsSlidersBlobRange.updateText();
+    settingsSlidersBlobRange.onValueChange(val => {
+        settingsSlidersBlobRange.updateText();
+        cameraOverlayCtx.beginPath();
+        cameraOverlayCtx.moveTo(10, 10);
+        cameraOverlayCtx.lineTo(10 + val, 10);
+        cameraOverlayCtx.closePath();
+        cameraOverlayCtx.strokeStyle = "rgb(255, 0, 50)";
+        cameraOverlayCtx.stroke();
+    });
+    new CameraSettingsBlobRangeButton().onClick(() => {
+        new CameraRangeSelectionContainer().hide();
+        new CameraSlidersContainer().show();
+        settingsSlidersBlobRange.show();
+        settingsSlidersEnv.hide();
+        settingsSlidersScreen.hide();
+    });
+
+    settingsSlidersEnv.hue = diffEnvRange.hRange;
+    settingsSlidersEnv.saturation = diffEnvRange.sRange;
+    settingsSlidersEnv.light = diffEnvRange.lRange;
+    settingsSlidersEnv.onHueChange(_ => settingsSlidersEnv.updateHueText());
+    settingsSlidersEnv.onSaturationChange(_ =>
+        settingsSlidersEnv.updateSaturationText()
+    );
+    settingsSlidersEnv.onLightChange(_ => settingsSlidersEnv.updateLightText());
+    new CameraSettingsEnvRangeButton().onClick(() => {
+        new CameraRangeSelectionContainer().hide();
+        new CameraSlidersContainer().show();
+        new CameraEnvironmentChangeOverlay().show();
+        settingsSlidersEnv.show();
+        settingsSlidersBlobRange.hide();
+        settingsSlidersScreen.hide();
+    });
+
+    settingsSlidersScreen.hue = similarScreenColorRange.hRange;
+    settingsSlidersScreen.saturation = similarScreenColorRange.sRange;
+    settingsSlidersScreen.light = similarScreenColorRange.lRange;
+    settingsSlidersScreen.onHueChange(_ =>
+        settingsSlidersScreen.updateHueText()
+    );
+    settingsSlidersScreen.onSaturationChange(_ =>
+        settingsSlidersScreen.updateSaturationText()
+    );
+    settingsSlidersScreen.onLightChange(_ =>
+        settingsSlidersScreen.updateLightText()
+    );
+    new CameraSettingsScreenRangeButton().onClick(() => {
+        new CameraRangeSelectionContainer().hide();
+        new CameraSlidersContainer().show();
+        new CameraScreenColorsOverlay().show();
+        settingsSlidersEnv.hide();
+        settingsSlidersBlobRange.hide();
+        settingsSlidersScreen.show();
+    });
+
+    new SettingsSlidersBackButton().onClick(() => {
+        cameraOverlayCtx.clearRect(
+            0,
+            0,
+            cameraOverlayCanvas.width,
+            cameraOverlayCanvas.height
+        );
+        new CameraSlidersContainer().hide();
+        new CameraEnvironmentChangeOverlay().hide();
+        new CameraScreenColorsOverlay().hide();
+        new CameraRangeSelectionContainer().show();
+    });
+}
 
 export function resetMaster() {
     const startButton = $("#start");
-    const startAutomatedButton = $("#start-automated");
     const nextSlaveButton = $("#next-slave");
     const captureSlaveButton = $("#capture-slave");
     const showOrientationButton = $("#show-orientation-button");
     const captureOrientationButton = $("#capture-orientation");
     const loadingMasterIndicator = $("#loading-master-indicator");
-    const resetButton = $("#reset");
     const welcomeMaster = $("#welcome-master");
     const startMasterButton = $("#start-master-button");
     const mainFlowMaster = $("#main-flow-master");
@@ -43,11 +159,11 @@ export function resetMaster() {
     const uploadImage = $("#upload-image-to-display");
     const displayImage = $("#display-uploaded-image");
 
-    const {
-        canvas: triangulationCanvas,
-        id: triangulationCanvasID,
-    } = createTriangulationCanvas();
-    welcomeMaster.append(triangulationCanvas);
+    // const {
+    //     canvas: triangulationCanvas,
+    //     id: triangulationCanvasID,
+    // } = createTriangulationCanvas();
+    // welcomeMaster.append(triangulationCanvas);
 
     mainFlowMaster.hide();
     startButton.hide();
@@ -66,75 +182,29 @@ export function resetMaster() {
     });
     welcomeMaster.css("display", "inherit");
 
-    startMasterButton.off().on("click", () => {
-        triangulationCanvas.remove();
+    startMasterButton.off().on("click", async () => {
+        // triangulationCanvas.remove();
         if (client.slaves.length === 0) {
             //@ts-ignore
             $("#welcome-master-no-slave-toast").toast("show");
             return;
         }
-        slaveFlowHandler = new SlaveFlowHandler();
-        //@ts-ignore
-        window.slaveFlowHandler = slaveFlowHandler;
 
-        welcomeMaster.css("display", "none");
-        mainFlowMaster.css("display", "inherit");
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        $("#player-overlay").css("width", "640px");
-        $("#player-overlay").css("height", "480px");
+        welcomeMaster.hide();
+        mainFlowMaster.css("display", "flex");
 
-        startButton.show();
-        startAutomatedButton.hide();
+        initMasterAfterWelcomeUI();
 
-        startAutomatedButton.off().on("click", () => {
-            slaveFlowHandler.automated = true;
-            startAutomatedButton.hide();
-            startButton.hide();
-            slaveFlowHandler.nextStep();
-        });
-        startButton.off().on("click", () => {
-            startAutomatedButton.hide();
-            slaveFlowHandler.takeNoColorPicture();
-            nextSlaveButton.toggle();
-        });
-        nextSlaveButton.off().on("click", () => {
-            slaveFlowHandler.showColorOnNextSlave();
-            nextSlaveButton.toggle();
-            captureSlaveButton.toggle();
-        });
-        captureSlaveButton.off().on("click", async () => {
-            loadingMasterIndicator.show();
-            captureSlaveButton.toggle();
-            await slaveFlowHandler.takePictureOfColoredScreen();
-        });
-        showOrientationButton.off().on("click", () => {
-            slaveFlowHandler.showOrientationOnSlave();
-            showOrientationButton.toggle();
-            captureOrientationButton.toggle();
-        });
-        captureOrientationButton.off().on("click", () => {
-            slaveFlowHandler.takePictureOfSlaveOrientation();
-            captureOrientationButton.toggle();
-        });
-        resetButton.off().on("click", () => {
-            slaveFlowHandler.reset();
-        });
+        const camera = new Camera();
+        await camera.start();
+
+        slaveFlowHandler = new SlaveFlowHandler(camera);
+        slaveFlowHandler.detect();
 
         $("#display-countdown-button")
             .off()
             .on("click", async () => {
                 client.notifySlavesOfStartTimeCounter();
-                /*
-                const img = await loadImage(
-                    env.baseUrl + "/images/creeper-left.png"
-                );
-                const imgCanvas = createCanvas(img.width, img.height);
-                imgCanvas.getContext("2d").drawImage(img, 0, 0);
-
-                slaveFlowHandler.screens.forEach(screen => {
-                    client.showCanvasImgOnSlave(screen.slaveID, imgCanvas);
-                });
-                */
             });
 
         $("#display-unicorn-img-button")
@@ -199,7 +269,7 @@ export function resetMaster() {
         $("#stop-video-button")
             .off()
             .on("click", async () => {
-                client.StopVideoOnSlaves();;
+                client.StopVideoOnSlaves();
             });
 
         $(".pink")
@@ -252,7 +322,7 @@ $(() => {
     $(document).keyup(e => {
         if (e.key === "r") {
             if (slaveFlowHandler) {
-                slaveFlowHandler.reset();
+                // slaveFlowHandler.reset();
             }
         }
     });
@@ -263,9 +333,6 @@ function onConnectionTypeChange(type: ConnectionType) {
     console.log("Changed type to: " + type);
     const page: JQuery<HTMLBodyElement> = $("#page");
     const loadingElem = $("#loading");
-    if (slaveFlowHandler) {
-        slaveFlowHandler.reset();
-    }
     if (client.type == ConnectionType.MASTER) {
         page.css("background-color", `rgb(77, 154, 227)`); //changing master color to sky blue
         $("#countdown").css("display", "none");
@@ -274,7 +341,7 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#master").css("display", "inherit");
         $("#welcome-master").css("display", "inherit");
         $("#main-flow-master").css("display", "none");
-        handleCameraInput();
+        resetMaster();
     } else {
         page.css("background-color", `rgb(76, 175, 80)`); //changing client color to leprechaun green
         loadingElem.css("display", "none");

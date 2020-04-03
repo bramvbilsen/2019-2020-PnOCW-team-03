@@ -1,36 +1,18 @@
-import { client, resetMaster } from "../../index";
-import findScreen, { createCanvas } from "./screen_detection/screen_detection";
+import { client } from "../../index";
 import SlaveScreen from "../util/SlaveScreen";
-import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
-import calculateScreenAngle from "./orientation_detection/orientation_detection_alternative";
+import { Camera } from "../jsHtml/master/camera/camera";
 import {
-    PREFERRED_CANVAS_HEIGHT,
-    PREFERRED_CANVAS_WIDTH,
-    DEFAULT_NON_COLORED_SLAVE_COLOR,
-} from "../CONSTANTS";
-import { createCameraOverlayWithPoints } from "../util/canvas";
-import { CornerLabels } from "../types/Points";
-import { BoundingBox } from "../util/BoundingBox";
-import { flattenOneLevel } from "../util/arrays";
-import Point from "./screen_detection/Point";
-import delauney from "./Triangulation/Delaunay";
-import Line from "./screen_detection/Line";
-import MiddlePoint from "./Triangulation/MiddlePoint";
-
-/**
- * An enumeration of all the different steps of the automatic screen detection.
- */
-export enum WorkflowStep {
-    BLANCO_IMAGE = "blanco image",
-    DISPLAY_SCREEN_COLOR = "display screen color",
-    DISPLAY_ORIENTATION_COLOR = "display orientation color",
-    REMOVE_SCREEN_COLOR = "remove screen color",
-    REMOVE_ORIENTATION_COLOR = "remove orientation color",
-    TAKE_AND_PROCESS_SCREEN = "take image and process slave screen",
-    TAKE_AND_PROCESS_ORIENTATION = "take image and process slave orientation",
-    END_CYCLE = "end slave cycle",
-    END = "end",
-}
+    CameraOverlay,
+    CameraEnvironmentChangeOverlay,
+    CameraScreenColorsOverlay,
+} from "../jsHtml/master/camera/cameraOverlays";
+import { DetectionBlob } from "./DetectionBlob";
+import { ScreenDetector } from "./ScreenDetector";
+import {
+    SettingSlidersEnv,
+    SettingsSlidersScreen,
+    SettingsSlidersBlobRange,
+} from "../jsHtml/master/camera/settings/slidersRanges";
 
 /**
  * Wait for the given amount of time.
@@ -42,393 +24,86 @@ export async function wait(dt: number) {
     });
 }
 
-/**
- * Retains workflow:
- *  Blanco -> Kleur -> zwart foto -> cycle slaves
- *  cycle slaves: show color -> next slave
- */
 export default class SlaveFlowHandler {
-    prevSlaveID: string;
-    currSlaveID: string;
-    currSlaveScreenFound = false;
     slaveIDs: string[];
-    origSlaveIDs: string[];
-    step: WorkflowStep;
-    blancoCanvas: HTMLCanvasElement;
-    blancoCanvasScale: number;
     screens: SlaveScreen[] = [];
-    automated: boolean = false;
+    camera: Camera;
 
-    constructor(automated?: boolean) {
-        if (automated) {
-            this.automated = automated;
-        }
-        this.step = WorkflowStep.BLANCO_IMAGE;
+    constructor(camera: Camera) {
+        this.slaveIDs = client.slaves;
+        this.camera = camera;
     }
 
-    /**
-     * Resets the colours on all slaves and resets the master.
-     */
-    public reset() {
-        $("#slave-flow-buttons").show();
-        $("#camera").show();
-        $("#display-slave-img-buttons").hide();
-        resetMaster();
-        client.slaves.forEach(screen => {
-            console.log("iterating slaves");
-            client.resetSlave(screen);
-            console.log("resetting:" + screen);
-        });
-        this.resetDebug();
-    }
+    detect() {
+        const blobsToFindCount = 5;
 
-    /**
-     * Resets the debug.
-     */
-    private resetDebug() {
-        //@ts-ignore
-        window.currentStep = 0;
-    }
+        const cameraOverlay = new CameraOverlay();
+        const cameraEnvChangeOverlay = new CameraEnvironmentChangeOverlay();
+        const cameraScreenColorsOverlay = new CameraScreenColorsOverlay();
+        const settingsSlidersEnv = new SettingSlidersEnv();
+        const settingsSlidersScreen = new SettingsSlidersScreen();
+        const settingsSlidersBlobRange = new SettingsSlidersBlobRange();
+        const cameraOverlayCtx = cameraOverlay.elem.getContext("2d");
+        const screenDetector = new ScreenDetector();
+        let detectionBlobs: DetectionBlob[] = [];
 
-    /**
-     * Ends the automatic detection for this slave.
-     * Either goes on to the next slave in the queue or finishes altogether.
-     */
-    private endSlaveCycle() {
-        this.prevSlaveID = this.currSlaveID;
-        if (this.slaveIDs.length !== 0) {
-            this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
-            this.currSlaveID = this.slaveIDs.pop();
-            if (!this.automated) {
-                $("#next-slave").show();
+        let canDetectAgain = true;
+        setInterval(() => {
+            if (!canDetectAgain) {
+                return;
             }
-            this.currSlaveScreenFound = true;
-        } else {
-            this.step = WorkflowStep.END;
-            $("#slave-flow-buttons").hide();
-            $("#camera").hide();
-            $("#display-slave-img-buttons").show();
-            const globalBoundingBox = new BoundingBox(
-                flattenOneLevel(this.screens.map(screen => screen.corners))
+            cameraOverlay.clear();
+
+            const {
+                detectionBlobs: newDetectionBlobs,
+                changedPixels,
+                pixelsWithScreenColors,
+            } = screenDetector.detect(
+                this.camera,
+                settingsSlidersEnv.toHSLRange(),
+                settingsSlidersScreen.toHSLRange(),
+                settingsSlidersBlobRange.value
             );
-            this.screens.forEach(screen => {
-                client.sendCutData(
-                    {
-                        LeftUp: screen.actualCorners.LeftUp.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                        RightUp: screen.actualCorners.RightUp.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                        RightUnder: screen.actualCorners.RightUnder.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                        LeftUnder: screen.actualCorners.LeftUnder.copyTranslated(
-                            -globalBoundingBox.topLeft.x,
-                            -globalBoundingBox.topLeft.y
-                        ).toInterface(),
-                    },
-                    globalBoundingBox.width,
-                    globalBoundingBox.height,
-                    screen.slaveID
-                );
-            });
-            //info van de triangulatie sturen
-            let middlePoints: Point[] = [];
-            this.screens.forEach(slave => {
-                let centroid = slave.centroid;
-                middlePoints.push(centroid);
-            });
-            middlePoints.sort(function(a, b) {
-                if (a.x - b.x == 0) {
-                    return a.y - b.y;
-                } else {
-                    return a.x - b.x;
-                }
-            });
-            //TODO: dit efficienter maken
-            const triangulation = delauney(middlePoints);
-            this.screens.forEach(screen => {
-                let sendData = triangulation.sendData(screen, this.screens);
-                client.sendTriangulationData(
-                    sendData.lines,
-                    sendData.point,
-                    sendData.ID
-                );
-                client.animation.middlePoints.push(
-                    new MiddlePoint(sendData.middlePoint, sendData.triang)
-                );
-            });
-        }
-    }
 
-    /**
-     * Initialises automatic slave screen detection.
-     */
-    private initialize() {
-        const startButton: JQuery<HTMLButtonElement> = $("#start");
-        startButton.css("display", "none");
-        this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
-        this.origSlaveIDs = [...this.slaveIDs];
-        this.currSlaveID = this.slaveIDs.pop();
-    }
-
-    /**
-     * Execute the next step of the automated screen detection.
-     * See enumeration of steps.
-     * (Only for automated flow!)
-     */
-    async nextStep() {
-        if (!this.automated) return;
-        if (this.automated) {
-            await wait(2500);
-        }
-        switch (this.step) {
-            case WorkflowStep.BLANCO_IMAGE:
-                console.log("AUTOMATED: TAKING BLANCO PICTURE");
-                await this.takeNoColorPicture();
-                break;
-            case WorkflowStep.DISPLAY_SCREEN_COLOR:
-                console.log("AUTOMATED: DISPLAYING COLOR");
-                this.showColorOnNextSlave();
-                break;
-            case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
-                console.log("AUTOMATED: TAKING PICTURE & PROCESSING");
-                await this.takePictureOfColoredScreen();
-                break;
-            case WorkflowStep.REMOVE_SCREEN_COLOR:
-                console.log("AUTOMATED: REMOVING COLOR");
-                this.removeScreenColorOnSlave();
-                break;
-            case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
-                console.log("AUTOMATED: DISPLAYING ORIENTATION COLOR");
-                this.showOrientationOnSlave();
-                break;
-            case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
-                console.log(
-                    "AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION"
-                );
-                await this.takePictureOfSlaveOrientation();
-                break;
-            case WorkflowStep.REMOVE_ORIENTATION_COLOR:
-                console.log("AUTOMATED: REMOVE ORIENTATION COLOR");
-                this.removeOrientationColorOnSlave();
-                break;
-            case WorkflowStep.END_CYCLE:
-                console.log("AUTOMATED: ENDING CYLCE");
-                this.endSlaveCycle();
-                break;
-            default:
-                console.log(
-                    "TRIED EXECUTING UNKOWN/UNWANTED STEP: " + this.step
-                );
-        }
-    }
-
-    /**
-     * Takes the general picture of all screens in their default state.
-     */
-    async takeNoColorPicture() {
-        this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
-        this.initialize();
-        this.currSlaveScreenFound = true;
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        const cameraWidth = player[0].videoWidth,
-            cameraHeight = player[0].videoHeight;
-
-        const { scale } = calculateCameraCanvasScaleFactor(
-            cameraWidth,
-            cameraHeight,
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        this.blancoCanvasScale = scale;
-        this.blancoCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        const blancoCtx = this.blancoCanvas.getContext("2d");
-        blancoCtx.drawImage(
-            player[0],
-            0,
-            0,
-            cameraWidth * scale,
-            cameraHeight * scale
-        );
-        $("#result-img").attr("src", this.blancoCanvas.toDataURL());
-        if (this.automated) {
-            await this.nextStep();
-        }
-    }
-
-    /**
-     * Show the colour on the next slave.
-     */
-    showColorOnNextSlave() {
-        this.step = WorkflowStep.TAKE_AND_PROCESS_SCREEN;
-        console.log("Showing color on slave");
-        client.showColorOnSlave(this.currSlaveID);
-    }
-
-    /**
-     * Take a picture of the slave screens.
-     * Assumes that one screen will be coloured.
-     * --> Should be called after `showColorOnNextSlave`.
-     */
-    async takePictureOfColoredScreen() {
-        this.step = WorkflowStep.REMOVE_SCREEN_COLOR;
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        const cameraWidth = player[0].videoWidth,
-            cameraHeight = player[0].videoHeight;
-        const { scale, along: scaledAlong } = calculateCameraCanvasScaleFactor(
-            cameraWidth,
-            cameraHeight,
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        const coloredCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        coloredCanvas
-            .getContext("2d")
-            .drawImage(
-                player[0],
-                0,
-                0,
-                cameraWidth * scale,
-                cameraHeight * scale
-            );
-        const corners = await findScreen(
-            this.blancoCanvas,
-            coloredCanvas,
-            client.color,
-            client.DEBUG
-        );
-
-        this.resetDebug();
-
-        if (corners.length !== 4) {
-            this.currSlaveScreenFound = false;
-        } else {
-            const resultCanvasWithBg = createCameraOverlayWithPoints(
-                corners,
-                cameraWidth,
-                cameraHeight,
-                scale,
-                scaledAlong,
-                this.blancoCanvas
-            );
-            const resultCanvas = createCameraOverlayWithPoints(
-                corners,
-                cameraWidth,
-                cameraHeight,
-                scale,
-                scaledAlong
-            );
-            $("#result-img").attr("src", resultCanvasWithBg.toDataURL());
-            $("#player-overlay").attr("src", resultCanvas.toDataURL());
-            this.screens.push(new SlaveScreen(corners, this.currSlaveID));
-        }
-        console.log("Screen found: " + this.currSlaveScreenFound);
-        $("#show-orientation-button").toggle();
-        $("#loading-master-indicator").toggle();
-        if (this.automated) {
-            await this.nextStep();
-        } else {
-            this.removeScreenColorOnSlave();
-        }
-    }
-
-    removeScreenColorOnSlave() {
-        this.step = WorkflowStep.DISPLAY_ORIENTATION_COLOR;
-        client.showColorOnSlave(
-            this.currSlaveID,
-            DEFAULT_NON_COLORED_SLAVE_COLOR
-        );
-    }
-
-    showOrientationOnSlave() {
-        this.step = WorkflowStep.TAKE_AND_PROCESS_ORIENTATION;
-        console.log("showing or colors");
-        client.toggleOrientationColorsOnSlave(this.currSlaveID);
-    }
-
-    /**
-     * Takes a picture of the screens.
-     * Assumes that one screen displays the correct orientation colours.
-     */
-    async takePictureOfSlaveOrientation() {
-        this.step = WorkflowStep.REMOVE_ORIENTATION_COLOR;
-        if (!this.currSlaveScreenFound) {
-            if (this.automated) {
-                this.nextStep();
-            } else {
-                this.removeOrientationColorOnSlave();
+            if (newDetectionBlobs.length >= blobsToFindCount) {
+                detectionBlobs = newDetectionBlobs
+                    .sort((blob_a, blob_b) => blob_b.area - blob_a.area)
+                    .slice(0, blobsToFindCount);
             }
-            return;
-        }
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        const cameraWidth = player[0].videoWidth,
-            cameraHeight = player[0].videoHeight;
-        const { scale } = calculateCameraCanvasScaleFactor(
-            cameraWidth,
-            cameraHeight,
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        const orientationCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        orientationCanvas
-            .getContext("2d")
-            .drawImage(
-                player[0],
-                0,
-                0,
-                cameraWidth * scale,
-                cameraHeight * scale
-            );
-        const currScreen = this.screens[this.screens.length - 1];
-        const { angle, ...cornerMapping } = calculateScreenAngle(
-            currScreen,
-            orientationCanvas
-        );
-        currScreen.angle = angle;
-        currScreen.actualCorners = cornerMapping;
-        console.log(currScreen.angle);
-        console.log(
-            "Actual Left Up maps to: " +
-                currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUp)
-        );
-        console.log(
-            "Actual Right Up maps to: " +
-                currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUp)
-        );
-        console.log(
-            "Actual Right Under maps to: " +
-                currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUnder)
-        );
-        console.log(
-            "Actual Left Under maps to: " +
-                currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder)
-        );
-        if (this.automated) {
-            await this.nextStep();
-        } else {
-            this.removeOrientationColorOnSlave();
-        }
-    }
 
-    removeOrientationColorOnSlave() {
-        this.step = WorkflowStep.END_CYCLE;
-        client.toggleOrientationColorsOnSlave(this.currSlaveID);
-        if (!this.automated) {
-            this.endSlaveCycle();
-        }
+            if (
+                cameraEnvChangeOverlay.isHidden() &&
+                cameraScreenColorsOverlay.isHidden()
+            ) {
+                detectionBlobs.forEach(blob => {
+                    blob.draw(cameraOverlayCtx, "");
+                });
+            } else if (!cameraEnvChangeOverlay.isHidden()) {
+                const ctx = cameraEnvChangeOverlay.elem.getContext("2d");
+                ctx.clearRect(
+                    0,
+                    0,
+                    cameraEnvChangeOverlay.width,
+                    cameraEnvChangeOverlay.height
+                );
+                ctx.fillStyle = "white";
+                changedPixels.forEach(pixel =>
+                    ctx.fillRect(pixel.x, pixel.y, 1, 1)
+                );
+            } else if (!cameraScreenColorsOverlay.isHidden()) {
+                const ctx = cameraScreenColorsOverlay.elem.getContext("2d");
+                ctx.clearRect(
+                    0,
+                    0,
+                    cameraScreenColorsOverlay.width,
+                    cameraScreenColorsOverlay.height
+                );
+                ctx.fillStyle = "white";
+                pixelsWithScreenColors.forEach(pixel =>
+                    ctx.fillRect(pixel.x, pixel.y, 1, 1)
+                );
+            }
+            canDetectAgain = true;
+        }, 0);
     }
 }

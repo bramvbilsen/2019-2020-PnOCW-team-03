@@ -8,7 +8,6 @@ import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
 import delauney from "../image_processing/Triangulation/Delaunay";
-import { client, slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import Line from "../image_processing/screen_detection/Line";
@@ -21,9 +20,9 @@ import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
+// import "p5/lib/addons/p5.dom";
 import ClientStorage from "./ClientStorage";
 import Animation from "./Animation";
-import "p5/lib/addons/p5.dom";
 
 const {
     checkIntersection,
@@ -145,12 +144,6 @@ class Client {
                         this._socket.on(
                             MasterEventTypes.SlaveChanges,
                             this.handleSlaveChanges
-                        )
-                    );
-                    socketIOEmittersForNewType.push(
-                        this._socket.on(
-                            MasterEventTypes.HandleNextSlaveFlowHanlderStep,
-                            this.handleNextSlaveFlowHandlerStep
                         )
                     );
                     // socketIOEmittersForNewType.push(
@@ -601,15 +594,6 @@ class Client {
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
         $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
-    };
-
-    /**
-     * Go to the next step in the current `SlaveFlowHandler`
-     */
-    public handleNextSlaveFlowHandlerStep = async (_: any) => {
-        if (slaveFlowHandler) {
-            await slaveFlowHandler.nextStep();
-        }
     };
 
     /**

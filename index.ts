@@ -35,20 +35,6 @@ app.use("/slave_images", express.static(slaveImgUploadFolder));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.post("/sync_test_result", (req, res) => {
-    const testResults: number[] = req.body;
-    createCSV({
-        fileName: "Sync_test",
-        columnNames: ["Iteration", "Offset"],
-        columnDatas: [
-            Array(testResults.length)
-                .fill(0)
-                .map((_, i) => i),
-            testResults,
-        ],
-    });
-});
-
 app.get("/", (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
@@ -188,7 +174,7 @@ io.on("connect", (socket: socketio.Socket) => {
             }
         }
     );
-    
+
     socket.on(
         MasterEventTypes.StopVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
@@ -201,9 +187,6 @@ io.on("connect", (socket: socketio.Socket) => {
             }
         }
     );
-
-
-
 
     socket.on(
         MasterEventTypes.ToggleSlaveOrientationColors,
@@ -306,21 +289,21 @@ io.on("connect", (socket: socketio.Socket) => {
     );
 
     //moet nog aangepast worden
-    socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
-        msg.slaves.forEach(id => {
-            io.to(id).emit(SlaveEventTypes.animationStateChange, {
-                state: true,
-            });
-        });
-    });
+    // socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
+    //     msg.slaves.forEach(id => {
+    //         io.to(id).emit(SlaveEventTypes.animationStateChange, {
+    //             state: true,
+    //         });
+    //     });
+    // });
 
-    socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
-        msg.slaves.forEach(id => {
-            io.to(id).emit(SlaveEventTypes.animationStateChange, {
-                state: false,
-            });
-        });
-    });
+    // socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
+    //     msg.slaves.forEach(id => {
+    //         io.to(id).emit(SlaveEventTypes.animationStateChange, {
+    //             state: false,
+    //         });
+    //     });
+    // });
 });
 
 server.listen(port, () => {
