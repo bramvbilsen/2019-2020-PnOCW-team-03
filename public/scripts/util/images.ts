@@ -18,6 +18,23 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
     });
 }
 
+/**
+ * A function to load a video on the given path.
+ * @param src The path to the video to load.
+ */
+export async function loadVideo(src: string): Promise<HTMLVideoElement> {
+    return new Promise((resolve, reject) => {
+        const vid = new HTMLVideoElement();
+        vid.src = src;
+        vid.onload = () => {
+            resolve(vid);
+        };
+        vid.onerror = err => {
+            reject(err);
+        };
+    });
+}
+
 //Fixme What does this function do?
 export function scaleAndCutBoundingBoxToImgAspectRatio(
     img: HTMLHtmlElement,

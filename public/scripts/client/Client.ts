@@ -496,18 +496,19 @@ class Client {
      * Emit to each slave the starttime of the video (10 seconds ahead from now).
      * Each slave gets the server time plus or minus its own delay.
      */
-    public StartVideoOnSlaves = () => {
+    public StartVideoOnSlaves = (videoUrl: string) => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
+            console.log("Video URL: " + videoUrl);
             let startTime = new Date().getTime() + 10000;
             let slaveIds = this.slaves;
             this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
                 startTime,
                 slaveIds,
-                videoUrl: "https://www.youtube.com/watch?v=wwDhzl_O6qY",
+                videoUrl,
             });
         }
     };
@@ -572,7 +573,7 @@ class Client {
     /**
      * Starts the video event
      */
-    private startVideoEvent = (msg: { startTime: number }): void => {
+    private startVideoEvent = (msg: { startTime: number, videoUrl: string }): void => {
         //Hier code van synchronisatie elke 5 sec
         this.hideAllSlaveLayers();
         this.moveToForeground("video-container-slave");
@@ -588,12 +589,17 @@ class Client {
         this.hideAllSlaveLayers();
         this.moveToForeground("video-container-slave");
 
+        console.log("Reached client: " + msg.videoUrl);
+
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
-            $("#video-slave").css("src", msg.videoUrl);
+            let source = document.getElementById("video-slave");
+            source.setAttribute("src", msg.videoUrl);
+            //$("#video-slave-source").css("src", msg.videoUrl);
         }, eta_ms);
 
         const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
+        video.load();
         video.play();
     };
 

@@ -189,7 +189,10 @@ export function resetMaster() {
         $("#start-video-button")
             .off()
             .on("click", async () => {
-                client.StartVideoOnSlaves();
+                console.log("Button pressed");
+                client.StartVideoOnSlaves(
+                    `${env.baseUrl}/images/bear.mp4`
+                );
             });
         $("#pause-video-button")
             .off()

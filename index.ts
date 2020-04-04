@@ -165,6 +165,7 @@ io.on("connect", (socket: socketio.Socket) => {
     socket.on(
         MasterEventTypes.StartVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string>; videoUrl: string }) => {
+            console.log("Reached server: " + msg.videoUrl);
             if (socket.id === connections.master.id) {
                 console.log("Attempting to start video by master");
                 msg.slaveIds.forEach(id => {
