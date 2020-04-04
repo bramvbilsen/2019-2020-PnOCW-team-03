@@ -164,12 +164,13 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on(
         MasterEventTypes.StartVideoOnSlaves,
-        (msg: { startTime: Date; slaveIds: Array<string> }) => {
+        (msg: { startTime: Date; slaveIds: Array<string>; videoUrl: string }) => {
             if (socket.id === connections.master.id) {
                 console.log("Attempting to start video by master");
                 msg.slaveIds.forEach(id => {
                     io.to(id).emit(SlaveEventTypes.StartVideo, {
                         startTime: msg.startTime,
+                        videoUrl: msg.videoUrl,
                     });
                 });
             }
@@ -201,9 +202,6 @@ io.on("connect", (socket: socketio.Socket) => {
             }
         }
     );
-
-
-
 
     socket.on(
         MasterEventTypes.ToggleSlaveOrientationColors,
@@ -305,22 +303,22 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
-    //moet nog aangepast worden
-    socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
-        msg.slaves.forEach(id => {
-            io.to(id).emit(SlaveEventTypes.animationStateChange, {
-                state: true,
-            });
-        });
-    });
+    // //moet nog aangepast worden
+    // socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
+    //     msg.slaves.forEach(id => {
+    //         io.to(id).emit(SlaveEventTypes.animationStateChange, {
+    //             state: true,
+    //         });
+    //     });
+    // });
 
-    socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
-        msg.slaves.forEach(id => {
-            io.to(id).emit(SlaveEventTypes.animationStateChange, {
-                state: false,
-            });
-        });
-    });
+    // socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
+    //     msg.slaves.forEach(id => {
+    //         io.to(id).emit(SlaveEventTypes.animationStateChange, {
+    //             state: false,
+    //         });
+    //     });
+    // });
 });
 
 server.listen(port, () => {

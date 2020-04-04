@@ -23,7 +23,7 @@ import { colortest } from "../../tests/color_detection/colorTesting";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
 import Animation from "./Animation";
-import "p5/lib/addons/p5.dom";
+//import "p5/lib/addons/p5.dom";
 
 const {
     checkIntersection,
@@ -107,7 +107,7 @@ class Client {
                         ),
                         this._socket.on(
                             SlaveEventTypes.StartVideo,
-                            this.startVideoEvent
+                            this.startVideoEventWithoutP5
                         ),
                         this._socket.on(
                             SlaveEventTypes.PauseVideo,
@@ -403,6 +403,7 @@ class Client {
         $("#pink-color").css("z-index", -2);
         $("#orientation-colors").css("z-index", -2);
         $("#image-container-slave").css("z-index", -2);
+        $("#video-container-slave").css("z-index", -2);
     }
     public moveToForeground(elemName: string) {
         $("#" + elemName).css("z-index", 1);
@@ -506,6 +507,7 @@ class Client {
             this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
                 startTime,
                 slaveIds,
+                videoUrl: "https://www.youtube.com/watch?v=wwDhzl_O6qY",
             });
         }
     };
@@ -572,21 +574,51 @@ class Client {
      */
     private startVideoEvent = (msg: { startTime: number }): void => {
         //Hier code van synchronisatie elke 5 sec
+        this.hideAllSlaveLayers();
+        this.moveToForeground("video-container-slave");
+
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
             new p5(this.videoDisplaySketch);
         }, eta_ms);
     };
 
+    private startVideoEventWithoutP5 = (msg: { startTime: number, videoUrl: string }): void => {
+        //Hier code van synchronisatie elke 5 sec
+        this.hideAllSlaveLayers();
+        this.moveToForeground("video-container-slave");
+
+        const eta_ms = msg.startTime - Date.now();
+        setTimeout(() => {
+            $("#video-slave").css("src", msg.videoUrl);
+        }, eta_ms);
+
+        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
+        video.play();
+    };
+
     /**
      * Stops the video event
      */
-    private stopVideoEvent = (): void => {};
+    private stopVideoEvent = (): void => {
+        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
+        video.pause();
+
+        this.hideAllSlaveLayers();
+        this.moveToForeground("default-slave-state");
+    };
 
     /**
      * Pauses the video event
      */
-    private PauseVideoEvent = (): void => {};
+    private PauseVideoEvent = (): void => {
+        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
+        if (! video.paused) {
+            video.pause();
+        } else {
+            video.play();
+        }
+    };
 
     /**
      * Continuous sync of videos, HOWTO?
