@@ -22,10 +22,9 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
  * A function to load a video on the given path.
  * @param src The path to the video to load.
  */
-export async function loadVideo(src: string): Promise<HTMLVideoElement> {
+export async function loadVideo(vid: HTMLVideoElement): Promise<HTMLVideoElement> {
     return new Promise((resolve, reject) => {
-        const vid = new HTMLVideoElement();
-        vid.src = src;
+        vid.load();
         vid.onload = () => {
             resolve(vid);
         };

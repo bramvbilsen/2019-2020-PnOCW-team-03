@@ -16,7 +16,7 @@ import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import SlaveScreen from "../util/SlaveScreen";
 import Triangulation from "../image_processing/Triangulation/Triangulation";
-import { loadImage } from "../util/images";
+import { loadImage, loadVideo } from "../util/images";
 import { wait } from "../image_processing/SlaveFlowHandler";
 import { CornerLabels } from "../types/Points";
 import { colortest } from "../../tests/color_detection/colorTesting";
@@ -446,7 +446,8 @@ class Client {
             p.frameRate(fps);
             const p5Canvas = p.createCanvas(windowWidth, windowHeight);
             p5Canvas.id("fullScreen");
-
+            this.hideAllSlaveLayers();
+            this.moveToForeground("fullScreen");
             initCountdown();
         };
 
@@ -456,6 +457,8 @@ class Client {
             this.currentNb = Math.floor(10 - elapsedTime / 1000);
             if (this.currentNb <= 0) {
                 p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+                this.hideAllSlaveLayers();
+                this.moveToForeground("default-slave-state");
                 $("#fullScreen").remove();
             }
             drawNb();
@@ -588,19 +591,18 @@ class Client {
         //Hier code van synchronisatie elke 5 sec
         this.hideAllSlaveLayers();
         this.moveToForeground("video-container-slave");
-
+        
+        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
         console.log("Reached client: " + msg.videoUrl);
+        video.setAttribute("src", msg.videoUrl);
+        video.load();
 
         const eta_ms = msg.startTime - Date.now();
-        setTimeout(() => {
-            let source = document.getElementById("video-slave");
-            source.setAttribute("src", msg.videoUrl);
-            //$("#video-slave-source").css("src", msg.videoUrl);
+        setTimeout(() => {  
+            video.play();  
         }, eta_ms);
+           
 
-        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
-        video.load();
-        video.play();
     };
 
     /**
@@ -608,7 +610,7 @@ class Client {
      */
     private stopVideoEvent = (): void => {
         const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
-        video.pause();
+        video.load();
 
         this.hideAllSlaveLayers();
         this.moveToForeground("default-slave-state");

@@ -112,8 +112,8 @@
                         Start video
                     </button>
                     <button type="button" class="btn btn-danger outlined-button-white"
-                    id="pause-video-button" title="Pause the video playback.">
-                        Pause video
+                    id="toggle-video-button" title="Toggle the video playback.">
+                        Toggle video
                     </button>
                     <button type="button" class="btn btn-danger outlined-button-white"
                     id="stop-video-button" title="Stop the video playback.">
@@ -165,8 +165,7 @@
             <img class="perspectiveImgSlave" id="image-slave" />
         </div>
         <div id="video-container-slave">
-            <video class="perspectiveVideoSlave" src="" id="video-slave">
-                <source src="" type="video/mp4" id="video-slave-source">
+            <video class="perspectiveVideoSlave" id="video-slave" preload autobuffer muted="muted">
             </video>
         </div>
     </div>
