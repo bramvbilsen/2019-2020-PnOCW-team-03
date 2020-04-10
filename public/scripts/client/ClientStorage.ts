@@ -2,6 +2,7 @@ import Line from "../image_processing/screen_detection/Line";
 import MiddlePoint from "../image_processing/Triangulation/MiddlePoint";
 import Point from "../image_processing/screen_detection/Point";
 import p5 from "p5";
+import { client } from "../../index";
 
 const linSystem = require("linear-equation-system");
 
@@ -28,7 +29,7 @@ export default class ClientStorage {
     positionBall: Point;
     eenheidsVector: Point;
     animation: p5;
-    p5Canvas: any;
+    p5Canvas: p5.Renderer;
     distancePerFrame = 0.5;
 
     constructor() {
@@ -41,17 +42,25 @@ export default class ClientStorage {
         );
     }
 
-    animate() {
-        this.animation.noLoop();
-        //nieuwe informatie
-        this.animation.loop();
+    animate(startTime: number, newPosition: Point, newUnitVector: Point) {
+        client.moveToForeground("animation");
+        const eta_ms = startTime - Date.now();
+        setTimeout(() => {
+            this.animation.noLoop();
+            this.positionBall = newPosition;
+            this.eenheidsVector = newUnitVector;
+            this.animation.loop();
+        }, eta_ms);
     }
 
     public animationSketch = (p: p5) => {
-        p.setup = function() {
+        p.setup = () => {
             const fps = 40;
             p.frameRate(fps);
             this.p5Canvas.id("animation");
+            const htmlcanvas = document.getElementById("animation");
+            htmlcanvas.style.transform = this.matrix3d;
+            htmlcanvas.style.transformOrigin = "0 0";
             p.noLoop();
         };
 
@@ -63,9 +72,6 @@ export default class ClientStorage {
                 this.positionBall.x + dx,
                 this.positionBall.y + dy
             );
-            if (this.outOfBound) {
-                p.noLoop();
-            }
             drawBall();
         };
 
@@ -75,10 +81,6 @@ export default class ClientStorage {
             p.ellipse(this.positionBall.x, this.positionBall.y, 100, 100);
         }
     };
-
-    outOfBound() {
-        return true;
-    }
 
     /**
      * Updates this ClientStorage instance with the new, given data.
@@ -102,13 +104,13 @@ export default class ClientStorage {
         points: { x: number; y: number }[]
     ) {
         this.triangulation = {
-            lines: lines.map(function(element) {
+            lines: lines.map(function (element) {
                 return new Line(
                     new Point(element.x1, element.y1),
                     new Point(element.x2, element.y2)
                 );
             }),
-            points: points.map(function(element) {
+            points: points.map(function (element) {
                 return new Point(element.x, element.y);
             }),
         };

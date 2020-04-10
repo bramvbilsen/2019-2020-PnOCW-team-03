@@ -78,7 +78,7 @@ io.on("connect", (socket: socketio.Socket) => {
         });
     });
 
-    socket.on(SlaveEventTypes.NotifyMasterThatPictureCanBeTaken, _ => {
+    socket.on(SlaveEventTypes.NotifyMasterThatPictureCanBeTaken, (_) => {
         socket
             .to(connections.masterID)
             .emit(MasterEventTypes.HandleNextSlaveFlowHanlderStep, {});
@@ -153,7 +153,7 @@ io.on("connect", (socket: socketio.Socket) => {
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
                 console.log("Attempting to start timer by master");
-                msg.slaveIds.forEach(id => {
+                msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.SetCounterEvent, {
                         startTime: msg.startTime,
                     });
@@ -164,11 +164,15 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on(
         MasterEventTypes.StartVideoOnSlaves,
-        (msg: { startTime: Date; slaveIds: Array<string>; videoUrl: string }) => {
+        (msg: {
+            startTime: Date;
+            slaveIds: Array<string>;
+            videoUrl: string;
+        }) => {
             console.log("Reached server: " + msg.videoUrl);
             if (socket.id === connections.master.id) {
                 console.log("Attempting to start video by master");
-                msg.slaveIds.forEach(id => {
+                msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.StartVideo, {
                         startTime: msg.startTime,
                         videoUrl: msg.videoUrl,
@@ -182,7 +186,7 @@ io.on("connect", (socket: socketio.Socket) => {
         MasterEventTypes.PauseVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
-                msg.slaveIds.forEach(id => {
+                msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.PauseVideo, {
                         startTime: msg.startTime,
                     });
@@ -190,12 +194,12 @@ io.on("connect", (socket: socketio.Socket) => {
             }
         }
     );
-    
+
     socket.on(
         MasterEventTypes.StopVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
-                msg.slaveIds.forEach(id => {
+                msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.StopVideo, {
                         startTime: msg.startTime,
                     });
@@ -254,37 +258,6 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
-    //zijn overbodig
-    // socket.on(
-    //     MasterEventTypes.ShowAnimationOnSlave,
-    //     (msg: {
-    //         slaveId: string;
-    //         startTime: any;
-    //         animationLine: any;
-    //         angles: any;
-    //         lines: any;
-    //         duration: any;
-    //         last: any;
-    //         next: any;
-    //     }) => {
-    //         if (socket.id === connections.master.id) {
-    //             io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
-    //         }
-    //     }
-    // );
-
-    // socket.on(SlaveEventTypes.animationFinished, () => {
-    //     console.log("dabbende steve, lit, u mama is so fat");
-    //     io.to(connections.masterID).emit(MasterEventTypes.nextLine, {});
-    // });
-
-    // socket.on(
-    //     MasterEventTypes.triangulationShow,
-    //     (msg: { slaveId: string; angles: any; lines: any }) => {
-    //         io.to(msg.slaveId).emit(SlaveEventTypes.linesShow, msg);
-    //     }
-    // );
-
     socket.on(
         MasterEventTypes.sendCutData,
         (msg: {
@@ -304,30 +277,20 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     );
 
-    // //moet nog aangepast worden
-    // socket.on(MasterEventTypes.startAnimation, (msg: { slaves: string[] }) => {
-    //     msg.slaves.forEach(id => {
-    //         io.to(id).emit(SlaveEventTypes.animationStateChange, {
-    //             state: true,
-    //         });
-    //     });
-    // });
-
-    // socket.on(MasterEventTypes.stopAnimation, (msg: { slaves: string[] }) => {
-    //     msg.slaves.forEach(id => {
-    //         io.to(id).emit(SlaveEventTypes.animationStateChange, {
-    //             state: false,
-    //         });
-    //     });
-    // });
+    socket.on(
+        MasterEventTypes.ShowAnimationOnSlave,
+        (msg: { vector: any; position: any; start: any; slaveId: string }) => {
+            io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
+        }
+    );
 });
 
 server.listen(port, () => {
     console.log(`Server listening on port: ${port}`);
-    startListeningForServerCommands(input => {
+    startListeningForServerCommands((input) => {
         switch (input) {
             case "kill_all":
-                connections.slaves.forEach(slave => slave.disconnect());
+                connections.slaves.forEach((slave) => slave.disconnect());
                 if (connections.master) connections.master.disconnect();
                 console.log("All connections closed");
                 break;
@@ -336,7 +299,7 @@ server.listen(port, () => {
                 console.log("Master connection closed");
                 break;
             case "kill_slaves":
-                connections.slaves.forEach(slave => slave.disconnect());
+                connections.slaves.forEach((slave) => slave.disconnect());
                 console.log("Slave connections closed");
                 break;
         }

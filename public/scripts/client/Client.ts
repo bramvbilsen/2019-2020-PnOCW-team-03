@@ -75,7 +75,7 @@ class Client {
         this._sync = new Sync(this._socket);
 
         loadImage(`${env.baseUrl}/images/ball.gif`).then(
-            img => (this.bouncingBallImg = img)
+            (img) => (this.bouncingBallImg = img)
         );
 
         this._socket.on(
@@ -83,7 +83,7 @@ class Client {
             (data: { type: ConnectionType }) => {
                 this._type = data.type;
                 this._slaves = [];
-                this.animation = new Animation(this._socket);
+                this.animation = new Animation(this);
                 this.removeNewSocketIOEmitters();
                 const socketIOEmittersForNewType: Array<SocketIOClient.Emitter> = [];
                 if (this.type === ConnectionType.SLAVE) {
@@ -117,27 +117,17 @@ class Client {
                             SlaveEventTypes.StopVideo,
                             this.stopVideoEvent
                         ),
-                        //DEZE SOCKETS ZIJN GESLOTEN
-                        // this._socket.on(
-                        //     SlaveEventTypes.DisplayTriangulationOnSlave,
-                        //     this.showTriangulation
-                        // ),
-                        // this._socket.on(
-                        //     SlaveEventTypes.showAnimation,
-                        //     this.showAnimation
-                        // ),
-                        // this._socket.on(
-                        //     SlaveEventTypes.linesShow,
-                        //     this.linesShow
-                        // ),
                         this._socket.on(
                             SlaveEventTypes.receiveCutData,
                             this.receiveCutData
                         ),
-
                         this._socket.on(
                             SlaveEventTypes.receiveTriangulationData,
                             this.receiveTriangulationData
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.showAnimation,
+                            this.showAnimation
                         )
                     );
                 } else {
@@ -350,7 +340,7 @@ class Client {
      */
     private displayImage = (data: { imgUrl: string }): void => {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
-        loadImage(data.imgUrl + "?" + Math.random()).then(img => {
+        loadImage(data.imgUrl + "?" + Math.random()).then((img) => {
             const canvas = createCanvas(
                 this.clientStorage.boundingBoxWidth,
                 this.clientStorage.boundingBoxHeight
@@ -409,6 +399,10 @@ class Client {
         $("#" + elemName).css("z-index", 1);
     }
 
+    public moveToBackground(elemName: string) {
+        $("#" + elemName).css("z-index", -1);
+    }
+
     /**
      * Emit to each slave the starttime of the counter (10 seconds ahead from now).
      * Each slave gets the server time plus or minus its own delay.
@@ -441,7 +435,7 @@ class Client {
             this.startAnimationTime = performance.now();
         };
 
-        p.setup = function() {
+        p.setup = function () {
             const fps = 30; // TODO: pas aan
             p.frameRate(fps);
             const p5Canvas = p.createCanvas(windowWidth, windowHeight);
@@ -560,7 +554,7 @@ class Client {
         };
          */
 
-        p.setup = function() {
+        p.setup = function () {
             const fps = 30;
             p.frameRate(fps);
             p.noCanvas();
@@ -576,7 +570,10 @@ class Client {
     /**
      * Starts the video event
      */
-    private startVideoEvent = (msg: { startTime: number, videoUrl: string }): void => {
+    private startVideoEvent = (msg: {
+        startTime: number;
+        videoUrl: string;
+    }): void => {
         //Hier code van synchronisatie elke 5 sec
         this.hideAllSlaveLayers();
         this.moveToForeground("video-container-slave");
@@ -587,29 +584,34 @@ class Client {
         }, eta_ms);
     };
 
-    private startVideoEventWithoutP5 = (msg: { startTime: number, videoUrl: string }): void => {
+    private startVideoEventWithoutP5 = (msg: {
+        startTime: number;
+        videoUrl: string;
+    }): void => {
         //Hier code van synchronisatie elke 5 sec
         this.hideAllSlaveLayers();
         this.moveToForeground("video-container-slave");
-        
-        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
+
+        const video: HTMLVideoElement = <HTMLVideoElement>(
+            document.getElementById("video-slave")
+        );
         console.log("Reached client: " + msg.videoUrl);
         video.setAttribute("src", msg.videoUrl);
         video.load();
 
         const eta_ms = msg.startTime - Date.now();
-        setTimeout(() => {  
-            video.play();  
+        setTimeout(() => {
+            video.play();
         }, eta_ms);
-           
-
     };
 
     /**
      * Stops the video event
      */
     private stopVideoEvent = (): void => {
-        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
+        const video: HTMLVideoElement = <HTMLVideoElement>(
+            document.getElementById("video-slave")
+        );
         video.load();
 
         this.hideAllSlaveLayers();
@@ -620,8 +622,10 @@ class Client {
      * Pauses the video event
      */
     private PauseVideoEvent = (): void => {
-        const video: HTMLVideoElement = <HTMLVideoElement> document.getElementById("video-slave");
-        if (! video.paused) {
+        const video: HTMLVideoElement = <HTMLVideoElement>(
+            document.getElementById("video-slave")
+        );
+        if (!video.paused) {
             video.pause();
         } else {
             video.play();
@@ -745,6 +749,32 @@ class Client {
         // this._socket.emit(MasterEventTypes.startAnimation, {
         //     slaves,
         // });
+    };
+
+    public sendAnimation = (
+        vector: { x: number; y: number },
+        position: { x: number; y: number },
+        startTime: number,
+        slaveId: string
+    ) => {
+        const start = (startTime += this.serverTimeDiff);
+        this._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
+            vector,
+            position,
+            start,
+            slaveId,
+        });
+    };
+
+    public showAnimation = (msg: {
+        vector: { x: number; y: number };
+        position: { x: number; y: number };
+        startTime: number;
+    }) => {
+        const startTime = (msg.startTime += this.serverTimeDiff);
+        const position = new Point(msg.position.x, msg.position.y);
+        const vector = new Point(msg.vector.x, msg.vector.y);
+        this.clientStorage.animate(startTime, position, vector);
     };
 }
 

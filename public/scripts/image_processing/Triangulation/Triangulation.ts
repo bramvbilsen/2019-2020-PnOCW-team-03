@@ -74,7 +74,7 @@ export default class Triangulation {
 
     //TODO: functie opsplitsen
     sendData(slave: SlaveScreen, allSlaves: SlaveScreen[]) {
-        const sendLines = this.lines.map(element => {
+        const sendLines = this.lines.map((element) => {
             return {
                 x1: element.a.x,
                 y1: element.a.y,
@@ -82,13 +82,13 @@ export default class Triangulation {
                 y2: element.b.y,
             };
         });
-        const points = this.points.map(function(element) {
+        const points = this.points.map(function (element) {
             return { x: element.x, y: element.y };
         });
         let centroid = slave.centroid;
         let linkedLines: Line[] = [];
         let linkedPoints: Point[] = [];
-        this.lines.forEach(line => {
+        this.lines.forEach((line) => {
             if (line.endPoints[0].equals(centroid)) {
                 linkedLines.push(line);
                 linkedPoints.push(line.endPoints[1]);
@@ -102,10 +102,10 @@ export default class Triangulation {
             point: Point[];
             slaveId: string;
         }[][];
-        linkedLines.forEach(Element => {
+        linkedLines.forEach((Element) => {
             linkedLine.push(this.findSlaves(centroid, Element, allSlaves));
         });
-        let triang = linkedLine.map(function(element, index) {
+        let triang = linkedLine.map(function (element, index) {
             return {
                 linkedLine: element,
                 linkedMiddlePoint: linkedPoints[index],
@@ -125,7 +125,7 @@ export default class Triangulation {
             point: Point[];
             slaveId: string;
         }[] = [];
-        slaves.forEach(element => {
+        slaves.forEach((element) => {
             let inter = this.findIntersections(line, element);
             if (inter.length > 0) {
                 if (inter.length == 1) {
@@ -143,8 +143,17 @@ export default class Triangulation {
             diff.x *= -1;
             diff.y *= -1;
         }
-        points.forEach(element => {
-            //switchen als volgorde niet overeen komt
+        points.forEach((element) => {
+            const point = element.point;
+            const pdiffx = point[1].x - point[0].x;
+            const pdiffy = point[1].y - point[0].y;
+            if (
+                Math.sign(pdiffx) != Math.sign(diff.x) ||
+                (Math.sign(pdiffx) == 0 &&
+                    Math.sign(pdiffy) != Math.sign(diff.y))
+            ) {
+                point.reverse();
+            }
         });
         return points;
     }

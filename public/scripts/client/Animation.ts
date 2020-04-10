@@ -1,18 +1,19 @@
 import MiddlePoint from "../image_processing/Triangulation/MiddlePoint";
 import Point from "../image_processing/screen_detection/Point";
+import Client from "./Client";
 
 export default class Animation {
-    private _socket: SocketIOClient.Socket;
+    client: Client;
     middlePoints: MiddlePoint[];
     nextMiddlePoint: MiddlePoint;
     animating: boolean;
     timeToNextLine: number;
 
-    constructor(socket: SocketIOClient.Socket) {
+    constructor(client: Client) {
         this.middlePoints = [];
         this.nextMiddlePoint = this.middlePoints[0];
         this.animating = false;
-        this._socket = socket;
+        this.client = client;
     }
 
     animate() {
@@ -33,9 +34,8 @@ export default class Animation {
         const next = this.nextMiddlePoint.next();
         const linkedLine = next.linkedLine;
         const currentMidlePoint = this.nextMiddlePoint.middlePoint;
-        linkedLine.forEach(element => {
+        linkedLine.forEach((element) => {
             const point = element.point[0];
-            const endPoint = element.point[1];
             const slaveId = element.slaveId;
             const vector = {
                 x: point.x - currentMidlePoint.x,
@@ -48,19 +48,36 @@ export default class Animation {
                 x: vector.x / distance,
                 y: vector.y / distance,
             };
+            this.client.sendAnimation(
+                unitVecor,
+                point,
+                this.timeToNextLine + distance / 20,
+                slaveId
+            );
         });
-        this.nextMiddlePoint = this.middlePoints.find(Element => {
+        this.nextMiddlePoint = this.middlePoints.find((Element) => {
             next.linkedMiddlePoint == Element.middlePoint;
         });
-        return 0;
+        return (
+            Math.sqrt(
+                Math.pow(
+                    this.nextMiddlePoint.middlePoint.x - currentMidlePoint.x,
+                    2
+                ) +
+                    Math.pow(
+                        this.nextMiddlePoint.middlePoint.y -
+                            currentMidlePoint.y,
+                        2
+                    )
+            ) / 20
+        );
     }
 
-    travelTime(endpoint: Point) {}
-
     nextLineSetup(newTimeToNextLine: number) {
+        const eta_ms = this.timeToNextLine - Date.now();
         setTimeout(() => {
             this.timeToNextLine = newTimeToNextLine;
-        }, this.timeToNextLine);
+        }, eta_ms);
     }
 
     stop() {
