@@ -11,13 +11,13 @@ export default class Animation {
 
     constructor(client: Client) {
         this.middlePoints = [];
-        this.nextMiddlePoint = this.middlePoints[0];
         this.animating = false;
         this.client = client;
     }
 
     animate() {
         this.animating = true;
+        this.nextMiddlePoint = this.middlePoints[0];
         this.animateLoop();
     }
 
