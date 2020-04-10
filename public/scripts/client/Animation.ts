@@ -56,7 +56,7 @@ export default class Animation {
             );
         });
         this.nextMiddlePoint = this.middlePoints.find((Element) => {
-            next.linkedMiddlePoint == Element.middlePoint;
+            next.linkedMiddlePoint.equals(Element.middlePoint);
         });
         return (
             Math.sqrt(
