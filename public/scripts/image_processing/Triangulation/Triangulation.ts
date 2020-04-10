@@ -101,7 +101,7 @@ export default class Triangulation {
         let linkedLine: {
             point: Point[];
             slaveId: string;
-        }[][];
+        }[][] = [];
         linkedLines.forEach((Element) => {
             linkedLine.push(this.findSlaves(centroid, Element, allSlaves));
         });
