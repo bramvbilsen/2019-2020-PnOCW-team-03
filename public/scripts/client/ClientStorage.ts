@@ -29,35 +29,64 @@ export default class ClientStorage {
     positionBall: Point;
     eenheidsVector: Point;
     animation: p5;
-    p5Canvas: p5.Renderer;
-    distancePerFrame = 0.5;
+    distancePerFrame = 2;
+    endTime: number;
+    stopTime = Date.now();
 
     constructor() {
         //this.animating = false;
         //p5 initialiseren
-        this.animation = new p5(this.animationSketch);
-        this.p5Canvas = this.animation.createCanvas(
-            this.boundingBoxWidth,
-            this.boundingBoxHeight
-        );
     }
 
-    animate(startTime: number, newPosition: Point, newUnitVector: Point) {
-        client.moveToForeground("animation");
+    animate(
+        startTime: number,
+        endTime: number,
+        newPosition: Point,
+        newUnitVector: Point
+    ) {
+        const arrivelTime = Date.now();
+        console.log("Animation gestart");
+        console.log("start= " + new Date(startTime));
         const eta_ms = startTime - Date.now();
+        console.log("PUNTEEEEEEN");
+        console.log(newPosition.x);
+        console.log(newPosition.y);
+        console.log("VECTOOOOOOOOOOR");
+        console.log(newUnitVector.x);
+        console.log(newUnitVector.y);
         setTimeout(() => {
-            this.animation.noLoop();
-            this.positionBall = newPosition;
-            this.eenheidsVector = newUnitVector;
-            this.animation.loop();
+            if (this.stopTime - arrivelTime <= 0) {
+                this.positionBall = newPosition;
+                this.eenheidsVector = newUnitVector;
+                this.endTime = endTime;
+                this.animation.loop();
+            }
+            //this.animation.noLoop();
         }, eta_ms);
+    }
+    startAnimation() {
+        client.hideAllSlaveLayers();
+        client.moveToForeground("animation");
+    }
+
+    stopAnimation() {
+        client.moveToBackground("animation");
+        client.hideAllSlaveLayers();
+        client.moveToForeground("default-slave-state");
+        this.animation.noLoop();
+        this.positionBall = undefined;
+        this.stopTime = Date.now();
     }
 
     public animationSketch = (p: p5) => {
         p.setup = () => {
-            const fps = 40;
+            const fps = 30;
             p.frameRate(fps);
-            this.p5Canvas.id("animation");
+            const p5Canvas = p.createCanvas(
+                this.boundingBoxWidth,
+                this.boundingBoxHeight
+            );
+            p5Canvas.id("animation");
             const htmlcanvas = document.getElementById("animation");
             htmlcanvas.style.transform = this.matrix3d;
             htmlcanvas.style.transformOrigin = "0 0";
@@ -65,21 +94,42 @@ export default class ClientStorage {
         };
 
         p.draw = () => {
+            //clearen
             p.clear();
-            const dx = this.distancePerFrame * this.eenheidsVector.x;
-            const dy = this.distancePerFrame * this.eenheidsVector.y;
-            this.positionBall = new Point(
-                this.positionBall.x + dx,
-                this.positionBall.y + dy
-            );
-            drawBall();
+            p.stroke("blue");
+            //lijnen en punten tekenen
+            if (this.triangulation) {
+                for (let i = 0; i < this.triangulation.points.length; i++) {
+                    const element = this.triangulation.points[i];
+                    p.point(element.x, element.y);
+                }
+                for (let i = 0; i < this.triangulation.lines.length; i++) {
+                    const element = this.triangulation.lines[i].endPoints;
+                    p.line(
+                        element[0].x,
+                        element[0].y,
+                        element[1].x,
+                        element[1].y
+                    );
+                }
+            }
+            //bal tekenen
+            if (this.positionBall) {
+                if (this.endTime - Date.now() > 0) {
+                    p.stroke(0, 0, 0, 0);
+                    p.fill("blue");
+                    p.ellipse(this.positionBall.x, this.positionBall.y, 50, 50);
+                    const dx = this.distancePerFrame * this.eenheidsVector.x;
+                    const dy = this.distancePerFrame * this.eenheidsVector.y;
+                    this.positionBall = new Point(
+                        this.positionBall.x + dx,
+                        this.positionBall.y + dy
+                    );
+                } else {
+                    p.noLoop();
+                }
+            }
         };
-
-        function drawBall() {
-            p.stroke(0, 0, 0, 0);
-            p.fill("blue");
-            p.ellipse(this.positionBall.x, this.positionBall.y, 100, 100);
-        }
     };
 
     /**
@@ -93,6 +143,9 @@ export default class ClientStorage {
         boundingBoxHeight: number,
         begin: SrcPoints
     ) {
+        console.log("boundingbox new data");
+        console.log(boundingBoxWidth);
+        console.log(boundingBoxHeight);
         this.boundingBoxHeight = boundingBoxHeight;
         this.boundingBoxWidth = boundingBoxWidth;
         this.matrix3d = this.perspectiveMatrix(begin);
@@ -114,6 +167,7 @@ export default class ClientStorage {
                 return new Point(element.x, element.y);
             }),
         };
+        this.animation = new p5(this.animationSketch);
     }
 
     /**

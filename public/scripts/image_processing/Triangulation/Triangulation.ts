@@ -73,7 +73,7 @@ export default class Triangulation {
     }
 
     //TODO: functie opsplitsen
-    sendData(slave: SlaveScreen, allSlaves: SlaveScreen[]) {
+    sendData(slave: SlaveScreen, allSlaves: SlaveScreen[], tL: Point) {
         const sendLines = this.lines.map((element) => {
             return {
                 x1: element.a.x,
@@ -85,7 +85,7 @@ export default class Triangulation {
         const points = this.points.map(function (element) {
             return { x: element.x, y: element.y };
         });
-        let centroid = slave.centroid;
+        let centroid = slave.centroid.copyTranslated(-tL.x, -tL.y);
         let linkedLines: Line[] = [];
         let linkedPoints: Point[] = [];
         this.lines.forEach((line) => {
@@ -103,7 +103,7 @@ export default class Triangulation {
             slaveId: string;
         }[][] = [];
         linkedLines.forEach((Element) => {
-            linkedLine.push(this.findSlaves(centroid, Element, allSlaves));
+            linkedLine.push(this.findSlaves(centroid, Element, allSlaves, tL));
         });
         let triang = linkedLine.map(function (element, index) {
             return {
@@ -120,16 +120,16 @@ export default class Triangulation {
         };
     }
 
-    findSlaves(middle: Point, line: Line, slaves: SlaveScreen[]) {
+    findSlaves(middle: Point, line: Line, slaves: SlaveScreen[], tL: Point) {
         let points: {
             point: Point[];
             slaveId: string;
         }[] = [];
         slaves.forEach((element) => {
-            let inter = this.findIntersections(line, element);
+            let inter = this.findIntersections(line, element, tL);
             if (inter.length > 0) {
                 if (inter.length == 1) {
-                    inter.push(element.centroid);
+                    inter.push(element.centroid.copyTranslated(-tL.x, -tL.y));
                 }
                 points.push({ point: inter, slaveId: element.slaveID });
             }
@@ -158,24 +158,28 @@ export default class Triangulation {
         return points;
     }
 
-    findIntersections(line: Line, slave: SlaveScreen) {
+    findIntersections(line: Line, slave: SlaveScreen, tL: Point) {
         const endPoints = line.endPoints;
         //deze volgorde maakt op zich niet zo veel uit
         const leftUp = this.stringToPoint(
             slave.mapActualToMasterCornerLabel(CornerLabels.LeftUp),
-            slave
+            slave,
+            tL
         );
         const rightUp = this.stringToPoint(
             slave.mapActualToMasterCornerLabel(CornerLabels.RightUp),
-            slave
+            slave,
+            tL
         );
         const leftUnder = this.stringToPoint(
             slave.mapActualToMasterCornerLabel(CornerLabels.LeftUnder),
-            slave
+            slave,
+            tL
         );
         const rightUnder = this.stringToPoint(
             slave.mapActualToMasterCornerLabel(CornerLabels.RightUnder),
-            slave
+            slave,
+            tL
         );
         let cuttingPoints: Point[] = [];
 
@@ -234,21 +238,21 @@ export default class Triangulation {
         return cuttingPoints;
     }
 
-    stringToPoint(corner: CornerLabels, slave: SlaveScreen) {
+    stringToPoint(corner: CornerLabels, slave: SlaveScreen, tL: Point) {
         if (corner == CornerLabels.LeftUp) {
-            return slave.sortedCorners.LeftUp;
+            return slave.sortedCorners.LeftUp.copyTranslated(-tL.x, -tL.y);
         }
 
         if (corner == CornerLabels.LeftUnder) {
-            return slave.sortedCorners.LeftUnder;
+            return slave.sortedCorners.LeftUnder.copyTranslated(-tL.x, -tL.y);
         }
 
         if (corner == CornerLabels.RightUp) {
-            return slave.sortedCorners.RightUp;
+            return slave.sortedCorners.RightUp.copyTranslated(-tL.x, -tL.y);
         }
 
         if (corner == CornerLabels.RightUnder) {
-            return slave.sortedCorners.RightUnder;
+            return slave.sortedCorners.RightUnder.copyTranslated(-tL.x, -tL.y);
         }
     }
 

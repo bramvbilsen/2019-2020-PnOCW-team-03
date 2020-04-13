@@ -1,4 +1,4 @@
-const WAITING_TIME_MS = 20000;
+const WAITING_TIME_MS = 30000;
 
 const gulp = require("gulp");
 const browserify = require("browserify");
@@ -13,7 +13,7 @@ const internalIp = require("internal-ip");
 const fs = require("fs");
 const args = {};
 const _args = require("minimist")(process.argv.slice(2));
-Object.keys(_args).forEach(arg => {
+Object.keys(_args).forEach((arg) => {
     if (arg !== "_") {
         args[arg] = _args[arg];
     }
@@ -34,7 +34,7 @@ const nonTsPaths_server = [
     "!./scientific_test_results/**/*",
 ];
 
-gulp.task("Compile server", function(done) {
+gulp.task("Compile server", function (done) {
     const tsProject = ts.createProject("./tsconfig.json");
     tsProject
         .src()
@@ -43,18 +43,18 @@ gulp.task("Compile server", function(done) {
     done();
 });
 
-gulp.task("Watch server TS", function() {
+gulp.task("Watch server TS", function () {
     return gulp.watch(tsPaths_server, gulp.series("Compile server"));
 });
 
-gulp.task("Copy server non-TS", function(done) {
+gulp.task("Copy server non-TS", function (done) {
     gulp.src(nonTsPaths_server, { base: "." }).pipe(
         gulp.dest(path.resolve("./build"))
     );
     done();
 });
 
-gulp.task("Watch server non-TS", function() {
+gulp.task("Watch server non-TS", function () {
     return gulp.watch(nonTsPaths_server, gulp.series("Copy server non-TS"));
 });
 
@@ -66,7 +66,7 @@ gulp.task(
     )
 );
 
-gulp.task("Set production env", function(done) {
+gulp.task("Set production env", function (done) {
     fs.copyFileSync("./public/env/env.prod.ts", "./public/env/env.ts");
     done();
 });
@@ -82,7 +82,7 @@ const nonTsPaths_client = [
     "!./public/package-lock.json",
 ];
 
-gulp.task("Compile client", function() {
+gulp.task("Compile client", function () {
     return browserify({
         basedir: path.resolve("./public/"),
         debug: true,
@@ -97,18 +97,18 @@ gulp.task("Compile client", function() {
         .pipe(gulp.dest(path.resolve("./build/public")));
 });
 
-gulp.task("Watch client TS", function() {
+gulp.task("Watch client TS", function () {
     return gulp.watch(tsPaths_client, gulp.series("Compile client"));
 });
 
-gulp.task("Copy client non-TS", function(done) {
+gulp.task("Copy client non-TS", function (done) {
     gulp.src(nonTsPaths_client, { base: "./public" }).pipe(
         gulp.dest(path.resolve("./build/public"))
     );
     done();
 });
 
-gulp.task("Watch client non-TS", function() {
+gulp.task("Watch client non-TS", function () {
     return gulp.watch(nonTsPaths_client, gulp.series("Copy client non-TS"));
 });
 
@@ -120,12 +120,12 @@ gulp.task(
     )
 );
 
-gulp.task("Set local env", function(done) {
+gulp.task("Set local env", function (done) {
     fs.copyFileSync("./public/env/env.local.ts", "./public/env/env.ts");
     done();
 });
 
-gulp.task("Set test env", function(done) {
+gulp.task("Set test env", function (done) {
     const testArgs = {
         baseUrl: "http://localhost:3000",
         test: true,
@@ -147,7 +147,7 @@ gulp.task("Set test env", function(done) {
 
 // ------ SHARED ------ //
 
-gulp.task("Clean", function(done) {
+gulp.task("Clean", function (done) {
     del.sync(["./build", "./public/build"]);
     done();
 });
@@ -185,7 +185,7 @@ gulp.task(
     )
 );
 
-gulp.task("Open localhost", function(done) {
+gulp.task("Open localhost", function (done) {
     setTimeout(() => {
         nodemon({
             script: "./build/index.js",

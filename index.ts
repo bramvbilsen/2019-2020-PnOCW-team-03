@@ -262,10 +262,13 @@ io.on("connect", (socket: socketio.Socket) => {
         MasterEventTypes.sendCutData,
         (msg: {
             slaveID: string;
-            srcPoints: number;
-            boundingBoxWidth: number;
-            boundingBoxHeight: number;
+            srcPoints: any;
+            boundingBoxWidth: any;
+            boundingBoxHeight: any;
         }) => {
+            console.log(msg.srcPoints);
+            console.log(msg.boundingBoxWidth);
+            console.log(msg.boundingBoxHeight);
             io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
         }
     );
@@ -273,14 +276,48 @@ io.on("connect", (socket: socketio.Socket) => {
     socket.on(
         MasterEventTypes.sendTriangulationData,
         (msg: { lines: any; points: any; slaveID: string }) => {
-            io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
+            io.to(msg.slaveID).emit(
+                SlaveEventTypes.receiveTriangulationData,
+                msg
+            );
         }
     );
 
     socket.on(
         MasterEventTypes.ShowAnimationOnSlave,
-        (msg: { vector: any; position: any; start: any; slaveId: string }) => {
+        (msg: {
+            vector: any;
+            position: any;
+            start: any;
+            end: any;
+            slaveId: string;
+        }) => {
             io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
+            console.log("Hier geweest");
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.startAnimation,
+        (msg: { slaveIds: Array<string> }) => {
+            console.log("Attempting to start timer by master");
+            msg.slaveIds.forEach((id) => {
+                io.to(id).emit(SlaveEventTypes.startAnimation, {
+                    msg,
+                });
+            });
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.stopAnimation,
+        (msg: { slaveIds: Array<string> }) => {
+            console.log("Attempting to start timer by master");
+            msg.slaveIds.forEach((id) => {
+                io.to(id).emit(SlaveEventTypes.stopAnimation, {
+                    msg,
+                });
+            });
         }
     );
 });

@@ -128,6 +128,14 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.showAnimation,
                             this.showAnimation
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.startAnimation,
+                            this.startAnimation
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.stopAnimation,
+                            this.stopAnimation
                         )
                     );
                 } else {
@@ -396,6 +404,7 @@ class Client {
         $("#video-container-slave").css("z-index", -2);
     }
     public moveToForeground(elemName: string) {
+        console.log("YOWYOW");
         $("#" + elemName).css("z-index", 1);
     }
 
@@ -435,13 +444,14 @@ class Client {
             this.startAnimationTime = performance.now();
         };
 
-        p.setup = function () {
+        p.setup = () => {
             const fps = 30; // TODO: pas aan
             p.frameRate(fps);
             const p5Canvas = p.createCanvas(windowWidth, windowHeight);
             p5Canvas.id("fullScreen");
             this.hideAllSlaveLayers();
             this.moveToForeground("fullScreen");
+
             initCountdown();
         };
 
@@ -708,6 +718,9 @@ class Client {
         boundingBoxWidth: number;
         boundingBoxHeight: number;
     }) => {
+        console.log("boundingbox shit");
+        console.log(msg.boundingBoxWidth);
+        console.log(msg.boundingBoxHeight);
         this.clientStorage.newData(
             msg.boundingBoxWidth,
             msg.boundingBoxHeight,
@@ -741,27 +754,44 @@ class Client {
     };
 
     public startAnimation = () => {
-        this.animation.animate();
+        if (this.type === ConnectionType.SLAVE) {
+            console.log("koekoek");
+            this.clientStorage.startAnimation();
+        }
+        if (this.type === ConnectionType.MASTER) {
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.startAnimation, {
+                slaveIds,
+            });
+            this.animation.animate();
+        }
     };
 
     public stopAnimation = () => {
-        // let slaves = this.slaves;
-        // this._socket.emit(MasterEventTypes.startAnimation, {
-        //     slaves,
-        // });
+        if (this.type === ConnectionType.SLAVE) {
+            this.clientStorage.stopAnimation();
+        }
+        if (this.type === ConnectionType.MASTER) {
+            let slaveIds = this.slaves;
+            this._socket.emit(MasterEventTypes.stopAnimation, {
+                slaveIds,
+            });
+            this.animation.stop();
+        }
     };
 
     public sendAnimation = (
         vector: { x: number; y: number },
         position: { x: number; y: number },
-        startTime: number,
+        start: number,
+        end: number,
         slaveId: string
     ) => {
-        const start = (startTime += this.serverTimeDiff);
         this._socket.emit(MasterEventTypes.ShowAnimationOnSlave, {
             vector,
             position,
             start,
+            end,
             slaveId,
         });
     };
@@ -769,12 +799,15 @@ class Client {
     public showAnimation = (msg: {
         vector: { x: number; y: number };
         position: { x: number; y: number };
-        startTime: number;
+        start: number;
+        end: number;
     }) => {
-        const startTime = (msg.startTime += this.serverTimeDiff);
+        const startTime = (msg.start += this.serverTimeDiff);
+        const endTime = (msg.end += this.serverTimeDiff);
         const position = new Point(msg.position.x, msg.position.y);
         const vector = new Point(msg.vector.x, msg.vector.y);
-        this.clientStorage.animate(startTime, position, vector);
+        this.clientStorage.animate(startTime, endTime, position, vector);
+        console.log("Animation ontvangen");
     };
 }
 

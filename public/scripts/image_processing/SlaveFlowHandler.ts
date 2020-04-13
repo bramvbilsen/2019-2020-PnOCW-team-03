@@ -74,7 +74,7 @@ export default class SlaveFlowHandler {
         $("#camera").show();
         $("#display-slave-img-buttons").hide();
         resetMaster();
-        client.slaves.forEach(screen => {
+        client.slaves.forEach((screen) => {
             console.log("iterating slaves");
             client.resetSlave(screen);
             console.log("resetting:" + screen);
@@ -109,9 +109,12 @@ export default class SlaveFlowHandler {
             $("#camera").hide();
             $("#display-slave-img-buttons").show();
             const globalBoundingBox = new BoundingBox(
-                flattenOneLevel(this.screens.map(screen => screen.corners))
+                flattenOneLevel(this.screens.map((screen) => screen.corners))
             );
-            this.screens.forEach(screen => {
+            console.log("boundingbox shit");
+            console.log(globalBoundingBox.width);
+            console.log(globalBoundingBox.height);
+            this.screens.forEach((screen) => {
                 client.sendCutData(
                     {
                         LeftUp: screen.actualCorners.LeftUp.copyTranslated(
@@ -138,11 +141,16 @@ export default class SlaveFlowHandler {
             });
             //info van de triangulatie sturen
             let middlePoints: Point[] = [];
-            this.screens.forEach(slave => {
+            this.screens.forEach((slave) => {
                 let centroid = slave.centroid;
-                middlePoints.push(centroid);
+                middlePoints.push(
+                    centroid.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    )
+                );
             });
-            middlePoints.sort(function(a, b) {
+            middlePoints.sort(function (a, b) {
                 if (a.x - b.x == 0) {
                     return a.y - b.y;
                 } else {
@@ -151,13 +159,19 @@ export default class SlaveFlowHandler {
             });
             //TODO: dit efficienter maken
             const triangulation = delauney(middlePoints);
-            this.screens.forEach(screen => {
-                let sendData = triangulation.sendData(screen, this.screens);
+            console.log("triangulation = " + triangulation.lines);
+            this.screens.forEach((screen) => {
+                let sendData = triangulation.sendData(
+                    screen,
+                    this.screens,
+                    globalBoundingBox.topLeft
+                );
                 client.sendTriangulationData(
                     sendData.lines,
                     sendData.point,
                     sendData.ID
                 );
+                console.log("sendata = " + sendData.triang);
                 client.animation.middlePoints.push(
                     new MiddlePoint(sendData.middlePoint, sendData.triang)
                 );
