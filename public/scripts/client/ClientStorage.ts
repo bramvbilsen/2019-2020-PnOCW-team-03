@@ -32,6 +32,7 @@ export default class ClientStorage {
     distancePerFrame = 2;
     endTime: number;
     stopTime = Date.now();
+    lastFrameTime: number;
 
     constructor() {
         //this.animating = false;
@@ -47,7 +48,7 @@ export default class ClientStorage {
         const arrivelTime = Date.now();
         console.log("Animation gestart");
         console.log("start= " + new Date(startTime));
-        const eta_ms = startTime - Date.now();
+        const eta_ms = startTime - arrivelTime;
         console.log("PUNTEEEEEEN");
         console.log(newPosition.x);
         console.log(newPosition.y);
@@ -76,6 +77,7 @@ export default class ClientStorage {
         this.animation.noLoop();
         this.positionBall = undefined;
         this.stopTime = Date.now();
+        this.lastFrameTime = undefined;
     }
 
     public animationSketch = (p: p5) => {
@@ -94,6 +96,17 @@ export default class ClientStorage {
         };
 
         p.draw = () => {
+            let deltaTime;
+            if (this.positionBall) {
+                if (!this.lastFrameTime) {
+                    this.lastFrameTime = performance.now();
+                    deltaTime = 1;
+                } else {
+                    const currentTime = performance.now();
+                    deltaTime = (currentTime - this.lastFrameTime) / 33.33;
+                    this.lastFrameTime = currentTime;
+                }
+            }
             //clearen
             p.clear();
             p.stroke("blue");
@@ -119,14 +132,21 @@ export default class ClientStorage {
                     p.stroke(0, 0, 0, 0);
                     p.fill("blue");
                     p.ellipse(this.positionBall.x, this.positionBall.y, 50, 50);
-                    const dx = this.distancePerFrame * this.eenheidsVector.x;
-                    const dy = this.distancePerFrame * this.eenheidsVector.y;
+                    const dx =
+                        this.distancePerFrame *
+                        this.eenheidsVector.x *
+                        deltaTime;
+                    const dy =
+                        this.distancePerFrame *
+                        this.eenheidsVector.y *
+                        deltaTime;
                     this.positionBall = new Point(
                         this.positionBall.x + dx,
                         this.positionBall.y + dy
                     );
                 } else {
                     p.noLoop();
+                    this.lastFrameTime = undefined;
                 }
             }
         };
