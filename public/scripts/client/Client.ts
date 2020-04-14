@@ -366,27 +366,29 @@ class Client {
                 this.clientStorage.boundingBoxHeight
             );
             const srcPoints = this.clientStorage.srcPoints;
-            canvas.style.clipPath =
-                "polygon(" +
-                srcPoints.LeftUp.x +
-                "px " +
-                srcPoints.LeftUp.y +
-                "px, " +
-                srcPoints.RightUp.x +
-                "px " +
-                srcPoints.RightUp.y +
-                "px, " +
-                srcPoints.RightUnder.x +
-                "px " +
-                srcPoints.RightUnder.y +
-                "px, " +
-                srcPoints.LeftUnder.x +
-                "px " +
-                srcPoints.LeftUnder.y +
-                "px)";
+            // canvas.style.clipPath =
+            //     "polygon(" +
+            //     srcPoints.LeftUp.x +
+            //     "px " +
+            //     srcPoints.LeftUp.y +
+            //     "px, " +
+            //     srcPoints.RightUp.x +
+            //     "px " +
+            //     srcPoints.RightUp.y +
+            //     "px, " +
+            //     srcPoints.RightUnder.x +
+            //     "px " +
+            //     srcPoints.RightUnder.y +
+            //     "px, " +
+            //     srcPoints.LeftUnder.x +
+            //     "px " +
+            //     srcPoints.LeftUnder.y +
+            //     "px)";
             canvas.style.transform = this.clientStorage.matrix3d;
             canvas.style.transformOrigin = "0 0";
-            $("#image-slave").attr("src", canvas.toDataURL());
+            document
+                .getElementById("image-container-slave")
+                .appendChild(canvas);
             this.hideAllSlaveLayers();
             this.moveToForeground("image-container-slave");
             //document.getElementsByTagName("body")[0].appendChild(canvas);

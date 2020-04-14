@@ -88,11 +88,17 @@ img {
 }
 
 #image-container-slave {
-    width: 100vw;
-    height: 100vh;
-    left: 0px;
-    top: 0px;
-    position: absolute;
+    position: fixed;
+
+    padding: 0;
+    margin: 0;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
     z-index: -2;
 }
 
@@ -222,6 +228,7 @@ video {
     width: 100%;
     height: 100%;
     background: rgba(14, 54, 66, 0.253);
+    z-index: -2;
 }
 
 h1,
