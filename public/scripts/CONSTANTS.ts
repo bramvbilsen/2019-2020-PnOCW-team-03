@@ -8,3 +8,4 @@ export const DEFAULT_NON_COLORED_SLAVE_COLOR: IRGBAColor = {
     b: 80,
     a: 100,
 };
+// TODO Bram Maarten: maak hier ook PURPLE_COLOR en BLUE_COLOR aan voor het gemak

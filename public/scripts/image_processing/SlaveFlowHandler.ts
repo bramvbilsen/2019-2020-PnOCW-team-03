@@ -22,11 +22,17 @@ import MiddlePoint from "./Triangulation/MiddlePoint";
  */
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
-    DISPLAY_SCREEN_COLOR = "display screen color",
+    DISPLAY_PURPLE_COLOR = "display screen color",
+    DISPLAY_BLUE_COLOR = "display blue color",
     DISPLAY_ORIENTATION_COLOR = "display orientation color",
+    DISPLAY_UPPERLEFT_SQUARE = "display upper left square",
+    DISPLAY_UPPERRIGHT_SQUARE = "display upper right square",
+    DISPLAY_BOTTOMRIGHT_SQUARE = "display bottom right square",
+    DISPLAY_BOTTOMLEFT_SQUARE = "display bottom left square",
     REMOVE_SCREEN_COLOR = "remove screen color",
     REMOVE_ORIENTATION_COLOR = "remove orientation color",
     TAKE_AND_PROCESS_SCREEN = "take image and process slave screen",
+    TAKE_AND_PROCESS_SQUARE = "take image and process square on slave",
     TAKE_AND_PROCESS_ORIENTATION = "take image and process slave orientation",
     END_CYCLE = "end slave cycle",
     END = "end",
@@ -97,7 +103,7 @@ export default class SlaveFlowHandler {
     private endSlaveCycle() {
         this.prevSlaveID = this.currSlaveID;
         if (this.slaveIDs.length !== 0) {
-            this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
+            this.step = WorkflowStep.DISPLAY_PURPLE_COLOR;
             this.currSlaveID = this.slaveIDs.pop();
             if (!this.automated) {
                 $("#next-slave").show();
@@ -205,32 +211,91 @@ export default class SlaveFlowHandler {
                 console.log("AUTOMATED: TAKING BLANCO PICTURE");
                 await this.takeNoColorPicture();
                 break;
-            case WorkflowStep.DISPLAY_SCREEN_COLOR:
+            // PURPLE
+            case WorkflowStep.DISPLAY_PURPLE_COLOR:
                 console.log("AUTOMATED: DISPLAYING COLOR");
-                this.showColorOnNextSlave();
+                this.showPurpleColorOnNextSlave();
                 break;
             case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
-                console.log("AUTOMATED: TAKING PICTURE & PROCESSING");
-                await this.takePictureOfColoredScreen();
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING SCREEN");
+                await this.takePictureAndFindColoredScreen();
                 break;
             case WorkflowStep.REMOVE_SCREEN_COLOR:
                 console.log("AUTOMATED: REMOVING COLOR");
                 this.removeScreenColorOnSlave();
                 break;
-            case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
-                console.log("AUTOMATED: DISPLAYING ORIENTATION COLOR");
-                this.showOrientationOnSlave();
+            // BLUE
+            case WorkflowStep.DISPLAY_BLUE_COLOR:
+                console.log("AUTOMATED: DISPLAYING COLOR");
+                this.showBlueColorOnNextSlave();
                 break;
-            case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
-                console.log(
-                    "AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION"
+            case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING SCREEN");
+                await this.takePictureAndFindColoredScreen();
+                break;
+            case WorkflowStep.REMOVE_SCREEN_COLOR:
+                console.log("AUTOMATED: REMOVING COLOR");
+                this.removeScreenColorOnSlave();
+                break;
+            // UPPERLEFT_SQUARE
+            case WorkflowStep.DISPLAY_UPPERLEFT_SQUARE:
+                console.log("AUTOMATED: DISPLAYING UPPER LEFT SQUARE");
+                this.displayUpperLeftSquareOnSlave();
+                break;
+            case WorkflowStep.TAKE_AND_PROCESS_SQUARE:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING SQUARE");
+                this.takePictureAndFindSquare(
+                    WorkflowStep.DISPLAY_UPPERLEFT_SQUARE
                 );
-                await this.takePictureOfSlaveOrientation();
                 break;
-            case WorkflowStep.REMOVE_ORIENTATION_COLOR:
-                console.log("AUTOMATED: REMOVE ORIENTATION COLOR");
-                this.removeOrientationColorOnSlave();
+            // UPPERRIGHT_SQUARE
+            case WorkflowStep.DISPLAY_UPPERRIGHT_SQUARE:
+                console.log("AUTOMATED: DISPLAYING UPPER RIGHT SQUARE");
+                this.displayUpperRightSquareOnSlave();
                 break;
+            case WorkflowStep.TAKE_AND_PROCESS_SQUARE:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING SQUARE");
+                this.takePictureAndFindSquare(
+                    WorkflowStep.DISPLAY_UPPERRIGHT_SQUARE
+                );
+                break;
+            // BOTTOMRIGHT_SQUARE
+            case WorkflowStep.DISPLAY_BOTTOMRIGHT_SQUARE:
+                console.log("AUTOMATED: DISPLAYING BOTTOM RIGHT SQUARE");
+                this.displayBottomRightSquareOnSlave();
+                break;
+            case WorkflowStep.TAKE_AND_PROCESS_SQUARE:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING SQUARE");
+                this.takePictureAndFindSquare(
+                    WorkflowStep.DISPLAY_BOTTOMRIGHT_SQUARE
+                );
+                break;
+            // BOTTOMLEFT_SQUARE
+            case WorkflowStep.DISPLAY_BOTTOMLEFT_SQUARE:
+                console.log("AUTOMATED: DISPLAYING BOTTOM LEFT SQUARE");
+                this.displayBottomLeftSquareOnSlave();
+                break;
+            case WorkflowStep.TAKE_AND_PROCESS_SQUARE:
+                console.log("AUTOMATED: TAKING PICTURE & PROCESSING SQUARE");
+                this.takePictureAndFindSquare(
+                    WorkflowStep.DISPLAY_BOTTOMLEFT_SQUARE
+                );
+                break;
+            // TODO Bram Maarten: behouden we dit nog ?
+            // case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
+            //     console.log("AUTOMATED: DISPLAYING ORIENTATION COLOR");
+            //     this.showOrientationOnSlave();
+            //     break;
+            // case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
+            //     console.log(
+            //         "AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION"
+            //     );
+            //     await this.takePictureOfSlaveOrientation();
+            //     break;
+            // case WorkflowStep.REMOVE_ORIENTATION_COLOR:
+            //     console.log("AUTOMATED: REMOVE ORIENTATION COLOR");
+            //     this.removeOrientationColorOnSlave();
+            //     break;
             case WorkflowStep.END_CYCLE:
                 console.log("AUTOMATED: ENDING CYLCE");
                 this.endSlaveCycle();
@@ -246,7 +311,7 @@ export default class SlaveFlowHandler {
      * Takes the general picture of all screens in their default state.
      */
     async takeNoColorPicture() {
-        this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
+        this.step = WorkflowStep.DISPLAY_PURPLE_COLOR;
         this.initialize();
         this.currSlaveScreenFound = true;
         const player: JQuery<HTMLVideoElement> = $("#player");
@@ -279,12 +344,21 @@ export default class SlaveFlowHandler {
     }
 
     /**
-     * Show the colour on the next slave.
+     * Show the purple colour on the next slave.
      */
-    showColorOnNextSlave() {
+    showPurpleColorOnNextSlave() {
         this.step = WorkflowStep.TAKE_AND_PROCESS_SCREEN;
         console.log("Showing color on slave");
         client.showColorOnSlave(this.currSlaveID);
+    }
+
+    /**
+     * Show the blue colour on the next slave.
+     */
+    showBlueColorOnNextSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_SCREEN;
+        console.log("Showing color on slave");
+        client.showColorOnSlave(this.currSlaveID); // TODO Bram Maarten: geef de blauwe kleur mee als 2e param (zie todo in CONSTANTS.ts)
     }
 
     /**
@@ -292,7 +366,8 @@ export default class SlaveFlowHandler {
      * Assumes that one screen will be coloured.
      * --> Should be called after `showColorOnNextSlave`.
      */
-    async takePictureOfColoredScreen() {
+    async takePictureAndFindColoredScreen() {
+        // TODO Bram Maarten: zorg ervoor dat je kunt meegeven of je nu purple of blue wilt scannen (zie todo in CONSTANTS.ts).
         this.step = WorkflowStep.REMOVE_SCREEN_COLOR;
         const player: JQuery<HTMLVideoElement> = $("#player");
         const cameraWidth = player[0].videoWidth,
@@ -357,12 +432,60 @@ export default class SlaveFlowHandler {
         }
     }
 
+    async takePictureAndFindSquare(previousStep: WorkflowStep) {
+        switch (previousStep) {
+            case WorkflowStep.DISPLAY_UPPERLEFT_SQUARE:
+                this.step = WorkflowStep.DISPLAY_UPPERRIGHT_SQUARE;
+                break;
+            case WorkflowStep.DISPLAY_UPPERRIGHT_SQUARE:
+                this.step = WorkflowStep.DISPLAY_BOTTOMRIGHT_SQUARE;
+                break;
+            case WorkflowStep.DISPLAY_BOTTOMRIGHT_SQUARE:
+                this.step = WorkflowStep.DISPLAY_BOTTOMLEFT_SQUARE;
+                break;
+            case WorkflowStep.DISPLAY_BOTTOMLEFT_SQUARE:
+                this.step = WorkflowStep.END_CYCLE;
+                break;
+        }
+        // TODO Bram Maarten: werk af
+    }
+
     removeScreenColorOnSlave() {
         this.step = WorkflowStep.DISPLAY_ORIENTATION_COLOR;
         client.showColorOnSlave(
             this.currSlaveID,
             DEFAULT_NON_COLORED_SLAVE_COLOR
         );
+    }
+
+    // TODO Bram Maarten: voor de komende functies denk ik dat het slimmer is om 1 functie te hebben met een enumeration voor
+    // de square posities. Bijvoorbeeld: displaySquareOnSlave(SQUAREPOSITIONS.UPPER_LEFT)
+    displayUpperLeftSquareOnSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_SQUARE;
+        // TODO Bram Maarten: maak eerst achtergrond opnieuw helemaal blauw
+        console.log("Showing upper left square on slave");
+        // TODO Bram Maarten: werk af
+    }
+
+    displayUpperRightSquareOnSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_SQUARE;
+        // TODO Bram Maarten: maak eerst achtergrond opnieuw helemaal blauw
+        console.log("Showing upper right square on slave");
+        // TODO Bram Maarten: werk af
+    }
+
+    displayBottomRightSquareOnSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_SQUARE;
+        // TODO Bram Maarten: maak eerst achtergrond opnieuw helemaal blauw
+        console.log("Showing bottom right square on slave");
+        // TODO Bram Maarten: werk af
+    }
+
+    displayBottomLeftSquareOnSlave() {
+        this.step = WorkflowStep.TAKE_AND_PROCESS_SQUARE;
+        // TODO Bram Maarten: maak eerst achtergrond opnieuw helemaal blauw
+        console.log("Showing bottom left square on slave");
+        // TODO Bram Maarten: werk af
     }
 
     showOrientationOnSlave() {

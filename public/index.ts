@@ -98,14 +98,15 @@ export function resetMaster() {
             nextSlaveButton.toggle();
         });
         nextSlaveButton.off().on("click", () => {
-            slaveFlowHandler.showColorOnNextSlave();
+            // TODO Bram Maarten: slaveFlowHandler.showColorOnNextSlave();
+            // Dit ^ was veranderd naar showPurpleColorOnNextSlave() (of blue). Moet je er nu 2 maken ? Of gewoon Purple
             nextSlaveButton.toggle();
             captureSlaveButton.toggle();
         });
         captureSlaveButton.off().on("click", async () => {
             loadingMasterIndicator.show();
             captureSlaveButton.toggle();
-            await slaveFlowHandler.takePictureOfColoredScreen();
+            await slaveFlowHandler.takePictureAndFindColoredScreen();
         });
         showOrientationButton.off().on("click", () => {
             slaveFlowHandler.showOrientationOnSlave();
@@ -140,7 +141,7 @@ export function resetMaster() {
         $("#display-unicorn-img-button")
             .off()
             .on("click", async () => {
-                slaveFlowHandler.screens.forEach(screen => {
+                slaveFlowHandler.screens.forEach((screen) => {
                     client.showImgOnSlave(
                         screen.slaveID,
                         `${env.baseUrl}/images/unicorn.jpeg`
@@ -151,7 +152,7 @@ export function resetMaster() {
         $("#display-master-img-button")
             .off()
             .on("click", async () => {
-                slaveFlowHandler.screens.forEach(screen => {
+                slaveFlowHandler.screens.forEach((screen) => {
                     client.showImgOnSlave(
                         screen.slaveID,
                         `${env.baseUrl}/images/unicorn.jpeg`
@@ -190,9 +191,7 @@ export function resetMaster() {
             .off()
             .on("click", async () => {
                 console.log("Button pressed");
-                client.StartVideoOnSlaves(
-                    `${env.baseUrl}/images/bear.mp4`
-                );
+                client.StartVideoOnSlaves(`${env.baseUrl}/images/bear.mp4`);
             });
         $("#pause-video-button")
             .off()
@@ -202,7 +201,7 @@ export function resetMaster() {
         $("#stop-video-button")
             .off()
             .on("click", async () => {
-                client.StopVideoOnSlaves();;
+                client.StopVideoOnSlaves();
             });
 
         $(".pink")
@@ -252,7 +251,7 @@ export function resetMaster() {
 }
 
 $(() => {
-    $(document).keyup(e => {
+    $(document).keyup((e) => {
         if (e.key === "r") {
             if (slaveFlowHandler) {
                 slaveFlowHandler.reset();
@@ -294,7 +293,7 @@ function onConnectionTypeChange(type: ConnectionType) {
 
 if (env.test) {
     $("#page").css("background-color", "white");
-    run_tests().then(results => {
+    run_tests().then((results) => {
         // downloadTests(results);
     });
 }
