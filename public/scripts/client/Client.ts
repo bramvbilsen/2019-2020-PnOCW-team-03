@@ -107,11 +107,11 @@ class Client {
                         ),
                         this._socket.on(
                             SlaveEventTypes.StartVideo,
-                            this.startVideoEventWithoutP5
+                            this.startVideoEvent
                         ),
                         this._socket.on(
                             SlaveEventTypes.PauseVideo,
-                            this.PauseVideoEvent
+                            this.pauseVideoEvent
                         ),
                         this._socket.on(
                             SlaveEventTypes.StopVideo,
@@ -551,52 +551,10 @@ class Client {
     };
 
     /**
-     * Draw the video on client
-     * TODO: PJ en Bas
-     */
-    public videoDisplaySketch = (p: p5) => {
-        function initVideo(video: p5.MediaElement) {
-            video.loop();
-            video.volume(0);
-        }
-        /**
-        const initVideo= function() => {
-            video.loop();
-            video.volume(0);
-        };
-         */
-
-        p.setup = function () {
-            const fps = 30;
-            p.frameRate(fps);
-            p.noCanvas();
-            let video = p.createVideo(
-                ["Zet hier in path naar video"],
-                initVideo
-            );
-            //video 100% displayen, dus geen size oproepen
-            initVideo(video);
-        };
-    };
-
-    /**
-     * Starts the video event
+     * Command for starting video clientside
+     * @param msg
      */
     private startVideoEvent = (msg: {
-        startTime: number;
-        videoUrl: string;
-    }): void => {
-        //Hier code van synchronisatie elke 5 sec
-        this.hideAllSlaveLayers();
-        this.moveToForeground("video-container-slave");
-
-        const eta_ms = msg.startTime - Date.now();
-        setTimeout(() => {
-            new p5(this.videoDisplaySketch);
-        }, eta_ms);
-    };
-
-    private startVideoEventWithoutP5 = (msg: {
         startTime: number;
         videoUrl: string;
     }): void => {
@@ -609,6 +567,8 @@ class Client {
         );
         console.log("Reached client: " + msg.videoUrl);
         video.setAttribute("src", msg.videoUrl);
+        video.style.transform = this.clientStorage.matrix3d;
+        video.style.transformOrigin = this.clientStorage.matrix3d;
         video.load();
 
         const eta_ms = msg.startTime - Date.now();
@@ -633,7 +593,7 @@ class Client {
     /**
      * Pauses the video event
      */
-    private PauseVideoEvent = (): void => {
+    private pauseVideoEvent = (): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
@@ -646,9 +606,10 @@ class Client {
 
     /**
      * Continuous sync of videos, HOWTO?
+     * get video is furthest time pos every 10seconds, and let all skip to that time
      */
-    public syncVideoEvents(video: p5.MediaElement) {
-        //video.speed()
+    public syncVideoEvents() {
+
     }
 
     /**
