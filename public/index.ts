@@ -190,7 +190,7 @@ export function resetMaster() {
             .off()
             .on("click", async () => {
                 console.log("Button pressed");
-                client.StartVideoOnSlaves(
+                client.startVideoOnSlaves(
                     `${env.baseUrl}/images/bear.mp4`
                 );
             });

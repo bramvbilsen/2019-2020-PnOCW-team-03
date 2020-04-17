@@ -118,7 +118,7 @@ class Client {
                             this.stopVideoEvent
                         ),
                         this._socket.on(
-                            SlaveEventTypes.sendVideoTimeStamp,
+                            SlaveEventTypes.GetVideoTimeStamp,
                             this.returnVideoTimeStamp
                         ),
                         this._socket.on(
@@ -147,19 +147,15 @@ class Client {
                         this._socket.on(
                             MasterEventTypes.SlaveChanges,
                             this.handleSlaveChanges
-                        )
-                    );
-                    socketIOEmittersForNewType.push(
+                        ),
                         this._socket.on(
                             MasterEventTypes.HandleNextSlaveFlowHanlderStep,
                             this.handleNextSlaveFlowHandlerStep
-                        )
-                    );
-                    socketIOEmittersForNewType.push(
+                        ),
                         this._socket.on(
                             SlaveEventTypes.sendVideoTimeStamp,
                             this.handleVideoTimeStamp
-                        )
+                        ),
                     );
                 }
                 this.setNewSocketIOEmitters(socketIOEmittersForNewType);
@@ -509,7 +505,7 @@ class Client {
      * Emit to each slave the starttime of the video (10 seconds ahead from now).
      * Each slave gets the server time plus or minus its own delay.
      */
-    public StartVideoOnSlaves = (videoUrl: string) => {
+    public startVideoOnSlaves = (videoUrl: string) => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
@@ -523,30 +519,60 @@ class Client {
                 slaveIds,
                 videoUrl,
             });
-            //this._socket.emit((MasterEventTypes.GetVideoTimeStampsOnSlaves))
+            this.syncVideoOnSlaves;
         }
     };
+
+    public syncVideoOnSlaves = () => {
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
+            );
+        } else {
+            window.setInterval(function(){
+                let startTime = new Date().getTime() + 1000;
+                let slaveIds = this.slaves;
+                this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
+                    startTime,
+                    slaveIds,
+                });
+              }, 5000);
+            
+        }
+    };
+
+    public stopSyncVideoOnSlaves = () => {
+        window.clearInterval();
+    }
+   
 
     /**
      * Slave side: sennd the video timeStamp
      */
         //TODO: Gather all slave messages and handle all this data on master side
-    public returnVideoTimeStamp = () =>{
+    public returnVideoTimeStamp = (msg: { startTime: number }): void =>{
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
-        let timeStamp = video.currentTime;
-        this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
-            timeStamp
+
+        const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
+        setTimeout(() => {
+            let timeStamp = video.currentTime;
+            this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
+            timeStamp, id: this._socket.id
         });
+        }, eta_ms);
+
+        
     };
 
     /**
-     * handle the videoStampReturned by the slaves
+     * handle the videoStampReturned by the slaves, using a map/list
+     * 
      *
      */
-    public handleVideoTimeStamp = () =>{
-
+    public handleVideoTimeStamp = (msg: { timeStamp: number, id: number }): void =>{
+        
     }
 
     /**
@@ -640,14 +666,22 @@ class Client {
     /**
      * Pauses the video event
      */
-    private pauseVideoEvent = (): void => {
+    private pauseVideoEvent = (msg: {
+        startTime: number;
+    }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
         if (!video.paused) {
-            video.pause();
+            const eta_ms = msg.startTime - Date.now();
+            setTimeout(() => {
+                video.pause();
+            }, eta_ms);
         } else {
-            video.play();
+            const eta_ms = msg.startTime - Date.now();
+            setTimeout(() => {
+                video.play();
+            }, eta_ms);
         }
     };
 

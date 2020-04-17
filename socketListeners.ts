@@ -261,4 +261,18 @@ export function videoListeners(socket: socketio.Socket) {
         }
     );
 
+    socket.on(
+        MasterEventTypes.GetVideoTimeStampsOnSlaves,
+        (msg: { startTime: Date; slaveIds: Array<string> }) => {
+            if (socket.id === connections.master.id) {
+                msg.slaveIds.forEach((id) => {
+                    io.to(id).emit(SlaveEventTypes.GetVideoTimeStamp, {
+                        startTime: msg.startTime,
+                    });
+                });
+            }
+        }
+    );
+
+
 }
