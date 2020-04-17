@@ -28,6 +28,7 @@ export enum SlaveEventTypes {
     PauseVideo = "pause-video",
     startAnimation = "start-animation-on-slave",
     stopAnimation = "stop-animation-on-slave",
+    sendVideoTimeStamp = "return-time-stamp-of-video",
 }
 
 export enum MasterEventTypes {
@@ -53,4 +54,6 @@ export enum MasterEventTypes {
     StartVideoOnSlaves = "start-video-on-slaves",
     StopVideoOnSlaves = "stop-video-on-slaves",
     PauseVideoOnSlaves = "pause-video-on-slaves",
+    GetVideoTimeStampsOnSlaves = "retrieve-time-stamp-of-video",
+    HandleVideoTimeStamp = "handle-video-time-stamps-from-slaves",
 }

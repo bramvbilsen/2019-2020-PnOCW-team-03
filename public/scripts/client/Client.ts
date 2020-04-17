@@ -118,6 +118,10 @@ class Client {
                             this.stopVideoEvent
                         ),
                         this._socket.on(
+                            SlaveEventTypes.sendVideoTimeStamp,
+                            this.returnVideoTimeStamp
+                        ),
+                        this._socket.on(
                             SlaveEventTypes.receiveCutData,
                             this.receiveCutData
                         ),
@@ -151,12 +155,12 @@ class Client {
                             this.handleNextSlaveFlowHandlerStep
                         )
                     );
-                    // socketIOEmittersForNewType.push(
-                    //     this._socket.on(
-                    //         MasterEventTypes.nextLine,
-                    //         this.nextlinesend
-                    //     )
-                    // );
+                    socketIOEmittersForNewType.push(
+                        this._socket.on(
+                            SlaveEventTypes.sendVideoTimeStamp,
+                            this.handleVideoTimeStamp
+                        )
+                    );
                 }
                 this.setNewSocketIOEmitters(socketIOEmittersForNewType);
                 this.onConnectionTypeChange(this.type);
@@ -519,9 +523,51 @@ class Client {
                 slaveIds,
                 videoUrl,
             });
+            //this._socket.emit((MasterEventTypes.GetVideoTimeStampsOnSlaves))
         }
     };
 
+    /**
+     * Slave side: sennd the video timeStamp
+     */
+        //TODO: Gather all slave messages and handle all this data on master side
+    public returnVideoTimeStamp = () =>{
+        const video: HTMLVideoElement = <HTMLVideoElement>(
+            document.getElementById("video-slave")
+        );
+        let timeStamp = video.currentTime;
+        this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
+            timeStamp
+        });
+    };
+
+    /**
+     * handle the videoStampReturned by the slaves
+     *
+     */
+    public handleVideoTimeStamp = () =>{
+
+    }
+
+    /**
+     * De initiele call voor de sync
+     * @constructor
+     */
+    public SyncVideoOnSlaves = () =>{
+        if (this.type === ConnectionType.SLAVE) {
+            console.warn(
+                "MASTER PERMISSION NEEDED TO pause video.\nNot executing command!"
+            );
+        }else{
+            let syncTime = new Date().getTime() + 10000;
+            this._socket.emit((MasterEventTypes.GetVideoTimeStampsOnSlaves), syncTime);
+        }
+    };
+
+    /**
+     * Master PauseVideoOn
+     * @constructor
+     */
     public PauseVideoOnSlaves = () => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
@@ -571,6 +617,7 @@ class Client {
         video.style.transformOrigin = this.clientStorage.matrix3d;
         video.load();
 
+
         const eta_ms = msg.startTime - Date.now();
         setTimeout(() => {
             video.play();
@@ -604,13 +651,6 @@ class Client {
         }
     };
 
-    /**
-     * Continuous sync of videos, HOWTO?
-     * get video is furthest time pos every 10seconds, and let all skip to that time
-     */
-    public syncVideoEvents() {
-
-    }
 
     /**
      * Updates the displayed number of slaves on the master.
