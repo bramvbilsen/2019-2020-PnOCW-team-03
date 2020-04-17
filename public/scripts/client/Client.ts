@@ -33,6 +33,9 @@ const {
 class Client {
     private _type: ConnectionType;
     public _slaves: Array<string> = [];
+    //create map for timestamps
+    private timeStamps = new Map();
+    private interval : any;
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
@@ -122,6 +125,10 @@ class Client {
                             this.returnVideoTimeStamp
                         ),
                         this._socket.on(
+                            SlaveEventTypes.UpdateVideoTime,
+                            this.updateVideoTime
+                        ),
+                        this._socket.on(
                             SlaveEventTypes.receiveCutData,
                             this.receiveCutData
                         ),
@@ -153,7 +160,7 @@ class Client {
                             this.handleNextSlaveFlowHandlerStep
                         ),
                         this._socket.on(
-                            SlaveEventTypes.sendVideoTimeStamp,
+                            MasterEventTypes.HandleVideoTimeStampsOnSlaves,
                             this.handleVideoTimeStamp
                         ),
                     );
@@ -512,14 +519,14 @@ class Client {
             );
         } else {
             console.log("Video URL: " + videoUrl);
-            let startTime = new Date().getTime() + 10000;
+            let startTime = new Date().getTime() + 3000;
             let slaveIds = this.slaves;
+            this.syncVideoOnSlaves();
             this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
                 startTime,
                 slaveIds,
                 videoUrl,
             });
-            this.syncVideoOnSlaves;
         }
     };
 
@@ -529,25 +536,31 @@ class Client {
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
-            window.setInterval(function(){
-                let startTime = new Date().getTime() + 1000;
-                let slaveIds = this.slaves;
-                this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
-                    startTime,
-                    slaveIds,
-                });
-              }, 5000);
+            console.log("syncing is starting, should be followed by 66")
+            this.interval = setInterval(this.sync, 7000);
             
         }
     };
 
+    public sync = ()  => {
+        let startTime = new Date().getTime() + 2700;
+        let slaveIds = this.slaves;
+        console.log("66: syncing video from master");
+            this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
+            startTime,
+            slaveIds,
+        });
+
+    }
+
     public stopSyncVideoOnSlaves = () => {
-        window.clearInterval();
+        console.log("stopping video sync")
+        clearInterval(this.interval);
     }
    
 
     /**
-     * Slave side: sennd the video timeStamp
+     * Slave side: send the video timeStamp
      */
         //TODO: Gather all slave messages and handle all this data on master side
     public returnVideoTimeStamp = (msg: { startTime: number }): void =>{
@@ -557,38 +570,58 @@ class Client {
 
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
+            console.log("slave is sending out timestamp" + video.currentTime);
             let timeStamp = video.currentTime;
             this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
-            timeStamp, id: this._socket.id
-        });
+                timeStamp, 
+                id: this._socket.id
+            });
         }, eta_ms);
 
         
     };
 
     /**
-     * handle the videoStampReturned by the slaves, using a map/list
+     * handle the videoStamp returned by the slaves, using a map/list
      * 
      *
      */
-    public handleVideoTimeStamp = (msg: { timeStamp: number, id: number }): void =>{
-        
+    public handleVideoTimeStamp = (msg: { timeStamp: number, id: string }): void =>{
+        console.log("handling timestamps");
+        this.timeStamps.set(msg.id, msg.timeStamp);
+        if (this.timeStamps.size == this.slaves.length) {
+            console.log("all clients sent in timestamp");
+            let highest = 0;
+            this.slaves.forEach(slaveId => {
+                if (this.timeStamps.get(slaveId) > highest ) {
+                    highest = this.timeStamps.get(slaveId)
+                }     
+            });
+            this.slaves.forEach(slaveId => {
+                let deltaTime = highest - this.timeStamps.get(slaveId);
+                this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave,{
+                    deltaTime, 
+                    id: slaveId
+                });
+
+            });
+            
+            this.timeStamps = new Map(); 
+        }
+    }
+    /**
+     * Update time of video so that all clients are synced
+     * 
+     */
+    public updateVideoTime = (msg: {deltaTime: number}): void => {
+        const video: HTMLVideoElement = <HTMLVideoElement>(
+            document.getElementById("video-slave")
+        );
+        console.log("slave is updating video frame to stay synced")
+        video.currentTime = video.currentTime + msg.deltaTime;
     }
 
-    /**
-     * De initiele call voor de sync
-     * @constructor
-     */
-    public SyncVideoOnSlaves = () =>{
-        if (this.type === ConnectionType.SLAVE) {
-            console.warn(
-                "MASTER PERMISSION NEEDED TO pause video.\nNot executing command!"
-            );
-        }else{
-            let syncTime = new Date().getTime() + 10000;
-            this._socket.emit((MasterEventTypes.GetVideoTimeStampsOnSlaves), syncTime);
-        }
-    };
+    
 
     /**
      * Master PauseVideoOn
@@ -600,7 +633,7 @@ class Client {
                 "MASTER PERMISSION NEEDED TO pause video.\nNot executing command!"
             );
         } else {
-            let startTime = new Date().getTime() + 10000;
+            let startTime = new Date().getTime() + 2500;
             let slaveIds = this.slaves;
             this._socket.emit(MasterEventTypes.PauseVideoOnSlaves, {
                 startTime,
@@ -619,6 +652,7 @@ class Client {
             this._socket.emit(MasterEventTypes.StopVideoOnSlaves, {
                 slaveIds,
             });
+            this.stopSyncVideoOnSlaves();
         }
     };
 
@@ -644,7 +678,7 @@ class Client {
         video.load();
 
 
-        const eta_ms = msg.startTime - Date.now();
+        const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
             video.play();
         }, eta_ms);
@@ -668,17 +702,18 @@ class Client {
      */
     private pauseVideoEvent = (msg: {
         startTime: number;
-    }): void => {
+        }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
+        console.log("toggling video");
         if (!video.paused) {
-            const eta_ms = msg.startTime - Date.now();
+            const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
             setTimeout(() => {
                 video.pause();
             }, eta_ms);
         } else {
-            const eta_ms = msg.startTime - Date.now();
+            const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
             setTimeout(() => {
                 video.play();
             }, eta_ms);

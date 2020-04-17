@@ -84,6 +84,11 @@ io.on("connect", (socket: socketio.Socket) => {
             .to(connections.masterID)
             .emit(MasterEventTypes.HandleNextSlaveFlowHanlderStep, {});
     });
+    socket.on(SlaveEventTypes.sendVideoTimeStamp, (msg: { timeStamp: number, id: string}) => {
+        socket
+            .to(connections.masterID)
+            .emit(MasterEventTypes.HandleVideoTimeStampsOnSlaves, {timeStamp: msg.timeStamp, id: msg.id});
+    });
 
     slaveBackgroundListeners(socket);
 

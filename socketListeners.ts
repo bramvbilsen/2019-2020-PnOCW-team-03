@@ -5,6 +5,7 @@ import {
     SharedEventTypes,
 } from "./types/SocketIOEvents";
 import socketio from "socket.io";
+let timeStamps = new Map();
 
 export function masterSlaveCommands(socket: socketio.Socket) {
     socket.on(MasterEventTypes.ResetSlave, (msg: { slaveId: string }) => {
@@ -239,6 +240,7 @@ export function videoListeners(socket: socketio.Socket) {
         MasterEventTypes.PauseVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
+                console.log("socketListener pause video")
                 msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.PauseVideo, {
                         startTime: msg.startTime,
@@ -273,6 +275,18 @@ export function videoListeners(socket: socketio.Socket) {
             }
         }
     );
+
+    socket.on(
+        MasterEventTypes.UpdateVideoTimeOnSlave,
+        (msg: { deltaTime: number; slaveId: string }) => {
+            if (socket.id === connections.master.id) {
+                    io.to(msg.slaveId).emit(SlaveEventTypes.UpdateVideoTime, {
+                        deltaTime: msg.deltaTime,
+                    });
+            }
+        }
+    );
+
 
 
 }

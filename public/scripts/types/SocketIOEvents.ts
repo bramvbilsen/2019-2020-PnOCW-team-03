@@ -31,6 +31,7 @@ export enum SlaveEventTypes {
     sendVideoTimeStamp = "return-time-stamp-of-video",
     GetVideoTimeStamp = "retrieve-time-stamp-of-video",
     HandleVideoTimeStamp = "handle-video-time-stamps-from-slaves",
+    UpdateVideoTime = "update-video-time-stamp"
 }
 
 export enum MasterEventTypes {
@@ -58,4 +59,5 @@ export enum MasterEventTypes {
     PauseVideoOnSlaves = "pause-video-on-slaves",
     GetVideoTimeStampsOnSlaves = "retrieve-time-stamp-of-video",
     HandleVideoTimeStampsOnSlaves = "handle-video-time-stamps-from-slaves",
+    UpdateVideoTimeOnSlave = "update-video-time-stamps-on-slave"
 }

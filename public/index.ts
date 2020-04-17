@@ -191,10 +191,10 @@ export function resetMaster() {
             .on("click", async () => {
                 console.log("Button pressed");
                 client.startVideoOnSlaves(
-                    `${env.baseUrl}/images/bear.mp4`
+                    `${env.baseUrl}/images/bunny.mp4`
                 );
             });
-        $("#pause-video-button")
+        $("#toggle-video-button")
             .off()
             .on("click", async () => {
                 client.PauseVideoOnSlaves();
