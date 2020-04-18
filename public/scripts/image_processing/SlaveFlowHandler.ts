@@ -211,6 +211,35 @@ export default class SlaveFlowHandler {
     }
 
     private sendDataToClients() {
+        const upscale = 20;
+        for (let i = 0; i < this.screens.length; i++) {
+            const screen = this.screens[i];
+            screen.actualCorners = {
+                LeftUp: new Point(
+                    screen.actualCorners.LeftUp.x * upscale,
+                    screen.actualCorners.LeftUp.y * upscale
+                ),
+                RightUp: new Point(
+                    screen.actualCorners.RightUp.x * upscale,
+                    screen.actualCorners.RightUp.y * upscale
+                ),
+                RightUnder: new Point(
+                    screen.actualCorners.RightUnder.x * upscale,
+                    screen.actualCorners.RightUnder.y * upscale
+                ),
+                LeftUnder: new Point(
+                    screen.actualCorners.LeftUnder.x * upscale,
+                    screen.actualCorners.LeftUnder.y * upscale
+                ),
+            };
+            for (let j = 0; j < screen.corners.length; j++) {
+                screen.corners[j] = new Point(
+                    screen.corners[j].x * upscale,
+                    screen.corners[j].y * upscale
+                );
+            }
+        }
+
         const globalBoundingBox = new BoundingBox(
             flattenOneLevel(this.screens.map((screen) => screen.corners))
         );
