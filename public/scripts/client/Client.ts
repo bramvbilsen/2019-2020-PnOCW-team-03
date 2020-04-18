@@ -518,8 +518,7 @@ class Client {
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
-            console.log("Video URL: " + videoUrl);
-            let startTime = new Date().getTime() + 3000;
+            let startTime = new Date().getTime() + 2700;
             let slaveIds = this.slaves;
             this.syncVideoOnSlaves();
             this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
@@ -529,23 +528,28 @@ class Client {
             });
         }
     };
-
+    
+    /**
+     * Starts the syncing process of the video, does this every six seconds
+     */
     public syncVideoOnSlaves = () => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
-            console.log("syncing is starting, should be followed by 66")
-            this.interval = setInterval(this.sync, 7000);
+            console.log("syncing is starting")
+            this.interval = setInterval(this.sync, 6000);
             
         }
     };
-
+    
+    /**
+     * sending request to the slaves to get their current timestamp of video
+     */
     public sync = ()  => {
         let startTime = new Date().getTime() + 2700;
         let slaveIds = this.slaves;
-        console.log("66: syncing video from master");
             this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
             startTime,
             slaveIds,
@@ -554,13 +558,12 @@ class Client {
     }
 
     public stopSyncVideoOnSlaves = () => {
-        console.log("stopping video sync")
         clearInterval(this.interval);
     }
    
 
     /**
-     * Slave side: send the video timeStamp
+     * Slave side: send the video timeStamp to the master
      */
         //TODO: Gather all slave messages and handle all this data on master side
     public returnVideoTimeStamp = (msg: { startTime: number, id: string }): void =>{
@@ -583,15 +586,14 @@ class Client {
 
     /**
      * handle the videoStamp returned by the slaves, using a map/list
-     * 
+     * calculate the difference between each slave and the furthest one
+     * send the individual difference to each slave
      *
      */
     public handleVideoTimeStamp = (msg: { timeStamp: number, id: string }): void =>{
-        console.log("handling timestamp from " + msg.id);
         this.timeStamps.set(msg.id, msg.timeStamp);
         if (this.timeStamps.size == this.slaves.length) {
             console.log("all clients sent in timestamp");
-            console.log(this.timeStamps);
             let highest = 0;
             this.slaves.forEach(slaveId => {
                 if (this.timeStamps.get(slaveId) > highest ) {
@@ -599,7 +601,7 @@ class Client {
                 }     
             });
             this.slaves.forEach(slaveId => {
-                console.log("sending out diff to: " + msg.id + slaveId)
+                console.log("sending out diff to: " + msg.id + " " + slaveId)
                 let deltaTime = highest - this.timeStamps.get(slaveId);
                 this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave,{
                     deltaTime, 
