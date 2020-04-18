@@ -35,7 +35,7 @@ class Client {
     public _slaves: Array<string> = [];
     //create map for timestamps
     private timeStamps = new Map();
-    private interval : any;
+    private interval: any;
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
@@ -162,7 +162,7 @@ class Client {
                         this._socket.on(
                             MasterEventTypes.HandleVideoTimeStampsOnSlaves,
                             this.handleVideoTimeStamp
-                        ),
+                        )
                     );
                 }
                 this.setNewSocketIOEmitters(socketIOEmittersForNewType);
@@ -431,7 +431,7 @@ class Client {
                 "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
             );
         } else {
-            let startTime = new Date().getTime() + 10000;
+            let startTime = new Date().getTime() + 3000;
             let slaveIds = this.slaves;
             this._socket.emit(MasterEventTypes.NotifySlavesOfStartTimeCounter, {
                 startTime,
@@ -441,17 +441,76 @@ class Client {
     };
 
     /**
-     * Creates a countdown visual?
+     * Creates a countdown visual
      */
     public countdownSketch = (p: p5) => {
-        let windowWidth = 500;
-        let windowHeight = 800;
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let particles: any = [];
+        let countdownFinished = false;
 
         const initCountdown = () => {
             console.log(this);
             this.currentNb = 11;
             this.startAnimationTime = performance.now();
         };
+
+        /**
+         * Source: https://codepen.io/Kourga/pen/EoaKqQ
+         */
+        class Particle {
+            pos: p5.Vector;
+            vel: p5.Vector;
+            acc: p5.Vector;
+            r: any;
+            halfr: number;
+
+            constructor(x: number, y: number, r: number) {
+                this.pos = p.createVector(x, y);
+                this.vel = p.createVector(p.random(-5, 5), p.random(-5, 5));
+                this.acc = p.createVector(0, 0);
+                this.r = r ? r : 48;
+                this.halfr = r / 2;
+            }
+
+            applyForce(force: p5.Vector) {
+                this.acc.add(force);
+            }
+
+            update() {
+                this.vel.add(this.acc);
+                this.pos.add(this.vel);
+                this.acc.set(0, 0);
+            }
+
+            display() {
+                p.noStroke();
+                p.fill(255);
+                p.ellipse(this.pos.x, this.pos.y, this.r, this.r);
+            }
+
+            edges() {
+                if (this.pos.y > p.height - this.halfr) {
+                    this.vel.y *= -1;
+                    this.pos.y = p.height - this.halfr;
+                }
+
+                if (this.pos.y < 0 + this.halfr) {
+                    this.vel.y *= -1;
+                    this.pos.y = 0 + this.halfr;
+                }
+
+                if (this.pos.x > p.width - this.halfr) {
+                    this.vel.x *= -1;
+                    this.pos.x = p.width - this.halfr;
+                }
+
+                if (this.pos.x < this.halfr) {
+                    this.vel.x /= -1;
+                    this.pos.x = this.halfr;
+                }
+            }
+        }
 
         p.setup = () => {
             const fps = 30; // TODO: pas aan
@@ -469,12 +528,21 @@ class Client {
             let elapsedTime = performance.now() - this.startAnimationTime;
             this.currentNb = Math.floor(10 - elapsedTime / 1000);
             if (this.currentNb <= 0) {
-                p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+                if (!countdownFinished) {
+                    p.noLoop();
+                    countdownFinished = true;
+                    p.loop();
+                }
+                drawExplosion();
+            } else {
+                drawNb();
+            }
+            if (this.currentNb < -7) {
+                p.noLoop();
                 this.hideAllSlaveLayers();
                 this.moveToForeground("default-slave-state");
                 $("#fullScreen").remove();
             }
-            drawNb();
         };
 
         const drawNb = () => {
@@ -489,6 +557,32 @@ class Client {
                 70,
                 80
             );
+        };
+
+        const drawExplosion = () => {
+            var i = 0;
+            setInterval(function () {
+                if (i <= 150) {
+                    particles[i] = new Particle(
+                        p.width / 2,
+                        p.height / 2,
+                        p.random(3, 35)
+                    );
+                    i++;
+                }
+            }, 15);
+
+            p.background("#0000ff");
+
+            var gravity = p.createVector(0, 0.05);
+            var wind = p.createVector(0.09, 0);
+
+            if (particles.length > 0) {
+                for (var i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].display();
+                }
+            }
         };
     };
 
@@ -536,94 +630,98 @@ class Client {
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
-            console.log("syncing is starting, should be followed by 66")
+            console.log("syncing is starting, should be followed by 66");
             this.interval = setInterval(this.sync, 7000);
-            
         }
     };
 
-    public sync = ()  => {
+    public sync = () => {
         let startTime = new Date().getTime() + 2700;
         let slaveIds = this.slaves;
         console.log("66: syncing video from master");
-            this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
+        this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
             startTime,
             slaveIds,
         });
-
-    }
+    };
 
     public stopSyncVideoOnSlaves = () => {
-        console.log("stopping video sync")
+        console.log("stopping video sync");
         clearInterval(this.interval);
-    }
-   
+    };
 
     /**
      * Slave side: send the video timeStamp
      */
-        //TODO: Gather all slave messages and handle all this data on master side
-    public returnVideoTimeStamp = (msg: { startTime: number, id: string }): void =>{
+    //TODO: Gather all slave messages and handle all this data on master side
+    public returnVideoTimeStamp = (msg: {
+        startTime: number;
+        id: string;
+    }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
 
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
-            console.log("slave is sending out timestamp" + " " + video.currentTime + " " + this._socket.id);
+            console.log(
+                "slave is sending out timestamp" +
+                    " " +
+                    video.currentTime +
+                    " " +
+                    this._socket.id
+            );
             let timeStamp = video.currentTime;
-            this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
-                timeStamp, 
-                id: msg.id
+            this._socket.emit(SlaveEventTypes.sendVideoTimeStamp, {
+                timeStamp,
+                id: msg.id,
             });
         }, eta_ms);
-
-        
     };
 
     /**
      * handle the videoStamp returned by the slaves, using a map/list
-     * 
+     *
      *
      */
-    public handleVideoTimeStamp = (msg: { timeStamp: number, id: string }): void =>{
+    public handleVideoTimeStamp = (msg: {
+        timeStamp: number;
+        id: string;
+    }): void => {
         console.log("handling timestamp from" + msg.id);
         this.timeStamps.set(msg.id, msg.timeStamp);
         if (this.timeStamps.size == this.slaves.length) {
             console.log("all clients sent in timestamp");
             console.log(this.timeStamps);
             let highest = 0;
-            this.slaves.forEach(slaveId => {
-                if (this.timeStamps.get(slaveId) > highest ) {
-                    highest = this.timeStamps.get(slaveId)
-                }     
+            this.slaves.forEach((slaveId) => {
+                if (this.timeStamps.get(slaveId) > highest) {
+                    highest = this.timeStamps.get(slaveId);
+                }
             });
-            this.slaves.forEach(slaveId => {
-                console.log("sending out diff to: " + msg.id + slaveId)
+            this.slaves.forEach((slaveId) => {
+                console.log("sending out diff to: " + msg.id + slaveId);
                 let deltaTime = highest - this.timeStamps.get(slaveId);
-                this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave,{
-                    deltaTime, 
-                    id: slaveId
+                this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave, {
+                    deltaTime,
+                    id: slaveId,
                 });
-
             });
-            
-            this.timeStamps = new Map(); 
+
+            this.timeStamps = new Map();
         }
-    }
+    };
     /**
      * Update time of video so that all clients are synced
-     * 
+     *
      */
-    public updateVideoTime = (msg: {deltaTime: number}): void => {
+    public updateVideoTime = (msg: { deltaTime: number }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
-        console.log("slave is updating video frame to stay synced")
+        console.log("slave is updating video frame to stay synced");
         video.currentTime = video.currentTime + msg.deltaTime;
-    }
-
-    
+    };
 
     /**
      * Master PauseVideoOn
@@ -679,7 +777,6 @@ class Client {
         video.style.transformOrigin = this.clientStorage.matrix3d;
         video.load();
 
-
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
             video.play();
@@ -702,9 +799,7 @@ class Client {
     /**
      * Pauses the video event
      */
-    private pauseVideoEvent = (msg: {
-        startTime: number;
-        }): void => {
+    private pauseVideoEvent = (msg: { startTime: number }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
@@ -719,9 +814,8 @@ class Client {
             setTimeout(() => {
                 video.play();
             }, eta_ms);
-        }    
+        }
     };
-
 
     /**
      * Updates the displayed number of slaves on the master.
