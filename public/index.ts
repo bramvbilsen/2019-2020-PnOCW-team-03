@@ -1,4 +1,3 @@
-import handleCameraInput from "./scripts/camera";
 import Client from "./scripts/client/Client";
 import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
@@ -12,6 +11,7 @@ import { BoundingBox } from "./scripts/util/BoundingBox";
 import { flattenOneLevel } from "./scripts/util/arrays";
 import { createImageCanvasForSlave } from "./scripts/util/ImageCutHandler";
 import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
+import { Camera } from "./scripts/UI/Master/Camera";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -66,59 +66,33 @@ export function resetMaster() {
     });
     welcomeMaster.css("display", "inherit");
 
-    startMasterButton.off().on("click", () => {
-        triangulationCanvas.remove();
+    startMasterButton.off().on("click", async () => {
         if (client.slaves.length === 0) {
             //@ts-ignore
             $("#welcome-master-no-slave-toast").toast("show");
             return;
         }
-        slaveFlowHandler = new SlaveFlowHandler();
+
+        triangulationCanvas.remove();
+
+        const camera = new Camera();
+        await camera.start();
+
+        slaveFlowHandler = new SlaveFlowHandler(camera);
         //@ts-ignore
         window.slaveFlowHandler = slaveFlowHandler;
+
+        $("#confirmButton")
+            .off()
+            .on("click", () => {
+                slaveFlowHandler.startDetection();
+            });
 
         welcomeMaster.css("display", "none");
         mainFlowMaster.css("display", "inherit");
         const player: JQuery<HTMLVideoElement> = $("#player");
         $("#player-overlay").css("width", "640px");
         $("#player-overlay").css("height", "480px");
-
-        startButton.show();
-        startAutomatedButton.hide();
-
-        startAutomatedButton.off().on("click", () => {
-            slaveFlowHandler.automated = true;
-            startAutomatedButton.hide();
-            startButton.hide();
-            slaveFlowHandler.nextStep();
-        });
-        startButton.off().on("click", () => {
-            startAutomatedButton.hide();
-            slaveFlowHandler.takeNoColorPicture();
-            nextSlaveButton.toggle();
-        });
-        nextSlaveButton.off().on("click", () => {
-            slaveFlowHandler.showColorOnNextSlave();
-            nextSlaveButton.toggle();
-            captureSlaveButton.toggle();
-        });
-        captureSlaveButton.off().on("click", async () => {
-            loadingMasterIndicator.show();
-            captureSlaveButton.toggle();
-            await slaveFlowHandler.takePictureOfColoredScreen();
-        });
-        showOrientationButton.off().on("click", () => {
-            slaveFlowHandler.showOrientationOnSlave();
-            showOrientationButton.toggle();
-            captureOrientationButton.toggle();
-        });
-        captureOrientationButton.off().on("click", () => {
-            slaveFlowHandler.takePictureOfSlaveOrientation();
-            captureOrientationButton.toggle();
-        });
-        resetButton.off().on("click", () => {
-            slaveFlowHandler.reset();
-        });
 
         $("#display-countdown-button")
             .off()
@@ -140,7 +114,7 @@ export function resetMaster() {
         $("#display-unicorn-img-button")
             .off()
             .on("click", async () => {
-                slaveFlowHandler.screens.forEach(screen => {
+                slaveFlowHandler.screens.forEach((screen) => {
                     client.showImgOnSlave(
                         screen.slaveID,
                         `${env.baseUrl}/images/unicorn.jpeg`
@@ -151,7 +125,7 @@ export function resetMaster() {
         $("#display-master-img-button")
             .off()
             .on("click", async () => {
-                slaveFlowHandler.screens.forEach(screen => {
+                slaveFlowHandler.screens.forEach((screen) => {
                     client.showImgOnSlave(
                         screen.slaveID,
                         `${env.baseUrl}/images/unicorn.jpeg`
@@ -190,9 +164,7 @@ export function resetMaster() {
             .off()
             .on("click", async () => {
                 console.log("Button pressed");
-                client.startVideoOnSlaves(
-                    `${env.baseUrl}/images/bunny.mp4`
-                );
+                client.startVideoOnSlaves(`${env.baseUrl}/images/bunny.mp4`);
             });
         $("#toggle-video-button")
             .off()
@@ -202,7 +174,7 @@ export function resetMaster() {
         $("#stop-video-button")
             .off()
             .on("click", async () => {
-                client.StopVideoOnSlaves();;
+                client.StopVideoOnSlaves();
             });
 
         $(".pink")
@@ -252,10 +224,10 @@ export function resetMaster() {
 }
 
 $(() => {
-    $(document).keyup(e => {
+    $(document).keyup((e) => {
         if (e.key === "r") {
             if (slaveFlowHandler) {
-                slaveFlowHandler.reset();
+                // slaveFlowHandler.reset();
             }
         }
     });
@@ -267,7 +239,7 @@ function onConnectionTypeChange(type: ConnectionType) {
     const page: JQuery<HTMLBodyElement> = $("#page");
     const loadingElem = $("#loading");
     if (slaveFlowHandler) {
-        slaveFlowHandler.reset();
+        // slaveFlowHandler.reset();
     }
     if (client.type == ConnectionType.MASTER) {
         page.css("background-color", `rgb(77, 154, 227)`); //changing master color to sky blue
@@ -277,7 +249,6 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#master").css("display", "inherit");
         $("#welcome-master").css("display", "inherit");
         $("#main-flow-master").css("display", "none");
-        handleCameraInput();
     } else {
         page.css("background-color", `rgb(76, 175, 80)`); //changing client color to leprechaun green
         loadingElem.css("display", "none");
@@ -294,7 +265,7 @@ function onConnectionTypeChange(type: ConnectionType) {
 
 if (env.test) {
     $("#page").css("background-color", "white");
-    run_tests().then(results => {
+    run_tests().then((results) => {
         // downloadTests(results);
     });
 }

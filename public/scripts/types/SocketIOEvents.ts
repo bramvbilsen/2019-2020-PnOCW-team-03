@@ -31,7 +31,12 @@ export enum SlaveEventTypes {
     sendVideoTimeStamp = "return-time-stamp-of-video",
     GetVideoTimeStamp = "retrieve-time-stamp-of-video",
     HandleVideoTimeStamp = "handle-video-time-stamps-from-slaves",
-    UpdateVideoTime = "update-video-time-stamp"
+    UpdateVideoTime = "update-video-time-stamp",
+
+    DisplayDetectionColor = "display-detection-color",
+    DisplayedDetectionColor = "displayed-detection-color",
+    DisplayOrientationColors = "display-orientation-colors",
+    DisplayedOrientationColors = "displayed-orientation-colors",
 }
 
 export enum MasterEventTypes {
@@ -59,5 +64,10 @@ export enum MasterEventTypes {
     PauseVideoOnSlaves = "pause-video-on-slaves",
     GetVideoTimeStampsOnSlaves = "retrieve-time-stamp-of-video",
     HandleVideoTimeStampsOnSlaves = "handle-video-time-stamps-from-slaves",
-    UpdateVideoTimeOnSlave = "update-video-time-stamps-on-slave"
+    UpdateVideoTimeOnSlave = "update-video-time-stamps-on-slave",
+
+    RequestDetectionColor = "request-detection-color",
+    ConfirmedDetectionColor = "confirmed-detection-color",
+    RequestOrientationColors = "request-orientation-colors",
+    ConfirmedOrientationColors = "confirmed-orientation-colors",
 }

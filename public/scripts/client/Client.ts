@@ -35,7 +35,7 @@ class Client {
     public _slaves: Array<string> = [];
     //create map for timestamps
     private timeStamps = new Map();
-    private interval : any;
+    private interval: any;
     private _socketIOEmitters: Array<SocketIOClient.Emitter> = [];
     private _socket: SocketIOClient.Socket;
     private _sync: Sync;
@@ -147,6 +147,14 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.stopAnimation,
                             this.stopAnimation
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.DisplayDetectionColor,
+                            this.displayColor
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.DisplayOrientationColors,
+                            this.displayOrientationColors
                         )
                     );
                 } else {
@@ -156,13 +164,9 @@ class Client {
                             this.handleSlaveChanges
                         ),
                         this._socket.on(
-                            MasterEventTypes.HandleNextSlaveFlowHanlderStep,
-                            this.handleNextSlaveFlowHandlerStep
-                        ),
-                        this._socket.on(
                             MasterEventTypes.HandleVideoTimeStampsOnSlaves,
                             this.handleVideoTimeStamp
-                        ),
+                        )
                     );
                 }
                 this.setNewSocketIOEmitters(socketIOEmittersForNewType);
@@ -256,7 +260,7 @@ class Client {
             );
             return;
         }
-        // TODO:  colors are not necessary any more.
+
         this._socket.emit(MasterEventTypes.ToggleSlaveOrientationColors, {
             slaveId,
         });
@@ -536,34 +540,31 @@ class Client {
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
-            console.log("syncing is starting, should be followed by 66")
+            console.log("syncing is starting, should be followed by 66");
             this.interval = setInterval(this.sync, 7000);
-            
         }
     };
 
-    public sync = ()  => {
+    public sync = () => {
         let startTime = new Date().getTime() + 2700;
         let slaveIds = this.slaves;
         console.log("66: syncing video from master");
-            this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
+        this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
             startTime,
             slaveIds,
         });
-
-    }
+    };
 
     public stopSyncVideoOnSlaves = () => {
-        console.log("stopping video sync")
+        console.log("stopping video sync");
         clearInterval(this.interval);
-    }
-   
+    };
 
     /**
      * Slave side: send the video timeStamp
      */
-        //TODO: Gather all slave messages and handle all this data on master side
-    public returnVideoTimeStamp = (msg: { startTime: number }): void =>{
+    //TODO: Gather all slave messages and handle all this data on master side
+    public returnVideoTimeStamp = (msg: { startTime: number }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
@@ -572,56 +573,54 @@ class Client {
         setTimeout(() => {
             console.log("slave is sending out timestamp" + video.currentTime);
             let timeStamp = video.currentTime;
-            this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
-                timeStamp, 
-                id: this._socket.id
+            this._socket.emit(SlaveEventTypes.sendVideoTimeStamp, {
+                timeStamp,
+                id: this._socket.id,
             });
         }, eta_ms);
-
-        
     };
 
     /**
      * handle the videoStamp returned by the slaves, using a map/list
-     * 
+     *
      *
      */
-    public handleVideoTimeStamp = (msg: { timeStamp: number, id: string }): void =>{
+    public handleVideoTimeStamp = (msg: {
+        timeStamp: number;
+        id: string;
+    }): void => {
         console.log("handling timestamps");
         this.timeStamps.set(msg.id, msg.timeStamp);
         if (this.timeStamps.size == this.slaves.length) {
             console.log("all clients sent in timestamp");
             let highest = 0;
-            this.slaves.forEach(slaveId => {
-                if (this.timeStamps.get(slaveId) > highest ) {
-                    highest = this.timeStamps.get(slaveId)
-                }     
+            this.slaves.forEach((slaveId) => {
+                if (this.timeStamps.get(slaveId) > highest) {
+                    highest = this.timeStamps.get(slaveId);
+                }
             });
-            this.slaves.forEach(slaveId => {
+            this.slaves.forEach((slaveId) => {
                 let deltaTime = highest - this.timeStamps.get(slaveId);
-                this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave,{
-                    deltaTime, 
-                    id: slaveId
+                this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave, {
+                    deltaTime,
+                    id: slaveId,
                 });
-
             });
-            
-            this.timeStamps = new Map(); 
+
+            this.timeStamps = new Map();
         }
-    }
+    };
     /**
      * Update time of video so that all clients are synced
-     * 
+     *
      */
-    public updateVideoTime = (msg: {deltaTime: number}): void => {
+    public updateVideoTime = (msg: { deltaTime: number }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
-        console.log("slave is updating video frame to stay synced")
+        console.log("slave is updating video frame to stay synced");
         video.currentTime = video.currentTime + msg.deltaTime;
-    }
-
-    
+    };
 
     /**
      * Master PauseVideoOn
@@ -677,7 +676,6 @@ class Client {
         video.style.transformOrigin = this.clientStorage.matrix3d;
         video.load();
 
-
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
             video.play();
@@ -700,9 +698,7 @@ class Client {
     /**
      * Pauses the video event
      */
-    private pauseVideoEvent = (msg: {
-        startTime: number;
-        }): void => {
+    private pauseVideoEvent = (msg: { startTime: number }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
@@ -720,22 +716,12 @@ class Client {
         }
     };
 
-
     /**
      * Updates the displayed number of slaves on the master.
      */
     private handleSlaveChanges = (data: { slaves: Array<string> }) => {
         this._slaves = data.slaves;
         $("#welcome-master-connected-slaves-amt").text(data.slaves.length);
-    };
-
-    /**
-     * Go to the next step in the current `SlaveFlowHandler`
-     */
-    public handleNextSlaveFlowHandlerStep = async (_: any) => {
-        if (slaveFlowHandler) {
-            await slaveFlowHandler.nextStep();
-        }
     };
 
     /**
@@ -880,6 +866,58 @@ class Client {
         const vector = new Point(msg.vector.x, msg.vector.y);
         this.clientStorage.animate(startTime, endTime, position, vector);
         console.log("Animation ontvangen");
+    };
+
+    public displayColor = (msg: { color: IRGBAColor }) => {
+        requestAnimationFrame(() => {
+            document.getElementById(
+                "slave"
+            ).style.backgroundColor = `rgb(${msg.color.r},${msg.color.g},${msg.color.b})`;
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    this._socket.emit(SlaveEventTypes.DisplayedDetectionColor);
+                }, 1000);
+            });
+        });
+    };
+
+    public requestColor = (color: IRGBAColor, slaveID: string) => {
+        return new Promise((resolve, reject) => {
+            this._socket.on(MasterEventTypes.ConfirmedDetectionColor, () => {
+                this._socket.off(MasterEventTypes.ConfirmedDetectionColor);
+                resolve();
+            });
+            this._socket.emit(MasterEventTypes.RequestDetectionColor, {
+                color,
+                slaveID,
+            });
+        });
+    };
+
+    private displayOrientationColors = (): void => {
+        requestAnimationFrame(() => {
+            this.hideAllSlaveLayers();
+            this.moveToForeground("orientation-colors");
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    this._socket.emit(
+                        SlaveEventTypes.DisplayedOrientationColors
+                    );
+                }, 1000);
+            });
+        });
+    };
+
+    public requestOrientationColors = (slaveIDs: string[]) => {
+        return new Promise((resolve, reject) => {
+            this._socket.on(MasterEventTypes.ConfirmedOrientationColors, () => {
+                this._socket.off(MasterEventTypes.ConfirmedOrientationColors);
+                resolve();
+            });
+            this._socket.emit(MasterEventTypes.RequestOrientationColors, {
+                slaveIDs,
+            });
+        });
     };
 }
 

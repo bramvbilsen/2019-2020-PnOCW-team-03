@@ -19,6 +19,10 @@ export default class Point {
         );
     }
 
+    distanceSq(point: Point) {
+        return Math.pow(point.x - this.x, 2) + Math.pow(point.y - this.y, 2);
+    }
+
     /**
      * Returns the x- and y-value of this point as an IPoint interface.
      */

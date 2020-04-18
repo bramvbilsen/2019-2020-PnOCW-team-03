@@ -72,6 +72,8 @@ app.get("/colored_screen_img", (req, res) => {
 const multerSlaveImageType = multer().single("image");
 app.post("/slaveImg", multerSlaveImageType, handleImageUpload);
 
+let slaveIDsToConfirmOrientation: Set<string> = new Set();
+
 io.on("connect", (socket: socketio.Socket) => {
     connections.add(socket);
 
@@ -84,10 +86,58 @@ io.on("connect", (socket: socketio.Socket) => {
             .to(connections.masterID)
             .emit(MasterEventTypes.HandleNextSlaveFlowHanlderStep, {});
     });
-    socket.on(SlaveEventTypes.sendVideoTimeStamp, (msg: { timeStamp: number, id: string}) => {
+    socket.on(
+        SlaveEventTypes.sendVideoTimeStamp,
+        (msg: { timeStamp: number; id: string }) => {
+            socket
+                .to(connections.masterID)
+                .emit(MasterEventTypes.HandleVideoTimeStampsOnSlaves, {
+                    timeStamp: msg.timeStamp,
+                    id: msg.id,
+                });
+        }
+    );
+
+    socket.on(
+        MasterEventTypes.RequestDetectionColor,
+        (msg: {
+            color: { r: number; g: number; b: number };
+            slaveID: string;
+        }) => {
+            console.log(
+                "Requesting " + msg.slaveID + " for a new background color!"
+            );
+            if (socket.id === connections.master.id) {
+                socket
+                    .to(msg.slaveID)
+                    .emit(SlaveEventTypes.DisplayDetectionColor, msg);
+            }
+        }
+    );
+    socket.on(SlaveEventTypes.DisplayedDetectionColor, () => {
+        console.log("Confirming new background color!");
         socket
-            .to(connections.masterID)
-            .emit(MasterEventTypes.HandleVideoTimeStampsOnSlaves, {timeStamp: msg.timeStamp, id: msg.id});
+            .to(connections.master.id)
+            .emit(MasterEventTypes.ConfirmedDetectionColor);
+    });
+
+    socket.on(
+        MasterEventTypes.RequestOrientationColors,
+        (msg: { slaveIDs: string[] }) => {
+            slaveIDsToConfirmOrientation = new Set(msg.slaveIDs);
+            msg.slaveIDs.forEach((id) => {
+                socket.to(id).emit(SlaveEventTypes.DisplayOrientationColors);
+            });
+        }
+    );
+
+    socket.on(SlaveEventTypes.DisplayedOrientationColors, () => {
+        slaveIDsToConfirmOrientation.delete(socket.id);
+        if (slaveIDsToConfirmOrientation.size == 0) {
+            socket
+                .to(connections.masterID)
+                .emit(MasterEventTypes.ConfirmedOrientationColors);
+        }
     });
 
     slaveBackgroundListeners(socket);
