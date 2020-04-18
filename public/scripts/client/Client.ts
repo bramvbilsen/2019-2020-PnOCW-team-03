@@ -587,7 +587,7 @@ class Client {
      *
      */
     public handleVideoTimeStamp = (msg: { timeStamp: number, id: string }): void =>{
-        console.log("handling timestamp from" + msg.id);
+        console.log("handling timestamp from " + msg.id);
         this.timeStamps.set(msg.id, msg.timeStamp);
         if (this.timeStamps.size == this.slaves.length) {
             console.log("all clients sent in timestamp");

@@ -270,7 +270,7 @@ export function videoListeners(socket: socketio.Socket) {
                 msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.GetVideoTimeStamp, {
                         startTime: msg.startTime,
-                        slaveId: id
+                        id: id
                     });
                 });
             }
@@ -279,9 +279,9 @@ export function videoListeners(socket: socketio.Socket) {
 
     socket.on(
         MasterEventTypes.UpdateVideoTimeOnSlave,
-        (msg: { deltaTime: number; slaveId: string }) => {
+        (msg: { deltaTime: number; id: string }) => {
             if (socket.id === connections.master.id) {
-                    io.to(msg.slaveId).emit(SlaveEventTypes.UpdateVideoTime, {
+                    io.to(msg.id).emit(SlaveEventTypes.UpdateVideoTime, {
                         deltaTime: msg.deltaTime,
                     });
                     console.log("listener for video sync update triggered")
