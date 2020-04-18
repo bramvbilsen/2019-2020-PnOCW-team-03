@@ -435,7 +435,7 @@ class Client {
                 "MASTER PERMISSION NEEDED TO CHANGE COLORS.\nNot executing command!"
             );
         } else {
-            let startTime = new Date().getTime() + 10000;
+            let startTime = new Date().getTime() + 3000;
             let slaveIds = this.slaves;
             this._socket.emit(MasterEventTypes.NotifySlavesOfStartTimeCounter, {
                 startTime,
@@ -445,17 +445,76 @@ class Client {
     };
 
     /**
-     * Creates a countdown visual?
+     * Creates a countdown visual
      */
     public countdownSketch = (p: p5) => {
-        let windowWidth = 500;
-        let windowHeight = 800;
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let particles: any = [];
+        let countdownFinished = false;
 
         const initCountdown = () => {
             console.log(this);
             this.currentNb = 11;
             this.startAnimationTime = performance.now();
         };
+
+        /**
+         * Source: https://codepen.io/Kourga/pen/EoaKqQ
+         */
+        class Particle {
+            pos: p5.Vector;
+            vel: p5.Vector;
+            acc: p5.Vector;
+            r: any;
+            halfr: number;
+
+            constructor(x: number, y: number, r: number) {
+                this.pos = p.createVector(x, y);
+                this.vel = p.createVector(p.random(-5, 5), p.random(-5, 5));
+                this.acc = p.createVector(0, 0);
+                this.r = r ? r : 48;
+                this.halfr = r / 2;
+            }
+
+            applyForce(force: p5.Vector) {
+                this.acc.add(force);
+            }
+
+            update() {
+                this.vel.add(this.acc);
+                this.pos.add(this.vel);
+                this.acc.set(0, 0);
+            }
+
+            display() {
+                p.noStroke();
+                p.fill(255);
+                p.ellipse(this.pos.x, this.pos.y, this.r, this.r);
+            }
+
+            edges() {
+                if (this.pos.y > p.height - this.halfr) {
+                    this.vel.y *= -1;
+                    this.pos.y = p.height - this.halfr;
+                }
+
+                if (this.pos.y < 0 + this.halfr) {
+                    this.vel.y *= -1;
+                    this.pos.y = 0 + this.halfr;
+                }
+
+                if (this.pos.x > p.width - this.halfr) {
+                    this.vel.x *= -1;
+                    this.pos.x = p.width - this.halfr;
+                }
+
+                if (this.pos.x < this.halfr) {
+                    this.vel.x /= -1;
+                    this.pos.x = this.halfr;
+                }
+            }
+        }
 
         p.setup = () => {
             const fps = 30; // TODO: pas aan
@@ -473,12 +532,21 @@ class Client {
             let elapsedTime = performance.now() - this.startAnimationTime;
             this.currentNb = Math.floor(10 - elapsedTime / 1000);
             if (this.currentNb <= 0) {
-                p.noLoop(); // TODO: maybe clear the canvas when -1 ?
+                if (!countdownFinished) {
+                    p.noLoop();
+                    countdownFinished = true;
+                    p.loop();
+                }
+                drawExplosion();
+            } else {
+                drawNb();
+            }
+            if (this.currentNb < -7) {
+                p.noLoop();
                 this.hideAllSlaveLayers();
                 this.moveToForeground("default-slave-state");
                 $("#fullScreen").remove();
             }
-            drawNb();
         };
 
         const drawNb = () => {
@@ -493,6 +561,32 @@ class Client {
                 70,
                 80
             );
+        };
+
+        const drawExplosion = () => {
+            var i = 0;
+            setInterval(function () {
+                if (i <= 150) {
+                    particles[i] = new Particle(
+                        p.width / 2,
+                        p.height / 2,
+                        p.random(3, 35)
+                    );
+                    i++;
+                }
+            }, 15);
+
+            p.background("#0000ff");
+
+            var gravity = p.createVector(0, 0.05);
+            var wind = p.createVector(0.09, 0);
+
+            if (particles.length > 0) {
+                for (var i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].display();
+                }
+            }
         };
     };
 
@@ -522,8 +616,7 @@ class Client {
                 "MASTER PERMISSION NEEDED TO start video.\nNot executing command!"
             );
         } else {
-            console.log("Video URL: " + videoUrl);
-            let startTime = new Date().getTime() + 3000;
+            let startTime = new Date().getTime() + 2700;
             let slaveIds = this.slaves;
             this.syncVideoOnSlaves();
             this._socket.emit(MasterEventTypes.StartVideoOnSlaves, {
@@ -534,6 +627,9 @@ class Client {
         }
     };
 
+    /**
+     * Starts the syncing process of the video, does this every six seconds
+     */
     public syncVideoOnSlaves = () => {
         if (this.type === ConnectionType.SLAVE) {
             console.warn(
@@ -545,10 +641,12 @@ class Client {
         }
     };
 
+    /**
+     * sending request to the slaves to get their current timestamp of video
+     */
     public sync = () => {
         let startTime = new Date().getTime() + 2700;
         let slaveIds = this.slaves;
-        console.log("66: syncing video from master");
         this._socket.emit(MasterEventTypes.GetVideoTimeStampsOnSlaves, {
             startTime,
             slaveIds,
@@ -561,35 +659,53 @@ class Client {
     };
 
     /**
-     * Slave side: send the video timeStamp
+     * Slave side: send the video timeStamp to the master
      */
     //TODO: Gather all slave messages and handle all this data on master side
-    public returnVideoTimeStamp = (msg: { startTime: number }): void => {
+    public returnVideoTimeStamp = (msg: {
+        startTime: number;
+        id: string;
+    }): void => {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
 
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
-            console.log("slave is sending out timestamp" + video.currentTime);
+            console.log(
+                "slave is sending out timestamp" +
+                    " " +
+                    video.currentTime +
+                    " " +
+                    this._socket.id
+            );
             let timeStamp = video.currentTime;
             this._socket.emit(SlaveEventTypes.sendVideoTimeStamp, {
                 timeStamp,
-                id: this._socket.id,
+                id: msg.id,
             });
         }, eta_ms);
     };
 
     /**
      * handle the videoStamp returned by the slaves, using a map/list
+<<<<<<< HEAD
      *
+=======
+<<<<<<< HEAD
+     *
+=======
+     * calculate the difference between each slave and the furthest one
+     * send the individual difference to each slave
+>>>>>>> a31486bb3a18ca2b9f4f0aa9e2642ad019ced35e
+>>>>>>> 4ac2a98e73af082b56adbb1a3958bc32ae99de3e
      *
      */
     public handleVideoTimeStamp = (msg: {
         timeStamp: number;
         id: string;
     }): void => {
-        console.log("handling timestamps");
+        console.log("handling timestamp from" + msg.id);
         this.timeStamps.set(msg.id, msg.timeStamp);
         if (this.timeStamps.size == this.slaves.length) {
             console.log("all clients sent in timestamp");
@@ -600,6 +716,7 @@ class Client {
                 }
             });
             this.slaves.forEach((slaveId) => {
+                console.log("sending out diff to: " + msg.id + slaveId);
                 let deltaTime = highest - this.timeStamps.get(slaveId);
                 this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave, {
                     deltaTime,
@@ -671,9 +788,11 @@ class Client {
             document.getElementById("video-slave")
         );
         console.log("Reached client: " + msg.videoUrl);
+        video.width = this.clientStorage.boundingBoxWidth;
+        video.height = this.clientStorage.boundingBoxHeight;
         video.setAttribute("src", msg.videoUrl);
         video.style.transform = this.clientStorage.matrix3d;
-        video.style.transformOrigin = this.clientStorage.matrix3d;
+        video.style.transformOrigin = "0 0";
         video.load();
 
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();

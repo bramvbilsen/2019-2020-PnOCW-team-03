@@ -240,7 +240,6 @@ export function videoListeners(socket: socketio.Socket) {
         MasterEventTypes.PauseVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
-                console.log("socketListener pause video")
                 msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.PauseVideo, {
                         startTime: msg.startTime,
@@ -270,6 +269,7 @@ export function videoListeners(socket: socketio.Socket) {
                 msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.GetVideoTimeStamp, {
                         startTime: msg.startTime,
+                        id: id
                     });
                 });
             }
@@ -278,9 +278,9 @@ export function videoListeners(socket: socketio.Socket) {
 
     socket.on(
         MasterEventTypes.UpdateVideoTimeOnSlave,
-        (msg: { deltaTime: number; slaveId: string }) => {
+        (msg: { deltaTime: number; id: string }) => {
             if (socket.id === connections.master.id) {
-                    io.to(msg.slaveId).emit(SlaveEventTypes.UpdateVideoTime, {
+                    io.to(msg.id).emit(SlaveEventTypes.UpdateVideoTime, {
                         deltaTime: msg.deltaTime,
                     });
             }
