@@ -675,7 +675,6 @@ class Client {
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
-        console.log("Reached client: " + msg.videoUrl);
         video.setAttribute("src", msg.videoUrl);
         video.style.transform = this.clientStorage.matrix3d;
         video.style.transformOrigin = this.clientStorage.matrix3d;

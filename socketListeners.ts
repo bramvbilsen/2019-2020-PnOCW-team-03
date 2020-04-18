@@ -240,7 +240,6 @@ export function videoListeners(socket: socketio.Socket) {
         MasterEventTypes.PauseVideoOnSlaves,
         (msg: { startTime: Date; slaveIds: Array<string> }) => {
             if (socket.id === connections.master.id) {
-                console.log("socketListener pause video")
                 msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.PauseVideo, {
                         startTime: msg.startTime,
@@ -284,7 +283,6 @@ export function videoListeners(socket: socketio.Socket) {
                     io.to(msg.id).emit(SlaveEventTypes.UpdateVideoTime, {
                         deltaTime: msg.deltaTime,
                     });
-                    console.log("listener for video sync update triggered")
             }
         }
     );
