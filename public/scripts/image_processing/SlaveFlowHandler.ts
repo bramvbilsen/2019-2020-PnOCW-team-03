@@ -211,7 +211,7 @@ export default class SlaveFlowHandler {
     }
 
     private sendDataToClients() {
-        const upscale = 20;
+        const upscale = 10;
         for (let i = 0; i < this.screens.length; i++) {
             const screen = this.screens[i];
             screen.actualCorners = {
