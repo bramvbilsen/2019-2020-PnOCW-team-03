@@ -6,9 +6,9 @@
     "scripts": {
         "start": "gulp",
         "build:production": "gulp build:production",
+        "build": "gulp build",
         "clean": "gulp Clean",
-        "test": "gulp run:tests -t ${$TEST}",
-        "build": "gulp build"
+        "test": "gulp run:tests -t ${$TEST}"
     },
     "author": "",
     "dependencies": {
