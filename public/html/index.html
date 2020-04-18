@@ -57,12 +57,45 @@
                 <div id="cameraButtonsContainer">
                   <div class="circularButtonContainer1">
                     <div class="circle button" id="settingsButton" tabindex="0">
-                      <i class="material-icons" id="settingsButtonIcon">settings</i>
+                      <!-- <i class="material-icons" id="settingsButtonIcon">settings</i> -->
                     </div>
                   </div>
                   <div class="circularButtonContainer2">
-                    <div class="circle button" id="confirmButton" tabindex="0"></div>
+                    <button class="circle button" id="confirmButton"></button>
+                    <div class="spinner-grow text-light" role="status" id="detectionLoadingIndicator"></div>
                   </div>
+                </div>
+            </div>
+            <div id="postDetectionContent">
+                <div>
+                    <button type="button" id="display-countdown-button" class="btn btn-outline-light thin-font">
+                    Display countdown
+                    </button>
+                    <button type="button" id="display-unicorn-img-button" class="btn btn-outline-light thin-font">
+                    Display unicorn
+                    </button>
+                    <button type="button" id="display-master-img-button" class="btn btn-outline-light thin-font">
+                    Display master image
+                    </button>
+                </div>
+                <div>
+                    <button type="button" id="display-delaunay-triangulation-button" class="btn btn-outline-light thin-font">
+                    Start animation
+                    </button>
+                    <button type="button" id="stop-delaunay-triangulation-button" class="btn btn-outline-light thin-font">
+                    Stop animation
+                    </button>
+                </div>
+                <div>
+                    <button type="button" id="start-video-button" class="btn btn-outline-light thin-font">
+                    Start Video
+                    </button>
+                    <button type="button" id="toggle-video-button" class="btn btn-outline-light thin-font">
+                    Pause Video
+                    </button>
+                    <button type="button" id="stop-video-button" class="btn btn-outline-light thin-font">
+                    Stop Video
+                    </button>
                 </div>
             </div>
         </div>

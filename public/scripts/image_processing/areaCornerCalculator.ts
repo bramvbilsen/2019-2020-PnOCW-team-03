@@ -48,6 +48,10 @@ export function findAreaCorners(
         }
     }
 
+    if (!p1) {
+        return [];
+    }
+
     let p2: Point;
     maxDist = 0;
     for (let i = 0; i < points.length; i++) {
@@ -57,6 +61,10 @@ export function findAreaCorners(
             maxDist = dist;
             p2 = p;
         }
+    }
+
+    if (!p2) {
+        return [p1];
     }
 
     const centerP1P2 = new Point(
@@ -88,38 +96,23 @@ export function findAreaCorners(
         }
     }
 
+    if (!p3) {
+        return [p1, p2];
+    }
+
     let p4: Point;
     maxDist = 0;
     for (let i = 0; i < points.length; i++) {
         const p = points[i];
         const dist = p.distanceSq(p3);
         if (dist > maxDist && !p.equals(p1) && !p.equals(p2) && !p.equals(p3)) {
-            // if (
-            //     Math.abs(
-            //         Math.atan2(p.y - p1.y, p.x - p1.x) -
-            //             Math.atan2(p2.y - p1.y, p2.x - p1.x)
-            //     ) >
-            //         (20 * Math.PI) / 180 &&
-            //     Math.abs(
-            //         Math.atan2(p.y - p2.y, p.x - p2.x) -
-            //             Math.atan2(p1.y - p2.y, p1.x - p2.x)
-            //     ) >
-            //         (20 * Math.PI) / 180 &&
-            //     Math.abs(
-            //         Math.atan2(p.y - p3.y, p.x - p3.x) -
-            //             Math.atan2(p1.y - p3.y, p1.x - p3.x)
-            //     ) >
-            //         (20 * Math.PI) / 180 &&
-            //     Math.abs(
-            //         Math.atan2(p.y - p3.y, p.x - p3.x) -
-            //             Math.atan2(p2.y - p3.y, p2.x - p3.x)
-            //     ) >
-            //         (20 * Math.PI) / 180
-            // ) {
             maxDist = dist;
             p4 = p;
-            // }
         }
+    }
+
+    if (!p4) {
+        return [p1, p2, p3];
     }
 
     return [p1, p2, p3, p4];

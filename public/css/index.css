@@ -491,6 +491,7 @@ h4 {
 
 #confirmButton:focus {
     background-color: rgba(0, 0, 0, 0.25);
+    outline: none;
 }
 
 #settingsButtonIcon {
@@ -581,4 +582,18 @@ body {
     max-height: 100vh;
     margin: 0px;
     overflow-x: hidden;
+}
+
+#detectionLoadingIndicator {
+    display: none;
+}
+
+#postDetectionContent {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
 }

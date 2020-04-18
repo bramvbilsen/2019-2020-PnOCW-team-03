@@ -5,6 +5,11 @@ import { CornerLabels } from "../types/Points";
 import { Camera } from "../UI/Master/Camera";
 import { CameraOverlay } from "../UI/Master/cameraOverlays";
 import { findAreaCorners } from "./areaCornerCalculator";
+import Point from "./screen_detection/Point";
+import { flattenOneLevel } from "../util/arrays";
+import { BoundingBox } from "../util/BoundingBox";
+import delauney from "./Triangulation/Delaunay";
+import MiddlePoint from "./Triangulation/MiddlePoint";
 
 /**
  * An enumeration of all the different steps of the automatic screen detection.
@@ -55,6 +60,7 @@ export default class SlaveFlowHandler {
             // TODO: Handle undefined exceptions whens screen not found
             await this.detectScreens();
             await this.detectOrientations();
+            this.sendDataToClients();
             resolve();
         });
     }
@@ -117,6 +123,11 @@ export default class SlaveFlowHandler {
                     )
                 );
             });
+
+            if (areas.length == 0) {
+                continue;
+            }
+
             ctx.fillStyle = "red";
             const areaToWorkWith = areas.sort((a, b) => b.length - a.length)[0];
             areaToWorkWith.forEach((p) => {
@@ -158,14 +169,15 @@ export default class SlaveFlowHandler {
                 ctx.fill();
             });
 
+            if (corners.length != 4) {
+                continue;
+            }
+
             this.screens.push(new SlaveScreen(corners, slaveId));
         }
     }
 
     private async detectOrientations() {
-        const cameraOverlay = new CameraOverlay();
-        const ctx = cameraOverlay.elem.getContext("2d");
-
         await client.requestOrientationColors(this.slaveIDs);
         console.log("Confirmed orientation colors");
         await wait(1000);
@@ -198,11 +210,74 @@ export default class SlaveFlowHandler {
         }
     }
 
-    removeOrientationColorOnSlave() {
-        this.step = WorkflowStep.END_CYCLE;
-        client.toggleOrientationColorsOnSlave(this.currSlaveID);
-        if (!this.automated) {
-            // this.endSlaveCycle();
-        }
+    private sendDataToClients() {
+        const globalBoundingBox = new BoundingBox(
+            flattenOneLevel(this.screens.map((screen) => screen.corners))
+        );
+        console.log("boundingbox shit");
+        console.log(globalBoundingBox.width);
+        console.log(globalBoundingBox.height);
+        this.screens.forEach((screen) => {
+            client.sendCutData(
+                {
+                    LeftUp: screen.actualCorners.LeftUp.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                    RightUp: screen.actualCorners.RightUp.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                    RightUnder: screen.actualCorners.RightUnder.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                    LeftUnder: screen.actualCorners.LeftUnder.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                },
+                globalBoundingBox.width,
+                globalBoundingBox.height,
+                screen.slaveID
+            );
+        });
+        //info van de triangulatie sturen
+        let middlePoints: Point[] = [];
+        this.screens.forEach((slave) => {
+            let centroid = slave.centroid;
+            middlePoints.push(
+                centroid.copyTranslated(
+                    -globalBoundingBox.topLeft.x,
+                    -globalBoundingBox.topLeft.y
+                )
+            );
+        });
+        middlePoints.sort(function (a, b) {
+            if (a.x - b.x == 0) {
+                return a.y - b.y;
+            } else {
+                return a.x - b.x;
+            }
+        });
+        //TODO: dit efficienter maken
+        const triangulation = delauney(middlePoints);
+        console.log("triangulation = " + triangulation.lines);
+        this.screens.forEach((screen) => {
+            let sendData = triangulation.sendData(
+                screen,
+                this.screens,
+                globalBoundingBox.topLeft
+            );
+            client.sendTriangulationData(
+                sendData.lines,
+                sendData.point,
+                sendData.ID
+            );
+            console.log("sendata = " + sendData.triang);
+            client.animation.middlePoints.push(
+                new MiddlePoint(sendData.middlePoint, sendData.triang)
+            );
+        });
     }
 }
