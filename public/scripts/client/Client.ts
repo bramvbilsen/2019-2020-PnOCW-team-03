@@ -563,18 +563,18 @@ class Client {
      * Slave side: send the video timeStamp
      */
         //TODO: Gather all slave messages and handle all this data on master side
-    public returnVideoTimeStamp = (msg: { startTime: number }): void =>{
+    public returnVideoTimeStamp = (msg: { startTime: number, id: string }): void =>{
         const video: HTMLVideoElement = <HTMLVideoElement>(
             document.getElementById("video-slave")
         );
 
         const eta_ms = msg.startTime + this._sync.timeDiff - Date.now();
         setTimeout(() => {
-            console.log("slave is sending out timestamp" + video.currentTime);
+            console.log("slave is sending out timestamp" + " " + video.currentTime + " " + this._socket.id);
             let timeStamp = video.currentTime;
             this._socket.emit(SlaveEventTypes.sendVideoTimeStamp,{
                 timeStamp, 
-                id: this._socket.id
+                id: msg.id
             });
         }, eta_ms);
 
@@ -587,10 +587,11 @@ class Client {
      *
      */
     public handleVideoTimeStamp = (msg: { timeStamp: number, id: string }): void =>{
-        console.log("handling timestamps");
+        console.log("handling timestamp from" + msg.id);
         this.timeStamps.set(msg.id, msg.timeStamp);
         if (this.timeStamps.size == this.slaves.length) {
             console.log("all clients sent in timestamp");
+            console.log(this.timeStamps);
             let highest = 0;
             this.slaves.forEach(slaveId => {
                 if (this.timeStamps.get(slaveId) > highest ) {
@@ -598,6 +599,7 @@ class Client {
                 }     
             });
             this.slaves.forEach(slaveId => {
+                console.log("sending out diff to: " + msg.id + slaveId)
                 let deltaTime = highest - this.timeStamps.get(slaveId);
                 this._socket.emit(MasterEventTypes.UpdateVideoTimeOnSlave,{
                     deltaTime, 
@@ -717,7 +719,7 @@ class Client {
             setTimeout(() => {
                 video.play();
             }, eta_ms);
-        }
+        }    
     };
 
 
