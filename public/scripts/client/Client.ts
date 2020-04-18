@@ -689,16 +689,8 @@ class Client {
 
     /**
      * handle the videoStamp returned by the slaves, using a map/list
-<<<<<<< HEAD
-     *
-=======
-<<<<<<< HEAD
-     *
-=======
      * calculate the difference between each slave and the furthest one
      * send the individual difference to each slave
->>>>>>> a31486bb3a18ca2b9f4f0aa9e2642ad019ced35e
->>>>>>> 4ac2a98e73af082b56adbb1a3958bc32ae99de3e
      *
      */
     public handleVideoTimeStamp = (msg: {
