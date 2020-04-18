@@ -195,6 +195,7 @@ export default class ClientStorage {
      * @param begin A SrcPoints instantiation holding the four corner points.
      */
     perspectiveMatrix(begin: SrcPoints) {
+        console.log(this.srcPoints);
         let x0 = begin.LeftUp.x;
         let y0 = begin.LeftUp.y;
         let x1 = begin.RightUp.x;

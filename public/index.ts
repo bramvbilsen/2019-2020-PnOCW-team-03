@@ -69,7 +69,7 @@ export function resetMaster() {
     welcomeMaster.css("display", "inherit");
 
     startMasterButton.off().on("click", async () => {
-        if (client.slaves.length === 0) {
+        if (client.slaves.length === 0 || innerWidth < innerHeight) {
             //@ts-ignore
             $("#welcome-master-no-slave-toast").toast("show");
             return;
