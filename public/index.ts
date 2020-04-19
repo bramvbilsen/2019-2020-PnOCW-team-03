@@ -211,6 +211,9 @@ $(() => {
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("Changed type to: " + type);
     const page: JQuery<HTMLBodyElement> = $("#page");
+    const video: HTMLVideoElement = <HTMLVideoElement>(
+        document.getElementById("video-slave")
+    );
     const loadingElem = $("#loading");
     if (slaveFlowHandler) {
         // slaveFlowHandler.reset();
@@ -224,6 +227,8 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#welcome-master").css("display", "inherit");
         $("#main-flow-master").css("display", "none");
     } else {
+        video.setAttribute("src", `${env.baseUrl}/images/bunny.mp4`);
+        video.load();
         page.css("background-color", `rgb(76, 175, 80)`); //changing client color to leprechaun green
         loadingElem.css("display", "none");
         $("#master").css("display", "none");
