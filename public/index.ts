@@ -87,6 +87,16 @@ export function resetMaster() {
         //@ts-ignore
         window.slaveFlowHandler = slaveFlowHandler;
 
+        // Reset
+        resetButton.off().on("click", () => {
+            // TODO: slaveFlowHandler.reset();
+        });
+
+        // Player for display master image on slaves
+        const player: JQuery<HTMLVideoElement> = $("#player");
+        $("#player-overlay").width(player.width());
+        $("#player-overlay").height(player.height());
+
         $("#confirmButton")
             .off()
             .on("click", async () => {
@@ -128,8 +138,28 @@ export function resetMaster() {
                             client.showImgOnSlave(
                                 screen.slaveID,
                                 `${env.baseUrl}/images/unicorn.jpeg`
+                                // TODO: `${env.baseUrl}/slaveImg`
                             );
                         });
+
+                        // TODO: fix dees -> doe het weg
+                        // const globalBoundingBox = new BoundingBox(
+                        //     flattenOneLevel(
+                        //         slaveFlowHandler.screens.map(screen => screen.corners)
+                        //     )
+                        // );
+                        // const canvas = createCanvas(player[0].videoWidth, player[0].videoHeight);
+                        // const ctx = canvas.getContext("2d");
+                        // ctx.drawImage(slaveFlowHandler.blancoCanvas, 0, 0, player[0].videoWidth * slaveFlowHandler.blancoCanvasScale, player[0].videoHeight);
+                        // slaveFlowHandler.screens.forEach(screen => {
+                        //     const slaveImg = createImageCanvasForSlave(
+                        //         globalBoundingBox,
+                        //         screen,
+                        //         slaveFlowHandler.screens,
+                        //         canvas
+                        //     );
+                        //     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
+                        // });
                     });
                 $("#display-delaunay-triangulation-button")
                     .off()
