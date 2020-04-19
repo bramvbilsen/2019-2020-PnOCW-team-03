@@ -1,14 +1,10 @@
 import env from "../../env/env";
 
-export function uploadSlaveImgCanvas(
-    slaveId: string,
-    canvas: HTMLCanvasElement
-) {
+export function uploadMasterImgCanvas(canvas: HTMLCanvasElement) {
     return new Promise<{ imgPath: string }>((resolve, reject) => {
         canvas.toBlob((blob) => {
             const formData = new FormData();
-            formData.append("image", blob, `${slaveId}.png`);
-            formData.append("slaveId", slaveId);
+            formData.append("image", blob, "masterImg.png");
             $.ajax({
                 url: env.baseUrl + "/slaveImg",
                 type: "POST",

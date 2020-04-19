@@ -10,6 +10,7 @@ import { flattenOneLevel } from "../util/arrays";
 import { BoundingBox } from "../util/BoundingBox";
 import delauney from "./Triangulation/Delaunay";
 import MiddlePoint from "./Triangulation/MiddlePoint";
+import { uploadMasterImgCanvas } from "../util/image_uploader";
 
 /**
  * An enumeration of all the different steps of the automatic screen detection.
@@ -208,6 +209,8 @@ export default class SlaveFlowHandler {
                     screen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder)
             );
         }
+        // Upload image in server:
+        uploadMasterImgCanvas(img);
     }
 
     private sendDataToClients() {

@@ -137,7 +137,7 @@ export function resetMaster() {
                         slaveFlowHandler.screens.forEach((screen) => {
                             client.showImgOnSlave(
                                 screen.slaveID,
-                                `${env.baseUrl}/images/unicorn.jpeg`
+                                `${env.baseUrl}/images/masterImg.png`
                                 // TODO: `${env.baseUrl}/slaveImg`
                             );
                         });
