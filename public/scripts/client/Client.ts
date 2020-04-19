@@ -552,8 +552,9 @@ class Client {
         const drawNb = () => {
             console.log("CountDown: " + this.currentNb);
             // p.stroke(0, 0, 0, 0); // TODO
-            p.fill(50);
-            p.textSize(50);
+            p.fill(p.color(255, 255, 255));
+            p.background("#0000ff");
+            p.textSize(80);
             p.text(
                 this.currentNb.toString(),
                 Math.floor(windowWidth / 2),
