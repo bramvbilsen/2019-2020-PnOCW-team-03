@@ -16,7 +16,13 @@ export default class Animation {
 
     animate() {
         this.nextMiddlePoint = this.middlePoints[0];
-        this.animateLoop();
+        if (this.middlePoints.length != 1) {
+            this.animateLoop();
+        } else {
+            let delay = 10000;
+            this.timeToNextLine = new Date().getTime() + delay;
+            this.timeToNextLine = this.timeToNextLine + this.sendLine();
+        }
     }
 
     animateLoop() {

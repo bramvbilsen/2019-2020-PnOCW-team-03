@@ -227,40 +227,88 @@ export default class ClientStorage {
 
         let h: number[] = linSystem.solve(matrix, c);
         console.log(h);
-        let matrix3d =
-            "matrix3d( " +
-            h[0] +
-            ", " +
-            h[3] +
-            ", " +
-            0 +
-            ", " +
-            h[6] +
-            ", " +
-            h[1] +
-            ", " +
-            h[4] +
-            ", " +
-            0 +
-            ", " +
-            h[7] +
-            ", " +
-            0 +
-            ", " +
-            0 +
-            ", " +
-            1 +
-            ", " +
-            0 +
-            ", " +
-            h[2] +
-            ", " +
-            h[5] +
-            ", " +
-            0 +
-            ", " +
-            1 +
-            " )";
+
+        let matrix3d: string;
+
+        if (h[0] != undefined) {
+            matrix3d =
+                "matrix3d( " +
+                h[0] +
+                ", " +
+                h[3] +
+                ", " +
+                0 +
+                ", " +
+                h[6] +
+                ", " +
+                h[1] +
+                ", " +
+                h[4] +
+                ", " +
+                0 +
+                ", " +
+                h[7] +
+                ", " +
+                0 +
+                ", " +
+                0 +
+                ", " +
+                1 +
+                ", " +
+                0 +
+                ", " +
+                h[2] +
+                ", " +
+                h[5] +
+                ", " +
+                0 +
+                ", " +
+                1 +
+                " )";
+        } else {
+            let angle = -(Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
+
+            let sumX = x0 + x1 + x2 + x3;
+            let sumY = y0 + y1 + y2 + y3;
+
+            let transx = sumX / 4;
+            let transy = sumY / 4;
+
+            let dist1x = Math.sqrt(Math.pow(x0 - x1, 2) + Math.pow(y0 - y1, 2));
+            let dist2x = Math.sqrt(Math.pow(window.innerWidth, 2));
+
+            let dist1y = Math.sqrt(Math.pow(x0 - x3, 2) + Math.pow(y0 - y3, 2));
+            let dist2y = Math.sqrt(Math.pow(window.innerHeight, 2));
+
+            let ratiox = dist2x / dist1x;
+            let ratioy = dist2y / dist1y;
+
+            let trx = -transx * ratiox;
+            console.log(trx);
+            let tryy = -transy * ratioy;
+            console.log(tryy);
+
+            console.log(angle);
+            matrix3d =
+                "translate( " +
+                window.innerWidth / 2 +
+                "px," +
+                window.innerHeight / 2 +
+                "px)" +
+                "rotate( " +
+                angle +
+                "deg ) " +
+                "translate( " +
+                trx +
+                "px," +
+                tryy +
+                "px)" +
+                "scale( " +
+                ratiox +
+                "," +
+                ratioy +
+                " ) ";
+        }
 
         console.log(matrix3d);
 
