@@ -55,3 +55,10 @@
   - `While some errant blocks are recognized, we can attempt to filter out these false positives.` Dit is veel gemakkelijker gezegd dan gedaan volgens mij.
   - `We also note that we have reliably found the corners of the screens.` je legt niet uit hoe
   - `In conjunction with a convex hull algorithm, run on the blocks, we could find the corner points of the screens with even more precision, eliminating missing areas within the screen, which can be caused by darkness or reflection.` Je hebt geen referentie noch testen die deze bewering staaft.
+
+# ID2 (Bram Vanbilsen, Sebastiaan Wouters)
+- De code review behandelt een groot stuk code en maakt duidelijk dat een heleboel ongebruikte code aanwezig is. `remove this. If it turns out to be useful after all, use git` is ook volgens mij de oplossing.
+- De best practices zijn goed geargumenteerd met de nodige referenties.
+- Duidelijk overzicht over de verbetering van de code na de vorige code reviews.
+- Ik mis bespreking van de correctheid van de code.
+- Doordat de template niet werd gebruikt mis ik de LOC. De werkuren lijken weinig. Is dit enkel de duur van het schrijven van het verslag? 
