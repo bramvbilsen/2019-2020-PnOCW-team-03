@@ -45,12 +45,6 @@ export function resetMaster() {
     const uploadImage = $("#upload-image-to-display");
     const displayImage = $("#display-uploaded-image");
 
-    const {
-        canvas: triangulationCanvas,
-        id: triangulationCanvasID,
-    } = createTriangulationCanvas();
-    welcomeMaster.append(triangulationCanvas);
-
     mainFlowMaster.hide();
     startButton.hide();
     nextSlaveButton.hide();
@@ -77,8 +71,6 @@ export function resetMaster() {
 
         $("#confirmButton").css("display", "inline-block");
         $("#detectionLoadingIndicator").css("display", "none");
-
-        triangulationCanvas.remove();
 
         const camera = new Camera();
         await camera.start();
@@ -114,7 +106,13 @@ export function resetMaster() {
                 );
 
                 $("#cameraContainer").css("display", "none");
-                $("#postDetectionContent").css("display", "bock");
+                $("#postDetectionContent").css("display", "");
+
+                const {
+                    canvas: triangulationCanvas,
+                    id: triangulationCanvasID,
+                } = createTriangulationCanvas();
+                mainFlowMaster.append(triangulationCanvas);
 
                 $("#display-countdown-button")
                     .off()
@@ -208,6 +206,7 @@ $(() => {
     resetMaster();
 });
 
+//Better name: onRefresh()
 function onConnectionTypeChange(type: ConnectionType) {
     console.log("Changed type to: " + type);
     const page: JQuery<HTMLBodyElement> = $("#page");
@@ -218,6 +217,8 @@ function onConnectionTypeChange(type: ConnectionType) {
     if (slaveFlowHandler) {
         // slaveFlowHandler.reset();
     }
+
+    $("#animation").remove();
     if (client.type == ConnectionType.MASTER) {
         page.css("background-color", `rgb(77, 154, 227)`); //changing master color to sky blue
         $("#countdown").css("display", "none");
@@ -233,6 +234,7 @@ function onConnectionTypeChange(type: ConnectionType) {
         loadingElem.css("display", "none");
         $("#master").css("display", "none");
         $("#slave").css("display", "inherit");
+        $("#triangulationCanvasID").remove();
     }
 
     if (env.test) {
