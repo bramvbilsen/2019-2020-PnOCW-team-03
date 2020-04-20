@@ -29,7 +29,7 @@ export default class ClientStorage {
     positionBall: Point;
     eenheidsVector: Point;
     animation: p5;
-    distancePerFrame = 2;
+    distancePerFrame = 1;
     endTime: number;
     stopTime = Date.now();
     lastFrameTime: number;
@@ -131,7 +131,7 @@ export default class ClientStorage {
                 if (this.endTime - Date.now() > 0) {
                     p.stroke(0, 0, 0, 0);
                     p.fill("blue");
-                    p.ellipse(this.positionBall.x, this.positionBall.y, 50, 50);
+                    p.ellipse(this.positionBall.x, this.positionBall.y, 10, 10);
                     const dx =
                         this.distancePerFrame *
                         this.eenheidsVector.x *

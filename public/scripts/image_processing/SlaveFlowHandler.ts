@@ -74,12 +74,12 @@ export default class SlaveFlowHandler {
         for (let i = 0; i < this.slaveIDs.length; i++) {
             const slaveId = this.slaveIDs[i];
             await client.requestColor(
-                { r: 0, g: 100, b: 100, a: 255 },
+                { r: 0, g: 150, b: 150, a: 255 },
                 slaveId
             );
             await wait(1000);
             const firstImg = this.camera.snap(this.scale);
-            await client.requestColor({ r: 100, g: 0, b: 0, a: 255 }, slaveId);
+            await client.requestColor({ r: 150, g: 0, b: 0, a: 255 }, slaveId);
             await wait(1000);
             const secondImg = this.camera.snap(this.scale);
             const firstImgCtx = firstImg.getContext("2d");

@@ -43,6 +43,9 @@ export default class Animation {
         };
         console.log(unitVector);
 
+        const pixelsTraveledIn30FPS = 1 * 30;
+        const ballRadius = 10;
+
         //DATA BERKENEN VERSTUREN NAAR SLAVES
         linkedLine.forEach((element) => {
             //beginpunt
@@ -55,11 +58,15 @@ export default class Animation {
                 y: point.y - currentMidlePoint.y,
             };
             let distance =
-                Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2)) - 50;
-            console.log(distance / 60);
+                Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2)) -
+                ballRadius;
+            console.log(distance / pixelsTraveledIn30FPS);
             console.log(
                 "start= " +
-                    new Date(this.timeToNextLine + (distance / 60) * 1000)
+                    new Date(
+                        this.timeToNextLine +
+                            (distance / pixelsTraveledIn30FPS) * 1000
+                    )
             );
 
             //actual beginpunt
@@ -70,7 +77,7 @@ export default class Animation {
             let beginPoint: Point;
             if (currentMidlePoint.equals(point)) {
                 beginPoint = point;
-                distance += 50;
+                distance += ballRadius;
             } else {
                 beginPoint = new Point(
                     currentMidlePoint.x + beginVector.x,
@@ -86,15 +93,16 @@ export default class Animation {
             };
             const distanceEnd =
                 Math.sqrt(Math.pow(vectorEnd.x, 2) + Math.pow(vectorEnd.y, 2)) +
-                50;
-            console.log(distanceEnd / 60);
+                ballRadius;
+            console.log(distanceEnd / pixelsTraveledIn30FPS);
 
             //animatie sturen
             this.client.sendAnimation(
                 unitVector,
                 beginPoint,
-                this.timeToNextLine + (distance / 60) * 1000,
-                this.timeToNextLine + (distanceEnd / 60) * 1000,
+                this.timeToNextLine + (distance / pixelsTraveledIn30FPS) * 1000,
+                this.timeToNextLine +
+                    (distanceEnd / pixelsTraveledIn30FPS) * 1000,
                 slaveId
             );
         });
@@ -106,8 +114,8 @@ export default class Animation {
             return next.linkedMiddlePoint.equals(Element.middlePoint);
         });
         console.log(rdist);
-        console.log(rdist / 60);
-        return (rdist / 60) * 1000;
+        console.log(rdist / pixelsTraveledIn30FPS);
+        return (rdist / pixelsTraveledIn30FPS) * 1000;
     }
 
     nextLineSetup(newTimeToNextLine: number) {
