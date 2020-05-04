@@ -72,3 +72,9 @@
 - `When it comes to time complexity the latter algorithm proves to be the better option` Tijdscomplexiteit is bij beiden O(HxW)=O(n^2). Ze is dus dezelfde.
 - De conclusie is goed, maar er zijn nergens testen vermeld om de conclusie te staven!
 - Jullie algoritmes zijn niet in staat schremen te detecteren, maar het is onmogelijk punten te identificeren. Bij geroteerde schermen zullen jullie problemen ondervinden.
+
+# F1.1: Code Review (Bram Vanbilsen, Sebastiaan Wouters)
+- De LOC is nog steeds afwezig
+- Na het lezen van het rapport kan ik alleen maar akkoord gaan met de conclusie. Het helpt natuurlijk dat deze code niet verwerkt is in de `oude` code.
+- `The main issues have been discussed above as it is based on the index.ts file of the first algorithm` als ik deze zin lees, moet ik echter denken aan code duplicatie!
+- Het stuk over de correctheid van de code is nu wel aanwezig, maar meldt helaas dat code onvoldoende getest is. 
