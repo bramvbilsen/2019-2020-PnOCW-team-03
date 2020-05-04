@@ -12,6 +12,14 @@ import {
     SharedEventTypes,
 } from "./types/SocketIOEvents";
 import { createCSV } from "./server/csvMaker";
+import {
+    triangulationListeners,
+    animationListeners,
+    videoListeners,
+    slaveBackgroundListeners,
+    synchronizationListeners,
+    displayImageOnSlavesListeners,
+} from "./socketListeners";
 
 console.log("Starting server...");
 
@@ -26,7 +34,7 @@ const imgFolder = path.resolve(staticFolder + "/img");
 export const htmlFolder = path.resolve(staticFolder + "/html");
 const slaveImgUploadFolder = path.resolve(__dirname + "/server/uploads/slaves");
 
-const connections: Connections = new Connections();
+export const connections: Connections = new Connections();
 
 app.use(express.static(staticFolder));
 app.use("/images", express.static(imgFolder));
@@ -41,9 +49,11 @@ app.post("/sync_test_result", (req, res) => {
         fileName: "Sync_test",
         columnNames: ["Iteration", "Offset"],
         columnDatas: [
-            Array(testResults.length).fill(0).map((_, i) => i),
-            testResults
-        ]
+            Array(testResults.length)
+                .fill(0)
+                .map((_, i) => i),
+            testResults,
+        ],
     });
 });
 
@@ -62,6 +72,8 @@ app.get("/colored_screen_img", (req, res) => {
 const multerSlaveImageType = multer().single("image");
 app.post("/slaveImg", multerSlaveImageType, handleImageUpload);
 
+let slaveIDsToConfirmOrientation: Set<string> = new Set();
+
 io.on("connect", (socket: socketio.Socket) => {
     connections.add(socket);
 
@@ -69,177 +81,84 @@ io.on("connect", (socket: socketio.Socket) => {
         connections.remove(socket);
     });
 
-    socket.on(SharedEventTypes.TimeSyncClient, (data: { t0: number }) => {
-        socket.emit(SharedEventTypes.TimeSyncServer, {
-            t1: Date.now(),
-            t0: data.t0,
-        });
-    });
-
-    socket.on(SlaveEventTypes.NotifyMasterThatPictureCanBeTaken, _ => {
+    socket.on(SlaveEventTypes.NotifyMasterThatPictureCanBeTaken, (_) => {
         socket
             .to(connections.masterID)
             .emit(MasterEventTypes.HandleNextSlaveFlowHanlderStep, {});
     });
-
     socket.on(
-        MasterEventTypes.ChangeSlaveBackgrounds,
-        (msg: { [key: string]: string }) => {
-            if (socket.id === connections.master.id) {
-                console.log("Attempting to change background by master");
-                for (const slaveId of Object.keys(msg)) {
-                    io.to(slaveId).emit(SlaveEventTypes.ChangeBackground, {
-                        color: msg[slaveId],
-                    });
-                }
-            }
-        }
-    );
-
-    socket.on(
-        MasterEventTypes.ChangeSlaveBackground,
-        (msg: {
-            slaveId: string;
-            color: { r: string; g: string; b: string };
-        }) => {
-            if (socket.id === connections.master.id) {
-                console.log("Attempting to change background by master");
-                io.to(msg.slaveId).emit(SlaveEventTypes.ChangeBackground, {
-                    color: msg.color,
+        SlaveEventTypes.sendVideoTimeStamp,
+        (msg: { timeStamp: number; id: string }) => {
+            socket
+                .to(connections.masterID)
+                .emit(MasterEventTypes.HandleVideoTimeStampsOnSlaves, {
+                    timeStamp: msg.timeStamp,
+                    id: msg.id,
                 });
-            }
         }
     );
 
     socket.on(
-        MasterEventTypes.DisplayImageOnSlave,
-        (msg: { slaveId: string; imgUrl: string }) => {
-            if (socket.id === connections.master.id) {
-                console.log(
-                    "Attempting to display image by master, imgurl: " +
-                    msg.imgUrl
-                );
-                io.to(msg.slaveId).emit(SlaveEventTypes.DisplayImage, {
-                    imgUrl: msg.imgUrl,
-                });
-            }
-        }
-    );
-
-    socket.on(MasterEventTypes.GiveUpMaster, (msg: { slaveId?: string }) => {
-        if (socket.id === connections.master.id) {
-            console.log("Attempting to give up master");
-            const slaveId = msg.slaveId;
-            let socket = connections.getSocketFromId(slaveId);
-            if (socket) {
-                connections.changeMaster(socket);
-            } else {
-                connections.changeMaster(connections.slaves[0]);
-            }
-        }
-    });
-
-    socket.on(
-        MasterEventTypes.NotifySlavesOfStartTimeCounter,
-        (msg: { startTime: Date; slaveIds: Array<string> }) => {
-            if (socket.id === connections.master.id) {
-                console.log("Attempting to start timer by master");
-                msg.slaveIds.forEach(id => {
-                    io.to(id).emit(SlaveEventTypes.SetCounterEvent, {
-                        startTime: msg.startTime,
-                    });
-                });
-            }
-        }
-    );
-
-    socket.on(
-        MasterEventTypes.ToggleSlaveOrientationColors,
+        MasterEventTypes.RequestDetectionColor,
         (msg: {
-            slaveId: string;
-            leftTop: { r: string; g: string; b: string };
-            rightTop: { r: string; g: string; b: string };
-            leftBottom: { r: string; g: string; b: string };
-            rightBottom: { r: string; g: string; b: string };
+            color: { r: number; g: number; b: number };
+            slaveID: string;
         }) => {
+            console.log(
+                "Requesting " + msg.slaveID + " for a new background color!"
+            );
             if (socket.id === connections.master.id) {
-                console.log("Attempting to change orientation by master");
-                const { slaveId, ...slaveMsg } = msg;
-                io.to(slaveId).emit(
-                    SlaveEventTypes.ChangeOrientationColors,
-                    slaveMsg
-                );
+                socket
+                    .to(msg.slaveID)
+                    .emit(SlaveEventTypes.DisplayDetectionColor, msg);
             }
         }
     );
-
-    socket.on(MasterEventTypes.SendArrowsUp, () => {
-        if (socket.id === connections.master.id) {
-            console.log("Attempting to display arrow by master");
-            for (const slaveId of connections.slaveIDs) {
-                io.to(slaveId).emit(SlaveEventTypes.DisplayArrowUp);
-            }
-        }
-    });
-
-    socket.on(MasterEventTypes.SendArrowsRight, () => {
-        if (socket.id === connections.master.id) {
-            console.log("Attempting to display arrow by master");
-            for (const slaveId of connections.slaveIDs) {
-                io.to(slaveId).emit(SlaveEventTypes.DisplayArrowRight);
-            }
-        }
+    socket.on(SlaveEventTypes.DisplayedDetectionColor, () => {
+        console.log("Confirming new background color!");
+        socket
+            .to(connections.master.id)
+            .emit(MasterEventTypes.ConfirmedDetectionColor);
     });
 
     socket.on(
-        MasterEventTypes.SendTriangulationOnSlave,
-        (msg: { slaveId: string; angles: any }) => {
-            if (socket.id === connections.master.id) {
-                io.to(msg.slaveId).emit(
-                    SlaveEventTypes.DisplayTriangulationOnSlave,
-                    msg
-                );
-            }
+        MasterEventTypes.RequestOrientationColors,
+        (msg: { slaveIDs: string[] }) => {
+            slaveIDsToConfirmOrientation = new Set(msg.slaveIDs);
+            msg.slaveIDs.forEach((id) => {
+                socket.to(id).emit(SlaveEventTypes.DisplayOrientationColors);
+            });
         }
     );
 
-    socket.on(
-        MasterEventTypes.ShowAnimationOnSlave,
-        (msg: {
-            slaveId: string;
-            startTime: any;
-            animationLine: any;
-            angles: any;
-            lines: any;
-            duration: any;
-            last: any;
-            next: any;
-        }) => {
-            if (socket.id === connections.master.id) {
-                io.to(msg.slaveId).emit(SlaveEventTypes.showAnimation, msg);
-            }
+    socket.on(SlaveEventTypes.DisplayedOrientationColors, () => {
+        slaveIDsToConfirmOrientation.delete(socket.id);
+        if (slaveIDsToConfirmOrientation.size == 0) {
+            socket
+                .to(connections.masterID)
+                .emit(MasterEventTypes.ConfirmedOrientationColors);
         }
-    );
-
-    socket.on(SlaveEventTypes.animationFinished, () => {
-        console.log("dabbende steve, lit, u mama is so fat");
-        io.to(connections.masterID).emit(MasterEventTypes.nextLine, {});
     });
 
-    socket.on(
-        MasterEventTypes.triangulationShow,
-        (msg: { slaveId: string; angles: any; lines: any }) => {
-            io.to(msg.slaveId).emit(SlaveEventTypes.linesShow, msg);
-        }
-    );
+    slaveBackgroundListeners(socket);
+
+    synchronizationListeners(socket);
+
+    videoListeners(socket);
+
+    triangulationListeners(socket);
+
+    animationListeners(socket);
+
+    displayImageOnSlavesListeners(socket);
 });
 
 server.listen(port, () => {
     console.log(`Server listening on port: ${port}`);
-    startListeningForServerCommands(input => {
+    startListeningForServerCommands((input) => {
         switch (input) {
             case "kill_all":
-                connections.slaves.forEach(slave => slave.disconnect());
+                connections.slaves.forEach((slave) => slave.disconnect());
                 if (connections.master) connections.master.disconnect();
                 console.log("All connections closed");
                 break;
@@ -248,7 +167,7 @@ server.listen(port, () => {
                 console.log("Master connection closed");
                 break;
             case "kill_slaves":
-                connections.slaves.forEach(slave => slave.disconnect());
+                connections.slaves.forEach((slave) => slave.disconnect());
                 console.log("Slave connections closed");
                 break;
         }

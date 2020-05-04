@@ -5,6 +5,11 @@ import Point from "./Point";
  * @param points
  * @returns Convex hull for `Points` sorted clockwise.
  */
+/**
+ * Computes the convex hull of the given points after they are sorted clockwise.
+ * All computations are being done with a new list containing copies of the points.
+ * @param points A list of points.
+ */
 export default function convexHull(points: Point[]) {
     points = points.map(point => point.copy());
 
@@ -44,8 +49,8 @@ export default function convexHull(points: Point[]) {
 
 // http://paulbourke.net/geometry/polygonmesh/centroid.pdf
 /**
- * Calculates convex hull of points and returns its centroid.
- * @param points
+ * Calculates convex hull of points and returns its centroid (a Point).
+ * @param points A list of points.
  */
 export function convexHullCentroid(points: Point[]) {
     points = convexHull(points);
@@ -63,7 +68,7 @@ export function convexHullCentroid(points: Point[]) {
         y += (yi + yii) * (xi * yii - xii * yi);
     }
 
-    let area = convexHullArea(points);
+    let area = convexHullArea(points); //Fixme The convex hull is computed 2 times.
     x = x / (6 * area);
     y = y / (6 * area);
 
@@ -72,8 +77,8 @@ export function convexHullCentroid(points: Point[]) {
 
 // http://paulbourke.net/geometry/polygonmesh/centroid.pdf
 /**
- * Calculates convex hull of points and returns its area.
- * @param points
+ * Calculates the convex hull and returns its area.
+ * @param points A list of points.
  */
 export function convexHullArea(points: Point[]) {
     points = convexHull(points);
@@ -89,16 +94,21 @@ export function convexHullArea(points: Point[]) {
     return area;
 }
 
-function findSmallestY(Points: Point[]) {
+/**
+ * Returns the index of the point with the smalles y-value.
+ * If the list is empty the index will be 0.
+ * @param points A list of points.
+ */
+function findSmallestY(points: Point[]) {
     let minimumY = Number.POSITIVE_INFINITY;
     let minIndex = 0;
-    for (let i = 0; i < Points.length; i++) {
-        if (Points[i].y < minimumY) {
-            minimumY = Points[i].y;
+    for (let i = 0; i < points.length; i++) {
+        if (points[i].y < minimumY) {
+            minimumY = points[i].y;
             minIndex = i;
         }
-        if (Points[i].y === minimumY) {
-            if (Points[i].x < Points[minIndex].x) {
+        if (points[i].y === minimumY) {
+            if (points[i].x < points[minIndex].x) {
                 minIndex = i;
             }
         }
@@ -106,6 +116,13 @@ function findSmallestY(Points: Point[]) {
     return minIndex;
 }
 
+/**
+ * Returns the orientation between the three points.
+ * @returns 0 (colinear), 1 (clockwise) or 2 (counterclockwise)
+ * @param p A first point.
+ * @param q A second point.
+ * @param r A third point.
+ */
 function orientation(p: Point, q: Point, r: Point) {
     const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
     if (val === 0) {
@@ -113,11 +130,19 @@ function orientation(p: Point, q: Point, r: Point) {
     } // colinear
     if (val > 0) {
         return 1;
-    } else {
+    } // clockwise
+    else {
         return 2;
-    } // clock or counterclock wise
+    } // counterclockwise
 }
 
+/**
+ * Compares the three points.
+ * @returns -1 or 1
+ * @param p0 A first point.
+ * @param p1 A second point.
+ * @param p2 A third point.
+ */
 function compare(p0: Point, p1: Point, p2: Point) {
     // Find orientation
     const o = orientation(p0, p1, p2);
@@ -125,22 +150,33 @@ function compare(p0: Point, p1: Point, p2: Point) {
     return o === 2 ? -1 : 1;
 }
 
-function swap(Points: Point[], i: number, j: number) {
-    const temp = Points[i];
-    Points[i] = Points[j];
-    Points[j] = temp;
-    return Points;
+/**
+ * Swaps two points with each other.
+ * @param points A list of points.
+ * @param i Index of the first point.
+ * @param j Index of the second point.
+ */
+function swap(points: Point[], i: number, j: number) {
+    const temp = points[i];
+    points[i] = points[j];
+    points[j] = temp;
+    return points;
 }
 
-function filterOnAngle(p0: Point, Points: Point[]) {
+/**
+ * Removes colinear points.
+ * @param p0 The starting point.
+ * @param points A list of points.
+ */
+function filterOnAngle(p0: Point, points: Point[]) {
     const toRemove = [];
-    for (let i = 0; i < Points.length - 1; i++) {
-        if (orientation(p0, Points[i], Points[i + 1]) === 0) {
+    for (let i = 0; i < points.length - 1; i++) {
+        if (orientation(p0, points[i], points[i + 1]) === 0) {
             toRemove.push(i);
         }
     }
     while (toRemove.length) {
-        Points.splice(toRemove.pop(), 1);
+        points.splice(toRemove.pop(), 1);
     }
-    return Points;
+    return points;
 }

@@ -1,6 +1,10 @@
 import { BoundingBox } from "./BoundingBox";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 
+/**
+ * A function to load an image on the given path.
+ * @param src The path to the image to load.
+ */
 export async function loadImage(src: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -15,41 +19,26 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /**
- * Returns a canvas with `img` scaled to the dimensions of `boundingBox`. Scaled to fill!
- * @param img
- *
- * @param globalBoundingBox Bounding box around all screens.
+ * A function to load a video on the given path.
+ * @param src The path to the video to load.
  */
-export function scaleAndCutImageToBoundingBoxAspectRatio(
-    img: HTMLCanvasElement,
-    globalBoundingBox: BoundingBox,
-    extraWidth: number,
-    extraHeight: number
-): HTMLCanvasElement {
-    const imgCanvas = createCanvas(
-        globalBoundingBox.width,
-        globalBoundingBox.height
-    );
-    const imgCtx = imgCanvas.getContext("2d");
-    imgCtx.drawImage(img, 0, 0, globalBoundingBox.width, globalBoundingBox.height);
-    const canvas = createCanvas(
-        globalBoundingBox.width + extraWidth,
-        globalBoundingBox.height + extraHeight
-    );
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(
-        imgCanvas,
-        extraWidth / 2, extraHeight / 2
-    );
-    return canvas;
+export async function loadVideo(vid: HTMLVideoElement): Promise<HTMLVideoElement> {
+    return new Promise((resolve, reject) => {
+        vid.load();
+        vid.onload = () => {
+            resolve(vid);
+        };
+        vid.onerror = err => {
+            reject(err);
+        };
+    });
 }
 
+//Fixme What does this function do?
 export function scaleAndCutBoundingBoxToImgAspectRatio(
     img: HTMLHtmlElement,
-    globalBoundingBox: BoundingBox) {
+    globalBoundingBox: BoundingBox
+) {
     const canvas = createCanvas(img.clientWidth, img.clientHeight);
     const ctx = canvas.getContext("2d");
-
 }
-
-

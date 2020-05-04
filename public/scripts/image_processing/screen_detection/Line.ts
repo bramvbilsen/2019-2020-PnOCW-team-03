@@ -30,12 +30,17 @@ export default class Line {
             (this.endPoints[1].x - this.endPoints[0].x);
     }
 
+    /**
+     * Returns a copy of this line.
+     */
     copy() {
         return new Line(this.a.copy(), this.b.copy());
     }
 
     /**
-     * Will return an angle between 0 and 179 deg.
+     * Computes the angle between the endpoints of this line.
+     * @returns An angle between 0 and 179 degrees.
+     * @param aroundMostRight Whether or not to search for the angle around the most right end.
      */
     angleBetweenEndpoints(aroundMostRight?: boolean): number {
         const sorted = this.endPoints.sort((a, b) =>
@@ -75,6 +80,12 @@ export default class Line {
     }
 
     //kan best korter worden gemaakt
+    /**
+     * Computes the surrounding circle of the given lines.
+     * @returns A Circle.
+     * @param line2 The first line.
+     * @param line3 The second line.
+     */
     surroundingCircle(line2: Line, line3: Line) {
         //middelpunten
         let midd = [];
@@ -119,8 +130,8 @@ export default class Line {
     }
 
     /**
-     * 
-     * @param line2 
+     * Computes the angle between this line and the given one.
+     * @param line2 The other line.
      * @param index 0 is counterclockwise and 1 is clockwise.
      */
     angle(line2: Line, index: number) {
@@ -164,6 +175,10 @@ export default class Line {
         return theta;
     }
 
+    /**
+     * Returns whether or not the two lines are considered to be equal.
+     * @param line The other line.
+     */
     equals(line: Line) {
         if (this.a.equals(line.a) && this.b.equals(line.b)) return true;
         if (this.a.equals(line.b) && this.b.equals(line.a)) return true;

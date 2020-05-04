@@ -1,19 +1,20 @@
-import { client, resetMaster } from "../../index";
-import findScreen, { createCanvas } from "./screen_detection/screen_detection";
+import { client } from "../../index";
 import SlaveScreen from "../util/SlaveScreen";
-import { calculateCameraCanvasScaleFactor, ScaledToFit } from "./camera_util";
-import getOrientationAngle from "./orientation_detection/orientation_detection";
 import calculateScreenAngle from "./orientation_detection/orientation_detection_alternative";
-import {
-    PREFERRED_CANVAS_HEIGHT,
-    PREFERRED_CANVAS_WIDTH,
-    DEFAULT_NON_COLORED_SLAVE_COLOR,
-} from "../CONSTANTS";
-import { createCameraOverlayWithPoints } from "../util/canvas";
-import Line from "./screen_detection/Line";
+import { CornerLabels } from "../types/Points";
+import { Camera } from "../UI/Master/Camera";
+import { CameraOverlay } from "../UI/Master/cameraOverlays";
+import { findAreaCorners } from "./areaCornerCalculator";
 import Point from "./screen_detection/Point";
-import { IMasterVsActualPoint, CornerLabels } from "../types/Points";
+import { flattenOneLevel } from "../util/arrays";
+import { BoundingBox } from "../util/BoundingBox";
+import delauney from "./Triangulation/Delaunay";
+import MiddlePoint from "./Triangulation/MiddlePoint";
+import { uploadMasterImgCanvas } from "../util/image_uploader";
 
+/**
+ * An enumeration of all the different steps of the automatic screen detection.
+ */
 export enum WorkflowStep {
     BLANCO_IMAGE = "blanco image",
     DISPLAY_SCREEN_COLOR = "display screen color",
@@ -26,17 +27,16 @@ export enum WorkflowStep {
     END = "end",
 }
 
+/**
+ * Wait for the given amount of time.
+ * @param dt This is the deltaTime between the start and end of the wait.
+ */
 export async function wait(dt: number) {
     return new Promise((resolve, reject) => {
         setTimeout(() => resolve(), dt);
     });
 }
 
-/**
- * Retains workflow:
- *  Blanco -> Kleur -> zwart foto -> cycle slaves
- *  cycle slaves: show color -> next slave
- */
 export default class SlaveFlowHandler {
     prevSlaveID: string;
     currSlaveID: string;
@@ -48,287 +48,268 @@ export default class SlaveFlowHandler {
     blancoCanvasScale: number;
     screens: SlaveScreen[] = [];
     automated: boolean = false;
+    camera: Camera;
+    scale = 0.5;
 
-    constructor(automated?: boolean) {
-        if (automated) {
-            this.automated = automated;
-        }
+    constructor(camera: Camera) {
         this.step = WorkflowStep.BLANCO_IMAGE;
+        this.camera = camera;
     }
 
-    public reset() {
-        const color = { ...client.color };
-        client.color = { r: 76, g: 175, b: 80, a: 255 };
-        if (this.prevSlaveID) {
-            client.showColorOnSlave(this.prevSlaveID);
-        }
-        if (this.currSlaveID) {
-            client.showColorOnSlave(this.currSlaveID);
-        }
-        client.color = color;
-        $("#slave-flow-buttons").show();
-        $("#camera").show();
-        $("#display-slave-img-buttons").hide();
-        resetMaster();
-        client.slaves.forEach(slave => {
-            client.showColorOnSlave(slave, { r: 76, g: 175, b: 80, a: 255 });
-        })
-        this.resetDebug();
+    public async startDetection() {
+        return new Promise(async (resolve, reject) => {
+            // TODO: Handle undefined exceptions whens screen not found
+            await this.detectScreens();
+            await this.detectOrientations();
+            this.sendDataToClients();
+            resolve();
+        });
     }
 
-    private resetDebug() {
-        //@ts-ignore
-        window.currentStep = 0;
-    }
+    private async detectScreens() {
+        const cameraOverlay = new CameraOverlay();
+        const ctx = cameraOverlay.elem.getContext("2d");
 
-    private endSlaveCycle() {
-        this.prevSlaveID = this.currSlaveID;
-        if (this.slaveIDs.length !== 0) {
-            this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
-            this.currSlaveID = this.slaveIDs.pop();
-            if (!this.automated) {
-                $("#next-slave").show();
-            }
-            this.currSlaveScreenFound = true;
-        } else {
-            this.step = WorkflowStep.END;
-            $("#slave-flow-buttons").hide();
-            $("#camera").hide();
-            $("#display-slave-img-buttons").show();
-        }
-    }
-
-    private initialize() {
-        const startButton: JQuery<HTMLButtonElement> = $("#start");
-        startButton.css("display", "none");
         this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
-        this.origSlaveIDs = [...this.slaveIDs];
-        this.currSlaveID = this.slaveIDs.pop();
-    }
-
-    /**
-     * Only for automated flow
-     */
-    async nextStep() {
-        if (!this.automated) return;
-        if (this.automated) {
-            await wait(2500);
-        }
-        switch (this.step) {
-            case WorkflowStep.BLANCO_IMAGE:
-                console.log("AUTOMATED: TAKING BLANCO PICTURE");
-                await this.takeNoColorPicture();
-                break;
-            case WorkflowStep.DISPLAY_SCREEN_COLOR:
-                console.log("AUTOMATED: DISPLAYING COLOR");
-                this.showColorOnNextSlave();
-                break;
-            case WorkflowStep.TAKE_AND_PROCESS_SCREEN:
-                console.log("AUTOMATED: TAKING PICTURE & PROCESSING");
-                await this.takePictureOfColoredScreen();
-                break;
-            case WorkflowStep.REMOVE_SCREEN_COLOR:
-                console.log("AUTOMATED: REMOVING COLOR");
-                this.removeScreenColorOnSlave();
-                break;
-            case WorkflowStep.DISPLAY_ORIENTATION_COLOR:
-                console.log("AUTOMATED: DISPLAYING ORIENTATION COLOR");
-                this.showOrientationOnSlave();
-                break;
-            case WorkflowStep.TAKE_AND_PROCESS_ORIENTATION:
-                console.log("AUTOMATED: TAKING PICTURE & PROCESSING ORIENTATION");
-                await this.takePictureOfSlaveOrientation();
-                break;
-            case WorkflowStep.REMOVE_ORIENTATION_COLOR:
-                console.log("AUTOMATED: REMOVE ORIENTATION COLOR");
-                this.removeOrientationColorOnSlave();
-                break;
-            case WorkflowStep.END_CYCLE:
-                console.log("AUTOMATED: ENDING CYLCE");
-                this.endSlaveCycle();
-                break;
-            default:
-                console.log(
-                    "TRIED EXECUTING UNKOWN/UNWANTED STEP: " + this.step
+        for (let i = 0; i < this.slaveIDs.length; i++) {
+            const slaveId = this.slaveIDs[i];
+            await client.requestColor(
+                { r: 0, g: 150, b: 150, a: 255 },
+                slaveId
+            );
+            await wait(1000);
+            const firstImg = this.camera.snap(this.scale);
+            await client.requestColor({ r: 150, g: 0, b: 0, a: 255 }, slaveId);
+            await wait(1000);
+            const secondImg = this.camera.snap(this.scale);
+            const firstImgCtx = firstImg.getContext("2d");
+            const secondImgCtx = secondImg.getContext("2d");
+            const firstImgData = firstImgCtx.getImageData(
+                0,
+                0,
+                firstImg.width,
+                firstImg.height
+            );
+            const secondImgData = secondImgCtx.getImageData(
+                0,
+                0,
+                secondImg.width,
+                secondImg.height
+            );
+            let diffPoints = this.camera.detectBigColorDifferences(
+                firstImgData,
+                secondImgData
+            );
+            const diffImgData = this.camera.pointsToImgData(
+                diffPoints,
+                firstImg.width,
+                firstImg.height
+            );
+            diffPoints = this.camera.filter8Neighbors(
+                diffPoints,
+                diffImgData,
+                5
+            );
+            const areas = this.camera.filterToAreas(diffPoints);
+            areas.forEach((area) => {
+                ctx.fillStyle = `rgb(${Math.random() * 50}, ${
+                    Math.random() * 255
+                }, ${Math.random() * 255})`;
+                area.forEach((p) =>
+                    ctx.fillRect(
+                        p.x / this.scale,
+                        p.y / this.scale,
+                        1 / this.scale,
+                        1 / this.scale
+                    )
                 );
-        }
-    }
+            });
 
-    async takeNoColorPicture() {
-        this.step = WorkflowStep.DISPLAY_SCREEN_COLOR;
-        this.initialize();
-        this.currSlaveScreenFound = true;
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        const cameraWidth = player[0].videoWidth,
-            cameraHeight = player[0].videoHeight;
-
-        const { scale } = calculateCameraCanvasScaleFactor(
-            cameraWidth,
-            cameraHeight,
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        this.blancoCanvasScale = scale;
-        this.blancoCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        const blancoCtx = this.blancoCanvas.getContext("2d");
-        blancoCtx.drawImage(
-            player[0],
-            0,
-            0,
-            cameraWidth * scale,
-            cameraHeight * scale
-        );
-        $("#result-img").attr("src", this.blancoCanvas.toDataURL());
-        if (this.automated) {
-            await this.nextStep();
-        }
-    }
-
-    /**
-     * First we show the color on the slave.
-     */
-    showColorOnNextSlave() {
-        this.step = WorkflowStep.TAKE_AND_PROCESS_SCREEN;
-        console.log("Showing color on slave");
-        client.showColorOnSlave(this.currSlaveID);
-    }
-
-    /**
-     * Should be called after `showColorOnNextSlave`.
-     */
-    async takePictureOfColoredScreen() {
-        this.step = WorkflowStep.REMOVE_SCREEN_COLOR;
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        const cameraWidth = player[0].videoWidth,
-            cameraHeight = player[0].videoHeight;
-        const { scale, along: scaledAlong } = calculateCameraCanvasScaleFactor(
-            cameraWidth,
-            cameraHeight,
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        const coloredCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        coloredCanvas
-            .getContext("2d")
-            .drawImage(
-                player[0],
-                0,
-                0,
-                cameraWidth * scale,
-                cameraHeight * scale
-            );
-        const corners = await findScreen(
-            this.blancoCanvas,
-            coloredCanvas,
-            client.color,
-            client.DEBUG
-        );
-
-        this.resetDebug();
-
-        if (corners.length !== 4) {
-            this.currSlaveScreenFound = false;
-        } else {
-            const resultCanvasWithBg = createCameraOverlayWithPoints(
-                corners,
-                cameraWidth,
-                cameraHeight,
-                scale,
-                scaledAlong,
-                this.blancoCanvas
-            );
-            const resultCanvas = createCameraOverlayWithPoints(
-                corners,
-                cameraWidth,
-                cameraHeight,
-                scale,
-                scaledAlong
-            );
-            $("#result-img").attr("src", resultCanvasWithBg.toDataURL());
-            $("#player-overlay").attr("src", resultCanvas.toDataURL());
-            this.screens.push(new SlaveScreen(corners, this.currSlaveID));
-        }
-        console.log("Screen found: " + this.currSlaveScreenFound);
-        $("#show-orientation-button").toggle();
-        $("#loading-master-indicator").toggle();
-        if (this.automated) {
-            await this.nextStep();
-        }
-    }
-
-    removeScreenColorOnSlave() {
-        this.step = WorkflowStep.DISPLAY_ORIENTATION_COLOR;
-        client.showColorOnSlave(
-            this.currSlaveID,
-            DEFAULT_NON_COLORED_SLAVE_COLOR
-        );
-    }
-
-    showOrientationOnSlave() {
-        this.step = WorkflowStep.TAKE_AND_PROCESS_ORIENTATION;
-        console.log("showing or colors");
-        client.toggleOrientationColorsOnSlave(this.currSlaveID);
-    }
-
-    async takePictureOfSlaveOrientation() {
-        this.step = WorkflowStep.REMOVE_ORIENTATION_COLOR;
-        if (!this.currSlaveScreenFound) {
-            if (this.automated) {
-                this.nextStep();
-            } else {
-                this.removeOrientationColorOnSlave();
+            if (areas.length == 0) {
+                continue;
             }
-            return;
-        }
-        const player: JQuery<HTMLVideoElement> = $("#player");
-        const cameraWidth = player[0].videoWidth,
-            cameraHeight = player[0].videoHeight;
-        const { scale } = calculateCameraCanvasScaleFactor(
-            cameraWidth,
-            cameraHeight,
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        const orientationCanvas = createCanvas(
-            PREFERRED_CANVAS_WIDTH,
-            PREFERRED_CANVAS_HEIGHT
-        );
-        orientationCanvas
-            .getContext("2d")
-            .drawImage(
-                player[0],
-                0,
-                0,
-                cameraWidth * scale,
-                cameraHeight * scale
+
+            ctx.fillStyle = "red";
+            const areaToWorkWith = areas.sort((a, b) => b.length - a.length)[0];
+            areaToWorkWith.forEach((p) => {
+                ctx.fillRect(
+                    p.x / this.scale,
+                    p.y / this.scale,
+                    1 / this.scale,
+                    1 / this.scale
+                );
+            });
+
+            const corners = findAreaCorners(
+                areaToWorkWith,
+                this.camera,
+                firstImg.width,
+                firstImg.height
             );
-        const currScreen = this.screens[this.screens.length - 1];
-        const { angle, ...cornerMapping } = calculateScreenAngle(currScreen, orientationCanvas);
-        currScreen.angle = angle;
-        currScreen.actualCorners = cornerMapping;
-        console.log(currScreen.angle);
-        console.log("Actual Left Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUp));
-        console.log("Actual Right Up maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUp));
-        console.log("Actual Right Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.RightUnder));
-        console.log("Actual Left Under maps to: " + currScreen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder));
-        if (this.automated) {
-            await this.nextStep();
-        } else {
-            this.removeOrientationColorOnSlave();
+
+            ctx.fillStyle = "blue";
+            corners.forEach((corner, index) => {
+                if (index == 0) {
+                    ctx.fillStyle = "blue";
+                } else if (index == 1) {
+                    ctx.fillStyle = "green";
+                } else if (index == 2) {
+                    ctx.fillStyle = "white";
+                } else {
+                    ctx.fillStyle = "black";
+                }
+                ctx.beginPath();
+                ctx.arc(
+                    corner.x / this.scale,
+                    corner.y / this.scale,
+                    10,
+                    0,
+                    2 * Math.PI
+                );
+                ctx.closePath();
+                ctx.fill();
+            });
+
+            if (corners.length != 4) {
+                continue;
+            }
+
+            this.screens.push(new SlaveScreen(corners, slaveId));
         }
     }
 
-    removeOrientationColorOnSlave() {
-        this.step = WorkflowStep.END_CYCLE;
-        client.toggleOrientationColorsOnSlave(this.currSlaveID);
-        if (!this.automated) {
-            this.endSlaveCycle();
+    private async detectOrientations() {
+        await client.requestOrientationColors(this.slaveIDs);
+        console.log("Confirmed orientation colors");
+        await wait(1000);
+        const img = this.camera.snap(this.scale);
+        for (let i = 0; i < this.screens.length; i++) {
+            const screen = this.screens[i];
+            const { angle, ...cornerMapping } = calculateScreenAngle(
+                screen,
+                img
+            );
+            screen.angle = angle;
+            screen.actualCorners = cornerMapping;
+            console.log(screen.angle);
+            console.log(
+                "Actual Left Up maps to: " +
+                    screen.mapActualToMasterCornerLabel(CornerLabels.LeftUp)
+            );
+            console.log(
+                "Actual Right Up maps to: " +
+                    screen.mapActualToMasterCornerLabel(CornerLabels.RightUp)
+            );
+            console.log(
+                "Actual Right Under maps to: " +
+                    screen.mapActualToMasterCornerLabel(CornerLabels.RightUnder)
+            );
+            console.log(
+                "Actual Left Under maps to: " +
+                    screen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder)
+            );
         }
+        // Upload image in server:
+        uploadMasterImgCanvas(img);
+    }
+
+    private sendDataToClients() {
+        const upscale = 1;
+        for (let i = 0; i < this.screens.length; i++) {
+            const screen = this.screens[i];
+            screen.actualCorners = {
+                LeftUp: new Point(
+                    screen.actualCorners.LeftUp.x * upscale,
+                    screen.actualCorners.LeftUp.y * upscale
+                ),
+                RightUp: new Point(
+                    screen.actualCorners.RightUp.x * upscale,
+                    screen.actualCorners.RightUp.y * upscale
+                ),
+                RightUnder: new Point(
+                    screen.actualCorners.RightUnder.x * upscale,
+                    screen.actualCorners.RightUnder.y * upscale
+                ),
+                LeftUnder: new Point(
+                    screen.actualCorners.LeftUnder.x * upscale,
+                    screen.actualCorners.LeftUnder.y * upscale
+                ),
+            };
+            for (let j = 0; j < screen.corners.length; j++) {
+                screen.corners[j] = new Point(
+                    screen.corners[j].x * upscale,
+                    screen.corners[j].y * upscale
+                );
+            }
+        }
+
+        const globalBoundingBox = new BoundingBox(
+            flattenOneLevel(this.screens.map((screen) => screen.corners))
+        );
+        console.log("boundingbox shit");
+        console.log(globalBoundingBox.width);
+        console.log(globalBoundingBox.height);
+        this.screens.forEach((screen) => {
+            client.sendCutData(
+                {
+                    LeftUp: screen.actualCorners.LeftUp.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                    RightUp: screen.actualCorners.RightUp.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                    RightUnder: screen.actualCorners.RightUnder.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                    LeftUnder: screen.actualCorners.LeftUnder.copyTranslated(
+                        -globalBoundingBox.topLeft.x,
+                        -globalBoundingBox.topLeft.y
+                    ).toInterface(),
+                },
+                globalBoundingBox.width,
+                globalBoundingBox.height,
+                screen.slaveID
+            );
+        });
+        //info van de triangulatie sturen
+        let middlePoints: Point[] = [];
+        this.screens.forEach((slave) => {
+            let centroid = slave.centroid;
+            middlePoints.push(
+                centroid.copyTranslated(
+                    -globalBoundingBox.topLeft.x,
+                    -globalBoundingBox.topLeft.y
+                )
+            );
+        });
+        middlePoints.sort(function (a, b) {
+            if (a.x - b.x == 0) {
+                return a.y - b.y;
+            } else {
+                return a.x - b.x;
+            }
+        });
+        //TODO: dit efficienter maken
+        const triangulation = delauney(middlePoints);
+        console.log("triangulation = " + triangulation.lines);
+        this.screens.forEach((screen) => {
+            let sendData = triangulation.sendData(
+                screen,
+                this.screens,
+                globalBoundingBox.topLeft
+            );
+            client.sendTriangulationData(
+                sendData.lines,
+                sendData.point,
+                sendData.ID
+            );
+            console.log("sendata = " + sendData.triang);
+            client.animation.middlePoints.push(
+                new MiddlePoint(sendData.middlePoint, sendData.triang)
+            );
+        });
     }
 }

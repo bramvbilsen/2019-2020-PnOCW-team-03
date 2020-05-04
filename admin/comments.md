@@ -78,3 +78,4 @@
 - Na het lezen van het rapport kan ik alleen maar akkoord gaan met de conclusie. Het helpt natuurlijk dat deze code niet verwerkt is in de `oude` code.
 - `The main issues have been discussed above as it is based on the index.ts file of the first algorithm` als ik deze zin lees, moet ik echter denken aan code duplicatie!
 - Het stuk over de correctheid van de code is nu wel aanwezig, maar meldt helaas dat code onvoldoende getest is. 
+

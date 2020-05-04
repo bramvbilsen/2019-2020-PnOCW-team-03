@@ -12,6 +12,8 @@
 </head>
 
 <body id="page" style="height: 100vh">
+
+    <!-- An area where test results can be printed. -->
     <div id="test-results" style="display: none;">
         <h2>TEST RESULTS</h2>
         <div id="test-results-text"></div>
@@ -22,11 +24,10 @@
         </div>
         <img id="test-results-visual" src="" style="max-width: 100vw; max-height: 100vh;" />
     </div>
-    <div id="countdown"></div>
     <div id="master" style="display:none;">
         <div id="welcome-master-no-slave-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-body" style="color: black;">
-                Looks like there are no slaves connected yet!
+                Make sure there are slaves connected and that the device is in landscape!
             </div>
         </div>
         <div id="welcome-master">
@@ -46,124 +47,72 @@
             </div>
         </div>
         <div id="main-flow-master">
-            <div class="cameraOutput" id="camera">
-                <video id="player" autoplay></video>
-                <img id="player-overlay" style="opacity: 0.25;">
-            </div>
-            <div>
-                <input type="range" id="focus-distance" style="display: none;">
-            </div>
-            <div id="slave-flow-buttons">
-                <div style="display: flex; flex-direction: row; justify-content: space-evenly; align-items: center;">
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start"
-                        title="Start screen detection. (screens must be in view of the camera)">
-                        <i class="fa fa-camera-retro"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="start-automated"
-                        title="Start automatic screen detection. (screens must be in view of the camera)">
-                        <i class="fa fa-play"></i>
-                    </button>
+            <div id="cameraContainer">
+                <div id="cameraViewFloater">
+                  <div id="cameraViewPortContainer">
+                    <video autoplay="true" id="camera"></video>
+                    <canvas id="cameraOverlay" class="cameraOverlay"></canvas>
+                  </div>
                 </div>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="next-slave"
-                    title="Switch to the next slave.">
-                    <i class="fa fa-step-forward"></i>
-                </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-slave"
-                    title="Capture the image of the slave.">
-                    <i class="fa fa-camera-retro"></i>
-                </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white"
-                    id="show-orientation-button" title="Show the background for orientation detection.">
-                    <i class="fa fa-compass"></i>
-                </button>
-                <button type="button" class="btn btn-danger btn-circle outlined-button-white" id="capture-orientation"
-                    title="Capture the image of the slave.">
-                    <i class="fa fa-camera-retro"></i>
-                </button>
-                <div id="loading-master-indicator" class="spinner-grow text-light" role="status">
-                    <span class="sr-only">Loading...</span>
+                <div id="cameraButtonsContainer">
+                  <div class="circularButtonContainer1">
+                    <div class="circle button" id="settingsButton" tabindex="0">
+                      <!-- <i class="material-icons" id="settingsButtonIcon">settings</i> -->
+                    </div>
+                  </div>
+                  <div class="circularButtonContainer2">
+                    <button class="circle button" id="confirmButton"></button>
+                    <div class="spinner-grow text-light" role="status" id="detectionLoadingIndicator"></div>
+                  </div>
                 </div>
             </div>
-            <div id="display-slave-img-buttons">
-                <div id="display-slave-img-buttons-content">
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-countdown-button"
-                        title="Display the countdown.">
-                        Display countdown
-                    </button>
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-unicorn-img-button"
-                        title="Display the standard unicorn image.">
-                        Display unicorn
-                    </button>
-                    <button type="button" class="btn btn-danger outlined-button-white" id="display-master-img-button"
-                        title="Display the image taken from the master's perspective.">
-                        Display master image
-                    </button>
-                    <button type="button" class="btn btn-danger outlined-button-white"
-                        id="display-delaunay-triangulation-button" title="Display the delaunay triangulation.">
-                        Display triangulation
-                    </button>
-                    <button type="button" class="btn btn-danger outlined-button-white"
-                        id="stop-delaunay-triangulation-button" title="Display the delaunay triangulation.">
-                        Stop Animation
-                    </button>
-                </div>
-            </div>
-
-            <div style="width: 100vw; display: flex; align-items: center; flex-direction: column;">
+            <div id="postDetectionContent" style="display: none;">
                 <div>
-                    <h3>OUTPUT</h3>
+                    <button type="button" id="display-countdown-button" class="btn btn-outline-light thin-font">
+                    Display countdown
+                    </button>
+                    <button type="button" id="display-unicorn-img-button" class="btn btn-outline-light thin-font">
+                    Display unicorn
+                    </button>
+                    <button type="button" id="display-master-img-button" class="btn btn-outline-light thin-font">
+                    Display master image
+                    </button>
                 </div>
-                <div id="result-img-container">
-                    <img id="result-img" src="" style="max-width: 100%; max-height: 100%;" />
+                <div>
+                    <button type="button" id="display-delaunay-triangulation-button" class="btn btn-outline-light thin-font">
+                    Start animation
+                    </button>
+                    <button type="button" id="stop-delaunay-triangulation-button" class="btn btn-outline-light thin-font">
+                    Stop animation
+                    </button>
+                </div>
+                <div>
+                    <button type="button" id="start-video-button" class="btn btn-outline-light thin-font">
+                    Start Video
+                    </button>
+                    <!--Toggle video: used to pause and play video after pausing, do not use Start Video button after pausing!-->
+                    <button type="button" id="toggle-video-button" class="btn btn-outline-light thin-font">
+                    Toggle Video
+                    </button>
+                    <button type="button" id="stop-video-button" class="btn btn-outline-light thin-font">
+                    Stop Video
+                    </button>
                 </div>
             </div>
         </div>
-        <!-- <button
-                                class="pink"
-                     git            id="Display Pink"
-                                style="vertical-align:middle"
-                            >
-                                <span>Display pink </span>
-                            </button>
-                            <button
-                                class="green"
-                                id="Display Green"
-                                style="vertical-align:middle"
-                            >
-                                <span>Display Green </span>
-                            </button>
-                            <button
-                                class="orange"
-                                id="Display Orange"
-                                style="vertical-align:middle"
-                            >
-                                <span>Display Orange </span>
-                            </button>
-                            <button
-                                class="blue"
-                                id="Display Blue"
-                                style="vertical-align:middle"
-                            >
-                                <span>Display Blue </span>
-                            </button>
-                            <button
-                                class="captureButton"
-                                id="reset"
-                                style="vertical-align:middle"
-                            >
-                                <span>Reset</span>
-                            </button> -->
     </div>
     </div>
-    <div id="slave" style="display:none; width: 100vw; height: 100vh; background-color: transparent;">
+
+    <!-- All parts pertaining to the slave. -->
+    <div id="slave" style="display:none; width: 100vw; height: 100vh;">
         <div id="main-flow-slave">
             <div id="default-slave-state">
-                <div style="padding-bottom: 20px;">
+                <!-- <div style="padding-bottom: 20px;">
                     Waiting on request from master
                 </div>
                 <div class="spinner-grow text-light" role="status">
                     <span class="sr-only">Loading...</span>
-                </div>
+                </div> -->
             </div>
             <div id="orientation-colors">
                 <div style="display: flex; width: 100vw; height: 100vh;">
@@ -177,17 +126,25 @@
                     </div>
                 </div>
             </div>
+            <div id="pink-color">
+            </div>
         </div>
         <div id="image-container-slave">
-            <img class="perspectiveImgSlave" id="image-slave" />
+        </div>
+        <div id="video-container-slave">
+            <video class="perspectiveVideoSlave" src="" id="video-slave" loop autobuffer preload muted="muted" >
+            </video>
         </div>
     </div>
+
+    <!-- A loading indicator. -->
     <div id="loading" style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;">
         <div class="spinner-grow text-light" role="status">
             <span class="sr-only">Loading...</span>
         </div>
     </div>
 
+    <!-- A number of different links and scripts. -->
     <div id="resources">
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>

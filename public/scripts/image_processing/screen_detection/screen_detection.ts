@@ -3,16 +3,13 @@
 import Point from "./Point";
 import Line from "./Line";
 import convexHull from "./hull";
+import { 
+    IHSLColor, 
+    IRGBAColor, 
+    IHSLRange, 
+} from "../../types/Color";
 
-import { IHSLColor, IRGBAColor, IHSLRange } from "../../types/Color";
-
-const similarPinkRange: IHSLRange = {
-    hRange: 50,
-    sRange: 40,
-    lRange: 40,
-};
-
-const randomColorRange: IHSLRange = {
+const colorRange: IHSLRange = {
     hRange: 50,
     sRange: 40,
     lRange: 40,
@@ -27,6 +24,10 @@ document.onkeypress = e => {
     console.log("new step");
 };
 
+/**
+ * Waits the given number of milliseconds. (asynchronous)
+ * @param ms Number of milliseconds.
+ */
 const wait = async (ms: number) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -35,6 +36,10 @@ const wait = async (ms: number) => {
     });
 };
 
+/**
+ * Returns the number of neighbouring pixels that are in the range.
+ * @param range A range to look in.
+ */
 const calcNeighborPixelsInRange = (range: number) => {
     return Array(range)
         .fill(1)
@@ -43,7 +48,7 @@ const calcNeighborPixelsInRange = (range: number) => {
 };
 
 /**
- *
+ * Computes the corners of the screen found in the image.
  * @param nonColoredImgPath - Path to image for slave without color.
  * @param coloredImgPath - Path to image for slave with color.
  * @param screenColorRGBA - Slave's color.
@@ -136,12 +141,8 @@ export default async function findScreen(
                 coloredScreenPixels
             );
             if (
-                !isSimilarHSLColor(
-                    noScreenColor,
-                    screenColor,
-                    randomColorRange
-                ) &&
-                isSimilarHSLColor(screenColorHSL, screenColor, similarPinkRange)
+                !isSimilarHSLColor(noScreenColor, screenColor, colorRange) &&
+                isSimilarHSLColor(screenColorHSL, screenColor, colorRange)
             ) {
                 const coloredNeighbors = amountOfNeighboringPixelsWithColor(
                     coloredScreenPixels,
@@ -286,6 +287,11 @@ export default async function findScreen(
     return corners;
 }
 
+/**
+ * Creates a new HTML canvas with the given dimensions.
+ * @param width The new width.
+ * @param height The new height.
+ */
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -294,6 +300,12 @@ export function createCanvas(width: number, height: number): HTMLCanvasElement {
 }
 
 // From: https://gist.github.com/mjackson/5311256
+/**
+ * Transforms the given RGB values to an IHSLColor.
+ * @param r The red value.
+ * @param g The green value.
+ * @param b The blue value.
+ */
 export function rgbToHsl(r: number, g: number, b: number): IHSLColor {
     (r /= 255), (g /= 255), (b /= 255);
     let max = Math.max(r, g, b),
@@ -324,7 +336,7 @@ export function rgbToHsl(r: number, g: number, b: number): IHSLColor {
 
 // From: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
 /**
- *
+ * Returns the IRGBAColor of the given pixel.
  * @param x - X coordinate.
  * @param y - Y coordinate.
  * @param width - Width of the image.
@@ -346,7 +358,7 @@ export function getRGBAColorForPixel(
 }
 
 /**
- *
+ * Returns the IHSLColor of the given pixel.
  * @param x - X coordinate.
  * @param y - Y coordinate.
  * @param width - Width of the image.
@@ -363,10 +375,10 @@ export function getHSLColorForPixel(
 }
 
 /**
- *
+ * Returns whether or not the two colours are considered to be similar.
  * @param colorA - Color to compare to `colorB`
  * @param colorB - Color to compare to `colorA`
- * @param params - Range to controll how similar both colors have to be.
+ * @param params - Range to control how similar both colors have to be.
  */
 export function isSimilarHSLColor(
     colorA: IHSLColor,
@@ -412,7 +424,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x - range, y, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -422,7 +434,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x, y - range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -432,7 +444,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x + range, y, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -442,7 +454,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x, y + range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -453,7 +465,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x - range, y - range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -464,7 +476,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x + range, y - range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -475,7 +487,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x - range, y + range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -486,7 +498,7 @@ export function amountOfNeighboringPixelsWithColor(
             isSimilarHSLColor(
                 getHSLColorForPixel(x + range, y + range, width, pixels),
                 hslColor,
-                similarPinkRange
+                colorRange
             )
         ) {
             result++;
@@ -509,6 +521,10 @@ function createConnections(points: Point[]) {
     return connections;
 }
 
+/**
+ * Filters out outliers.
+ * @param possibleCorners A list of points.
+ */
 function removeOutliers(possibleCorners: Point[]) {
     const MAX_AVG_DISTANCE_DIFF_THRESHOLD = 1.25;
 
@@ -603,6 +619,13 @@ function findFinalCorners(cornerConnections: Line[]): Point[] {
     ];
 }
 
+/**
+ * Draws lines and their corners on a canvas.
+ * @param width The width of the new canvas.
+ * @param height The height of the new canvas.
+ * @param lines The lines to draw.
+ * @param pointSize Size of the corners points.
+ */
 function drawResultLines(
     width: number,
     height: number,
@@ -630,6 +653,10 @@ function drawResultLines(
     return canvas;
 }
 
+/**
+ * Adds the debug information to the given canvas.
+ * @param canvasToDisplay A HTML canvas.
+ */
 function displayDebugResult(canvasToDisplay: HTMLCanvasElement) {
     $("#result-img").attr("src", canvasToDisplay.toDataURL());
     $("#test-results-visual").attr("src", canvasToDisplay.toDataURL());
