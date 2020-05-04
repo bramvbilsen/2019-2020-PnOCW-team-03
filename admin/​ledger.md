@@ -68,6 +68,42 @@ Niet samengezeten wegens deadline software ontwerp
 
 Eerst hebben we via discord teamoverleg gehad. We hebben toen besloten om verder te werken aan de UI, perspectief en animatie(zie plan of attack). Voor elke taak werd er 2 man aangewezen: Bassie en Pieter-Jan voor UI, Bram en Maarten voor perspectief en Liam en Adam voor animatie. Na de gezamelijke teammeeting zijn de groepjes in een apparte call gegaan.
 
+### 24/03
+
+CR1, CEO: Perspectief verder aan het project toevoegen en oude screen detection code herbekeken met andere kleuren. Er werd daarna begonnen aan de opdracht van screen tracking. Hiervoor werd een aparte repo aangemaakt om te kunnen testen.
+
+CR2, CTO: UI z-index problemen oplossen en opruimen van opkuisen(= ongebruikt verwijderen en documentatie) van code
+
+TC3, TC4: Verder animation overzetten naar p5.
+
+### 31/03
+
+CR2, CTO, TC4: Implementeren van video feature.
+
+CEO, TC3: refactors van animation mergen.
+
+CR1: Verder alternatieven voor screen detection uitwerken.
+
+### 19/04
+
+Videocall om te bespreken wat er nog allemala voor de demo van 21/04 moest gebeuren.
+
+### 20/04
+
+De laatste kleine details voor de demo werden gefixt.
+
+### 22/04
+
+Er werd een videocall gedaan om de opdracht van screen tracking te bespreken. Al bestaande ideeën en nieuwe werden besproken. De conclusie van de call was dat iedereen(al dan niet in groep) een idee verder ging uitwerken, ook met implementatie, om daarna het beste(of meerdere) uitegewerkte idee in het verlsag te zetten en vervolgens in het project te implementeren.
+
+### 27/04
+
+Van de vorige zitting zijn er twee implementaties uitgekomen met potentieel. Er werd beslist om beiden in het verslag op te nemen. Daarna zal er gekeken worden welk van de twee het sterkst presteert onder verschillende situaties. Na de meeting werd er geschreven aan het verslag.
+
+### 28/04
+
+Iedereen werkte aan het verslag voor de opdracht van het screen tracking.
+
 **<u>Dates:</u>**
 
 ### 30/9:
