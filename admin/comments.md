@@ -61,4 +61,21 @@
 - De best practices zijn goed geargumenteerd met de nodige referenties.
 - Duidelijk overzicht over de verbetering van de code na de vorige code reviews.
 - Ik mis bespreking van de correctheid van de code.
-- Doordat de template niet werd gebruikt mis ik de LOC. De werkuren lijken weinig. Is dit enkel de duur van het schrijven van het verslag? 
+- Doordat de template niet werd gebruikt mis ik de LOC. De werkuren lijken weinig. Is dit enkel de duur van het schrijven van het verslag?
+
+# F1.1 (Volledig team)
+- Kan je nog eens verduidelijken wie aan welke sectie/algoritme heeft gewerkt?
+- `Tracking Algorithms`: Zoals ik eerder vermelde, zijn de algoritmes die jullie implementeerden niet echt `tracking algoritmes` te noemen aangezien ze geen rekening houden met oude datapunten. Dit zijn nog steeds detectie algoritmes, al werken ze misschien wel wat sneller en robuster dan de eerste versies die jullie schreven.
+- Laat een spatie tussen tekst en referentie
+- Te veel informatie voor de algoritmes achter edge detection zelf. Een correcte referentie en een vermelding van de gebruikte parameters is voldoende en brengt de lengte van de tekst dichter bij de gevraagde 5 pagina's
+- Je kan niet zomaar beweren dat de performatie WxH is aangezien dit de kost is van de Sobolev stap. Wat is bijvoorbeel de kost van het vinden van de diagonalen?
+- `When it comes to time complexity the latter algorithm proves to be the better option` Tijdscomplexiteit is bij beiden O(HxW)=O(n^2). Ze is dus dezelfde.
+- De conclusie is goed, maar er zijn nergens testen vermeld om de conclusie te staven!
+- Jullie algoritmes zijn niet in staat schremen te detecteren, maar het is onmogelijk punten te identificeren. Bij geroteerde schermen zullen jullie problemen ondervinden.
+
+# F1.1: Code Review (Bram Vanbilsen, Sebastiaan Wouters)
+- De LOC is nog steeds afwezig
+- Na het lezen van het rapport kan ik alleen maar akkoord gaan met de conclusie. Het helpt natuurlijk dat deze code niet verwerkt is in de `oude` code.
+- `The main issues have been discussed above as it is based on the index.ts file of the first algorithm` als ik deze zin lees, moet ik echter denken aan code duplicatie!
+- Het stuk over de correctheid van de code is nu wel aanwezig, maar meldt helaas dat code onvoldoende getest is. 
+
