@@ -220,6 +220,416 @@ CR1: 5u
 
 CR2,CTO: 3u
 
+### 18/03
+
+###### -CEO: Perspectief gemïmplementeerd in aparte repo en getest
+
+CEO: 8u
+
+### 19/03
+
+###### -CEO, CR1: Setup voor de 3d matrix te implementeren
+
+CEO, CR1: 3u
+
+### 20/03
+
+###### -CEO: Added clientstorage to project
+
+###### -CTO, CR2: UI overzetten naar z-index [index.css, index.html en client.ts]
+
+CTO: 3u30
+
+CR2: 2U
+
+CEO: 2u30
+
+### 22/03
+
+###### -CR2: verwijderen automatische detectie + zIndex verbeteren
+
+CR2: 4u
+
+### 23/03
+
+###### -CTO: Code cleanup
+
+###### -CR1: Implementatie van perspectief in het project
+
+###### -CR2: Camera Overlay in edge case fixen
+
+CTO: 6u
+
+CR1: 5u30
+
+CR2: 3u
+
+### 24/03
+
+###### -CEO, CR1: Gestart aan tracking, opencv + types
+
+###### -CTO, CR2: UI z-index problemen oplossen + code cleanup
+
+###### -TC3, TC4: Animation p5 start first trial
+
+CEO, CR1: 5u
+
+CTO, CR2: 6u30
+
+TC3, TC4: 3u
+
+### 25/03
+
+###### -CR1: Code review schrijven
+
+CR1: 2u
+
+### 26/03
+
+###### -CTO: Code cleanup
+
+CTO: 3u
+
+### 27/03
+
+###### -CR2: Code Review + kleine UI bug
+
+###### -TC3: Animation p5 continue on first trial
+
+CR2: 2u30
+
+TC3: 0u30
+
+### 28/03
+
+###### -CR1: Eerste versie tracking
+
+CR1: 2u
+
+### 29/03
+
+###### -CEO: Refactoring animation
+
+###### -CR1: Verbetering screen detection
+
+CEO: 4u
+
+CR1: 6u
+
+### 30/03
+
+###### -CEO: Refactoring animation
+
+###### -CR1: Live screen detection + tracking
+
+CEO: 4u
+
+CR1: 4u
+
+### 31/03
+
+###### -CEO: Animation refactor
+
+###### -CTO, TC4, CR2: begin implementeren video support
+
+###### -CR1: Live screen detection + tracking
+
+###### -TC3: Animation p5 done
+
+CEO: 4u
+
+CTO: 4u30
+
+CR1: 4u
+
+CR2: 2u
+
+TC3: 2u30
+
+TC4: 2u30
+
+### 01/04
+
+###### -CEO: animation refactoring
+
+###### -CR1: Screen detection en tracking
+
+CEO: 4u
+
+CR1: 8U
+
+### 02/04
+
+###### -CR1: Screen detection en tracking
+
+###### -CR2: Verder gewerkt aan implementatie video support
+
+CR2: 3u
+
+CR1: 8U
+
+### 03/04
+
+###### -CR1: Screen detection en tracking
+
+CR1: 8U
+
+### 04/04
+
+###### -CEO: animation refactoring
+
+###### -CTO: Video support
+
+###### -CR1: Screen detection en tracking
+
+CEO: 4u
+
+CR1: 8U
+
+CTO: 5u
+
+### 06/04
+
+###### -CR1: Screen detection en tracking
+
+CR1: 8U
+
+### 07/04
+
+###### -CR1: Screen detection en tracking
+
+CR1: 8U
+
+### 08/04
+
+###### -CR1: Screen detection en tracking
+
+###### -CR2: Video synchronisatie
+
+CR2: 3u
+
+CR1: 8U
+
+### 09/04
+
+###### -CR1: Screen detection en tracking
+
+CR1: 8U
+
+### 10/04
+
+###### -CR1: Screen detection en tracking
+
+CR1: 8U
+
+### 11/04
+
+###### -CEO: Fixen van kleine errors animation
+
+###### -CR1: Screen detection en tracking
+
+CR1: 8U
+
+CEO: 4u
+
+### 13/04
+
+###### -CEO, CR1: Alternatieve screendetection algoritmes implementeren en testen
+
+###### -CEO: Animation 'smooth' gemaakt op tragere CPU's + verwijderen oude code animation
+
+CR1: 8 u
+
+CEO: 10 u
+
+### 14/04
+
+###### -CEO, CR1: Alternatieve screendetection algoritmes implementeren en testen
+
+###### -CEO: Een error die soms bij image displaying voorkwam gefixt
+
+###### -CR2: Video synchronisatie
+
+CR2: 3u
+
+CEO, CR1: 12 u
+
+### 15/04
+
+###### -TC3: Preparing the alternative screen detection algorithm methods
+
+###### -CEO, CR1: Alternatieve screendetection algoritmes implementeren en testen
+
+CEO, CR1: 12 u
+
+TC3: 2u
+
+### 16/04
+
+###### -TC4: Oude video code herbekeken en wat aangepast
+
+###### -CEO, CR1: Alternatieve screendetection algoritmes implementeren en testen
+
+CEO, CR1: 12 u
+
+TC4: 1u
+
+### 17/04
+
+###### -CEO, CR1: Alternatieve screendetection algoritmes implementeren en testen
+
+CEO, CR1: 12 u
+
+CTO: 4u30
+
+TC4: 2u
+
+### 18/04
+
+###### -Iedereen: meeting en testen van nieuw detection algoritme op ieder zijn toestellen
+
+###### -CR1: Implementeren van nieuw detection algoritme in project
+
+###### -TC3: Animation effect after countdown
+
+###### -TC4, CEO, CR2, CTO: Werken aan debuggen videosync
+
+CEO: 3u
+
+CTO: 2u
+
+CR1: 3u
+
+CR2: 3u
+
+TC3: 1u15
+
+TC4: 3u
+
+### 19/04
+
+###### -Iedereen: bespreken wat er nog gefixt moet worden
+
+###### -CEO, CR2: videosyncen final touches
+
+###### -CR1: Verder implementeren van nieuw detectie algoritme
+
+###### -TC3: Display master image on all slaves
+
+###### -TC4: Werken aan slaveImgCasting werkende te krijgen
+
+CEO: 4u
+
+CTO: 2u30
+
+CR1: 4u
+
+CR2: 4u
+
+TC3: 4u
+
+TC4: 8u
+
+### 20/04
+
+###### -CEO: Error in 3d matrix fix
+
+###### -CTO: Visuele bugs UI herstellen
+
+###### -CR2: demo voorbereidingen
+
+CEO: 8u
+
+CTO: 2u
+
+CR2: 1u30
+
+### 21/04
+
+###### -Iedereen: nabespreking van de demo
+
+###### -TC4: Demo video uitbreiden
+
+-Iedereen(buiten TC4): 1u
+
+TC4: 2u30
+
+### 22/04
+
+###### -Iedereen: Meeting voor bespreking en taakverdeling tracking
+
+Iedereen: 1u30
+
+### 23/04
+
+###### -CR1: Tracking concepten verder uitwerken
+
+###### -CR2: Concept pattern detection uitwerken
+
+CR1: 4u
+
+CR2: 3u
+
+### 24/04
+
+###### -TC4: Begin van code om live point detection, te doorlopen en testen
+
+TC4: 2u
+
+### 25/04
+
+###### -CR1: Tracking concepten verder uitwerken
+
+###### -CR2: Pattern detection algorithme implementatie
+
+###### -TC4: Kort simpel algoritme testen in js voor keypoints te detecteren
+
+CR1: 3u
+
+CR2: 4u
+
+TC4: 2u
+
+### 26/04
+
+###### -CR1: Tracking concepten verder uitwerken
+
+###### -TC4,CR2: Pattern detection algorithme uitbreiding
+
+CR1: 3u
+
+CR2: 5u
+
+TC4: 5u
+
+### 27/04
+
+###### Iedereen: Groep call voor algoritmes van tracking.
+
+CEO: 1u
+
+CTO: 5u
+
+CR2: 2u
+
+TC3: 1u30
+
+TC4: 2u
+
+### 28/04
+
+###### -CTO, CR1, CR2, TC3, TC4: Verslag schrijven
+
+CTO: 2u
+
+CR1: 3u
+
+CR2: 3u30
+
+TC3: 2u30
+
+TC4: 4u
+
 ###### EERSTE SEMESTER
 
 ### Taakverdeling:
