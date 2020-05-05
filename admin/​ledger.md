@@ -104,6 +104,10 @@ Van de vorige zitting zijn er twee implementaties uitgekomen met potentieel. Er 
 
 Iedereen werkte aan het verslag voor de opdracht van het screen tracking.
 
+### 05/05
+
+Meeting over de twee taken die moesten gebeuren: tracking van points in project implementeren en beginnen aan het eind verslag. CEO en CR1 werden aangeduid voor het eerste te doen en de rest begon aan het verslag.
+
 **<u>Dates:</u>**
 
 ### 30/9:
