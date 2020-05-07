@@ -1020,18 +1020,14 @@ class Client {
 
     public requestTrackingScreen = (
         slaveID: String
-    ): Promise<{ screenInnerWidth: number; screenInnerHeight: number }> => {
+    ): Promise<{ edgeRatio: number }> => {
         return new Promise((resolve, reject) => {
             this._socket.on(
                 MasterEventTypes.ConfirmedTrackingScreen,
-                (msg: {
-                    screenInnerWidth: number;
-                    screenInnerHeight: number;
-                }) => {
+                (msg: { edgeRatio: number }) => {
                     this._socket.off(MasterEventTypes.ConfirmedTrackingScreen);
                     resolve({
-                        screenInnerWidth: msg.screenInnerWidth,
-                        screenInnerHeight: msg.screenInnerHeight,
+                        edgeRatio: msg.edgeRatio,
                     });
                 }
             );
@@ -1044,12 +1040,45 @@ class Client {
     public displayTrackingWindow = () => {
         requestAnimationFrame(() => {
             this.hideAllSlaveLayers();
+            const trackingContainer = document.getElementById(
+                "tracking-container-slave"
+            );
+            while (trackingContainer.firstChild) {
+                trackingContainer.removeChild(trackingContainer.lastChild);
+            }
+            const canvas = createCanvas(innerWidth, innerHeight);
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "rgb(0, 26.07, 0)";
+            ctx.fillRect(0, 0, innerWidth, innerHeight);
+            ctx.fillStyle = "rgb(255, 108, 255)";
+            const centerX = Math.round(innerWidth / 2);
+            const centerY = Math.round(innerHeight / 2);
+            const trackingRectWidth = Math.round(innerWidth * 0.85);
+            const trackingRectHeight = Math.round(innerHeight * 0.85);
+            ctx.fillRect(
+                centerX - Math.round(trackingRectWidth / 2),
+                centerY - Math.round(trackingRectHeight / 2),
+                trackingRectWidth,
+                trackingRectHeight
+            );
+            trackingContainer.appendChild(canvas);
+            this.hideAllSlaveLayers();
             this.moveToForeground("tracking-container-slave");
+            const edgeDiagonalWidth = (innerWidth - trackingRectWidth) / 2;
+            const edgeDiagonalHeight = (innerHeight - trackingRectHeight) / 2;
+            const edgeDiagonalLength = Math.sqrt(
+                edgeDiagonalWidth * edgeDiagonalWidth +
+                    edgeDiagonalHeight * edgeDiagonalHeight
+            );
+            const screenDiagonal = Math.sqrt(
+                (innerWidth / 2) * (innerWidth / 2) +
+                    (innerHeight / 2) * (innerHeight / 2)
+            );
+            const edgeRatio = edgeDiagonalLength / screenDiagonal;
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     this._socket.emit(SlaveEventTypes.DisplayedTrackingScreen, {
-                        screenInnerWidth: innerWidth,
-                        screenInnerHeight: innerHeight,
+                        edgeRatio,
                     });
                 }, 1000);
             });

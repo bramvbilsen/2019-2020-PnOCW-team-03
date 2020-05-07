@@ -99,9 +99,9 @@ gulp.task("Compile client", function () {
             .transform(babelify.configure({ extensions: [".ts", ".js"] }))
             .bundle()
             .pipe(source("bundle.js"))
-            // .pipe(buffer())
+            .pipe(buffer())
             // .pipe(sourcemaps.init({ loadMaps: true }))
-            // .pipe(uglify())
+            .pipe(uglify())
             // .pipe(sourcemaps.write())
             .pipe(gulp.dest(path.resolve("./build/public")))
     );

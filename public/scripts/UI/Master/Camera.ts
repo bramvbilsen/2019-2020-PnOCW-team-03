@@ -614,7 +614,7 @@ export class Camera extends HtmlElem {
     getAreasOfInterestAroundCorners(
         edgePoints: Point[],
         corners: Point[],
-        maxRangesPerCorner: number[]
+        maxCornerRange: number
     ) {
         const filtered: Array<Point[]> = [];
         for (let i = 0; i < corners.length; i++) {
@@ -624,8 +624,7 @@ export class Camera extends HtmlElem {
             const p = edgePoints[i];
             for (let j = 0; j < corners.length; j++) {
                 const corner = corners[j];
-                const maxDist = maxRangesPerCorner[j];
-                if (p.distanceTo(corner) <= maxDist) {
+                if (p.distanceTo(corner) <= maxCornerRange) {
                     filtered[j].push(p);
                 }
             }

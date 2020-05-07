@@ -1,4 +1,5 @@
 import express from "express";
+import compression from "compression";
 import * as http from "http";
 import socketio from "socket.io";
 import * as path from "path";
@@ -42,6 +43,7 @@ app.use("/slave_images", express.static(slaveImgUploadFolder));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(compression());
 
 app.post("/sync_test_result", (req, res) => {
     const testResults: number[] = req.body;

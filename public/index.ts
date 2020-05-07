@@ -179,8 +179,7 @@ export function resetMaster() {
                         $("#postDetectionContent").css("display", "none");
                         const screenToTrack = slaveFlowHandler.screens[0];
                         const {
-                            screenInnerWidth,
-                            screenInnerHeight,
+                            edgeRatio,
                         } = await client.requestTrackingScreen(
                             screenToTrack.slaveID
                         );
@@ -191,8 +190,7 @@ export function resetMaster() {
                                 const tracker = new ScreenTracker(
                                     camera,
                                     screenToTrack,
-                                    screenInnerWidth,
-                                    screenInnerHeight
+                                    edgeRatio
                                 );
                                 tracker.track();
                             });
