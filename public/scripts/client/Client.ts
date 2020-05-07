@@ -155,6 +155,10 @@ class Client {
                         this._socket.on(
                             SlaveEventTypes.DisplayOrientationColors,
                             this.displayOrientationColors
+                        ),
+                        this._socket.on(
+                            SlaveEventTypes.DisplayTrackingScreen,
+                            this.displayTrackingWindow
                         )
                     );
                 } else {
@@ -399,7 +403,6 @@ class Client {
         $("#video-container-slave").css("z-index", -2);
     }
     public moveToForeground(elemName: string) {
-        console.log("YOWYOW");
         $("#" + elemName).css("z-index", 1);
     }
 
@@ -1011,6 +1014,44 @@ class Client {
             });
             this._socket.emit(MasterEventTypes.RequestOrientationColors, {
                 slaveIDs,
+            });
+        });
+    };
+
+    public requestTrackingScreen = (
+        slaveID: String
+    ): Promise<{ screenInnerWidth: number; screenInnerHeight: number }> => {
+        return new Promise((resolve, reject) => {
+            this._socket.on(
+                MasterEventTypes.ConfirmedTrackingScreen,
+                (msg: {
+                    screenInnerWidth: number;
+                    screenInnerHeight: number;
+                }) => {
+                    this._socket.off(MasterEventTypes.ConfirmedTrackingScreen);
+                    resolve({
+                        screenInnerWidth: msg.screenInnerWidth,
+                        screenInnerHeight: msg.screenInnerHeight,
+                    });
+                }
+            );
+            this._socket.emit(MasterEventTypes.RequestTrackingScreen, {
+                slaveID,
+            });
+        });
+    };
+
+    public displayTrackingWindow = () => {
+        requestAnimationFrame(() => {
+            this.hideAllSlaveLayers();
+            this.moveToForeground("tracking-container-slave");
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    this._socket.emit(SlaveEventTypes.DisplayedTrackingScreen, {
+                        screenInnerWidth: innerWidth,
+                        screenInnerHeight: innerHeight,
+                    });
+                }, 1000);
             });
         });
     };

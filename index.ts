@@ -140,6 +140,24 @@ io.on("connect", (socket: socketio.Socket) => {
         }
     });
 
+    socket.on(
+        MasterEventTypes.RequestTrackingScreen,
+        (msg: { slaveID: string }) => {
+            console.log("Requesting " + msg.slaveID + " for tracking!");
+            if (socket.id === connections.master.id) {
+                socket
+                    .to(msg.slaveID)
+                    .emit(SlaveEventTypes.DisplayTrackingScreen, msg);
+            }
+        }
+    );
+    socket.on(SlaveEventTypes.DisplayedTrackingScreen, (msg) => {
+        console.log("Confirming tracking display!");
+        socket
+            .to(connections.master.id)
+            .emit(MasterEventTypes.ConfirmedTrackingScreen, msg);
+    });
+
     slaveBackgroundListeners(socket);
 
     synchronizationListeners(socket);

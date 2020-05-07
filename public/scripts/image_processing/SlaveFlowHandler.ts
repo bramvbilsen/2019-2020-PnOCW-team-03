@@ -174,7 +174,14 @@ export default class SlaveFlowHandler {
                 continue;
             }
 
-            this.screens.push(new SlaveScreen(corners, slaveId));
+            this.screens.push(
+                new SlaveScreen(
+                    corners.map(
+                        (c) => new Point(c.x / this.scale, c.y / this.scale)
+                    ),
+                    slaveId
+                )
+            );
         }
     }
 
@@ -182,7 +189,7 @@ export default class SlaveFlowHandler {
         await client.requestOrientationColors(this.slaveIDs);
         console.log("Confirmed orientation colors");
         await wait(1000);
-        const img = this.camera.snap(this.scale);
+        const img = this.camera.snap(1);
         for (let i = 0; i < this.screens.length; i++) {
             const screen = this.screens[i];
             const { angle, ...cornerMapping } = calculateScreenAngle(

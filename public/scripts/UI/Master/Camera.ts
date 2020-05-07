@@ -15,6 +15,14 @@ export class Camera extends HtmlElem {
         return document.querySelector("#camera");
     }
 
+    get videoWidth(): number {
+        return this.elem.videoWidth;
+    }
+
+    get videoHeight(): number {
+        return this.elem.videoHeight;
+    }
+
     private addOverlays() {
         const elem = this.elem;
         const videoWidth = elem.videoWidth;
@@ -552,5 +560,95 @@ export class Camera extends HtmlElem {
         }
 
         return areas;
+    }
+
+    findEdgesByColorChanges(center: Point, imgData: ImageData) {
+        const pixels = imgData.data;
+        const edgePoints: Point[] = [];
+        const step = 1;
+        const colorThreshold = 7;
+        const centerI = center.y * (imgData.width * 4) + center.x * 4;
+        for (let deg = 0; deg < 360; deg += 1) {
+            const rads = (deg * Math.PI) / 180;
+            let searchingColorChange = true;
+            let dist = step;
+            let prevColor = convert.rgb.lab([
+                pixels[centerI],
+                pixels[centerI + 1],
+                pixels[centerI + 2],
+            ]);
+            while (searchingColorChange) {
+                const x = Math.round(center.x + dist * Math.cos(rads));
+                const y = Math.round(center.y + dist * Math.sin(rads));
+                if (
+                    x >= imgData.width ||
+                    y >= imgData.height ||
+                    x < 0 ||
+                    y < 0
+                ) {
+                    break;
+                }
+                const point = new Point(x, y);
+                const i = y * (imgData.width * 4) + x * 4;
+                const color = convert.rgb.lab([
+                    pixels[i],
+                    pixels[i + 1],
+                    pixels[i + 2],
+                ]);
+                const colorDiff = deltaE.getDeltaE00(
+                    { L: prevColor[0], A: prevColor[1], B: prevColor[2] },
+                    { L: color[0], A: color[1], B: color[2] }
+                );
+                if (colorDiff > colorThreshold) {
+                    edgePoints.push(point);
+                    searchingColorChange = false;
+                } else {
+                    prevColor = color;
+                    dist += step;
+                }
+            }
+        }
+        return edgePoints;
+    }
+
+    getAreasOfInterestAroundCorners(
+        edgePoints: Point[],
+        corners: Point[],
+        maxRangesPerCorner: number[]
+    ) {
+        const filtered: Array<Point[]> = [];
+        for (let i = 0; i < corners.length; i++) {
+            filtered.push([]);
+        }
+        for (let i = 0; i < edgePoints.length; i++) {
+            const p = edgePoints[i];
+            for (let j = 0; j < corners.length; j++) {
+                const corner = corners[j];
+                const maxDist = maxRangesPerCorner[j];
+                if (p.distanceTo(corner) <= maxDist) {
+                    filtered[j].push(p);
+                }
+            }
+        }
+        return filtered;
+    }
+
+    findCornersInPOI(previousCenter: Point, cornerAreas: Array<Point[]>) {
+        const corners: Point[] = [];
+        cornerAreas.forEach((area) => {
+            let maxDist = 0;
+            let point: Point;
+            area.forEach((p) => {
+                const dist = p.distanceSq(previousCenter);
+                if (dist > maxDist) {
+                    maxDist = dist;
+                    point = p;
+                }
+            });
+            if (point) {
+                corners.push(point);
+            }
+        });
+        return corners;
     }
 }

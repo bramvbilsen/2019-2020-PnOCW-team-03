@@ -196,6 +196,7 @@ export default class ClientStorage {
      */
     perspectiveMatrix(begin: SrcPoints) {
         console.log(this.srcPoints);
+        console.log(begin);
         let x0 = begin.LeftUp.x;
         let y0 = begin.LeftUp.y;
         let x1 = begin.RightUp.x;

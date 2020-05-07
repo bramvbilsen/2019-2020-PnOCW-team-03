@@ -1,9 +1,11 @@
 const WAITING_TIME_MS = 30000;
 
 const gulp = require("gulp");
+const uglify = require("gulp-uglify-es").default;
 const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const tsify = require("tsify");
+const sourcemaps = require("gulp-sourcemaps");
 const babelify = require("babelify");
 const ts = require("gulp-typescript");
 const nodemon = require("gulp-nodemon");
@@ -11,6 +13,7 @@ const path = require("path");
 const del = require("del");
 const internalIp = require("internal-ip");
 const fs = require("fs");
+const buffer = require("vinyl-buffer");
 const args = {};
 const _args = require("minimist")(process.argv.slice(2));
 Object.keys(_args).forEach((arg) => {
@@ -83,18 +86,25 @@ const nonTsPaths_client = [
 ];
 
 gulp.task("Compile client", function () {
-    return browserify({
-        basedir: path.resolve("./public/"),
-        debug: true,
-        entries: ["index.ts"],
-        cache: {},
-        packageCache: {},
-    })
-        .plugin(tsify, require("./public/tsconfig.json").compilerOptions)
-        .transform(babelify.configure({ extensions: [".ts", ".js"] }))
-        .bundle()
-        .pipe(source("bundle.js"))
-        .pipe(gulp.dest(path.resolve("./build/public")));
+    return (
+        browserify({
+            basedir: path.resolve("./public/"),
+            debug: true,
+            entries: ["index.ts"],
+            cache: {},
+            packageCache: {},
+        })
+            // .pipe(sourcemaps.init())
+            .plugin(tsify, require("./public/tsconfig.json").compilerOptions)
+            .transform(babelify.configure({ extensions: [".ts", ".js"] }))
+            .bundle()
+            .pipe(source("bundle.js"))
+            // .pipe(buffer())
+            // .pipe(sourcemaps.init({ loadMaps: true }))
+            // .pipe(uglify())
+            // .pipe(sourcemaps.write())
+            .pipe(gulp.dest(path.resolve("./build/public")))
+    );
 });
 
 gulp.task("Watch client TS", function () {

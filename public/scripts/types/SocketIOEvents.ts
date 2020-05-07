@@ -37,6 +37,8 @@ export enum SlaveEventTypes {
     DisplayedDetectionColor = "displayed-detection-color",
     DisplayOrientationColors = "display-orientation-colors",
     DisplayedOrientationColors = "displayed-orientation-colors",
+    DisplayTrackingScreen = "display-tracking-screen",
+    DisplayedTrackingScreen = "displayed-tracking-screen",
 }
 
 export enum MasterEventTypes {
@@ -70,4 +72,6 @@ export enum MasterEventTypes {
     ConfirmedDetectionColor = "confirmed-detection-color",
     RequestOrientationColors = "request-orientation-colors",
     ConfirmedOrientationColors = "confirmed-orientation-colors",
+    RequestTrackingScreen = "request-tracking-screen",
+    ConfirmedTrackingScreen = "confirmed-tracking-screen",
 }

@@ -77,6 +77,9 @@
                     <button type="button" id="display-master-img-button" class="btn btn-outline-light thin-font">
                     Display master image
                     </button>
+                    <button type="button" id="track-slaves-button" class="btn btn-outline-light thin-font">
+                    Track Screens
+                    </button>
                 </div>
                 <div>
                     <button type="button" id="display-delaunay-triangulation-button" class="btn btn-outline-light thin-font">
@@ -107,12 +110,6 @@
     <div id="slave" style="display:none; width: 100vw; height: 100vh;">
         <div id="main-flow-slave">
             <div id="default-slave-state">
-                <!-- <div style="padding-bottom: 20px;">
-                    Waiting on request from master
-                </div>
-                <div class="spinner-grow text-light" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div> -->
             </div>
             <div id="orientation-colors">
                 <div style="display: flex; width: 100vw; height: 100vh;">
@@ -134,6 +131,37 @@
         <div id="video-container-slave">
             <video class="perspectiveVideoSlave" src="" id="video-slave" loop autobuffer preload muted="muted" >
             </video>
+        </div>
+        <div id="tracking-container-slave" style="    position: fixed;
+        padding: 0;
+        margin: 0;
+    
+        top: 0;
+        left: 0;
+    
+        max-width: 100vw;
+        z-index: -2;">
+            <div id="tracking-floater-slave" style="    width: 100vw;
+            height: 100vh;
+            min-width: 100vw;
+            max-width: 100vw;
+            min-height: 100vh;
+            max-height: 100vh;
+            position: relative;
+            background-color: rgb(255, 108, 255);">
+                <div id="tracking-border" style="    border: 125px solid rgb(0, 26.07, 0);
+                box-sizing: border-box;
+                width: 100vw;
+                height: 100vh;
+                min-width: 100vw;
+                max-width: 100vw;
+                min-height: 100vh;
+                max-height: 100vh;
+                position: absolute;"></div>
+                <div id="slaveCorners">
+                    <div class="corner"></div>
+                </div>
+            </div>
         </div>
     </div>
 

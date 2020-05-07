@@ -14,6 +14,7 @@ import { flattenOneLevel } from "./scripts/util/arrays";
 import { createImageCanvasForSlave } from "./scripts/util/ImageCutHandler";
 import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
 import { Camera } from "./scripts/UI/Master/Camera";
+import { ScreenTracker } from "./scripts/tracking/tracking";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -92,6 +93,7 @@ export function resetMaster() {
         $("#confirmButton")
             .off()
             .on("click", async () => {
+                $("#confirmButton").off();
                 $("#confirmButton").css("display", "none");
                 $("#detectionLoadingIndicator").css("display", "inline-block");
 
@@ -136,28 +138,8 @@ export function resetMaster() {
                             client.showImgOnSlave(
                                 screen.slaveID,
                                 `${env.baseUrl}/images/masterImg.png`
-                                // TODO: `${env.baseUrl}/slaveImg`
                             );
                         });
-
-                        // TODO: fix dees -> doe het weg
-                        // const globalBoundingBox = new BoundingBox(
-                        //     flattenOneLevel(
-                        //         slaveFlowHandler.screens.map(screen => screen.corners)
-                        //     )
-                        // );
-                        // const canvas = createCanvas(player[0].videoWidth, player[0].videoHeight);
-                        // const ctx = canvas.getContext("2d");
-                        // ctx.drawImage(slaveFlowHandler.blancoCanvas, 0, 0, player[0].videoWidth * slaveFlowHandler.blancoCanvasScale, player[0].videoHeight);
-                        // slaveFlowHandler.screens.forEach(screen => {
-                        //     const slaveImg = createImageCanvasForSlave(
-                        //         globalBoundingBox,
-                        //         screen,
-                        //         slaveFlowHandler.screens,
-                        //         canvas
-                        //     );
-                        //     client.showCanvasImgOnSlave(screen.slaveID, slaveImg);
-                        // });
                     });
                 $("#display-delaunay-triangulation-button")
                     .off()
@@ -187,6 +169,33 @@ export function resetMaster() {
                     .off()
                     .on("click", async () => {
                         client.StopVideoOnSlaves();
+                    });
+
+                $("#track-slaves-button")
+                    .off()
+                    .on("click", async () => {
+                        $("#cameraContainer").css("display", "");
+                        $("#confirmButton").css("display", "");
+                        $("#postDetectionContent").css("display", "none");
+                        const screenToTrack = slaveFlowHandler.screens[0];
+                        const {
+                            screenInnerWidth,
+                            screenInnerHeight,
+                        } = await client.requestTrackingScreen(
+                            screenToTrack.slaveID
+                        );
+                        $("#confirmButton")
+                            .off()
+                            .on("click", async () => {
+                                $("#confirmButton").css("display", "none");
+                                const tracker = new ScreenTracker(
+                                    camera,
+                                    screenToTrack,
+                                    screenInnerWidth,
+                                    screenInnerHeight
+                                );
+                                tracker.track();
+                            });
                     });
             });
 
