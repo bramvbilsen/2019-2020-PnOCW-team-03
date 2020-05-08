@@ -368,6 +368,7 @@ class Client {
                 this.clientStorage.boundingBoxWidth,
                 this.clientStorage.boundingBoxHeight
             );
+            canvas.className = "perspective";
             const ctx = canvas.getContext("2d");
             ctx.drawImage(
                 img,
@@ -1020,14 +1021,15 @@ class Client {
 
     public requestTrackingScreen = (
         slaveID: String
-    ): Promise<{ edgeRatio: number }> => {
+    ): Promise<{ edgeRatio: number; crossRatio: number }> => {
         return new Promise((resolve, reject) => {
             this._socket.on(
                 MasterEventTypes.ConfirmedTrackingScreen,
-                (msg: { edgeRatio: number }) => {
+                (msg: { edgeRatio: number; crossRatio: number }) => {
                     this._socket.off(MasterEventTypes.ConfirmedTrackingScreen);
                     resolve({
                         edgeRatio: msg.edgeRatio,
+                        crossRatio: msg.crossRatio,
                     });
                 }
             );
@@ -1070,15 +1072,26 @@ class Client {
                 edgeDiagonalWidth * edgeDiagonalWidth +
                     edgeDiagonalHeight * edgeDiagonalHeight
             );
-            const screenDiagonal = Math.sqrt(
-                (innerWidth / 2) * (innerWidth / 2) +
-                    (innerHeight / 2) * (innerHeight / 2)
+            const screenDiagonalLength = Math.sqrt(
+                innerWidth * innerWidth + innerHeight * innerHeight
             );
-            const edgeRatio = edgeDiagonalLength / screenDiagonal;
+            const halfScreenDiagonalLength = screenDiagonalLength / 2;
+            const trackingRectDiagonalLength =
+                halfScreenDiagonalLength - edgeDiagonalLength;
+            const trackingCornerToFurthestScreenCorner =
+                screenDiagonalLength - edgeDiagonalLength;
+
+            const crossRatio =
+                (halfScreenDiagonalLength *
+                    trackingCornerToFurthestScreenCorner) /
+                (trackingRectDiagonalLength * screenDiagonalLength);
+
+            const edgeRatio = edgeDiagonalLength / halfScreenDiagonalLength;
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     this._socket.emit(SlaveEventTypes.DisplayedTrackingScreen, {
                         edgeRatio,
+                        crossRatio,
                     });
                 }, 1000);
             });

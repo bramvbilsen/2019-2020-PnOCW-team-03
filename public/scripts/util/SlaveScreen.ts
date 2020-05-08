@@ -2,8 +2,9 @@ import Point from "../image_processing/screen_detection/Point";
 import { BoundingBox } from "./BoundingBox";
 import Line from "../image_processing/screen_detection/Line";
 import { radiansToDegrees, rotatePointAroundAnchor } from "./angles";
-import { sortCorners } from "./shapes";
+import { sortCorners, getCentroidOf } from "./shapes";
 import { IActualCorners, CornerLabels } from "../types/Points";
+const { checkIntersection } = require("line-intersect");
 
 export default class SlaveScreen {
     corners: Point[];
@@ -31,16 +32,8 @@ export default class SlaveScreen {
     }
 
     get centroid(): Point {
-        let sumX = 0;
-        let sumY = 0;
-        this.corners.forEach((point) => {
-            sumX += point.x;
-            sumY += point.y;
-        });
-        return new Point(
-            Math.round(sumX / this.corners.length),
-            Math.round(sumY / this.corners.length)
-        );
+        const centroid = getCentroidOf(this.corners);
+        return new Point(centroid.x, centroid.y);
     }
 
     get boundingBox() {
@@ -308,6 +301,12 @@ export default class SlaveScreen {
             this.slaveID
         );
         screen.slavePortionImg = this.slavePortionImg;
+        screen.actualCorners = {
+            LeftUp: this.actualCorners.LeftUp.copy(),
+            RightUp: this.actualCorners.RightUp.copy(),
+            RightUnder: this.actualCorners.RightUnder.copy(),
+            LeftUnder: this.actualCorners.LeftUnder.copy(),
+        };
         return screen;
     }
 

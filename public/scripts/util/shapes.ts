@@ -1,48 +1,64 @@
 import Point from "../image_processing/screen_detection/Point";
+const { checkIntersection } = require("line-intersect");
 
 /**
  * Returns the centroid of the given points.
  * @param points A list of points.
  */
 export function getCentroidOf(points: Point[]): Point {
-    var sumX = 0;
-    var sumY = 0;
-    points.forEach(point => {
-        sumX += point.x;
-        sumY += point.y;
-    });
-    return new Point(
-        Math.round(sumX / points.length),
-        Math.round(sumY / points.length)
+    const sortedCorners = sortCorners(points);
+    const intersection = checkIntersection(
+        sortedCorners.LeftUp.x,
+        sortedCorners.LeftUp.y,
+        sortedCorners.RightUnder.x,
+        sortedCorners.RightUnder.y,
+        sortedCorners.LeftUnder.x,
+        sortedCorners.LeftUnder.y,
+        sortedCorners.RightUp.x,
+        sortedCorners.RightUp.y
     );
+    return new Point(intersection.point.x, intersection.point.y);
 }
 
 /**
  * Returns the bounding box of the given points.
  * @param points A list of points.
  */
-export function calculateBoundingBox(points: Point[]): { 
-    topLeft: Point; topRight: Point; bottomLeft: Point; bottomRight: Point } {
-    const xCoordinates = points.map(point => point.x).sort((a, b) => a - b);
-    const yCoordinates = points.map(point => point.y).sort((a, b) => a - b);
+export function calculateBoundingBox(
+    points: Point[]
+): {
+    topLeft: Point;
+    topRight: Point;
+    bottomLeft: Point;
+    bottomRight: Point;
+} {
+    const xCoordinates = points.map((point) => point.x).sort((a, b) => a - b);
+    const yCoordinates = points.map((point) => point.y).sort((a, b) => a - b);
     const minX = xCoordinates[0];
     const maxX = xCoordinates[xCoordinates.length - 1];
     const minY = yCoordinates[0];
     const maxY = yCoordinates[yCoordinates.length - 1];
-    const res = sortCorners([new Point(minX, minY), new Point(maxX, maxY), new Point(maxX, minY), new Point(minX, maxY)]);
+    const res = sortCorners([
+        new Point(minX, minY),
+        new Point(maxX, maxY),
+        new Point(maxX, minY),
+        new Point(minX, maxY),
+    ]);
     return {
         topLeft: res.LeftUp,
         topRight: res.RightUp,
         bottomLeft: res.LeftUnder,
         bottomRight: res.RightUnder,
-    }
+    };
 }
 
 /**
  * Sorts the corners.
  * @param corners A list of points.
  */
-export function sortCorners(corners: Point[]): {
+export function sortCorners(
+    corners: Point[]
+): {
     LeftUp: Point;
     RightUp: Point;
     RightUnder: Point;

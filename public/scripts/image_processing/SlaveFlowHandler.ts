@@ -253,9 +253,6 @@ export default class SlaveFlowHandler {
         const globalBoundingBox = new BoundingBox(
             flattenOneLevel(this.screens.map((screen) => screen.corners))
         );
-        console.log("boundingbox shit");
-        console.log(globalBoundingBox.width);
-        console.log(globalBoundingBox.height);
         this.screens.forEach((screen) => {
             client.sendCutData(
                 {

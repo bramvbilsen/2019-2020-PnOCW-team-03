@@ -3,10 +3,7 @@ import Line from "../screen_detection/Line";
 import SlaveScreen from "../../util/SlaveScreen";
 import { CornerLabels } from "../../types/Points";
 
-const {
-    checkIntersection,
-    colinearPointWithinSegment,
-} = require("line-intersect");
+const { checkIntersection } = require("line-intersect");
 
 export default class Triangulation {
     line: Line[];

@@ -5,13 +5,7 @@ import SlaveFlowHandler, {
     wait,
 } from "./scripts/image_processing/SlaveFlowHandler";
 import run_tests from "./tests/run";
-import downloadTests from "./tests/download";
-import { createCanvas } from "./scripts/image_processing/screen_detection/screen_detection";
 import env from "./env/env";
-import { loadImage } from "./scripts/util/images";
-import { BoundingBox } from "./scripts/util/BoundingBox";
-import { flattenOneLevel } from "./scripts/util/arrays";
-import { createImageCanvasForSlave } from "./scripts/util/ImageCutHandler";
 import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
 import { Camera } from "./scripts/UI/Master/Camera";
 import { ScreenTracker } from "./scripts/tracking/tracking";
@@ -179,7 +173,7 @@ export function resetMaster() {
                         $("#postDetectionContent").css("display", "none");
                         const screenToTrack = slaveFlowHandler.screens[0];
                         const {
-                            edgeRatio,
+                            crossRatio,
                         } = await client.requestTrackingScreen(
                             screenToTrack.slaveID
                         );
@@ -190,7 +184,7 @@ export function resetMaster() {
                                 const tracker = new ScreenTracker(
                                     camera,
                                     screenToTrack,
-                                    edgeRatio
+                                    crossRatio
                                 );
                                 tracker.track();
                             });

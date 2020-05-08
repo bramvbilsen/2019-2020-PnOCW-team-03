@@ -562,6 +562,55 @@ export class Camera extends HtmlElem {
         return areas;
     }
 
+    findDiagonals(edgePoints: Point[]) {
+        let longest1 = Number.NEGATIVE_INFINITY;
+        let longest2 = Number.NEGATIVE_INFINITY;
+        let line1: [Point, Point];
+        let line2: [Point, Point];
+
+        for (let i = 0; i < edgePoints.length; i++) {
+            const point1 = edgePoints[i];
+            for (let j = i; j < edgePoints.length; j++) {
+                const point2 = edgePoints[j];
+                const dist = point1.distanceSq(point2);
+                const newSlope = (point2.y - point1.y) / (point2.x - point1.x);
+                if (dist > longest1) {
+                    if (line1 && line2) {
+                        const line2Slope =
+                            (line2[1].y - line2[0].y) /
+                            (line2[1].x - line2[0].x);
+                        if (
+                            ((line2Slope > 0 && newSlope < 0) ||
+                                (line2Slope < 0 && newSlope > 0)) &&
+                            Math.abs(line2Slope) / Math.abs(newSlope) > 0.15 &&
+                            Math.abs(line2Slope) / Math.abs(newSlope) < 1.85
+                        ) {
+                            longest1 = dist;
+                            line1 = [point1, point2];
+                        }
+                    } else {
+                        longest1 = dist;
+                        line1 = [point1, point2];
+                    }
+                } else if (dist > longest2) {
+                    const line1Slope =
+                        (line1[1].y - line1[0].y) / (line1[1].x - line1[0].x);
+                    if (
+                        ((line1Slope > 0 && newSlope < 0) ||
+                            (line1Slope < 0 && newSlope > 0)) &&
+                        Math.abs(line1Slope) / Math.abs(newSlope) > 0.15 &&
+                        Math.abs(line1Slope) / Math.abs(newSlope) < 1.85
+                    ) {
+                        longest2 = dist;
+                        line2 = [point1, point2];
+                    }
+                }
+            }
+        }
+
+        return [line1, line2];
+    }
+
     findEdgesByColorChanges(center: Point, imgData: ImageData) {
         const pixels = imgData.data;
         const edgePoints: Point[] = [];

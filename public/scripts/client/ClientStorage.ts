@@ -170,6 +170,14 @@ export default class ClientStorage {
         this.boundingBoxWidth = boundingBoxWidth;
         this.matrix3d = this.perspectiveMatrix(begin);
         this.srcPoints = begin;
+        const perspectiveElements = <HTMLCollectionOf<HTMLElement>>(
+            document.getElementsByClassName("perspective")
+        );
+        for (let i = 0; i < perspectiveElements.length; i++) {
+            const elem = perspectiveElements[i];
+            elem.style.transform = this.matrix3d;
+            elem.style.transformOrigin = "0 0";
+        }
     }
 
     addTriangulation(
