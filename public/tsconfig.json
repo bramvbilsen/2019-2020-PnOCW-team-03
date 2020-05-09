@@ -3,7 +3,7 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
-        "moduleResolution": "classic",
+        "moduleResolution": "Node",
         "sourceMap": true,
         "outDir": "build",
         "rootDir": "./",

@@ -3,11 +3,16 @@ import SlaveScreen from "../util/SlaveScreen";
 import Point from "../image_processing/screen_detection/Point";
 import { CameraOverlay } from "../UI/Master/cameraOverlays";
 import { getCentroidOf } from "../util/shapes";
-import { slaveFlowHandler } from "../../index";
+import { slaveFlowHandler, client } from "../../index";
+import { lusolve } from "mathjs";
+import { BoundingBox } from "../util/BoundingBox";
+import { flattenOneLevel } from "../util/arrays";
+import Line from "../image_processing/screen_detection/Line";
 
 const linSystem = require("linear-equation-system");
 
 export class ScreenTracker {
+    stopTracking = false;
     scale: number;
     ctx: CanvasRenderingContext2D;
     camera: Camera;
@@ -18,6 +23,7 @@ export class ScreenTracker {
     corners: Point[] = [];
     matrix: Array<Array<number>> = [];
     originalScreens: SlaveScreen[];
+    timeSinceLastEmit: number = 0;
 
     constructor(
         camera: Camera,
@@ -25,7 +31,7 @@ export class ScreenTracker {
         crossRatio: number,
         scale?: number
     ) {
-        this.scale = scale || 0.5;
+        this.scale = scale || 0.2;
         this.ctx = new CameraOverlay().elem.getContext("2d");
         this.camera = camera;
         this.screen = screen;
@@ -108,114 +114,25 @@ export class ScreenTracker {
     }
 
     private calcPerspectiveMatrix() {
-        const translation = innerWidth * 10;
+        const originalCorners: Point[] = this.originalCorners;
+        const corners: Point[] = this.corners;
 
-        const oPTopLeftBottomRightDiagLength = this.originalCorners[0].distanceTo(
-            this.originalCorners[2]
-        );
-        const oPTopLeftBottomRightDiagDirection = new Point(
-            (this.originalCorners[0].x - this.originalCorners[2].x) /
-                oPTopLeftBottomRightDiagLength,
-            (this.originalCorners[0].y - this.originalCorners[2].y) /
-                oPTopLeftBottomRightDiagLength
-        );
-        const oPTopRightBottomLeftDiagLength = this.originalCorners[1].distanceTo(
-            this.originalCorners[3]
-        );
-        const oPTopRightBottomLeftDiagDirection = new Point(
-            (this.originalCorners[1].x - this.originalCorners[3].x) /
-                oPTopRightBottomLeftDiagLength,
-            (this.originalCorners[1].y - this.originalCorners[3].y) /
-                oPTopRightBottomLeftDiagLength
-        );
-        const bigOriginalPoints = [
-            new Point(
-                this.originalCorners[0].x +
-                    oPTopLeftBottomRightDiagDirection.x * translation,
-                this.originalCorners[0].y +
-                    oPTopLeftBottomRightDiagDirection.y * translation
-            ),
-            new Point(
-                this.originalCorners[1].x +
-                    oPTopRightBottomLeftDiagDirection.x * translation,
-                this.originalCorners[1].y +
-                    oPTopRightBottomLeftDiagDirection.y * translation
-            ),
-            new Point(
-                this.originalCorners[2].x +
-                    -oPTopLeftBottomRightDiagDirection.x * translation,
-                this.originalCorners[2].y +
-                    -oPTopLeftBottomRightDiagDirection.y * translation
-            ),
-            new Point(
-                this.originalCorners[3].x +
-                    -oPTopRightBottomLeftDiagDirection.x * translation,
-                this.originalCorners[3].y +
-                    -oPTopRightBottomLeftDiagDirection.y * translation
-            ),
-        ];
-
-        const nPTopLeftBottomRightDiagLength = this.corners[0].distanceTo(
-            this.corners[2]
-        );
-        const nPTopLeftBottomRightDiagDirection = new Point(
-            (this.corners[0].x - this.corners[2].x) /
-                nPTopLeftBottomRightDiagLength,
-            (this.corners[0].y - this.corners[2].y) /
-                nPTopLeftBottomRightDiagLength
-        );
-        const nPTopRightBottomLeftDiagLength = this.corners[1].distanceTo(
-            this.corners[3]
-        );
-        const nPTopRightBottomLeftDiagDirection = new Point(
-            (this.corners[1].x - this.corners[3].x) /
-                nPTopRightBottomLeftDiagLength,
-            (this.corners[1].y - this.corners[3].y) /
-                nPTopRightBottomLeftDiagLength
-        );
-        const bigNewPoints = [
-            new Point(
-                this.corners[0].x +
-                    nPTopLeftBottomRightDiagDirection.x * translation,
-                this.corners[0].y +
-                    nPTopLeftBottomRightDiagDirection.y * translation
-            ),
-            new Point(
-                this.corners[1].x +
-                    nPTopRightBottomLeftDiagDirection.x * translation,
-                this.corners[1].y +
-                    nPTopRightBottomLeftDiagDirection.y * translation
-            ),
-            new Point(
-                this.corners[2].x +
-                    -nPTopLeftBottomRightDiagDirection.x * translation,
-                this.corners[2].y +
-                    -nPTopLeftBottomRightDiagDirection.y * translation
-            ),
-            new Point(
-                this.corners[3].x +
-                    -nPTopRightBottomLeftDiagDirection.x * translation,
-                this.corners[3].y +
-                    -nPTopRightBottomLeftDiagDirection.y * translation
-            ),
-        ];
-
-        let x0 = bigOriginalPoints[0].x;
-        let y0 = bigOriginalPoints[0].y;
-        let x1 = bigOriginalPoints[1].x;
-        let y1 = bigOriginalPoints[1].y;
-        let x2 = bigOriginalPoints[2].x;
-        let y2 = bigOriginalPoints[2].y;
-        let x3 = bigOriginalPoints[3].x;
-        let y3 = bigOriginalPoints[3].y;
-        let u0 = bigNewPoints[0].x;
-        let v0 = bigNewPoints[0].y;
-        let u1 = bigNewPoints[1].x;
-        let v1 = bigNewPoints[1].y;
-        let u2 = bigNewPoints[2].x;
-        let v2 = bigNewPoints[2].y;
-        let u3 = bigNewPoints[3].x;
-        let v3 = bigNewPoints[3].y;
+        let x0 = originalCorners[0].x;
+        let y0 = originalCorners[0].y;
+        let x1 = originalCorners[1].x;
+        let y1 = originalCorners[1].y;
+        let x2 = originalCorners[2].x;
+        let y2 = originalCorners[2].y;
+        let x3 = originalCorners[3].x;
+        let y3 = originalCorners[3].y;
+        let u0 = corners[0].x;
+        let v0 = corners[0].y;
+        let u1 = corners[1].x;
+        let v1 = corners[1].y;
+        let u2 = corners[2].x;
+        let v2 = corners[2].y;
+        let u3 = corners[3].x;
+        let v3 = corners[3].y;
         let row1 = [x0, y0, 1, 0, 0, 0, -u0 * x0, -u0 * y0];
         let row2 = [0, 0, 0, x0, y0, 1, -v0 * x0, -v0 * y0];
         let row3 = [x1, y1, 1, 0, 0, 0, -u1 * x1, -u1 * y1];
@@ -228,33 +145,22 @@ export class ScreenTracker {
         const c = [u0, v0, u1, v1, u2, v2, u3, v3];
 
         this.matrix = [row1, row2, row3, row4, row5, row6, row7, row8];
-        const h: number[] = linSystem.solve(this.matrix, c);
+        const h: number[] = <number[]>lusolve(this.matrix, c);
+        console.log(h);
         return h;
     }
 
     private WHOOPWHOOP(matrix: number[]) {
-        const trackingCentroid = getCentroidOf(this.originalCorners);
+        const updatedScreens: SlaveScreen[] = [];
+        const needsToSendData = this.timeSinceLastEmit >= 100;
         for (let i = 0; i < this.originalScreens.length; i++) {
             const originalScreen = this.originalScreens[i];
-            const screenCentroid = originalScreen.centroid;
-            const centroidsDist = trackingCentroid.distanceTo(screenCentroid);
-            const translationDir = new Point(
-                (screenCentroid.x - trackingCentroid.x) / centroidsDist,
-                (screenCentroid.y - trackingCentroid.y) / centroidsDist
-            );
             let corners = [
                 originalScreen.actualCorners.LeftUp,
                 originalScreen.actualCorners.RightUp,
                 originalScreen.actualCorners.RightUnder,
                 originalScreen.actualCorners.LeftUnder,
             ];
-            corners = corners.map(
-                (p) =>
-                    new Point(
-                        p.x - translationDir.x * centroidsDist,
-                        p.y - translationDir.y * centroidsDist
-                    )
-            );
             for (let j = 0; j < corners.length; j++) {
                 const corner = corners[j];
                 const x = corner.x;
@@ -267,15 +173,59 @@ export class ScreenTracker {
                     (matrix[3] * x + matrix[4] * y + matrix[5] * 1) / div;
                 corners[j] = new Point(newX, newY);
             }
-            this.drawCorners(
-                corners.map(
-                    (p) =>
-                        new Point(
-                            p.x + translationDir.x * centroidsDist,
-                            p.y + translationDir.y * centroidsDist
-                        )
+
+            this.drawCorners(corners.map((c) => new Point(c.x, c.y)));
+
+            if (needsToSendData) {
+                const newScreen = originalScreen.copy();
+                updatedScreens.push(newScreen);
+                newScreen.corners = corners;
+                newScreen.actualCorners.LeftUp = corners[0];
+                newScreen.actualCorners.RightUp = corners[1];
+                newScreen.actualCorners.RightUnder = corners[2];
+                newScreen.actualCorners.LeftUnder = corners[3];
+            }
+        }
+
+        if (needsToSendData) {
+            const screensToSendTo: SlaveScreen[] = [];
+            updatedScreens.forEach((s) => {
+                if (s.slaveID != this.screen.slaveID) {
+                    screensToSendTo.push(s);
+                }
+            });
+            const boundingBox = new BoundingBox(
+                flattenOneLevel(
+                    screensToSendTo.map((screen, i) => screen.corners)
                 )
             );
+            screensToSendTo.forEach((screen, i) => {
+                const screenCorners = screen.actualCorners;
+                client.sendCutData(
+                    {
+                        LeftUp: screenCorners.LeftUp.copyTranslated(
+                            -boundingBox.topLeft.x,
+                            -boundingBox.topLeft.y
+                        ).toInterface(),
+                        RightUp: screenCorners.RightUp.copyTranslated(
+                            -boundingBox.topLeft.x,
+                            -boundingBox.topLeft.y
+                        ).toInterface(),
+                        RightUnder: screenCorners.RightUnder.copyTranslated(
+                            -boundingBox.topLeft.x,
+                            -boundingBox.topLeft.y
+                        ).toInterface(),
+                        LeftUnder: screenCorners.LeftUnder.copyTranslated(
+                            -boundingBox.topLeft.x,
+                            -boundingBox.topLeft.y
+                        ).toInterface(),
+                    },
+                    boundingBox.width,
+                    boundingBox.height,
+                    screen.slaveID
+                );
+            });
+            this.timeSinceLastEmit = 0;
         }
     }
 
@@ -343,7 +293,8 @@ export class ScreenTracker {
         }
 
         let cornerSearchRadius =
-            (this.findShortestSideLength(this.corners) / 2) * 0.6;
+            (this.findShortestSideLength(this.corners) / 2) * 1;
+        let newCornersAcceptanceRadius = cornerSearchRadius * 0.01;
 
         this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
 
@@ -394,19 +345,36 @@ export class ScreenTracker {
                     );
                 });
             });
-            this.corners = this.camera
-                .findCornersInPOI(scaledPrevCenter, cornerAreas)
+            const newCorners = this.camera
+                .findCornersInPOI(
+                    scaledPrevCenter,
+                    cornerAreas,
+                    newCornersAcceptanceRadius
+                )
                 .map((c) => new Point(c.x / this.scale, c.y / this.scale));
+            if (newCorners.length != 0) {
+                this.corners = newCorners;
+            }
+            // this.corners = this.camera
+            //     .findCornersInPOI(scaledPrevCenter, cornerAreas)
+            //     .map((c) => new Point(c.x / this.scale, c.y / this.scale));
             prevCenter = getCentroidOf(this.corners);
             cornerSearchRadius =
-                (this.findShortestSideLength(this.corners) / 2) * 0.6;
+                (this.findShortestSideLength(this.corners) / 2) * 1;
             this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
             this.WHOOPWHOOP(this.calcPerspectiveMatrix());
             ctx.fillStyle = "red";
             ctx.fillText("Frame took: " + (Date.now() - startT) + "ms", 50, 50);
-            requestAnimationFrame(trackStep);
+            this.timeSinceLastEmit += Date.now() - startT;
+            if (!this.stopTracking) {
+                requestAnimationFrame(trackStep);
+            }
         };
 
         requestAnimationFrame(trackStep);
+    }
+
+    stop() {
+        this.stopTracking = true;
     }
 }

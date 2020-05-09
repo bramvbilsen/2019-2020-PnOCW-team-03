@@ -1,6 +1,6 @@
 import SlaveScreen from "./SlaveScreen";
 import Point from "../image_processing/screen_detection/Point";
-import { calculateBoundingBox } from "./shapes";
+import { calculateBoundingBox, getCentroidOf } from "./shapes";
 import { rotatePointAroundAnchor } from "./angles";
 
 export class BoundingBox {
@@ -33,16 +33,8 @@ export class BoundingBox {
     }
 
     get centroid(): Point {
-        let sumX = 0;
-        let sumY = 0;
-        this.points.forEach(point => {
-            sumX += point.x;
-            sumY += point.y;
-        });
-        return new Point(
-            Math.round(sumX / this.points.length),
-            Math.round(sumY / this.points.length)
-        );
+        const centroid = getCentroidOf(this.points);
+        return new Point(centroid.x, centroid.y);
     }
 
     constructor(points: Point[]) {
@@ -54,9 +46,15 @@ export class BoundingBox {
     }
 
     copyRotated(deg: number) {
-        return new BoundingBox(this.points.map(point =>
-            rotatePointAroundAnchor(new Point(point.x, point.y), this.centroid, deg)
-        ));
+        return new BoundingBox(
+            this.points.map((point) =>
+                rotatePointAroundAnchor(
+                    new Point(point.x, point.y),
+                    this.centroid,
+                    deg
+                )
+            )
+        );
     }
 }
 
@@ -91,8 +89,8 @@ export class BoudingBoxOfSlaveScreens {
 
     constructor(slaveScreens: SlaveScreen[]) {
         let points: Point[] = [];
-        slaveScreens.forEach(screen => {
-            const newPoints: Point[] = screen.corners.map(corner =>
+        slaveScreens.forEach((screen) => {
+            const newPoints: Point[] = screen.corners.map((corner) =>
                 corner.copy()
             );
             this._screens.push(screen.copy());
@@ -114,12 +112,11 @@ export class BoudingBoxOfSlaveScreens {
         this._bottomLeft.y = this._bottomLeft.y * factor;
         this._bottomRight.x = this._bottomRight.x * factor;
         this._bottomRight.y = this._bottomRight.y * factor;
-        this._screens.forEach(screen => {
-            screen.corners.forEach(corner => {
+        this._screens.forEach((screen) => {
+            screen.corners.forEach((corner) => {
                 corner.x = corner.x * factor;
                 corner.y = corner.y * factor;
             });
         });
     }
-
 }

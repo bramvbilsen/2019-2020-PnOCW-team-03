@@ -7,23 +7,12 @@ import {
 import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
-import delauney from "../image_processing/Triangulation/Delaunay";
-import { client, slaveFlowHandler } from "../../index";
 import Point from "../image_processing/screen_detection/Point";
 import { createCanvas } from "../image_processing/screen_detection/screen_detection";
-import Line from "../image_processing/screen_detection/Line";
-import { BoundingBox } from "../util/BoundingBox";
-import { flattenOneLevel } from "../util/arrays";
-import SlaveScreen from "../util/SlaveScreen";
-import Triangulation from "../image_processing/Triangulation/Triangulation";
-import { loadImage, loadVideo } from "../util/images";
-import { wait } from "../image_processing/SlaveFlowHandler";
-import { CornerLabels } from "../types/Points";
-import { colortest } from "../../tests/color_detection/colorTesting";
+import { loadImage } from "../util/images";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
 import Animation from "./Animation";
-//import "p5/lib/addons/p5.dom";
 
 const {
     checkIntersection,
@@ -365,9 +354,10 @@ class Client {
         console.log("DISPLAYING IMAGE: " + data.imgUrl);
         loadImage(data.imgUrl + "?" + Math.random()).then((img) => {
             const canvas = createCanvas(
-                this.clientStorage.boundingBoxWidth,
-                this.clientStorage.boundingBoxHeight
+                this.clientStorage.originalBoundingBoxWidth,
+                this.clientStorage.originalBoundingBoxHeight
             );
+            canvas.id = "imageToDisplay";
             canvas.className = "perspective";
             const ctx = canvas.getContext("2d");
             ctx.drawImage(
@@ -378,10 +368,9 @@ class Client {
                 img.height,
                 0,
                 0,
-                this.clientStorage.boundingBoxWidth,
-                this.clientStorage.boundingBoxHeight
+                this.clientStorage.originalBoundingBoxWidth,
+                this.clientStorage.originalBoundingBoxHeight
             );
-            const srcPoints = this.clientStorage.srcPoints;
             canvas.style.transform = this.clientStorage.matrix3d;
             canvas.style.transformOrigin = "0 0";
             const parent = document.getElementById("image-container-slave");
@@ -400,8 +389,10 @@ class Client {
         $("#default-slave-state").css("z-index", -2);
         $("#pink-color").css("z-index", -2);
         $("#orientation-colors").css("z-index", -2);
+        $("#detection-colors").css("z-index", -2);
         $("#image-container-slave").css("z-index", -2);
         $("#video-container-slave").css("z-index", -2);
+        $("#tracking-container-slave").css("z-index", -2);
     }
     public moveToForeground(elemName: string) {
         $("#" + elemName).css("z-index", 1);
@@ -769,8 +760,8 @@ class Client {
         );
         console.log("Reached client: " + msg.videoUrl);
 
-        video.width = this.clientStorage.boundingBoxWidth;
-        video.height = this.clientStorage.boundingBoxHeight;
+        video.width = this.clientStorage.originalBoundingBoxWidth;
+        video.height = this.clientStorage.originalBoundingBoxHeight;
         video.style.transform = this.clientStorage.matrix3d;
         video.style.transformOrigin = "0 0";
 
@@ -969,8 +960,10 @@ class Client {
 
     public displayColor = (msg: { color: IRGBAColor }) => {
         requestAnimationFrame(() => {
+            this.hideAllSlaveLayers();
+            this.moveToForeground("detection-colors");
             document.getElementById(
-                "slave"
+                "detection-colors"
             ).style.backgroundColor = `rgb(${msg.color.r},${msg.color.g},${msg.color.b})`;
             requestAnimationFrame(() => {
                 setTimeout(() => {

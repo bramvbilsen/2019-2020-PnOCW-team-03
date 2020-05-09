@@ -9,6 +9,7 @@ import env from "./env/env";
 import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
 import { Camera } from "./scripts/UI/Master/Camera";
 import { ScreenTracker } from "./scripts/tracking/tracking";
+import { CameraOverlay } from "./scripts/UI/Master/cameraOverlays";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -25,20 +26,15 @@ window.findScreen = findScreen;
 
 export function resetMaster() {
     const startButton = $("#start");
-    const startAutomatedButton = $("#start-automated");
     const nextSlaveButton = $("#next-slave");
     const captureSlaveButton = $("#capture-slave");
     const showOrientationButton = $("#show-orientation-button");
     const captureOrientationButton = $("#capture-orientation");
     const loadingMasterIndicator = $("#loading-master-indicator");
-    const resetButton = $("#reset");
     const welcomeMaster = $("#welcome-master");
     const startMasterButton = $("#start-master-button");
     const mainFlowMaster = $("#main-flow-master");
     const resultImgContainer = $("#result-img-container");
-
-    const uploadImage = $("#upload-image-to-display");
-    const displayImage = $("#display-uploaded-image");
 
     mainFlowMaster.hide();
     startButton.hide();
@@ -55,6 +51,7 @@ export function resetMaster() {
         delay: 5000,
         animation: true,
     });
+    $("#postDetectionContent").css("display", "none");
     welcomeMaster.css("display", "inherit");
 
     startMasterButton.off().on("click", async () => {
@@ -63,7 +60,7 @@ export function resetMaster() {
             $("#welcome-master-no-slave-toast").toast("show");
             return;
         }
-
+        $("#cameraContainer").css("display", "");
         $("#confirmButton").css("display", "inline-block");
         $("#detectionLoadingIndicator").css("display", "none");
 
@@ -73,11 +70,6 @@ export function resetMaster() {
         slaveFlowHandler = new SlaveFlowHandler(camera);
         //@ts-ignore
         window.slaveFlowHandler = slaveFlowHandler;
-
-        // Reset
-        resetButton.off().on("click", () => {
-            // TODO: slaveFlowHandler.reset();
-        });
 
         // Player for display master image on slaves
         const player: JQuery<HTMLVideoElement> = $("#player");
@@ -91,17 +83,10 @@ export function resetMaster() {
                 $("#confirmButton").css("display", "none");
                 $("#detectionLoadingIndicator").css("display", "inline-block");
 
-                await slaveFlowHandler.startDetection();
-
-                $("#detectionLoadingIndicator").animate(
-                    {
-                        width: "0px",
-                        height: "0px",
-                    },
-                    1000
-                );
+                await slaveFlowHandler.detect();
 
                 $("#cameraContainer").css("display", "none");
+                $("#detectionLoadingIndicator").css("display", "none");
                 $("#postDetectionContent").css("display", "");
 
                 const {
@@ -168,26 +153,65 @@ export function resetMaster() {
                 $("#track-slaves-button")
                     .off()
                     .on("click", async () => {
-                        $("#cameraContainer").css("display", "");
-                        $("#confirmButton").css("display", "");
-                        $("#postDetectionContent").css("display", "none");
                         const screenToTrack = slaveFlowHandler.screens[0];
+                        const ctx = new CameraOverlay().elem.getContext("2d");
+                        ctx.clearRect(
+                            0,
+                            0,
+                            camera.videoWidth,
+                            camera.videoHeight
+                        );
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                        ctx.fillRect(0, 0, camera.videoWidth, 30);
+                        ctx.fillStyle = "white";
+                        ctx.fillText(
+                            "Match the tracking screen to its original corners and press the red button.",
+                            20,
+                            20
+                        );
+                        ctx.fillStyle = "red";
+                        screenToTrack.corners.forEach((c) => {
+                            ctx.beginPath();
+                            ctx.arc(c.x, c.y, 10, 0, 2 * Math.PI);
+                            ctx.closePath();
+                            ctx.fill();
+                        });
                         const {
                             crossRatio,
                         } = await client.requestTrackingScreen(
                             screenToTrack.slaveID
                         );
+                        const tracker = new ScreenTracker(
+                            camera,
+                            screenToTrack,
+                            crossRatio
+                        );
+                        $("#cameraContainer").css("display", "");
+                        $("#confirmButton").css("display", "");
+                        $("#trackingBackButton").css("display", "inline-block");
+                        $("#postDetectionContent").css("display", "none");
+                        $("#trackingBackButton")
+                            .off()
+                            .on("click", () => {
+                                tracker.stop();
+                                $("#cameraContainer").css("display", "none");
+                                $("#trackingBackButton").css("display", "none");
+                                $("#confirmButton").css("display", "none");
+                                $("#postDetectionContent").css("display", "");
+                            });
+
                         $("#confirmButton")
                             .off()
                             .on("click", async () => {
                                 $("#confirmButton").css("display", "none");
-                                const tracker = new ScreenTracker(
-                                    camera,
-                                    screenToTrack,
-                                    crossRatio
-                                );
                                 tracker.track();
                             });
+                    });
+
+                $("#reset-master-button")
+                    .off()
+                    .on("click", () => {
+                        resetMaster();
                     });
             });
 

@@ -56,9 +56,7 @@
                 </div>
                 <div id="cameraButtonsContainer">
                   <div class="circularButtonContainer1">
-                    <div class="circle button" id="settingsButton" tabindex="0">
-                      <!-- <i class="material-icons" id="settingsButtonIcon">settings</i> -->
-                    </div>
+                    <button class="button" id="trackingBackButton" tabindex="0">Back</button>
                   </div>
                   <div class="circularButtonContainer2">
                     <button class="circle button" id="confirmButton"></button>
@@ -101,6 +99,11 @@
                     Stop Video
                     </button>
                 </div>
+                <div>
+                    <button type="button" id="reset-master-button" class="btn btn-outline-light thin-font">
+                    Reset master
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -123,8 +126,7 @@
                     </div>
                 </div>
             </div>
-            <div id="pink-color">
-            </div>
+            <div id="detection-colors"></div>
         </div>
         <div id="image-container-slave">
         </div>

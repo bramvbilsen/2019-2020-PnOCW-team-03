@@ -56,7 +56,7 @@ export default class SlaveFlowHandler {
         this.camera = camera;
     }
 
-    public async startDetection() {
+    public async detect() {
         return new Promise(async (resolve, reject) => {
             // TODO: Handle undefined exceptions whens screen not found
             await this.detectScreens();
@@ -69,6 +69,7 @@ export default class SlaveFlowHandler {
     private async detectScreens() {
         const cameraOverlay = new CameraOverlay();
         const ctx = cameraOverlay.elem.getContext("2d");
+        ctx.clearRect(0, 0, cameraOverlay.width, cameraOverlay.height);
 
         this.slaveIDs = client.slaves.length === 0 ? [] : [...client.slaves];
         for (let i = 0; i < this.slaveIDs.length; i++) {

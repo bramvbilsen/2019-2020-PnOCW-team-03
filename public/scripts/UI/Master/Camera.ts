@@ -3,6 +3,7 @@ import { createCanvas } from "../../image_processing/screen_detection/screen_det
 import { CameraOverlay } from "./cameraOverlays";
 import HtmlElem from "./HtmlElem";
 import convert from "color-convert";
+import { getCentroidOf } from "../../util/shapes";
 const deltaE = require("delta-e");
 
 export class Camera extends HtmlElem {
@@ -681,7 +682,11 @@ export class Camera extends HtmlElem {
         return filtered;
     }
 
-    findCornersInPOI(previousCenter: Point, cornerAreas: Array<Point[]>) {
+    findCornersInPOI(
+        previousCenter: Point,
+        cornerAreas: Array<Point[]>,
+        acceptanceRadius: number
+    ) {
         const corners: Point[] = [];
         cornerAreas.forEach((area) => {
             let maxDist = 0;
@@ -697,6 +702,12 @@ export class Camera extends HtmlElem {
                 corners.push(point);
             }
         });
-        return corners;
+        if (
+            getCentroidOf(corners).distanceTo(previousCenter) < acceptanceRadius
+        ) {
+            return [];
+        } else {
+            return corners;
+        }
     }
 }

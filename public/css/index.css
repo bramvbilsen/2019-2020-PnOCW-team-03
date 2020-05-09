@@ -152,6 +152,15 @@ img {
     z-index: -2;
 }
 
+#detection-colors {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: -2;
+}
+
 #pink-color {
     width: 100vw;
     height: 100vh;
@@ -501,6 +510,10 @@ h4 {
 #confirmButton:focus {
     background-color: rgba(0, 0, 0, 0.25);
     outline: none;
+}
+
+#trackingBackButton {
+    display: none;
 }
 
 #settingsButtonIcon {

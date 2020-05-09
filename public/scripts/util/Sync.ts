@@ -34,31 +34,5 @@ export default class Sync {
 
         // 3) Remove first in
         if (this._offsets.length > 10) this._offsets.pop();
-
-        // 4) Post test results
-        this.postTestResults(300);
     };
-
-    private postTestResults(nbIterations: number) {
-        if (this.avgTestResults.length <= nbIterations) {
-            //console.log(this.avgTestResults.length);
-            this.avgTestResults.push(this.timeDiff);
-        } else if (!this._finishedTest) {
-            this._finishedTest = true;
-            const stringifiedResults = JSON.stringify(this.avgTestResults);
-            //console.log(stringifiedResults);
-            $.ajax({
-                url: env.baseUrl + "/sync_test_result",
-                dataType: "json",
-                contentType: "application/json;charset=utf-8",
-                type: "POST",
-                data: stringifiedResults,
-                success: function(msg) {
-                    if (msg != null) {
-                        return msg.URL;
-                    }
-                },
-            });
-        }
-    }
 }

@@ -3,6 +3,7 @@ import MiddlePoint from "../image_processing/Triangulation/MiddlePoint";
 import Point from "../image_processing/screen_detection/Point";
 import p5 from "p5";
 import { client } from "../../index";
+import { matrixMultiplication3x3 } from "../util/matrix";
 
 const linSystem = require("linear-equation-system");
 
@@ -17,8 +18,8 @@ interface SrcPoints {
 }
 
 export default class ClientStorage {
-    boundingBoxWidth: number;
-    boundingBoxHeight: number;
+    originalBoundingBoxWidth: number;
+    originalBoundingBoxHeight: number;
     matrix3d: string;
     srcPoints: SrcPoints;
     triangulation: {
@@ -85,8 +86,8 @@ export default class ClientStorage {
             const fps = 30;
             p.frameRate(fps);
             const p5Canvas = p.createCanvas(
-                this.boundingBoxWidth,
-                this.boundingBoxHeight
+                this.originalBoundingBoxWidth,
+                this.originalBoundingBoxHeight
             );
             p5Canvas.id("animation");
             const htmlcanvas = document.getElementById("animation");
@@ -163,12 +164,21 @@ export default class ClientStorage {
         boundingBoxHeight: number,
         begin: SrcPoints
     ) {
+        if (!this.originalBoundingBoxWidth) {
+            this.originalBoundingBoxHeight = boundingBoxHeight;
+            this.originalBoundingBoxWidth = boundingBoxWidth;
+        }
         console.log("boundingbox new data");
         console.log(boundingBoxWidth);
         console.log(boundingBoxHeight);
-        this.boundingBoxHeight = boundingBoxHeight;
-        this.boundingBoxWidth = boundingBoxWidth;
-        this.matrix3d = this.perspectiveMatrix(begin);
+        const yScale = boundingBoxHeight / this.originalBoundingBoxHeight;
+        const xScale = boundingBoxWidth / this.originalBoundingBoxWidth;
+        const perspectiveMatrixRes = this.perspectiveMatrix(
+            begin,
+            xScale || 1,
+            yScale || 1
+        );
+        this.matrix3d = perspectiveMatrixRes;
         this.srcPoints = begin;
         const perspectiveElements = <HTMLCollectionOf<HTMLElement>>(
             document.getElementsByClassName("perspective")
@@ -202,7 +212,12 @@ export default class ClientStorage {
      * Calculates and returns the perspective matrix for the given data.
      * @param begin A SrcPoints instantiation holding the four corner points.
      */
-    perspectiveMatrix(begin: SrcPoints) {
+    perspectiveMatrix(
+        begin: SrcPoints,
+        extraScaleX: number,
+        extraScaleY: number
+    ) {
+        const scaleMatrix = [extraScaleX, 0, 0, 0, extraScaleY, 0, 0, 0, 1];
         console.log(this.srcPoints);
         console.log(begin);
         let x0 = begin.LeftUp.x;
@@ -240,42 +255,20 @@ export default class ClientStorage {
         let matrix3d: string;
 
         if (h[0] != undefined) {
-            matrix3d =
-                "matrix3d( " +
-                h[0] +
-                ", " +
-                h[3] +
-                ", " +
-                0 +
-                ", " +
-                h[6] +
-                ", " +
-                h[1] +
-                ", " +
-                h[4] +
-                ", " +
-                0 +
-                ", " +
-                h[7] +
-                ", " +
-                0 +
-                ", " +
-                0 +
-                ", " +
-                1 +
-                ", " +
-                0 +
-                ", " +
-                h[2] +
-                ", " +
-                h[5] +
-                ", " +
-                0 +
-                ", " +
-                1 +
-                " )";
+            h = [
+                h[0] * scaleMatrix[0],
+                h[1] * scaleMatrix[4],
+                h[2],
+                h[3] * scaleMatrix[0],
+                h[4] * scaleMatrix[4],
+                h[5],
+                h[6] * scaleMatrix[0],
+                h[7] * scaleMatrix[4],
+                1,
+            ];
         } else {
-            let angle = -(Math.atan2(y1 - y0, x1 - x0) * 180) / Math.PI;
+            console.log("POWER RANGERS");
+            let angle = -Math.atan2(y1 - y0, x1 - x0);
 
             let sumX = x0 + x1 + x2 + x3;
             let sumY = y0 + y1 + y2 + y3;
@@ -298,26 +291,72 @@ export default class ClientStorage {
             console.log(tryy);
 
             console.log(angle);
-            matrix3d =
-                "translate( " +
-                window.innerWidth / 2 +
-                "px," +
-                window.innerHeight / 2 +
-                "px)" +
-                "rotate( " +
-                angle +
-                "deg ) " +
-                "translate( " +
-                trx +
-                "px," +
-                tryy +
-                "px)" +
-                "scale( " +
-                ratiox +
-                "," +
-                ratioy +
-                " ) ";
+
+            const s = [ratiox, 0, 0, 0, ratioy, 0, 0, 0, 1];
+            const t1 = [1, 0, trx, 0, 1, tryy, 0, 0, 1];
+            const r = [
+                Math.cos(angle),
+                -Math.sin(angle),
+                0,
+                Math.sin(angle),
+                Math.cos(angle),
+                0,
+                0,
+                0,
+                1,
+            ];
+            const t2 = [
+                1,
+                0,
+                window.innerWidth / 2,
+                0,
+                1,
+                window.innerHeight / 2,
+                0,
+                0,
+                1,
+            ];
+
+            h = matrixMultiplication3x3(t1, s);
+            h = matrixMultiplication3x3(r, h);
+            h = matrixMultiplication3x3(t2, h);
+            h = matrixMultiplication3x3(h, scaleMatrix);
         }
+
+        matrix3d =
+            "matrix3d( " +
+            h[0] +
+            ", " +
+            h[3] +
+            ", " +
+            0 +
+            ", " +
+            h[6] +
+            ", " +
+            h[1] +
+            ", " +
+            h[4] +
+            ", " +
+            0 +
+            ", " +
+            h[7] +
+            ", " +
+            0 +
+            ", " +
+            0 +
+            ", " +
+            1 +
+            ", " +
+            0 +
+            ", " +
+            h[2] +
+            ", " +
+            h[5] +
+            ", " +
+            0 +
+            ", " +
+            1 +
+            " )";
 
         console.log(matrix3d);
 

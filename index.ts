@@ -45,20 +45,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(compression());
 
-app.post("/sync_test_result", (req, res) => {
-    const testResults: number[] = req.body;
-    createCSV({
-        fileName: "Sync_test",
-        columnNames: ["Iteration", "Offset"],
-        columnDatas: [
-            Array(testResults.length)
-                .fill(0)
-                .map((_, i) => i),
-            testResults,
-        ],
-    });
-});
-
 app.get("/", (req, res) => {
     res.sendFile(path.resolve(htmlFolder + "/index.html"));
 });
