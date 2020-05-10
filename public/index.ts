@@ -10,7 +10,7 @@ import createTriangulationCanvas from "./scripts/image_processing/Triangulation/
 import { Camera } from "./scripts/UI/Master/Camera";
 import { ScreenTracker } from "./scripts/tracking/tracking";
 import { CameraOverlay } from "./scripts/UI/Master/cameraOverlays";
-import { foundMostOuterScreensPoints } from "./scripts/util/shapes";
+import { findMostOuterScreensPoints } from "./scripts/util/shapes";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -154,8 +154,12 @@ export function resetMaster() {
                 $("#track-slaves-button")
                     .off()
                     .on("click", async () => {
-                        // const pointsToTrack = foundMostOuterScreensPoints(slaveFlowHandler.screens);
-                        const screenToTrack = slaveFlowHandler.screens[0];
+                        const {
+                            corners: pointsToTrack,
+                            ids,
+                        } = findMostOuterScreensPoints(
+                            slaveFlowHandler.screens
+                        );
                         const ctx = new CameraOverlay().elem.getContext("2d");
                         ctx.clearRect(
                             0,
@@ -167,27 +171,32 @@ export function resetMaster() {
                         ctx.fillRect(0, 0, camera.videoWidth, 30);
                         ctx.fillStyle = "white";
                         ctx.fillText(
-                            "Match the tracking screen to its original corners and press the red button.",
+                            "Go to you original position and press the red button.",
                             20,
                             20
                         );
                         ctx.fillStyle = "red";
-                        screenToTrack.corners.forEach((c) => {
+                        [
+                            pointsToTrack.LeftUp,
+                            pointsToTrack.RightUp,
+                            pointsToTrack.RightUnder,
+                            pointsToTrack.LeftUnder,
+                        ].forEach((c) => {
                             ctx.beginPath();
                             ctx.arc(c.x, c.y, 10, 0, 2 * Math.PI);
                             ctx.closePath();
                             ctx.fill();
                         });
-                        const {
-                            crossRatio,
-                        } = await client.requestTrackingScreen(
-                            screenToTrack.slaveID
+
+                        const crossRatios = await client.requestTrackingScreen(
+                            ids
                         );
-                        const tracker = new ScreenTracker(
-                            camera,
-                            screenToTrack,
-                            crossRatio
-                        );
+                        const tracker = new ScreenTracker(camera, [
+                            pointsToTrack.LeftUp,
+                            pointsToTrack.RightUp,
+                            pointsToTrack.RightUnder,
+                            pointsToTrack.LeftUnder,
+                        ]);
                         $("#cameraContainer").css("display", "");
                         $("#confirmButton").css("display", "");
                         $("#trackingBackButton").css("display", "inline-block");
@@ -206,7 +215,20 @@ export function resetMaster() {
                             .off()
                             .on("click", async () => {
                                 $("#confirmButton").css("display", "none");
-                                tracker.track();
+                                tracker.track(crossRatios, [
+                                    slaveFlowHandler.screens.find(
+                                        (s) => s.slaveID == ids.LeftUp
+                                    ),
+                                    slaveFlowHandler.screens.find(
+                                        (s) => s.slaveID == ids.RightUp
+                                    ),
+                                    slaveFlowHandler.screens.find(
+                                        (s) => s.slaveID == ids.RightUnder
+                                    ),
+                                    slaveFlowHandler.screens.find(
+                                        (s) => s.slaveID == ids.LeftUnder
+                                    ),
+                                ]);
                             });
                     });
 

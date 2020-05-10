@@ -1012,79 +1012,146 @@ class Client {
         });
     };
 
-    public requestTrackingScreen = (
-        slaveID: String
-    ): Promise<{ edgeRatio: number; crossRatio: number }> => {
+    public requestTrackingScreen = (iDnCorners: {
+        LeftUp: string;
+        RightUp: string;
+        RightUnder: string;
+        LeftUnder: string;
+    }): Promise<number[]> => {
         return new Promise((resolve, reject) => {
             this._socket.on(
                 MasterEventTypes.ConfirmedTrackingScreen,
-                (msg: { edgeRatio: number; crossRatio: number }) => {
+                (msg: { crossRatios: number[] }) => {
                     this._socket.off(MasterEventTypes.ConfirmedTrackingScreen);
-                    resolve({
-                        edgeRatio: msg.edgeRatio,
-                        crossRatio: msg.crossRatio,
-                    });
+                    resolve(msg.crossRatios);
                 }
             );
-            this._socket.emit(MasterEventTypes.RequestTrackingScreen, {
-                slaveID,
-            });
+            this._socket.emit(
+                MasterEventTypes.RequestTrackingScreen,
+                iDnCorners
+            );
         });
     };
 
-    public displayTrackingWindow = () => {
+    public displayTrackingWindow = (msg: {
+        location: "LeftUp" | "RightUp" | "LeftUnder" | "RightUnder";
+    }) => {
+        console.log("Displaying " + msg.location + " circle");
         requestAnimationFrame(() => {
-            this.hideAllSlaveLayers();
             const trackingContainer = document.getElementById(
                 "tracking-container-slave"
             );
             while (trackingContainer.firstChild) {
                 trackingContainer.removeChild(trackingContainer.lastChild);
             }
+
+            const circleDiagRatio = 0.49;
+
+            let circleCenter: Point;
+            let radius: number;
+            let crossRatio: number;
+            let c: Point = new Point(innerWidth / 2, innerHeight / 2);
+            if (msg.location == "LeftUp") {
+                circleCenter = new Point(
+                    innerWidth * circleDiagRatio,
+                    innerHeight * circleDiagRatio
+                );
+                const a = new Point(0, 0);
+                const b = circleCenter;
+                const d = new Point(innerWidth, innerHeight);
+                const acLength = a.distanceTo(c);
+                const bdLength = b.distanceTo(d);
+                const bcLength = b.distanceTo(c);
+                const adLength = a.distanceTo(d);
+                radius = Math.min(
+                    b.distanceTo(new Point(0, b.y)),
+                    b.distanceTo(new Point(b.x, 0))
+                );
+                crossRatio = (acLength * bdLength) / (bcLength * adLength);
+            } else if (msg.location == "RightUp") {
+                circleCenter = new Point(
+                    innerWidth * (1 - circleDiagRatio),
+                    innerHeight * circleDiagRatio
+                );
+                const a = new Point(innerWidth, 0);
+                const b = circleCenter;
+                const d = new Point(0, innerHeight);
+                const acLength = a.distanceTo(c);
+                const bdLength = b.distanceTo(d);
+                const bcLength = b.distanceTo(c);
+                const adLength = a.distanceTo(d);
+                radius = Math.min(
+                    b.distanceTo(new Point(innerWidth, b.y)),
+                    b.distanceTo(new Point(b.x, 0))
+                );
+                crossRatio = (acLength * bdLength) / (bcLength * adLength);
+            } else if (msg.location == "RightUnder") {
+                circleCenter = new Point(
+                    innerWidth * (1 - circleDiagRatio),
+                    innerHeight * (1 - circleDiagRatio)
+                );
+                const a = new Point(innerWidth, innerHeight);
+                const b = circleCenter;
+                const d = new Point(0, 0);
+                const acLength = a.distanceTo(c);
+                const bdLength = b.distanceTo(d);
+                const bcLength = b.distanceTo(c);
+                const adLength = a.distanceTo(d);
+                radius = Math.min(
+                    b.distanceTo(new Point(innerWidth, b.y)),
+                    b.distanceTo(new Point(b.x, innerHeight))
+                );
+                crossRatio = (acLength * bdLength) / (bcLength * adLength);
+            } else {
+                circleCenter = new Point(
+                    innerWidth * circleDiagRatio,
+                    innerHeight * (1 - circleDiagRatio)
+                );
+                const a = new Point(0, innerHeight);
+                const b = circleCenter;
+                const d = new Point(innerWidth, 0);
+                const acLength = a.distanceTo(c);
+                const bdLength = b.distanceTo(d);
+                const bcLength = b.distanceTo(c);
+                const adLength = a.distanceTo(d);
+                radius = Math.min(
+                    b.distanceTo(new Point(0, b.y)),
+                    b.distanceTo(new Point(b.x, innerHeight))
+                );
+                crossRatio = (acLength * bdLength) / (bcLength * adLength);
+            }
+
             const canvas = createCanvas(innerWidth, innerHeight);
             const ctx = canvas.getContext("2d");
             ctx.fillStyle = "rgb(0, 26.07, 0)";
-            ctx.fillRect(0, 0, innerWidth, innerHeight);
+            ctx.beginPath();
+            ctx.arc(circleCenter.x, circleCenter.y, radius, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.fill();
             ctx.fillStyle = "rgb(255, 108, 255)";
-            const centerX = Math.round(innerWidth / 2);
-            const centerY = Math.round(innerHeight / 2);
-            const trackingRectWidth = Math.round(innerWidth * 0.85);
-            const trackingRectHeight = Math.round(innerHeight * 0.85);
-            ctx.fillRect(
-                centerX - Math.round(trackingRectWidth / 2),
-                centerY - Math.round(trackingRectHeight / 2),
-                trackingRectWidth,
-                trackingRectHeight
+            ctx.beginPath();
+            ctx.arc(
+                circleCenter.x,
+                circleCenter.y,
+                radius * 0.95,
+                0,
+                2 * Math.PI
             );
+            ctx.closePath();
+            ctx.fill();
+
             trackingContainer.appendChild(canvas);
             this.hideAllSlaveLayers();
             this.moveToForeground("tracking-container-slave");
-            const edgeDiagonalWidth = (innerWidth - trackingRectWidth) / 2;
-            const edgeDiagonalHeight = (innerHeight - trackingRectHeight) / 2;
-            const edgeDiagonalLength = Math.sqrt(
-                edgeDiagonalWidth * edgeDiagonalWidth +
-                    edgeDiagonalHeight * edgeDiagonalHeight
-            );
-            const screenDiagonalLength = Math.sqrt(
-                innerWidth * innerWidth + innerHeight * innerHeight
-            );
-            const halfScreenDiagonalLength = screenDiagonalLength / 2;
-            const trackingRectDiagonalLength =
-                halfScreenDiagonalLength - edgeDiagonalLength;
-            const trackingCornerToFurthestScreenCorner =
-                screenDiagonalLength - edgeDiagonalLength;
 
-            const crossRatio =
-                (halfScreenDiagonalLength *
-                    trackingCornerToFurthestScreenCorner) /
-                (trackingRectDiagonalLength * screenDiagonalLength);
+            console.log("Cross Ratio: " + crossRatio);
 
-            const edgeRatio = edgeDiagonalLength / halfScreenDiagonalLength;
             requestAnimationFrame(() => {
                 setTimeout(() => {
+                    const resp = {};
                     this._socket.emit(SlaveEventTypes.DisplayedTrackingScreen, {
-                        edgeRatio,
                         crossRatio,
+                        cornerLocation: msg.location,
                     });
                 }, 1000);
             });

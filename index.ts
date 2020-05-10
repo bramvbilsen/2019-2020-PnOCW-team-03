@@ -61,6 +61,8 @@ const multerSlaveImageType = multer().single("image");
 app.post("/slaveImg", multerSlaveImageType, handleImageUpload);
 
 let slaveIDsToConfirmOrientation: Set<string> = new Set();
+let slaveIDsToConfirmTracking: Set<String> = new Set();
+let trackingResponses: number[] = [null, null, null, null];
 
 io.on("connect", (socket: socketio.Socket) => {
     connections.add(socket);
@@ -130,21 +132,58 @@ io.on("connect", (socket: socketio.Socket) => {
 
     socket.on(
         MasterEventTypes.RequestTrackingScreen,
-        (msg: { slaveID: string }) => {
-            console.log("Requesting " + msg.slaveID + " for tracking!");
+        (msg: {
+            LeftUp: string;
+            RightUp: string;
+            RightUnder: string;
+            LeftUnder: string;
+        }) => {
+            console.log("Request for tracking!");
+            slaveIDsToConfirmTracking = new Set([
+                msg.LeftUp,
+                msg.RightUp,
+                msg.RightUnder,
+                msg.LeftUnder,
+            ]);
             if (socket.id === connections.master.id) {
-                socket
-                    .to(msg.slaveID)
-                    .emit(SlaveEventTypes.DisplayTrackingScreen, msg);
+                for (let [location, id] of Object.entries(msg)) {
+                    socket.to(id).emit(SlaveEventTypes.DisplayTrackingScreen, {
+                        location,
+                    });
+                }
             }
         }
     );
-    socket.on(SlaveEventTypes.DisplayedTrackingScreen, (msg) => {
-        console.log("Confirming tracking display!");
-        socket
-            .to(connections.master.id)
-            .emit(MasterEventTypes.ConfirmedTrackingScreen, msg);
-    });
+    socket.on(
+        SlaveEventTypes.DisplayedTrackingScreen,
+        (msg: { crossRatio: number; cornerLocation: string }) => {
+            console.log("Confirming tracking display!");
+            slaveIDsToConfirmTracking.delete(socket.id);
+            if (msg.cornerLocation == "LeftUp") {
+                trackingResponses[0] = msg.crossRatio;
+            } else if (msg.cornerLocation == "RightUp") {
+                trackingResponses[1] = msg.crossRatio;
+            } else if (msg.cornerLocation == "RightUnder") {
+                trackingResponses[2] = msg.crossRatio;
+            } else {
+                trackingResponses[3] = msg.crossRatio;
+            }
+            if (
+                trackingResponses[0] != null &&
+                trackingResponses[1] != null &&
+                trackingResponses[2] != null &&
+                trackingResponses[3] != null
+            ) {
+                console.log("Track confirmed");
+                socket
+                    .to(connections.master.id)
+                    .emit(MasterEventTypes.ConfirmedTrackingScreen, {
+                        crossRatios: trackingResponses,
+                    });
+                trackingResponses = [null, null, null, null];
+            }
+        }
+    );
 
     slaveBackgroundListeners(socket);
 

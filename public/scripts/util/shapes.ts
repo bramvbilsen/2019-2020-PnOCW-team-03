@@ -104,12 +104,13 @@ export function sortCorners(
     };
 }
 
-export function foundMostOuterScreensPoints(screens: SlaveScreen[]) {
+export function findMostOuterScreensPoints(screens: SlaveScreen[]) {
     const boundingBox = new BoundingBox(
         flattenOneLevel(screens.map((screen) => screen.corners))
     );
     const center = boundingBox.centroid;
     const sC0 = screens[0].sortedCorners;
+    const id0 = screens[0].slaveID;
     const corners: {
         LeftUp: Point;
         RightUp: Point;
@@ -121,28 +122,44 @@ export function foundMostOuterScreensPoints(screens: SlaveScreen[]) {
         RightUnder: sC0.RightUnder,
         LeftUnder: sC0.LeftUnder,
     };
+    const ids: {
+        LeftUp: string;
+        RightUp: string;
+        RightUnder: string;
+        LeftUnder: string;
+    } = {
+        LeftUp: id0,
+        RightUp: id0,
+        RightUnder: id0,
+        LeftUnder: id0,
+    };
     for (let i = 1; i < screens.length; i++) {
         const sC = screens[i].sortedCorners;
-        if (center.distanceTo(sC.LeftUp) < center.distanceTo(corners.LeftUp)) {
+        const id = screens[i].slaveID;
+        if (center.distanceTo(sC.LeftUp) > center.distanceTo(corners.LeftUp)) {
             corners.LeftUp = sC.LeftUp;
+            ids.LeftUp = id;
         }
         if (
-            center.distanceTo(sC.RightUp) < center.distanceTo(corners.RightUp)
+            center.distanceTo(sC.RightUp) > center.distanceTo(corners.RightUp)
         ) {
             corners.RightUp = sC.RightUp;
+            ids.RightUp = id;
         }
         if (
-            center.distanceTo(sC.RightUnder) <
+            center.distanceTo(sC.RightUnder) >
             center.distanceTo(corners.RightUnder)
         ) {
             corners.RightUnder = sC.RightUnder;
+            ids.RightUnder = id;
         }
         if (
-            center.distanceTo(sC.LeftUnder) <
+            center.distanceTo(sC.LeftUnder) >
             center.distanceTo(corners.LeftUnder)
         ) {
             corners.LeftUnder = sC.LeftUnder;
+            ids.LeftUnder = id;
         }
     }
-    return corners;
+    return { corners, ids };
 }

@@ -7,17 +7,12 @@ import { slaveFlowHandler, client } from "../../index";
 import { lusolve } from "mathjs";
 import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
-import Line from "../image_processing/screen_detection/Line";
-
-const linSystem = require("linear-equation-system");
 
 export class ScreenTracker {
     stopTracking = false;
     scale: number;
     ctx: CanvasRenderingContext2D;
     camera: Camera;
-    screen: SlaveScreen;
-    crossRatio: number;
     originalCorners: Point[] = [];
     prevCorners: Point[] = [];
     corners: Point[] = [];
@@ -25,17 +20,11 @@ export class ScreenTracker {
     originalScreens: SlaveScreen[];
     timeSinceLastEmit: number = 0;
 
-    constructor(
-        camera: Camera,
-        screen: SlaveScreen,
-        crossRatio: number,
-        scale?: number
-    ) {
+    constructor(camera: Camera, originalCorners: Point[], scale?: number) {
         this.scale = scale || 0.2;
         this.ctx = new CameraOverlay().elem.getContext("2d");
         this.camera = camera;
-        this.screen = screen;
-        this.crossRatio = crossRatio;
+        this.originalCorners = originalCorners;
         this.originalScreens = slaveFlowHandler.screens.map((s) => s.copy());
     }
 
@@ -79,7 +68,7 @@ export class ScreenTracker {
         searchRadius: number,
         color = "red"
     ) {
-        const size = 5;
+        const size = 3;
         const ctx = this.ctx;
         ctx.fillStyle = color;
         ctx.strokeStyle = "blue";
@@ -146,7 +135,6 @@ export class ScreenTracker {
 
         this.matrix = [row1, row2, row3, row4, row5, row6, row7, row8];
         const h: number[] = <number[]>lusolve(this.matrix, c);
-        console.log(h);
         return h;
     }
 
@@ -166,7 +154,6 @@ export class ScreenTracker {
                 const x = corner.x;
                 const y = corner.y;
                 const div = matrix[6] * x + matrix[7] * y + 1;
-                console.log("K: " + div);
                 let newX =
                     (matrix[0] * x + matrix[1] * y + matrix[2] * 1) / div;
                 let newY =
@@ -188,12 +175,7 @@ export class ScreenTracker {
         }
 
         if (needsToSendData) {
-            const screensToSendTo: SlaveScreen[] = [];
-            updatedScreens.forEach((s) => {
-                if (s.slaveID != this.screen.slaveID) {
-                    screensToSendTo.push(s);
-                }
-            });
+            const screensToSendTo: SlaveScreen[] = updatedScreens;
             const boundingBox = new BoundingBox(
                 flattenOneLevel(
                     screensToSendTo.map((screen, i) => screen.corners)
@@ -229,61 +211,59 @@ export class ScreenTracker {
         }
     }
 
-    track() {
+    track(crossRatios: number[], screensForCrossRatios: SlaveScreen[]) {
         const cameraWidth = this.camera.videoWidth;
         const cameraHeight = this.camera.videoHeight;
         const ctx = this.ctx;
         ctx.clearRect(0, 0, cameraWidth, cameraHeight);
-        let prevCenter = this.screen.centroid.copy();
+        let prevCenter = getCentroidOf(this.originalCorners);
         this.corners = [
-            this.screen.actualCorners.LeftUp.copy(),
-            this.screen.actualCorners.RightUp.copy(),
-            this.screen.actualCorners.RightUnder.copy(),
-            this.screen.actualCorners.LeftUnder.copy(),
+            this.originalCorners[0].copy(),
+            this.originalCorners[1].copy(),
+            this.originalCorners[2].copy(),
+            this.originalCorners[3].copy(),
         ];
-        // this.drawScreen(this.corners, prevCenter, 0, "green");
+
         const cornerTranslationInfo = [
             [
-                this.screen.actualCorners.LeftUp.distanceTo(
-                    this.screen.actualCorners.RightUnder
+                this.corners[0].distanceTo(
+                    screensForCrossRatios[0].actualCorners.RightUnder
                 ),
-                prevCenter.distanceTo(this.screen.actualCorners.LeftUp),
+                screensForCrossRatios[0].centroid.distanceTo(this.corners[0]),
             ],
             [
-                this.screen.actualCorners.RightUp.distanceTo(
-                    this.screen.actualCorners.LeftUnder
+                this.corners[1].distanceTo(
+                    screensForCrossRatios[1].actualCorners.LeftUnder
                 ),
-                prevCenter.distanceTo(this.screen.actualCorners.RightUp),
+                screensForCrossRatios[1].centroid.distanceTo(this.corners[1]),
             ],
             [
-                this.screen.actualCorners.RightUnder.distanceTo(
-                    this.screen.actualCorners.LeftUp
+                this.corners[2].distanceTo(
+                    screensForCrossRatios[2].actualCorners.LeftUp
                 ),
-                prevCenter.distanceTo(this.screen.actualCorners.RightUnder),
+                screensForCrossRatios[2].centroid.distanceTo(this.corners[2]),
             ],
             [
-                this.screen.actualCorners.LeftUnder.distanceTo(
-                    this.screen.actualCorners.RightUp
+                this.corners[3].distanceTo(
+                    screensForCrossRatios[3].actualCorners.RightUp
                 ),
-                prevCenter.distanceTo(this.screen.actualCorners.LeftUnder),
+                screensForCrossRatios[3].centroid.distanceTo(this.corners[3]),
             ],
         ];
+        this.originalCorners.length = 0;
         for (let i = 0; i < this.corners.length; i++) {
+            const crossRatio = crossRatios[i];
             const corner = this.corners[i];
             const info = cornerTranslationInfo[i];
             const diagonalLength = info[0];
             const distToCenter = info[1];
             const borderDiagonalLength =
-                (diagonalLength * distToCenter * (this.crossRatio - 1)) /
-                (this.crossRatio * diagonalLength - distToCenter);
+                (diagonalLength * distToCenter * (crossRatio - 1)) /
+                (crossRatio * diagonalLength - distToCenter);
 
-            const toCenterVector = new Point(
-                prevCenter.x - corner.x,
-                prevCenter.y - corner.y
-            );
             const directionVectorToCenter = new Point(
-                toCenterVector.x / distToCenter,
-                toCenterVector.y / distToCenter
+                (screensForCrossRatios[i].centroid.x - corner.x) / distToCenter,
+                (screensForCrossRatios[i].centroid.y - corner.y) / distToCenter
             );
             this.corners[i] = new Point(
                 corner.x + directionVectorToCenter.x * borderDiagonalLength,
@@ -291,12 +271,6 @@ export class ScreenTracker {
             );
             this.originalCorners.push(this.corners[i].copy());
         }
-
-        let cornerSearchRadius =
-            (this.findShortestSideLength(this.corners) / 2) * 1;
-        let newCornersAcceptanceRadius = cornerSearchRadius * 0.05;
-
-        this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
 
         const trackStep = () => {
             const startT = Date.now();
@@ -315,28 +289,24 @@ export class ScreenTracker {
                 return;
             }
             this.updatePrevCorners();
-            const scaledPrevCenter = new Point(
-                Math.round(prevCenter.x * this.scale),
-                Math.round(prevCenter.y * this.scale)
-            );
-            const edgePixels = this.camera.findEdgesByColorChanges(
-                scaledPrevCenter,
-                frameImgData
-            );
-            // ctx.fillStyle = "green";
-            // edgePixels.forEach((p) => {
-            //     ctx.fillRect(p.x / this.scale, p.y / this.scale, 5, 5);
-            // });
-            const cornerAreas = this.camera.getAreasOfInterestAroundCorners(
-                edgePixels,
-                this.corners.map(
-                    (c) => new Point(c.x * this.scale, c.y * this.scale)
-                ),
-                cornerSearchRadius * this.scale
-            );
-            ctx.fillStyle = "blue";
-            cornerAreas.forEach((area) => {
-                area.forEach((p) => {
+            const newCorners: Point[] = [];
+            // This loops is the only place for scaled points.
+            for (let i = 0; i < this.corners.length; i++) {
+                const corner = this.corners[i];
+                const scaledCorner = new Point(
+                    corner.x * this.scale,
+                    corner.y * this.scale
+                );
+                const edgePixels = this.camera.findEdgesByColorChanges(
+                    scaledCorner,
+                    frameImgData
+                );
+                let x = 0;
+                let y = 0;
+                ctx.fillStyle = "blue";
+                edgePixels.forEach((p) => {
+                    x += p.x;
+                    y += p.y;
                     ctx.fillRect(
                         p.x / this.scale,
                         p.y / this.scale,
@@ -344,24 +314,13 @@ export class ScreenTracker {
                         1 / this.scale
                     );
                 });
-            });
-            const newCorners = this.camera
-                .findCornersInPOI(
-                    scaledPrevCenter,
-                    cornerAreas,
-                    newCornersAcceptanceRadius
-                )
-                .map((c) => new Point(c.x / this.scale, c.y / this.scale));
-            if (newCorners.length != 0) {
-                this.corners = newCorners;
+                x /= edgePixels.length;
+                y /= edgePixels.length;
+                newCorners.push(new Point(x / this.scale, y / this.scale));
             }
-            // this.corners = this.camera
-            //     .findCornersInPOI(scaledPrevCenter, cornerAreas)
-            //     .map((c) => new Point(c.x / this.scale, c.y / this.scale));
+            this.corners = newCorners;
             prevCenter = getCentroidOf(this.corners);
-            cornerSearchRadius =
-                (this.findShortestSideLength(this.corners) / 2) * 1;
-            this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
+            this.drawCorners(this.corners, "green");
             this.WHOOPWHOOP(this.calcPerspectiveMatrix());
             ctx.fillStyle = "red";
             ctx.fillText("Frame took: " + (Date.now() - startT) + "ms", 50, 50);

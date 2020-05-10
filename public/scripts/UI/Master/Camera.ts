@@ -616,9 +616,9 @@ export class Camera extends HtmlElem {
         const pixels = imgData.data;
         const edgePoints: Point[] = [];
         const step = 1;
-        const colorThreshold = 7;
+        const colorThreshold = 7 * 1;
         const centerI = center.y * (imgData.width * 4) + center.x * 4;
-        for (let deg = 0; deg < 360; deg += 1) {
+        for (let deg = 0; deg < 360; deg += 5) {
             const rads = (deg * Math.PI) / 180;
             let searchingColorChange = true;
             let dist = step;
@@ -649,10 +649,21 @@ export class Camera extends HtmlElem {
                     { L: prevColor[0], A: prevColor[1], B: prevColor[2] },
                     { L: color[0], A: color[1], B: color[2] }
                 );
-                if (colorDiff > colorThreshold) {
+                if (
+                    colorDiff != undefined &&
+                    colorDiff != null &&
+                    dist > 1 &&
+                    colorDiff > colorThreshold
+                ) {
+                    if (dist <= 1) {
+                        console.log(colorDiff);
+                    }
                     edgePoints.push(point);
                     searchingColorChange = false;
                 } else {
+                    if (!color) {
+                        console.log("Color: " + color);
+                    }
                     prevColor = color;
                     dist += step;
                 }
@@ -661,53 +672,31 @@ export class Camera extends HtmlElem {
         return edgePoints;
     }
 
-    getAreasOfInterestAroundCorners(
+    getAreaOfInterestAroundCorner(
         edgePoints: Point[],
-        corners: Point[],
+        corner: Point,
         maxCornerRange: number
     ) {
-        const filtered: Array<Point[]> = [];
-        for (let i = 0; i < corners.length; i++) {
-            filtered.push([]);
-        }
+        const filtered: Point[] = [];
         for (let i = 0; i < edgePoints.length; i++) {
             const p = edgePoints[i];
-            for (let j = 0; j < corners.length; j++) {
-                const corner = corners[j];
-                if (p.distanceTo(corner) <= maxCornerRange) {
-                    filtered[j].push(p);
-                }
+            if (p.distanceTo(corner) <= maxCornerRange) {
+                filtered.push(p);
             }
         }
         return filtered;
     }
 
-    findCornersInPOI(
-        previousCenter: Point,
-        cornerAreas: Array<Point[]>,
-        acceptanceRadius: number
-    ) {
-        const corners: Point[] = [];
-        cornerAreas.forEach((area) => {
-            let maxDist = 0;
-            let point: Point;
-            area.forEach((p) => {
-                const dist = p.distanceSq(previousCenter);
-                if (dist > maxDist) {
-                    maxDist = dist;
-                    point = p;
-                }
-            });
-            if (point) {
-                corners.push(point);
+    findCornerInPOI(previousCenter: Point, cornerArea: Point[]) {
+        let maxDist = 0;
+        let point: Point;
+        cornerArea.forEach((p) => {
+            const dist = p.distanceSq(previousCenter);
+            if (dist > maxDist) {
+                maxDist = dist;
+                point = p;
             }
         });
-        if (
-            getCentroidOf(corners).distanceTo(previousCenter) < acceptanceRadius
-        ) {
-            return [];
-        } else {
-            return corners;
-        }
+        return point;
     }
 }

@@ -311,7 +311,7 @@ export default class SlaveFlowHandler {
                 sendData.point,
                 sendData.ID
             );
-            console.log("sendata = " + sendData.triang);
+            // console.log("sendata = " + sendData.triang);
             client.animation.middlePoints.push(
                 new MiddlePoint(sendData.middlePoint, sendData.triang)
             );
