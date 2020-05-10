@@ -114,8 +114,8 @@ export class ScreenTracker {
     }
 
     private calcPerspectiveMatrix() {
-        const originalCorners: Point[] = this.originalCorners;
-        const corners: Point[] = this.corners;
+        let originalCorners: Point[] = this.originalCorners;
+        let corners: Point[] = this.corners;
 
         let x0 = originalCorners[0].x;
         let y0 = originalCorners[0].y;
@@ -294,7 +294,7 @@ export class ScreenTracker {
 
         let cornerSearchRadius =
             (this.findShortestSideLength(this.corners) / 2) * 1;
-        let newCornersAcceptanceRadius = cornerSearchRadius * 0.01;
+        let newCornersAcceptanceRadius = cornerSearchRadius * 0.05;
 
         this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
 

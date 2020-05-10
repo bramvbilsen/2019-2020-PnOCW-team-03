@@ -10,6 +10,7 @@ import createTriangulationCanvas from "./scripts/image_processing/Triangulation/
 import { Camera } from "./scripts/UI/Master/Camera";
 import { ScreenTracker } from "./scripts/tracking/tracking";
 import { CameraOverlay } from "./scripts/UI/Master/cameraOverlays";
+import { foundMostOuterScreensPoints } from "./scripts/util/shapes";
 
 export const client = new Client({
     onConnectionTypeChange: onConnectionTypeChange,
@@ -153,6 +154,7 @@ export function resetMaster() {
                 $("#track-slaves-button")
                     .off()
                     .on("click", async () => {
+                        // const pointsToTrack = foundMostOuterScreensPoints(slaveFlowHandler.screens);
                         const screenToTrack = slaveFlowHandler.screens[0];
                         const ctx = new CameraOverlay().elem.getContext("2d");
                         ctx.clearRect(

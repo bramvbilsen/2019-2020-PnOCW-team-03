@@ -1,4 +1,8 @@
 import Point from "../image_processing/screen_detection/Point";
+import SlaveScreen from "./SlaveScreen";
+import { BoundingBox, BoudingBoxOfSlaveScreens } from "./BoundingBox";
+import { flattenOneLevel } from "./arrays";
+import { IActualCorners } from "../types/Points";
 const { checkIntersection } = require("line-intersect");
 
 /**
@@ -98,4 +102,47 @@ export function sortCorners(
         RightUp,
         RightUnder,
     };
+}
+
+export function foundMostOuterScreensPoints(screens: SlaveScreen[]) {
+    const boundingBox = new BoundingBox(
+        flattenOneLevel(screens.map((screen) => screen.corners))
+    );
+    const center = boundingBox.centroid;
+    const sC0 = screens[0].sortedCorners;
+    const corners: {
+        LeftUp: Point;
+        RightUp: Point;
+        RightUnder: Point;
+        LeftUnder: Point;
+    } = {
+        LeftUp: sC0.LeftUp,
+        RightUp: sC0.RightUp,
+        RightUnder: sC0.RightUnder,
+        LeftUnder: sC0.LeftUnder,
+    };
+    for (let i = 1; i < screens.length; i++) {
+        const sC = screens[i].sortedCorners;
+        if (center.distanceTo(sC.LeftUp) < center.distanceTo(corners.LeftUp)) {
+            corners.LeftUp = sC.LeftUp;
+        }
+        if (
+            center.distanceTo(sC.RightUp) < center.distanceTo(corners.RightUp)
+        ) {
+            corners.RightUp = sC.RightUp;
+        }
+        if (
+            center.distanceTo(sC.RightUnder) <
+            center.distanceTo(corners.RightUnder)
+        ) {
+            corners.RightUnder = sC.RightUnder;
+        }
+        if (
+            center.distanceTo(sC.LeftUnder) <
+            center.distanceTo(corners.LeftUnder)
+        ) {
+            corners.LeftUnder = sC.LeftUnder;
+        }
+    }
+    return corners;
 }
