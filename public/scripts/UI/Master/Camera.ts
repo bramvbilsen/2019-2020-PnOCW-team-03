@@ -618,7 +618,7 @@ export class Camera extends HtmlElem {
         const step = 1;
         const colorThreshold = 7;
         const centerI = center.y * (imgData.width * 4) + center.x * 4;
-        for (let deg = 0; deg < 360; deg += 1) {
+        for (let deg = 0; deg < 360; deg += 0.5) {
             const rads = (deg * Math.PI) / 180;
             let searchingColorChange = true;
             let dist = step;
@@ -645,7 +645,7 @@ export class Camera extends HtmlElem {
                     pixels[i + 1],
                     pixels[i + 2],
                 ]);
-                const colorDiff = deltaE.getDeltaE00(
+                const colorDiff = deltaE.getDeltaE76(
                     { L: prevColor[0], A: prevColor[1], B: prevColor[2] },
                     { L: color[0], A: color[1], B: color[2] }
                 );
@@ -682,32 +682,24 @@ export class Camera extends HtmlElem {
         return filtered;
     }
 
-    findCornersInPOI(
-        previousCenter: Point,
-        cornerAreas: Array<Point[]>,
-        acceptanceRadius: number
-    ) {
+    findCornersInPOI(previousCenter: Point, cornerAreas: Array<Point[]>) {
         const corners: Point[] = [];
-        cornerAreas.forEach((area) => {
+        for (let i = 0; i < cornerAreas.length; i++) {
+            const area = cornerAreas[i];
             let maxDist = 0;
             let point: Point;
-            area.forEach((p) => {
+            for (let j = 0; j < area.length; j++) {
+                const p = area[j];
                 const dist = p.distanceSq(previousCenter);
                 if (dist > maxDist) {
                     maxDist = dist;
                     point = p;
                 }
-            });
+            }
             if (point) {
                 corners.push(point);
             }
-        });
-        if (
-            getCentroidOf(corners).distanceTo(previousCenter) < acceptanceRadius
-        ) {
-            return [];
-        } else {
-            return corners;
         }
+        return corners;
     }
 }

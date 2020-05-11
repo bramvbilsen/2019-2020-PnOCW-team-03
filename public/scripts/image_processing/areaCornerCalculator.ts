@@ -1,5 +1,6 @@
 import Point from "./screen_detection/Point";
 import { Camera } from "../UI/Master/Camera";
+import { filterOnAngle, orientation } from "./screen_detection/hull";
 
 export function findAreaCorners(
     area: Point[],
@@ -19,7 +20,7 @@ export function findAreaCorners(
 
     camera.applyBigGaussianBlur(foundScreenImgData);
     camera.applySharpen(foundScreenImgData);
-    const points = camera.applySobelEdgeFilter(foundScreenImgData);
+    let points = camera.applySobelEdgeFilter(foundScreenImgData);
 
     const xValues = points.map((p) => p.x);
     const yValues = points.map((p) => p.y);
@@ -71,6 +72,72 @@ export function findAreaCorners(
         p2.x + (p1.x - p2.x) / 2,
         p2.y + (p1.y - p2.y) / 2
     );
+
+    // points = points.sort((a, b) => {
+    //     const o = orientation(p1, a, b);
+    //     if (o === 0) return p1.distanceTo(b) >= p1.distanceTo(a) ? -1 : 1;
+    //     return o === 2 ? -1 : 1;
+    // });
+
+    // const distP1CenterP1P2 = p1.distanceTo(centerP1P2);
+
+    // let p3: Point;
+    // let prevDistToP1P2: number;
+    // for (let i = 0; i < points.length; i++) {
+    //     const p = points[i];
+    //     let dist = centerP1P2.distanceTo(p);
+    //     if (dist < distP1CenterP1P2 * 0.1) {
+    //         continue;
+    //     }
+    //     let t =
+    //         ((p.x - p1.x) * (p2.x - p1.x) + (p.y - p1.y) * (p2.y - p1.y)) /
+    //         dist;
+    //     t = Math.max(0, Math.min(1, t));
+    //     const distToP1P2 = Math.sqrt(
+    //         p.distanceTo(
+    //             new Point(p1.x + t * (p2.x - p1.x), p1.y + t * (p2.y - p1.y))
+    //         )
+    //     );
+    //     console.log(distToP1P2);
+    //     if (
+    //         // prevDistToP1P2 &&
+    //         // prevDistToP1P2 > distToP1P2 * 0.5 &&
+    //         // prevDistToP1P2 < distP1CenterP1P2 * 1.5
+    //         distToP1P2 > 10
+    //     ) {
+    //         p3 = p;
+    //         break;
+    //     }
+    //     prevDistToP1P2 = distP1CenterP1P2;
+    // }
+
+    // let p4: Point;
+    // prevDistToP1P2 = null;
+    // for (let i = points.length - 1; i > 0; i--) {
+    //     const p = points[i];
+    //     let dist = centerP1P2.distanceTo(p);
+    //     if (dist < distP1CenterP1P2 * 0.1) {
+    //         continue;
+    //     }
+    //     let t =
+    //         ((p.x - p1.x) * (p2.x - p1.x) + (p.y - p1.y) * (p2.y - p1.y)) /
+    //         dist;
+    //     t = Math.max(0, Math.min(1, t));
+    //     const distToP1P2 = Math.sqrt(
+    //         p.distanceTo(
+    //             new Point(p1.x + t * (p2.x - p1.x), p1.y + t * (p2.y - p1.y))
+    //         )
+    //     );
+    //     if (
+    //         prevDistToP1P2 &&
+    //         prevDistToP1P2 > distToP1P2 * 0.5 &&
+    //         prevDistToP1P2 < distP1CenterP1P2 * 1.5
+    //     ) {
+    //         p4 = p;
+    //         break;
+    //     }
+    //     prevDistToP1P2 = distP1CenterP1P2;
+    // }
 
     let p3: Point;
     maxDist = 0;
