@@ -11,7 +11,7 @@ import Point from "./Point";
  * @param points A list of points.
  */
 export default function convexHull(points: Point[]) {
-    points = points.map(point => point.copy());
+    points = points.map((point) => point.copy());
 
     //find point with smallets y-coordinate
     const minIndex = findSmallestY(points);
@@ -123,7 +123,7 @@ function findSmallestY(points: Point[]) {
  * @param q A second point.
  * @param r A third point.
  */
-function orientation(p: Point, q: Point, r: Point) {
+export function orientation(p: Point, q: Point, r: Point) {
     const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
     if (val === 0) {
         return 0;
@@ -168,7 +168,7 @@ function swap(points: Point[], i: number, j: number) {
  * @param p0 The starting point.
  * @param points A list of points.
  */
-function filterOnAngle(p0: Point, points: Point[]) {
+export function filterOnAngle(p0: Point, points: Point[]) {
     const toRemove = [];
     for (let i = 0; i < points.length - 1; i++) {
         if (orientation(p0, points[i], points[i + 1]) === 0) {

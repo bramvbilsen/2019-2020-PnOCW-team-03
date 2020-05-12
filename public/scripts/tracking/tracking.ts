@@ -33,7 +33,7 @@ export class ScreenTracker {
         crossRatio: number,
         scale?: number
     ) {
-        this.scale = scale || 0.2;
+        this.scale = scale || 1;
         this.ctx = new CameraOverlay().elem.getContext("2d");
         this.camera = camera;
         this.screen = screen;
@@ -214,13 +214,13 @@ export class ScreenTracker {
 
         this.matrix = [row1, row2, row3, row4, row5, row6, row7, row8];
         const h: number[] = <number[]>lusolve(this.matrix, c);
-        console.log(h);
         return h;
     }
 
     private WHOOPWHOOP(matrix: number[]) {
         const updatedScreens: SlaveScreen[] = [];
-        const needsToSendData = this.timeSinceLastEmit >= 100;
+        const needsToSendData = this.timeSinceLastEmit >= 300;
+        // const needsToSendData = true;
         for (let i = 0; i < this.originalScreens.length; i++) {
             const originalScreen = this.originalScreens[i];
             let corners = [
@@ -234,7 +234,6 @@ export class ScreenTracker {
                 const x = corner.x;
                 const y = corner.y;
                 const div = matrix[6] * x + matrix[7] * y + 1;
-                console.log("K: " + div);
                 let newX =
                     (matrix[0] * x + matrix[1] * y + matrix[2] * 1) / div;
                 let newY =
@@ -369,7 +368,7 @@ export class ScreenTracker {
             (this.findShortestSideLength(this.corners) / 2) * 1;
         let newCornersAcceptanceRadius = cornerSearchRadius * 0.05;
 
-        this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
+        // this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
 
         //draw cube eerste keer
         console.log("DRAW CUBE");
@@ -377,6 +376,10 @@ export class ScreenTracker {
 
         const trackStep = () => {
             const startT = Date.now();
+
+            const cornerSearchRadius =
+                (this.findShortestSideLength(this.corners) / 2) * 1;
+
             ctx.clearRect(0, 0, cameraWidth, cameraHeight);
             const frame = this.camera.snap(this.scale);
             const frameCtx = frame.getContext("2d");
@@ -423,17 +426,10 @@ export class ScreenTracker {
                 });
             });
             const newCorners = this.camera
-                .findCornersInPOI(scaledPrevCenter, cornerAreas, 0)
+                .findCornersInPOI(scaledPrevCenter, cornerAreas)
                 .map((c) => new Point(c.x / this.scale, c.y / this.scale));
-            if (newCorners.length != 0) {
-                this.corners = newCorners;
-            }
-            // this.corners = this.camera
-            //     .findCornersInPOI(scaledPrevCenter, cornerAreas)
-            //     .map((c) => new Point(c.x / this.scale, c.y / this.scale));
+            this.corners = newCorners;
             prevCenter = getCentroidOf(this.corners);
-            cornerSearchRadius =
-                (this.findShortestSideLength(this.corners) / 2) * 1;
             this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
 
             //draw cube in loop -> moet in whoopwhoop komen
