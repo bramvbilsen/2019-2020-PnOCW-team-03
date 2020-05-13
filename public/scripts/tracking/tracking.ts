@@ -8,6 +8,7 @@ import { lusolve } from "mathjs";
 import { BoundingBox } from "../util/BoundingBox";
 import { flattenOneLevel } from "../util/arrays";
 import Line from "../image_processing/screen_detection/Line";
+import { Cube } from "./3dscene";
 
 const linSystem = require("linear-equation-system");
 
@@ -24,6 +25,7 @@ export class ScreenTracker {
     matrix: Array<Array<number>> = [];
     originalScreens: SlaveScreen[];
     timeSinceLastEmit: number = 0;
+    cube: Cube;
 
     constructor(
         camera: Camera,
@@ -48,6 +50,72 @@ export class ScreenTracker {
             ctx.closePath();
             ctx.fill();
         }
+    }
+
+    private drawCube() {
+        let cube = this.cube;
+        console.log("HEY");
+        console.log(cube.CUBE_LINES.length);
+        let points = cube.CUBE_VERTICES;
+        for (let i = 0; i < cube.CUBE_LINES.length; i++) {
+            const element = cube.CUBE_LINES[i];
+            let point1 = cube.project(points[element[0]]);
+            let point2 = cube.project(points[element[1]]);
+            console.log("DEZE SHIT WORDT GETEKEND");
+            console.log(point1);
+            console.log(point2);
+            const ctx = this.ctx;
+            ctx.strokeStyle = "red";
+            ctx.beginPath();
+            ctx.moveTo(point1[0], point1[1]);
+            ctx.lineTo(point2[0], point2[1]);
+            ctx.stroke();
+        }
+    }
+
+    private transform(point: number[], matrix: number[]) {
+        let pr = this.cube.project(point, matrix);
+        return new Point(pr[0], pr[1]);
+    }
+
+    private drawCubeTrans(matrix: number[]) {
+        let cube = this.cube;
+        console.log("HEY");
+        console.log(cube.CUBE_LINES.length);
+        let points = cube.CUBE_VERTICES;
+        for (let i = 4; i < cube.CUBE_LINES.length; i++) {
+            const element = cube.CUBE_LINES[i];
+
+            let point1 = this.transform(points[element[0]], matrix);
+
+            let point2 = this.transform(points[element[1]], matrix);
+
+            console.log("DEZE SHIT WORDT GETEKEND");
+            console.log(point1);
+            console.log(point2);
+            const ctx = this.ctx;
+            ctx.strokeStyle = "blue";
+            ctx.beginPath();
+            ctx.moveTo(point1.x, point1.y);
+            ctx.lineTo(point2.x, point2.y);
+            ctx.stroke();
+        }
+        const ctx = this.ctx;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "rgba(255,0,0,0.5)";
+        ctx.beginPath();
+        const beginelement = cube.CUBE_LINES[0];
+
+        let beginpoint = this.transform(points[beginelement[0]], matrix);
+        ctx.moveTo(beginpoint.x, beginpoint.y);
+        for (let i = 1; i < 4; i++) {
+            const element = cube.CUBE_LINES[i];
+
+            let point1 = this.transform(points[element[0]], matrix);
+            ctx.lineTo(point1.x, point1.y);
+        }
+        ctx.closePath();
+        ctx.fill();
     }
 
     private drawCornerInformation(
@@ -175,6 +243,8 @@ export class ScreenTracker {
 
             this.drawCorners(corners.map((c) => new Point(c.x, c.y)));
 
+            this.drawCubeTrans(matrix);
+
             if (needsToSendData) {
                 const newScreen = originalScreen.copy();
                 updatedScreens.push(newScreen);
@@ -291,10 +361,18 @@ export class ScreenTracker {
             this.originalCorners.push(this.corners[i].copy());
         }
 
-        // let cornerSearchRadius =
-        //     (this.findShortestSideLength(this.corners) / 2) * 1.25;
+        //aanmaken van cube
+        this.cube = new Cube(prevCenter, this.screen.height);
+
+        let cornerSearchRadius =
+            (this.findShortestSideLength(this.corners) / 2) * 1;
+        let newCornersAcceptanceRadius = cornerSearchRadius * 0.05;
 
         // this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
+
+        //draw cube eerste keer
+        console.log("DRAW CUBE");
+        this.drawCube();
 
         const trackStep = () => {
             const startT = Date.now();
@@ -353,6 +431,10 @@ export class ScreenTracker {
             this.corners = newCorners;
             prevCenter = getCentroidOf(this.corners);
             this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
+
+            //draw cube in loop -> moet in whoopwhoop komen
+            this.drawCube;
+
             this.WHOOPWHOOP(this.calcPerspectiveMatrix());
             ctx.fillStyle = "red";
             ctx.fillText("Frame took: " + (Date.now() - startT) + "ms", 50, 50);
