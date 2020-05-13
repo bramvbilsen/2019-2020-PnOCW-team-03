@@ -13,6 +13,7 @@ import { Cube } from "./3dscene";
 const linSystem = require("linear-equation-system");
 
 export class ScreenTracker {
+    show3DSceneButton: HTMLButtonElement;
     stopTracking = false;
     scale: number;
     ctx: CanvasRenderingContext2D;
@@ -33,12 +34,15 @@ export class ScreenTracker {
         crossRatio: number,
         scale?: number
     ) {
-        this.scale = scale || 1;
+        this.scale = scale || 0.75;
         this.ctx = new CameraOverlay().elem.getContext("2d");
         this.camera = camera;
         this.screen = screen;
         this.crossRatio = crossRatio;
         this.originalScreens = slaveFlowHandler.screens.map((s) => s.copy());
+        this.show3DSceneButton = <HTMLButtonElement>(
+            document.getElementById("tracking3DButton")
+        );
     }
 
     private drawCorners(corners: Point[], color?: string) {
@@ -54,21 +58,17 @@ export class ScreenTracker {
 
     private drawCube() {
         let cube = this.cube;
-        console.log("HEY");
         console.log(cube.CUBE_LINES.length);
         let points = cube.CUBE_VERTICES;
         for (let i = 0; i < cube.CUBE_LINES.length; i++) {
             const element = cube.CUBE_LINES[i];
             let point1 = cube.project(points[element[0]]);
             let point2 = cube.project(points[element[1]]);
-            console.log("DEZE SHIT WORDT GETEKEND");
-            console.log(point1);
-            console.log(point2);
             const ctx = this.ctx;
             ctx.strokeStyle = "red";
             ctx.beginPath();
-            ctx.moveTo(point1[0], point1[1]);
-            ctx.lineTo(point2[0], point2[1]);
+            ctx.moveTo(point1[0] * this.scale, point1[1] * this.scale);
+            ctx.lineTo(point2[0] * this.scale, point2[1] * this.scale);
             ctx.stroke();
         }
     }
@@ -90,14 +90,11 @@ export class ScreenTracker {
 
             let point2 = this.transform(points[element[1]], matrix);
 
-            console.log("DEZE SHIT WORDT GETEKEND");
-            console.log(point1);
-            console.log(point2);
             const ctx = this.ctx;
             ctx.strokeStyle = "blue";
             ctx.beginPath();
-            ctx.moveTo(point1.x, point1.y);
-            ctx.lineTo(point2.x, point2.y);
+            ctx.moveTo(point1.x * this.scale, point1.y * this.scale);
+            ctx.lineTo(point2.x * this.scale, point2.y * this.scale);
             ctx.stroke();
         }
         const ctx = this.ctx;
@@ -107,12 +104,12 @@ export class ScreenTracker {
         const beginelement = cube.CUBE_LINES[0];
 
         let beginpoint = this.transform(points[beginelement[0]], matrix);
-        ctx.moveTo(beginpoint.x, beginpoint.y);
+        ctx.moveTo(beginpoint.x * this.scale, beginpoint.y * this.scale);
         for (let i = 1; i < 4; i++) {
             const element = cube.CUBE_LINES[i];
 
             let point1 = this.transform(points[element[0]], matrix);
-            ctx.lineTo(point1.x, point1.y);
+            ctx.lineTo(point1.x * this.scale, point1.y * this.scale);
         }
         ctx.closePath();
         ctx.fill();
@@ -241,9 +238,11 @@ export class ScreenTracker {
                 corners[j] = new Point(newX, newY);
             }
 
-            this.drawCorners(corners.map((c) => new Point(c.x, c.y)));
+            // this.drawCorners(corners.map((c) => new Point(c.x, c.y)));
 
-            this.drawCubeTrans(matrix);
+            if (this.show3DSceneButton.dataset.enabled == "true") {
+                this.drawCubeTrans(matrix);
+            }
 
             if (needsToSendData) {
                 const newScreen = originalScreen.copy();
@@ -362,7 +361,10 @@ export class ScreenTracker {
         }
 
         //aanmaken van cube
-        this.cube = new Cube(prevCenter, this.screen.height);
+        this.cube = new Cube(
+            new Point(prevCenter.x / this.scale, prevCenter.y / this.scale),
+            this.screen.height
+        );
 
         let cornerSearchRadius =
             (this.findShortestSideLength(this.corners) / 2) * 1;
@@ -371,8 +373,9 @@ export class ScreenTracker {
         // this.drawScreen(this.corners, prevCenter, cornerSearchRadius);
 
         //draw cube eerste keer
-        console.log("DRAW CUBE");
-        this.drawCube();
+        if (this.show3DSceneButton.dataset.enabled == "true") {
+            this.drawCube();
+        }
 
         const trackStep = () => {
             const startT = Date.now();

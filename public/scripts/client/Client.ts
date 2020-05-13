@@ -8,11 +8,11 @@ import { IRGBAColor } from "../types/Color";
 import env from "../../env/env";
 import Sync from "../util/Sync";
 import Point from "../image_processing/screen_detection/Point";
-import { createCanvas } from "../image_processing/screen_detection/screen_detection";
 import { loadImage } from "../util/images";
 import p5 from "p5";
 import ClientStorage from "./ClientStorage";
 import Animation from "./Animation";
+import { createCanvas } from "../util/canvas";
 
 const {
     checkIntersection,
@@ -31,7 +31,6 @@ class Client {
     public onConnectionTypeChange: (connectionType: ConnectionType) => void;
     public DEBUG: boolean = false;
     public cutWithRealPoints: boolean = false;
-    public bouncingBallImg: HTMLImageElement;
     private currentNb = 11;
     private startAnimationTime: number;
     private clientStorage: ClientStorage;
@@ -65,10 +64,6 @@ class Client {
         this._socket.on("connected", () => console.log("Connected!"));
 
         this._sync = new Sync(this._socket);
-
-        loadImage(`${env.baseUrl}/images/ball.gif`).then(
-            (img) => (this.bouncingBallImg = img)
-        );
 
         this._socket.on(
             SharedEventTypes.NotifyOfTypeChange,

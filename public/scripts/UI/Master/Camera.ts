@@ -1,9 +1,8 @@
 import Point from "../../image_processing/screen_detection/Point";
-import { createCanvas } from "../../image_processing/screen_detection/screen_detection";
 import { CameraOverlay } from "./cameraOverlays";
 import HtmlElem from "./HtmlElem";
 import convert from "color-convert";
-import { getCentroidOf } from "../../util/shapes";
+import { createCanvas } from "../../util/canvas";
 const deltaE = require("delta-e");
 
 export class Camera extends HtmlElem {

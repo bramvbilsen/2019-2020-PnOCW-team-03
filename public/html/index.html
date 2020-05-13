@@ -56,8 +56,10 @@
                 </div>
                 <div id="cameraButtonsContainer">
                   <div class="circularButtonContainer1">
-                    <button class="button" id="trackingBackButton" tabindex="0">Back</button>
-                    <button class="button" id="tracking3DButton" tabindex="0">3D</button>
+                    <div style="display: flex; flex-direction: column;">
+                        <button class="button" id="trackingBackButton" tabindex="0">Back</button>
+                        <button class="button" id="tracking3DButton" data-enabled="false" tabindex="0">3D</button>
+                    </div>
                   </div>
                   <div class="circularButtonContainer2">
                     <button class="circle button" id="confirmButton"></button>
@@ -100,11 +102,11 @@
                     Stop Video
                     </button>
                 </div>
-                <div>
+                <!-- <div>
                     <button type="button" id="reset-master-button" class="btn btn-outline-light thin-font">
                     Reset master
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

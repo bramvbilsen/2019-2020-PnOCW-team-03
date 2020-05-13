@@ -1,8 +1,8 @@
 import SlaveScreen from "../../util/SlaveScreen";
 import Point from "../screen_detection/Point";
 import { sortCorners } from "../../util/shapes";
-import { getHSLColorForPixel } from "../screen_detection/screen_detection";
 import Line from "../screen_detection/Line";
+import { getHSLColorForPixel } from "../../util/colors";
 
 /**
  * Contains an RGB colour: red, green, blue and transparancy.

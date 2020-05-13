@@ -1,10 +1,8 @@
 import Client from "./scripts/client/Client";
-import findScreen from "./scripts/image_processing/screen_detection/screen_detection";
 import { ConnectionType } from "./scripts/types/ConnectionType";
 import SlaveFlowHandler, {
     wait,
 } from "./scripts/image_processing/SlaveFlowHandler";
-import run_tests from "./tests/run";
 import env from "./env/env";
 import createTriangulationCanvas from "./scripts/image_processing/Triangulation/triangulationCanvas";
 import { Camera } from "./scripts/UI/Master/Camera";
@@ -20,10 +18,6 @@ export let slaveFlowHandler: SlaveFlowHandler;
 
 //@ts-ignore
 window.client = client;
-//@ts-ignore
-window.findScreen = findScreen;
-//@ts-ignore
-//window.imageDisplayHandler = imageDisplayHandler(slaveFlowHandler.screens);
 
 export function resetMaster() {
     const startButton = $("#start");
@@ -204,7 +198,15 @@ export function resetMaster() {
                             });
                         $("#tracking3DButton")
                             .off()
-                            .on("click", () => {});
+                            .on("click", () => {
+                                const button3D = document.getElementById(
+                                    "tracking3DButton"
+                                );
+                                button3D.dataset.enabled =
+                                    button3D.dataset.enabled == "false"
+                                        ? "true"
+                                        : "false";
+                            });
                         $("#confirmButton")
                             .off()
                             .on("click", async () => {
@@ -272,11 +274,4 @@ function onConnectionTypeChange(type: ConnectionType) {
         $("#master").css("display", "none");
         $("#countdown").css("display", "none");
     }
-}
-
-if (env.test) {
-    $("#page").css("background-color", "white");
-    run_tests().then((results) => {
-        // downloadTests(results);
-    });
 }

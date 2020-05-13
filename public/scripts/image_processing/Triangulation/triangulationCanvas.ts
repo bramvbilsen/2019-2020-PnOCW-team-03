@@ -1,6 +1,6 @@
-import { createCanvas } from "../screen_detection/screen_detection";
 import Point from "../screen_detection/Point";
 import delauney from "./Delaunay";
+import { createCanvas } from "../../util/canvas";
 
 export default () => {
     const id = "triangulation-demo";
@@ -10,7 +10,7 @@ export default () => {
     const clickedPoints: Point[] = [];
 
     canvas.addEventListener("click", (e: MouseEvent) => {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         const boundingRect = canvas.getBoundingClientRect();
         const x = e.clientX - boundingRect.left;
         const y = e.clientY - boundingRect.top;
@@ -23,14 +23,14 @@ export default () => {
             }
         });
         const triangulation = delauney(clickedPoints).lines;
-        triangulation.forEach(line => {
+        triangulation.forEach((line) => {
             let endPoints = line.endPoints;
             ctx.beginPath();
             ctx.moveTo(endPoints[0].x, endPoints[0].y);
             ctx.lineTo(endPoints[1].x, endPoints[1].y);
             ctx.stroke();
         });
-        clickedPoints.forEach(point => {
+        clickedPoints.forEach((point) => {
             ctx.font = "50px Arial";
             ctx.fillText("*", point.x - 10, point.y + 25);
         });

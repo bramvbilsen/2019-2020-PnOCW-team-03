@@ -1,6 +1,3 @@
-import { BoundingBox } from "./BoundingBox";
-import { createCanvas } from "../image_processing/screen_detection/screen_detection";
-
 /**
  * A function to load an image on the given path.
  * @param src The path to the image to load.
@@ -12,7 +9,7 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
         img.onload = () => {
             resolve(img);
         };
-        img.onerror = err => {
+        img.onerror = (err) => {
             reject(err);
         };
     });
@@ -22,23 +19,16 @@ export async function loadImage(src: string): Promise<HTMLImageElement> {
  * A function to load a video on the given path.
  * @param src The path to the video to load.
  */
-export async function loadVideo(vid: HTMLVideoElement): Promise<HTMLVideoElement> {
+export async function loadVideo(
+    vid: HTMLVideoElement
+): Promise<HTMLVideoElement> {
     return new Promise((resolve, reject) => {
         vid.load();
         vid.onload = () => {
             resolve(vid);
         };
-        vid.onerror = err => {
+        vid.onerror = (err) => {
             reject(err);
         };
     });
-}
-
-//Fixme What does this function do?
-export function scaleAndCutBoundingBoxToImgAspectRatio(
-    img: HTMLHtmlElement,
-    globalBoundingBox: BoundingBox
-) {
-    const canvas = createCanvas(img.clientWidth, img.clientHeight);
-    const ctx = canvas.getContext("2d");
 }
