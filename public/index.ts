@@ -191,6 +191,7 @@ export function resetMaster() {
                         $("#cameraContainer").css("display", "");
                         $("#confirmButton").css("display", "");
                         $("#trackingBackButton").css("display", "inline-block");
+                        $("#tracking3DButton").css("display", "inline-block");
                         $("#postDetectionContent").css("display", "none");
                         $("#trackingBackButton")
                             .off()
@@ -201,7 +202,9 @@ export function resetMaster() {
                                 $("#confirmButton").css("display", "none");
                                 $("#postDetectionContent").css("display", "");
                             });
-
+                        $("#tracking3DButton")
+                            .off()
+                            .on("click", () => {});
                         $("#confirmButton")
                             .off()
                             .on("click", async () => {

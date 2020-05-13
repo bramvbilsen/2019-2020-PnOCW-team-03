@@ -171,6 +171,9 @@ export default class SlaveFlowHandler {
                 ctx.fill();
             });
 
+            console.log("CORNERS: ");
+            console.log(JSON.stringify(corners));
+
             if (corners.length != 4) {
                 continue;
             }
@@ -183,6 +186,7 @@ export default class SlaveFlowHandler {
                     slaveId
                 )
             );
+            console.log(this.screens);
         }
     }
 
@@ -199,23 +203,23 @@ export default class SlaveFlowHandler {
             );
             screen.angle = angle;
             screen.actualCorners = cornerMapping;
-            console.log(screen.angle);
-            console.log(
-                "Actual Left Up maps to: " +
-                    screen.mapActualToMasterCornerLabel(CornerLabels.LeftUp)
-            );
-            console.log(
-                "Actual Right Up maps to: " +
-                    screen.mapActualToMasterCornerLabel(CornerLabels.RightUp)
-            );
-            console.log(
-                "Actual Right Under maps to: " +
-                    screen.mapActualToMasterCornerLabel(CornerLabels.RightUnder)
-            );
-            console.log(
-                "Actual Left Under maps to: " +
-                    screen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder)
-            );
+            // console.log(screen.angle);
+            // console.log(
+            //     "Actual Left Up maps to: " +
+            //         screen.mapActualToMasterCornerLabel(CornerLabels.LeftUp)
+            // );
+            // console.log(
+            //     "Actual Right Up maps to: " +
+            //         screen.mapActualToMasterCornerLabel(CornerLabels.RightUp)
+            // );
+            // console.log(
+            //     "Actual Right Under maps to: " +
+            //         screen.mapActualToMasterCornerLabel(CornerLabels.RightUnder)
+            // );
+            // console.log(
+            //     "Actual Left Under maps to: " +
+            //         screen.mapActualToMasterCornerLabel(CornerLabels.LeftUnder)
+            // );
         }
         // Upload image in server:
         uploadMasterImgCanvas(img);
@@ -299,7 +303,7 @@ export default class SlaveFlowHandler {
         });
         //TODO: dit efficienter maken
         const triangulation = delauney(middlePoints);
-        console.log("triangulation = " + triangulation.lines);
+        // console.log("triangulation = " + triangulation.lines);
         this.screens.forEach((screen) => {
             let sendData = triangulation.sendData(
                 screen,

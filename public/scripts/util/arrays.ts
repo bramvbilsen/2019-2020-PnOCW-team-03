@@ -7,3 +7,9 @@ export function flattenOneLevel(arr: Array<any>) {
         return arr.concat(curr);
     }, []);
 }
+
+export function median(arr: Array<number>) {
+    const i = Math.floor(arr.length / 2);
+    arr = [...arr].sort((a, b) => a - b);
+    return arr.length % 2 !== 0 ? arr[i] : (arr[i - 1] + arr[i]) / 2;
+}

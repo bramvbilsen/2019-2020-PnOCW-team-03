@@ -123,9 +123,6 @@ export function triangulationListeners(socket: socketio.Socket) {
             boundingBoxWidth: any;
             boundingBoxHeight: any;
         }) => {
-            console.log(msg.srcPoints);
-            console.log(msg.boundingBoxWidth);
-            console.log(msg.boundingBoxHeight);
             io.to(msg.slaveID).emit(SlaveEventTypes.receiveCutData, msg);
         }
     );
@@ -269,7 +266,7 @@ export function videoListeners(socket: socketio.Socket) {
                 msg.slaveIds.forEach((id) => {
                     io.to(id).emit(SlaveEventTypes.GetVideoTimeStamp, {
                         startTime: msg.startTime,
-                        id: id
+                        id: id,
                     });
                 });
             }
@@ -280,13 +277,10 @@ export function videoListeners(socket: socketio.Socket) {
         MasterEventTypes.UpdateVideoTimeOnSlave,
         (msg: { deltaTime: number; id: string }) => {
             if (socket.id === connections.master.id) {
-                    io.to(msg.id).emit(SlaveEventTypes.UpdateVideoTime, {
-                        deltaTime: msg.deltaTime,
-                    });
+                io.to(msg.id).emit(SlaveEventTypes.UpdateVideoTime, {
+                    deltaTime: msg.deltaTime,
+                });
             }
         }
     );
-
-
-
 }

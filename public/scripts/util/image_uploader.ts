@@ -13,7 +13,6 @@ export function uploadMasterImgCanvas(canvas: HTMLCanvasElement) {
                 processData: false,
                 data: formData,
                 success: (data: any) => {
-                    console.log("Success: " + data);
                     resolve(data);
                 },
                 error: () => {

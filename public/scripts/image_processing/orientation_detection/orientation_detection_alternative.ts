@@ -121,15 +121,14 @@ export default function calculateScreenAngle(
     RightUnder: Point;
     LeftUnder: Point;
 } {
-
     const pixels = canvas
         .getContext("2d")
         .getImageData(0, 0, canvas.width, canvas.height).data;
 
     /**New try with all 4 corners their colors*/
-    const corners: Point[] = screen.corners.map(corner => corner.copy());
+    const corners: Point[] = screen.corners.map((corner) => corner.copy());
     const sortedCorners = sortCorners(corners);
-    console.log("CORNERS AT START OF ANGLE DETECTION: " + JSON.stringify(sortedCorners));
+    // console.log("CORNERS AT START OF ANGLE DETECTION: " + JSON.stringify(sortedCorners));
 
     if (screen.corners.length !== 4) {
         return {
@@ -137,7 +136,7 @@ export default function calculateScreenAngle(
             LeftUnder: sortedCorners.LeftUnder,
             RightUnder: sortedCorners.RightUnder,
             RightUp: sortedCorners.RightUp,
-            LeftUp: sortedCorners.LeftUp
+            LeftUp: sortedCorners.LeftUp,
         };
     }
 
@@ -152,7 +151,7 @@ export default function calculateScreenAngle(
 
     //Fixme Make a function to deal with this.
 
-    const topLeftDiag = (new Line(sortedCorners.LeftUp, centroid));
+    const topLeftDiag = new Line(sortedCorners.LeftUp, centroid);
     let xdir = (centroid.x - sortedCorners.LeftUp.x) / topLeftDiag.length;
     let ydir = (centroid.y - sortedCorners.LeftUp.y) / topLeftDiag.length;
     let x = sortedCorners.LeftUp.x;
@@ -164,16 +163,21 @@ export default function calculateScreenAngle(
         ctx.arc(x, y, 5, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
-        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        const pixelColor = getHSLColorForPixel(
+            Math.round(x),
+            Math.round(y),
+            canvas.width,
+            pixels
+        );
         if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
             pinkPixelsTopLeft++;
         }
         x += xdir;
         y += ydir;
     }
-    console.log("Pink in top left: " + pinkPixelsTopLeft);
+    // console.log("Pink in top left: " + pinkPixelsTopLeft);
 
-    const topRightDiag = (new Line(sortedCorners.RightUp, centroid));
+    const topRightDiag = new Line(sortedCorners.RightUp, centroid);
     xdir = (centroid.x - sortedCorners.RightUp.x) / topRightDiag.length;
     ydir = (centroid.y - sortedCorners.RightUp.y) / topRightDiag.length;
     x = sortedCorners.RightUp.x;
@@ -185,16 +189,21 @@ export default function calculateScreenAngle(
         ctx.arc(x, y, 5, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
-        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        const pixelColor = getHSLColorForPixel(
+            Math.round(x),
+            Math.round(y),
+            canvas.width,
+            pixels
+        );
         if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
             pinkPixelsTopRight++;
         }
         x += xdir;
         y += ydir;
     }
-    console.log("Pink in top right: " + pinkPixelsTopRight);
+    // console.log("Pink in top right: " + pinkPixelsTopRight);
 
-    const bottomLeftDiag = (new Line(sortedCorners.LeftUnder, centroid));
+    const bottomLeftDiag = new Line(sortedCorners.LeftUnder, centroid);
     xdir = (centroid.x - sortedCorners.LeftUnder.x) / bottomLeftDiag.length;
     ydir = (centroid.y - sortedCorners.LeftUnder.y) / bottomLeftDiag.length;
     x = sortedCorners.LeftUnder.x;
@@ -206,16 +215,21 @@ export default function calculateScreenAngle(
         ctx.arc(x, y, 5, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
-        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        const pixelColor = getHSLColorForPixel(
+            Math.round(x),
+            Math.round(y),
+            canvas.width,
+            pixels
+        );
         if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
             pinkPixelsBottomLeft++;
         }
         x += xdir;
         y += ydir;
     }
-    console.log("Pink in bottom left: " + pinkPixelsBottomLeft);
+    // console.log("Pink in bottom left: " + pinkPixelsBottomLeft);
 
-    const bottomRightDiag = (new Line(sortedCorners.RightUnder, centroid));
+    const bottomRightDiag = new Line(sortedCorners.RightUnder, centroid);
     xdir = (centroid.x - sortedCorners.RightUnder.x) / bottomRightDiag.length;
     ydir = (centroid.y - sortedCorners.RightUnder.y) / bottomRightDiag.length;
     x = sortedCorners.RightUnder.x;
@@ -227,16 +241,26 @@ export default function calculateScreenAngle(
         ctx.arc(x, y, 5, 0, Math.PI * 2);
         ctx.closePath();
         ctx.fill();
-        const pixelColor = getHSLColorForPixel(Math.round(x), Math.round(y), canvas.width, pixels);
+        const pixelColor = getHSLColorForPixel(
+            Math.round(x),
+            Math.round(y),
+            canvas.width,
+            pixels
+        );
         if (isSimilarHSLColor(leftUpperColor, pixelColor, colorRange)) {
             pinkPixelsBottomRight++;
         }
         x += xdir;
         y += ydir;
     }
-    console.log("Pink in bottom right: " + pinkPixelsBottomRight);
+    // console.log("Pink in bottom right: " + pinkPixelsBottomRight);
 
-    const maxPinkPixels = Math.max(pinkPixelsTopLeft, pinkPixelsTopRight, pinkPixelsBottomLeft, pinkPixelsBottomRight);
+    const maxPinkPixels = Math.max(
+        pinkPixelsTopLeft,
+        pinkPixelsTopRight,
+        pinkPixelsBottomLeft,
+        pinkPixelsBottomRight
+    );
     if (maxPinkPixels === pinkPixelsTopLeft) {
         leftUp = sortedCorners.LeftUp;
         rightUp = sortedCorners.RightUp;
@@ -260,8 +284,7 @@ export default function calculateScreenAngle(
     }
 
     let theta =
-        Math.atan2(rightUp.y - leftUp.y, rightUp.x - leftUp.x) *
-        180 /
+        (Math.atan2(rightUp.y - leftUp.y, rightUp.x - leftUp.x) * 180) /
         Math.PI;
 
     if (theta < 0) {
@@ -275,6 +298,6 @@ export default function calculateScreenAngle(
         LeftUp: leftUp,
         LeftUnder: leftUnder,
         RightUp: rightUp,
-        RightUnder: rightUnder
+        RightUnder: rightUnder,
     };
 }
