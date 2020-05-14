@@ -62,7 +62,7 @@ export class Cube {
         }
     }
 
-    PERSPECTIVE = 700;
+    PERSPECTIVE = 500;
 
     project(point: number[], matrix?: number[]) {
         let cameraX = this.middle.x;
