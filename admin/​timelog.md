@@ -113,6 +113,12 @@ CR1: 2u
 
 TC3: 2u
 
+### 23/02
+
+###### -TC4: Schrijven beginselen report
+
+TC4: 1u
+
 ### 24/02:
 
 ###### -CEO: Bug gefixt waar dat testen niet de juiste getallen terug gaven.

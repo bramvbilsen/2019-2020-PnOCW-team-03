@@ -1,4 +1,5 @@
 import Point from "../image_processing/screen_detection/Point";
+import { CameraOverlay } from "../UI/Master/cameraOverlays";
 
 export class Cube {
     //een cube vanuit frontaal zicht
@@ -31,8 +32,11 @@ export class Cube {
 
     constructor(middle: Point, size: number) {
         //hier aanpassen van waar de cube moet worden getekened
-        this.middle = middle;
-        const scale = size / 2;
+        const overlay = new CameraOverlay();
+        const width = overlay.width;
+        const height = overlay.height;
+        this.middle = new Point(width / 2, height / 2);
+        const scale = width / 8;
         for (let i = 0; i < this.CUBE_VERTICES.length; i++) {
             this.CUBE_VERTICES[i][0] =
                 this.CUBE_VERTICES[i][0] * scale + this.middle.x;
@@ -73,7 +77,7 @@ export class Cube {
                 (matrix[3] * cameraX + matrix[4] * cameraY + matrix[5] * 1) /
                 div;
         }
-        let scaleProjected = this.PERSPECTIVE / (this.PERSPECTIVE + point[2]);
+        let scaleProjected = (-this.PERSPECTIVE + point[2]) / this.PERSPECTIVE;
         // The xProjected is the x position on the 2D world
         let xProjected = (point[0] - cameraX) * scaleProjected + cameraX;
         // The yProjected is the y position on the 2D world
